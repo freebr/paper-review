@@ -1,0 +1,35 @@
+﻿<%
+' TASK_PROGRESS
+Const tpNone=0
+Const tpTbl1Uploaded=1
+Const tpTbl1Unpassed=2
+Const tpTbl1Passed=3
+Const tpTbl2Uploaded=4
+Const tpTbl2Unpassed=5
+Const tpTbl2Passed=6
+Const tpTbl3Uploaded=7
+Const tpTbl3Unpassed=8
+Const tpTbl3Passed=9
+Const tpTbl4Uploaded=10
+Const tpTbl4Unpassed=11
+Const tpTbl4Passed=12
+' REVIEW_STATUS
+Const rsNone=0
+Const rsDetectThesisUploaded=1
+Const rsNotAgreeDetect=2
+Const rsAgreeDetect=3
+Const rsDetected=4
+Const rsReviewThesisUploaded=5
+Const rsNotAgreeReview=6
+Const rsAgreeReview=7
+Const rsMatchExpert=8
+Const rsReviewed=9
+Const rsReviewEval=10
+Const rsModifyThesisUploaded=11
+Const rsModifyUnpassed=12
+Const rsModifyPassed=13
+Const rsDefencePlan=14
+Const rsDefenceEval=15
+Const rsInstructEval=16
+Const rsFinalThesisUploaded=17
+%>
