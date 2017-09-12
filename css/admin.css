@@ -1,0 +1,11 @@
+﻿@import "global.css";
+
+table.tblform {border:0;background-color:#999999}
+table.tblform tr {background-color:#ffffff}
+table.tblform tr.trbuttons {background-color:#cccccc}
+div.divcontrol { display:inline }
+span.eval_notice { color:#ff0000;font-weight:bold }
+input.txt { background:none;border-top:0;border-left:0;border-right:0;border-bottom:1px solid dimgray }
+input.score { text-align:center }
+input.scorep { text-align:center; border:0 }
+input.selectbox { cursor:pointer;text-align:center }

@@ -1,0 +1,15 @@
+﻿@import "global.css";
+
+p { font-size:12pt }
+table.tblform { padding:0 30px;background-color:#ffffff;border:1px solid #cccccc }
+td.section { height:30px; background:url(../images/student/section.png) left center no-repeat;
+						 line-height:60px; padding-left:30px; font-size:14pt; font-weight:bold }
+td.section2 { border-bottom:1px dashed #666666; font-size:12pt; font-weight:bold }
+
+td.summary p { color:dimgray;text-align:center }
+input[type="text"],select { text-align:left;font-size:12pt;background:none;border-top:0;border-left:0;border-right:0;border-bottom:1px solid dimgray }
+select { width:415px;text-align:center }
+div.divupload { position:absolute;padding:10px;border:1px solid #cccccc;background-color:#ffface;
+								filter:alpha(opacity=80);-webkit-opacity:.8;-moz-opacity:.8;text-align:center }
+div.divclaim { position:absolute;display:none;background-color:#000000;color:#ffffff;padding:10px;left:0;top:0;width:90%;height:70%;filter:alpha(opacity=80);-moz-opacity:.8;-webkit-opacity:.8 }
+span.decl { color:#0000ff; font-weight:bold }
