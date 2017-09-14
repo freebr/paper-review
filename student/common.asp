@@ -5,7 +5,6 @@ Function toYearMonth(ByVal year,ByVal month)
 	If Len(month)=1 Then month="0"&month
 	toYearMonth=year&"."&month
 End Function
-
 Function addFormInfoToArray(tg,arr,fieldName,propName)
 	ReDim arr(Request.Form(fieldName).Count-1)
 	For i=0 To UBound(arr)
@@ -14,7 +13,6 @@ Function addFormInfoToArray(tg,arr,fieldName,propName)
 	tg.addInfo propName,arr
 	addFormInfoToArray=1
 End Function
-
 Function isMatched(pattern,s)
 	' 判断指定字符串是否满足指定模式
 	Dim regEx:Set regEx=New RegExp
@@ -22,7 +20,6 @@ Function isMatched(pattern,s)
 	isMatched=regEx.Test(s)
 	Set regEx=Nothing
 End Function
-
 Function loadResearchwayList(stu_type)
 	Dim arr
 	If stu_type=5 Then ' 工程硕士
@@ -36,7 +33,6 @@ Function loadResearchwayList(stu_type)
 	End If	
 	loadResearchwayList=arr
 End Function
-
 Function getTeacherIdByName(name)
 	If IsNull(name) Then
 		getTeacherIdByName=-1
@@ -58,7 +54,6 @@ Function getTeacherIdByName(name)
 	CloseRs rsTeacher
 	CloseConn conn
 End Function
-
 Function getTeachTypeNameById(teachtype_id)
 	Dim ret
 	Select Case UCase(teachtype_id)
@@ -70,7 +65,6 @@ Function getTeachTypeNameById(teachtype_id)
 	End Select
 	getTeachTypeNameById=ret
 End Function
-
 Function getProDutyNameOf(tid)
 	Dim conn,rs,sql,num
 	Connect conn
@@ -82,7 +76,6 @@ Function getProDutyNameOf(tid)
 	CloseRs rs
 	CloseConn conn
 End Function
-
 Function getReviewResult(n)
 	Dim ret
 	Select Case n
@@ -94,7 +87,6 @@ Function getReviewResult(n)
 	End Select
 	getReviewResult=ret
 End Function
-
 Function getFinalResult(n)
 	Dim ret
 	Select Case n
@@ -107,12 +99,10 @@ Function getFinalResult(n)
 	End Select
 	getFinalResult=ret
 End Function
-
 Function getDefenceResult(n)	' 按代码返回相应的答辩成绩
 	Dim arr:arr=Array("未录入","优秀","良好","及格","不及格")
 	getDefenceResult=arr(n)
 End Function
-
 Function sendEmailToTutor(filename)
 	Dim conn,rs,sql,num
 	Dim arrSemInfo,arrMailId
@@ -151,7 +141,6 @@ Function sendEmailToTutor(filename)
 	CloseConn conn
 	sendEmailToTutor=1
 End Function
-
 Function reviewResultList(ctlname,sel,showtip)	' 显示评审结果选择框
 	Dim arr,i
 	arr=Array("","A","B","C","D","E")
@@ -162,7 +151,6 @@ Function reviewResultList(ctlname,sel,showtip)	' 显示评审结果选择框
 	Next %>
 </select><%
 End Function
-
 Function finalResultList(ctlname,sel,showtip)	' 显示处理意见选择框
 	Dim arr,i
 	arr=Array("","I","II","III","IV","V","VI")
@@ -173,7 +161,6 @@ Function finalResultList(ctlname,sel,showtip)	' 显示处理意见选择框
 	Next %>
 </select></div><%
 End Function
-
 Function getClientInfo(cli)
 	Dim conn,rs,sql,result,i
 	Connect conn
@@ -205,22 +192,20 @@ Function getClientInfo(cli)
 	CloseConn conn
 	getClientInfo=1
 End Function
-
 If 0 And Not hasPrivilege(Session("writeprivileges"),"SATEST") And Not hasPrivilege(Session("readprivileges"),"SATEST") Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4">您没有权限！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 	Response.End
 End If
-
 Dim stuclient:Set stuclient=New StudentClientInfo
 getClientInfo(stuclient)
 If stuclient.SystemStatus=STUCLI_STATUS_CLOSED Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4">电子评阅系统未启用！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 	Response.End
 End If
-
 Dim arrTable,arrTblThesis,arrTableStatText,arrStuOprName,arrStep
 arrTable=Array("","开题报告表","中期检查表","预答辩申请表","答辩及授予学位审批材料")
-arrTblThesis=Array("","开题论文（已完成的论文部分）","中期论文","预答辩论文")
+arrTblThesis=Array("","开题论文","中期论文","预答辩论文")
+arrTblThesisDetail=Array("","开题论文（已完成的论文部分）","中期论文","预答辩论文")
 arrTableStatText=Array("—","待审核","审核不通过","审核通过")
 arrStuOprName=Array("","开题报告表","中期检查表","预答辩申请表","答辩及授予学位审批材料","送检论文","送审论文","答辩论文","定稿论文")
 arrStep=Array("","提交送检论文","导师不同意检测","导师同意检测","论文已检测","提交送审论文","导师不同意送审","导师同意送审","专家正在评阅","专家完成评阅","导师确认评阅结果","提交答辩论文","答辩论文未通过","答辩论文已通过","答辩委员会给出修改意见","教指会分会给出修改意见","提交定稿论文")

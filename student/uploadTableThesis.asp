@@ -6,13 +6,11 @@
 <%If IsEmpty(Session("Suser")) Then Response.Redirect("../error.asp?timeout")
 Dim opr,bOpen,bUpload
 Dim conn,rs,sql,result
-
 bOpen=True
 bUpload=True
 opr=0
 sem_info=getCurrentSemester()
 stu_type=Session("StuType")
-
 Connect conn
 sql="SELECT *,dbo.getThesisStatusText(1,TASK_PROGRESS,2) AS STAT_TEXT FROM VIEW_TEST_THESIS_REVIEW_INFO WHERE STU_ID="&Session("Stuid")&" ORDER BY PERIOD_ID DESC" 'AND PERIOD_ID="&sem_info(3)&" AND Valid=1"
 GetRecordSetNoLock conn,rs,sql,result
@@ -44,7 +42,6 @@ If opr<>0 Then
 	enddate=stuclient.getOpentime(opr,STUCLI_OPENTIME_END)
 	If Not bOpen Then bUpload=False
 End If
-
 curStep=Request.QueryString("step")
 Select Case curStep
 Case vbNullstring ' 填写信息页面
@@ -64,7 +61,7 @@ Case vbNullstring ' 填写信息页面
 	ElseIf Not bUpload Then
 %><span class="tip">当前状态为【<%=rs("STAT_TEXT")%>】，不能上传论文！</span><%
 	Else
-%>当前上传的是：<span style="color:#ff0000;font-weight:bold"><%=arrTblThesis(opr)%></span><br/>
+%>当前上传的是：<span style="color:#ff0000;font-weight:bold"><%=arrTblThesisDetail(opr)%></span><br/>
 请选择要上传的文件，并点击&quot;提交&quot;按钮：<%
 	End If %></p></td></tr>
 <tr><td align="center"><form id="fmThesis" action="?step=1" method="post" enctype="multipart/form-data">
@@ -91,7 +88,6 @@ Case vbNullstring ' 填写信息页面
 	End If %>
 </script></body></html><%
 Case 1	' 上传进程
-
 	If Not bOpen Then
 		bError=True
 		errdesc="上传"&arrTblThesis(opr)&"的时间为"&FormatDateTime(startdate,1)&"至"&FormatDateTime(enddate,1)&"，本专业上传通道已关闭或当前不在开放时间内，不能上传论文！"
