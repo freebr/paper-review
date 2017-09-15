@@ -9,7 +9,7 @@ teachtype_id=Request.Form("In_TEACHTYPE_ID")
 spec_id=Request.Form("In_SPECIALITY_ID")
 is_reviewed=Request.Form("In_IS_REVIEWED")
 finalFilter=Request.Form("finalFilter")
-If Len(finalFilter) Then PubTerm="AND "&finalFilter
+If Len(finalFilter) Then PubTerm="AND ("&finalFilter&")"
 If Len(teachtype_id) And teachtype_id<>"0" Then
 	PubTerm=PubTerm&" AND TEACHTYPE_ID="&toSqlString(teachtype_id)
 Else
