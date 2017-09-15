@@ -12,7 +12,7 @@ enter_year=Request.Form("In_ENTER_YEAR")
 query_task_progress=Request.Form("In_TASK_PROGRESS")
 query_review_status=Request.Form("In_REVIEW_STATUS")
 finalFilter=Request.Form("finalFilter")
-If Len(finalFilter) Then PubTerm="AND "&finalFilter
+If Len(finalFilter) Then PubTerm="AND ("&finalFilter&")"
 If Len(period_id) And period_id<>"0" Then
 	period_id=Int(period_id)
 	PubTerm=PubTerm&" AND PERIOD_ID="&toSqlString(period_id)

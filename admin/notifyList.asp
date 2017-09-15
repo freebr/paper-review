@@ -7,7 +7,7 @@ Dim PubTerm,PageNo,PageSize
 sem_info=getCurrentSemester()
 user_type=Request.Form("usertype")
 finalFilter=Request.Form("finalFilter")
-If Len(finalFilter) Then PubTerm="AND "&finalFilter
+If Len(finalFilter) Then PubTerm="AND ("&finalFilter&")"
 If Len(user_type) And user_type<>"0" Then
 	PubTerm=PubTerm&" AND USER_TYPE="&toSqlString(user_type)
 End If

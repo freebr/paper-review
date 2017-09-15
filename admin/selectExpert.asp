@@ -11,7 +11,7 @@ itemid=Request.QueryString("item")
 
 Dim PubTerm,PageNo,PageSize
 finalFilter=Request.Form("finalFilter")
-If Len(finalFilter) Then PubTerm="AND "&finalFilter
+If Len(finalFilter) Then PubTerm="AND ("&finalFilter&")"
 
 '----------------------PAGE-------------------------
 PageNo=""

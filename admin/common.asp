@@ -63,7 +63,7 @@ Function getTeacherIdByName(name)
 	name=Replace(name,"'","''")
 	name=Replace(name,"""","""""")
 	Connect conn
-	sql="SELECT TEACHERID,TEACHERNAME FROM TEACHER_INFO WHERE TEACHERNAME='"&name&"'"
+	sql="SELECT TEACHERID,TEACHERNAME FROM TEACHER_INFO WHERE TEACHERNAME='"&name&"' AND VALID=0"
 	GetRecordSetNoLock conn,rsTeacher,sql,num
 	If rsTeacher.EOF Then
 		getTeacherIdByName=-1
