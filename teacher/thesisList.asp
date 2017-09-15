@@ -12,7 +12,7 @@ query_task_progress=Request.Form("In_TASK_PROGRESS")
 query_review_status=Request.Form("In_REVIEW_STATUS")
 Tid=Session("Tid")
 finalFilter=Request.Form("finalFilter")
-If Len(finalFilter) Then PubTerm="AND "&finalFilter
+If Len(finalFilter) Then PubTerm="AND ("&finalFilter&")"
 If Len(teachtype_id) And teachtype_id<>"0" Then
 	PubTerm=PubTerm&" AND TEACHTYPE_ID="&toSqlString(teachtype_id)
 Else
