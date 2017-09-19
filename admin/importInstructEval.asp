@@ -81,7 +81,7 @@ Case 2	' 上传进程
 <input type="hidden" name="sendemail" value="<%=send_email%>" />
 <input type="hidden" name="filename" value="<%=strDestFile%>" />
 <p><%=byteFileSize%> 字节已上传，正在导入学院学位评定分委员会修改意见...</p></form>
-<script type="text/javascript">setTimeout("$('#UploadFinish').submit()",500);</script><%
+<script type="text/javascript">setTimeout("$('#fmUploadFinish').submit()",500);</script><%
 	Else
 %>
 <script type="text/javascript">alert("<%=errstring%>");history.go(-1);</script><%

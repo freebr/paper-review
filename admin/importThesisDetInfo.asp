@@ -96,7 +96,7 @@ Case 2	' 上传进程
 <input type="hidden" name="reportDir" value="<%=strReportDir%>" />
 <input type="hidden" name="reportNameFmt" value="<%=reportNameFmt%>" />
 <p><%=byteFileSize%> 字节已上传，正在导入论文查重信息和关联检测报告...</p></form>
-<script type="text/javascript">setTimeout("$('#UploadFinish').submit()",500);</script><%
+<script type="text/javascript">setTimeout("$('#fmUploadFinish').submit()",500);</script><%
 	Else
 %>
 <script type="text/javascript">alert("<%=errstring%>");history.go(-1);</script><%
