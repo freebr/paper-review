@@ -86,6 +86,7 @@ Case 2	' 上传进程
 <meta name="theme-color" content="#2D79B2" />
 <title>导入论文查重信息自EXCEL文件</title>
 <link href="../css/admin.css" rel="stylesheet" type="text/css" />
+<script src="../scripts/jquery-1.6.3.min.js" type="text/javascript"></script>
 </head>
 <body bgcolor="ghostwhite">
 <center><br /><b>导入论文查重信息自EXCEL文件</b><br /><br /><%
@@ -150,7 +151,7 @@ Case 3	' 数据读取，导入到数据库
 			If Not bError Then
 				reportFilePath=reportDir&file.Name
 				stuno=toSqlString(rs(1))
-				sql="SELECT STU_ID FROM STUDENT_INFO WHERE STU_NO="&stuno
+				sql="SELECT STU_ID FROM VIEW_STUDENT_INFO WHERE STU_NO="&stuno
 				GetRecordSet conn,rsa,sql,result
 				If rsa.EOF Then
 					bError=True
@@ -159,8 +160,6 @@ Case 3	' 数据读取，导入到数据库
 					stuid=rsa("STU_ID")
 					sql2=sql2&"UPDATE TEST_THESIS_REVIEW_INFO SET REPRODUCTION_RATIO="&reproduct_ratio&",DETECT_REPORT="&toSqlString(reportFilePath)&",REVIEW_STATUS="&rsDetected&" WHERE STU_ID="&stuid&";"
 					numThesis=numThesis+1
-'					Response.Write numThesis&":"&sql2
-'					Response.Flush
 				End If
 			End If
 			CloseRs rsa

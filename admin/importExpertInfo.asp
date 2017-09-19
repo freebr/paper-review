@@ -9,6 +9,7 @@ Case vbNullstring ' 文件选择页面
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link href="../css/admin.css" rel="stylesheet" type="text/css" />
+<script src="../scripts/jquery-1.6.3.min.js" type="text/javascript"></script>
 </head>
 <body bgcolor="ghostwhite">
 <center><font size=4><b>导入自EXCEL文件</b><br>
@@ -60,6 +61,7 @@ Case 2	' 上传进程
 <meta name="theme-color" content="#2D79B2" />
 <title>导入自EXCEL文件</title>
 <link href="../css/admin.css" rel="stylesheet" type="text/css" />
+<script src="../scripts/jquery-1.6.3.min.js" type="text/javascript"></script>
 </head>
 <body bgcolor="ghostwhite">
 <center><br /><b>导入自EXCEL文件</b><br /><br /><%
@@ -78,7 +80,7 @@ Case 3	' 数据读取，导入到数据库
 	Function addData()
 		' 添加数据
 		Dim fieldValue(6)
-		Dim sql,conn,result,rsExp,rsTea,rsTmp
+		Dim sql,conn,connOrigin,result,rsExp,rsTea,rsTmp
 		Dim numNewTeacher,numNewExTeacher,numUpdTeacher
 		Dim bIsUpdated,bIsInschool
 		Dim arrRet(1)
@@ -89,10 +91,11 @@ Case 3	' 数据读取，导入到数据库
 		numNewExTeacher=0
 		Set py=New PinyinQuery
 		Connect conn
+		ConnectOriginDb connOrigin
 		sql="SELECT * FROM TEST_THESIS_REVIEW_EXPERT_INFO"
 		GetRecordSet conn,rsExp,sql,result
 		sql="SELECT * FROM TEACHER_INFO"
-		GetRecordSet conn,rsTea,sql,result
+		GetRecordSet connOrigin,rsTea,sql,result
 		Do While Not rs.EOF
 			If IsNull(rs(0)) Then Exit Do
 			bIsUpdated=False
@@ -134,7 +137,7 @@ Case 3	' 数据读取，导入到数据库
 						Do
 							If i>0 Then	s=username&i
 							sql="SELECT TEACHERID FROM TEACHER_INFO WHERE TEACHERNO="&toSqlString(s)
-							GetRecordSetNoLock conn,rsTmp,sql,result
+							GetRecordSetNoLock connOrigin,rsTmp,sql,result
 							CloseRs rsTmp
 							i=i+1
 						Loop While result>0
@@ -184,7 +187,8 @@ Case 3	' 数据读取，导入到数据库
 		sql="UPDATE TEACHER_INFO SET WRITEPRIVILEGETAGSTRING=dbo.addPrivilege(WRITEPRIVILEGETAGSTRING,'I10',''),"&_
 								"READPRIVILEGETAGSTRING=dbo.addPrivilege(READPRIVILEGETAGSTRING,'I10','') WHERE "&_
 								"dbo.hasPrivilege(WRITEPRIVILEGETAGSTRING,'I10')=0 AND dbo.hasPrivilege(READPRIVILEGETAGSTRING,'I10')=0 AND TEACHERID IN (SELECT TEACHER_ID FROM TEST_THESIS_REVIEW_EXPERT_INFO)"
-		conn.Execute sql
+		connOrigin.Execute sql
+		CloseConn connOrigin
 		CloseConn conn
 		Set py=Nothing
 		arrRet(0)=numNewTeacher

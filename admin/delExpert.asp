@@ -6,15 +6,18 @@ ids=Request.Form("sel")
 sel_count=Request.Form("sel").Count
 FormGetToSafeRequest(ids)
 Connect conn
+ConnectOriginDb connOrigin
 For i=1 To sel_count
-	sql=sql&"UPDATE TEACHER_INFO SET WRITEPRIVILEGETAGSTRING=dbo.removePrivilege(WRITEPRIVILEGETAGSTRING,'I10'),"&_
+	sql_origin=sql_origin&"UPDATE TEACHER_INFO SET WRITEPRIVILEGETAGSTRING=dbo.removePrivilege(WRITEPRIVILEGETAGSTRING,'I10'),"&_
 				  "READPRIVILEGETAGSTRING=dbo.removePrivilege(READPRIVILEGETAGSTRING,'I10') WHERE TEACHERID="&Request.Form("sel")(i)&";"
 Next
 If sel_count>0 Then
 	sql=sql&"DELETE FROM TEST_THESIS_REVIEW_EXPERT_INFO WHERE TEACHER_ID IN ("&ids&");"
-	sql=sql&"DELETE FROM TEACHER_INFO WHERE TEACHERID IN ("&ids&") AND IFTEACHER=3;"
+	sql_origin=sql_origin&"DELETE FROM TEACHER_INFO WHERE TEACHERID IN ("&ids&") AND IFTEACHER=3;"
 	conn.Execute sql
+	connOrigin.Execute sql_origin
 End If
+CloseConn connOrigin
 CloseConn conn
 %><script type="text/javascript">
 	alert("操作完成。");

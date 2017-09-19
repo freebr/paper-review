@@ -10,7 +10,7 @@ finalFilter=Request.Form("finalFilter2")
 pageSize=Request.Form("pageSize2")
 pageNo=Request.Form("pageNo2")
 password="123456"
-Connect conn
+ConnectOriginDb conn
 sql="UPDATE TEACHER_INFO SET USER_PASSWORD="&toSqlString(password)&" WHERE TEACHERID IN ("&ids&")"
 conn.Execute sql
 CloseConn conn

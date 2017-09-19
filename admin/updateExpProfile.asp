@@ -27,8 +27,9 @@ bankname=upload.Form("bankname")
 idcard_no=upload.Form("idcard_no")
 
 Connect conn
-sql="SELECT * FROM SCUT_MD.dbo.TEACHER_INFO WHERE TEACHERID="&Teacherid
-GetRecordSet conn,rs,sql,result
+ConnectOriginDb connOrigin
+sql="SELECT * FROM TEACHER_INFO WHERE TEACHERID="&Teacherid
+GetRecordSet connOrigin,rs,sql,result
 If sex<>"男" And sex<>"女" Then
 	bError=True
 	errdesc="请选择性别！"
@@ -81,6 +82,7 @@ End If
 If bError Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 	CloseRs rs
+  CloseConn connOrigin
   CloseConn conn
 	Response.End
 End If
@@ -98,6 +100,7 @@ If rs("IFTEACHER")=3 Then
 	rs.Update()
 End If
 CloseRs rs
+CloseConn connOrigin
 
 ' 更新专家库
 sql="SELECT * FROM TEST_THESIS_REVIEW_EXPERT_INFO WHERE TEACHER_ID="&TeacherId

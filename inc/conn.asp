@@ -3,12 +3,26 @@
 Response.Expires=-1
 Sub Connect(conn)
 	Dim connstr
-	connstr="Provider=SQLNCLI10;Persist Security Info=True;User ID=sa;Password=cnsba2016.net;Initial Catalog=ThesisReviewSys;Data Source=116.57.68.162,14033;Pooling=true;MAX Pool Size=512;Min Pool Size=50;Connection Lifetime=999;"
+	connstr=getConnectionString("ThesisReviewSys")
 	Set conn=Server.CreateObject("ADODB.Connection")
   conn.CommandTimeout=300
   conn.CursorLocation=adUseClient
 	conn.Open connstr
 End Sub
+Sub ConnectOriginDb(conn)
+	Dim connstr
+	connstr=getConnectionString("SCUT_MD")
+	Set conn=Server.CreateObject("ADODB.Connection")
+  conn.CommandTimeout=300
+  conn.CursorLocation=adUseClient
+	conn.Open connstr
+End Sub
+Function getConnectionString(initDbName)
+	Dim ret
+	ret="Provider=SQLNCLI10;Persist Security Info=True;User ID=sa;Password=cnsba2016.net;Initial Catalog="&initDbName
+	ret=ret&";Data Source=116.57.68.162,14033;Pooling=true;Max Pool Size=512;Min Pool Size=50;Connection Lifetime=999;"
+	getConnectionString=ret
+End Function
 Function CmdParam(name,ptype,dir,size,value)
 	' 构造命令参数对象
 	Dim cmd

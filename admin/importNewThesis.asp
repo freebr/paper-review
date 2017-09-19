@@ -18,6 +18,7 @@ Case vbNullstring ' 文件选择页面
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link href="../css/admin.css" rel="stylesheet" type="text/css" />
+<script src="../scripts/jquery-1.6.3.min.js" type="text/javascript"></script>
 </head>
 <body bgcolor="ghostwhite">
 <center><font size=4><b>导入新增论文自EXCEL文件</b><br />
@@ -92,6 +93,7 @@ Case 2	' 上传进程
 <meta name="theme-color" content="#2D79B2" />
 <title>导入新增论文自EXCEL文件</title>
 <link href="../css/admin.css" rel="stylesheet" type="text/css" />
+<script src="../scripts/jquery-1.6.3.min.js" type="text/javascript"></script>
 </head>
 <body bgcolor="ghostwhite">
 <center><br /><b>导入新增论文自EXCEL文件</b><br /><br /><%
@@ -114,7 +116,7 @@ Case 3	' 数据读取，导入到数据库
 	Function addData()
 		' 添加数据
 		Dim fieldValue(3)
-		Dim sql,sql_upd_rv,sql_upd_pv,sql_upd_apply,conn,result,rsa,rsb,rsc
+		Dim sql,sql_upd_rv,sql_upd_pv,sql_upd_apply,conn,connOrigin,result,rsa,rsb,rsc
 		Dim stuid,tutorid,recid,teachtypeid,submit_review_time
 		Dim numThesis
 		Dim s,i,strTmp,strTmp2
@@ -127,6 +129,7 @@ Case 3	' 数据读取，导入到数据库
 		numThesis=0
 		sql_upd_rv="DECLARE @id int;"
 		Connect conn
+		ConnectOriginDb connOrigin
 		Do While Not rs.EOF
 			If IsNull(rs(0)) Then Exit Do
 			' 学号
@@ -159,7 +162,7 @@ Case 3	' 数据读取，导入到数据库
 				If Not rsb.EOF Then
 					tutorid=rsb("TEACHER_ID")
 					sql="SELECT RECRUIT_ID,TEACHTYPE_ID FROM VIEW_TUTOR_RECRUIT_INFO WHERE TEACHER_ID="&tutorid&" AND PERIOD_ID="&period_id&" AND TEACHTYPE_ID="&fieldValue(1)
-					Set rsc=conn.Execute(sql)
+					Set rsc=connOrigin.Execute(sql)
 					If Not rsc.EOF Then
 						recid=rsc("RECRUIT_ID")
 						teachtypeid=rsc("TEACHTYPE_ID")
@@ -193,9 +196,10 @@ Case 3	' 数据读取，导入到数据库
 		' 增加新的评阅论文，并更新已有评阅论文
 		If Len(sql_upd_rv) Then conn.Execute sql_upd_rv
 		' 添加学生访问评阅系统的权限
-		If Len(sql_upd_pv) Then conn.Execute sql_upd_pv
+		If Len(sql_upd_pv) Then connOrigin.Execute sql_upd_pv
 		' 添加学生选导师系统填报志愿信息
-		If Len(sql_upd_apply) Then conn.Execute sql_upd_apply
+		If Len(sql_upd_apply) Then connOrigin.Execute sql_upd_apply
+		CloseConn connOrigin
 		CloseConn conn
 		addData=numThesis
 	End Function
