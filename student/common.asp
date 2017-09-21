@@ -192,7 +192,7 @@ Function getClientInfo(cli)
 	CloseConn conn
 	getClientInfo=1
 End Function
-If 0 And Not hasPrivilege(Session("writeprivileges"),"SATEST") And Not hasPrivilege(Session("readprivileges"),"SATEST") Then
+If 0 And Not hasPrivilege(Session("writeprivileges"),"SA8") And Not hasPrivilege(Session("readprivileges"),"SA8") Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4">您没有权限！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 	Response.End
 End If
