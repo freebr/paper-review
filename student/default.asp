@@ -101,7 +101,7 @@ Function showStepInfo(stepDisplay,stepCounter,bHidden)
 			For i=0 To 1
 				If arrRevRet(i)<>5 Then	' 该专家已评阅
 					If i=1 Then Response.Write "&emsp;"
-%><a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=<%=13+i%>" target="_blank"><img src="../images/student/down.png" />点击下载第<%=i+1%>份评阅书</a></span><%
+%><a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=<%=13+i%>" target="_blank"><img src="../images/down.png" />点击下载第<%=i+1%>份评阅书</a></span><%
 				End If
 			Next
 		End If

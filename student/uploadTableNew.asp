@@ -165,7 +165,7 @@ Case vbNullstring ' 填写信息页面
 <tr><td><%
 	If opr<>0 Then %>
 <div style="text-align:right"><hr />
-<a href="<%=template_file%>" target="_blank"><img src="../images/student/down.png" />下载<%=arrStuOprName(opr)%>模板...</a></div><%
+<a href="<%=template_file%>" target="_blank"><img src="../images/down.png" />下载<%=arrStuOprName(opr)%>模板...</a></div><%
 	End If %></td></tr></table></form></td></tr></table></center>
 <script type="text/javascript">
 <%

@@ -106,7 +106,7 @@ Case vbNullstring ' 填写信息页面
 	Else
 %>当前上传的是：<span style="color:#ff0000;font-weight:bold"><%=arrStuOprName(opr)%></span><%
 		If opr=STUCLI_OPR_DETECT Or opr=STUCLI_OPR_FINAL Then
-%>&emsp;<a id="linkclaim" href="#"><img src="../images/student/bulb_yellow.png">查看论文提交要求</a><%
+%>&emsp;<a id="linkclaim" href="#"><img src="../images/bulb_yellow.png">查看论文提交要求</a><%
 		End If
 		Select Case opr
 		Case STUCLI_OPR_DETECT %>
@@ -193,9 +193,9 @@ PDF&nbsp;格式，文件命名为：作者姓名_学号_论文题目.pdf<%
 <tr><td>
 <div id="divdown"><%
 	If opr=STUCLI_OPR_DETECT Then
-%><a href="template/fzbsmb.doc" target="_blank"><img src="../images/student/down.png" />下载硕士学位论文文字复制比情况说明表</a><%
+%><a href="template/fzbsmb.doc" target="_blank"><img src="../images/down.png" />下载硕士学位论文文字复制比情况说明表</a><%
 	Else
-%><a href="template/sssqb.doc" target="_blank"><img src="../images/student/down.png" />下载硕士学位论文分会复审意见表</a><%
+%><a href="template/sssqb.doc" target="_blank"><img src="../images/down.png" />下载硕士学位论文分会复审意见表</a><%
 	End If
 %></div></td></tr></table></form></td></tr></table></center>
 <div id="divclaim" class="divclaim"><%
