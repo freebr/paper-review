@@ -140,4 +140,7 @@ Const STUCLI_STUTYPE_MPACC = 9
 Const STUCLI_STATUS_CLOSED = 0
 Const STUCLI_STATUS_OPEN = 1
 Const STUCLI_STATUS_DEBUG = 2
+
+Dim arrStuTypeId:arrStuTypeId=Array(0,5,6,7,9)
+Dim arrStuTypeName:arrStuTypeName=Array("","ME","MBA","EMBA","MPAcc")
 %>

@@ -463,10 +463,7 @@ Case 2	' 填写评语页面
 	Case 6 ' 填写导师送审评语页面 %>
 <tr><td colspan=3>送审论文：<a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=9" target="_blank">点击下载</a></td></tr>
 <tr><td colspan=3>导师对学位论文的评语<span class="eval_notice">（请阅读论文后填写，200-2000字）</span>：<span id="eval_text_tip"></span><br/>
-送审评语的基本内容参考：<br/>
-①对论文内容的概述及论文选题的理论意义和实践意义；②学生是否按要求独立完成了毕业论文各环节所规定的任务；③论点是否明确和有创新性，文献收集和论据是否充分可靠；
-④学生是否较好地掌握了课题所涉及到的基础理论、基本技能和专业知识；⑤论文的体例是否规范，结构是否合理和有逻辑性，语言是否流畅、表达是否清楚；
-⑥论文尚存在的缺点或不足，需如何进行修改；⑦论文是否达到申请学士学位的学术水平，可否提交答辩。</td></tr>
+送审评语的基本内容参考：<br/><%=getNoticeText(rs("TEACHTYPE_ID"),"review_eval_reference")%></td></tr>
 <tr><td colspan=3><textarea name="eval_text" rows="10" style="width:100%"></textarea><br/></td></tr><%
 		If Not isunpass Then %>
 <tr><td colspan=3 style="padding:0"><table class="tblform" width="100%" cellspacing="1" cellpadding="3">

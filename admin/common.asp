@@ -131,6 +131,30 @@ Function getReviewFileStatTxtArray()
 	getReviewFileStatTxtArray=Array("不向导师和学生显示","仅向导师显示","仅向学生显示","导师和学生均显示")
 End Function
 
+Function getNoticeText(stuType,noticeName)
+	Dim conn,rs,sql,num
+	Connect conn
+	sql="EXEC getNoticeText ?,?"
+	Set rs=ExecQuery(conn,sql,Array(CmdParam("StudentType",adInteger,adParamInput,4,stuType),CmdParam("NoticeName",adVarWChar,adParamInput,50,noticeName)),num)
+	If rs.EOF Then
+		getNoticeText="【无】"
+	Else
+		getNoticeText=rs(0).Value
+	End If
+	CloseRs rs
+	CloseConn conn
+End Function
+
+Function setNoticeText(stuType,noticeName,noticeContent)
+	Dim conn,sql
+	Connect conn
+	sql="EXEC setNoticeText ?,?,?"
+	ExecNonQuery conn,sql,Array(CmdParam("StudentType",adInteger,adParamInput,4,stuType), _
+															CmdParam("NoticeName",adVarWChar,adParamInput,50,noticeName), _
+															CmdParam("NoticeContent",adVarWChar,adParamInput,4000,noticeContent))
+	CloseConn conn
+End Function
+
 Function sendEmailToStudent(thesisID,filetypename,ispass,ByVal evaltext)
 	Dim conn,rs,sql,num
 	Dim arrMailId,mailid

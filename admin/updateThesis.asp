@@ -225,7 +225,7 @@ Case 6	'  同意/不同意送审操作
 		review_time=Now
 		Randomize
 		filename=FormatDateTime(review_time,1)&Int(Timer)&Int(Rnd()*999)&".docx"
-		filepath=Server.MapPath("/ThesisReview/expertort")&"\"&filename
+		filepath=Server.MapPath("/ThesisReview/teacher/export")&"\"&filename
 		Set rag=New ReviewAppGen
 		rag.Author=author
 		rag.StuNo=stuno

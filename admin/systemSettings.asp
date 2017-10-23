@@ -10,17 +10,17 @@ If IsEmpty(Session("user")) Then Response.Redirect("../error.asp?timeout")
 curstep=Request.QueryString("step")
 If Len(curstep)=0 Or Not IsNumeric(curstep) Then curstep="1"
 sem_info=getCurrentSemester()
-Dim arrMailId,arrMailSubject,arrStuOprFlag,arrStuOprName,arrStuType
+Dim arrMailId,arrMailSubject,arrStuOprFlag,arrStuOprName
 Dim tutor_startdate,tutor_enddate,exp_startdate,exp_enddate
 Dim stu_startdate():ReDim stu_startdate(OPRTYPE_COUNT)
 Dim stu_enddate():ReDim stu_enddate(OPRTYPE_COUNT)
 Dim stu_clientstatus
 arrStuOprFlag=Array("","TABLE1","TABLE2","TABLE3","TABLE4","DETECT","REVIEW","MODIFY","FINAL")
 arrStuOprName=Array("","开题报告表","中期检查表","预答辩申请表","答辩审批材料","送检论文","送审论文","答辩论文","定稿论文")
-arrStuType=Array("","ME","MBA","EMBA","MPAcc")
 arrMailSubject=Array("","论文送审通知邮件（学生）","论文送审通知邮件（导师）","论文待评阅通知邮件","论文待评阅通知短信","论文审核通知邮件","论文审核未通过通知邮件","论文审核通过通知邮件","评阅意见确认通知邮件","信息导入通知邮件（学生）","信息导入通知邮件（导师）","待办事项通知邮件")
 ReDim arrMailId(UBound(arrMailSubject))
-If curstep="1" Then
+Select Case curstep
+Case "1"
 	ReDim stu_clientstatus(OPRTYPE_COUNT*STUTYPE_COUNT)
 	Connect conn
 	sql="SELECT * FROM TEST_THESIS_REVIEW_SYSTEM WHERE USE_YEAR="&sem_info(0)&" AND USE_SEMESTER="&sem_info(1)
@@ -79,7 +79,7 @@ If curstep="1" Then
 	If Not bSet Then
 %><span style="color:red;font-weight:bold">(请先设置开放时间等属性，方可开放系统)</span><%
 	End If %></font>
-<form id="fmSettings" id="fmSettings" method="post" action="?step=2" onsubmit="return chkForm()">
+<form id="fmSettings" method="post" action="?step=2" onsubmit="return chkForm()">
 <input type="hidden" name="In_PERIOD_ID" value="<%=sem_info(3)%>">
 <table width="900" cellpadding="2" cellspacing="1" bgcolor="dimgray">
 <tr bgcolor="ghostwhite">
@@ -91,6 +91,10 @@ If curstep="1" Then
 %><span style="color:red">设置成功</span><br/><%
 	End Select
 %></td></tr>
+<tr bgcolor="ghostwhite">
+<td align="left">其他设置：
+	<a href="noticeText.asp">提示文本设置</a>
+</td></tr>
 <tr bgcolor="ghostwhite">
 <td align="center">当前系统状态：<%
 	If isValid Then
@@ -130,7 +134,7 @@ If curstep="1" Then
 			Else
 				checkflag=vbNullString
 			End If
-%>&emsp;<label for="stu_clientstatus<%=k%>"><input type="checkbox" name="stu_clientstatus<%=k%>" id="stu_clientstatus<%=k%>" <%=checkflag%>/><%=arrStuType(j)%></label><%
+%>&emsp;<label for="stu_clientstatus<%=k%>"><input type="checkbox" name="stu_clientstatus<%=k%>" id="stu_clientstatus<%=k%>" <%=checkflag%>/><%=arrStuTypeName(j)%></label><%
 		Next
 %></td></tr><%
 	Next %></table></p></td></tr>
@@ -164,9 +168,9 @@ $subject - 论文题目,$tutorname - 导师姓名,$tutormail - 导师邮箱,$exp
 		this.form.submit();
 	}).attr('disabled',false);
 </script></html><%
-Else
+Case "2"
+	Dim ok
 	Dim mail_content,fieldlist
-	Dim strTmp
 	ReDim mail_content(UBound(arrMailSubject))
 	For i=1 To OPRTYPE_COUNT
 		stu_startdate(i)=Request.Form("stu_startdate"&i)
@@ -262,5 +266,5 @@ Else
 <script type="text/javascript">
 document.all.ret.submit();
 </script></body><%
-End If
+End Select
 %>

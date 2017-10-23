@@ -81,6 +81,20 @@ Function getFinalResult(n)
 	getFinalResult=ret
 End Function
 
+Function getNoticeText(stuType,noticeName)
+	Dim conn,rs,sql,num
+	Connect conn
+	sql="EXEC getNoticeText ?,?"
+	Set rs=ExecQuery(conn,sql,Array(CmdParam("StudentType",adInteger,adParamInput,4,stuType),CmdParam("NoticeName",adVarWChar,adParamInput,50,noticeName)),num)
+	If rs.EOF Then
+		getNoticeText="【无】"
+	Else
+		getNoticeText=rs(0).Value
+	End If
+	CloseRs rs
+	CloseConn conn
+End Function
+
 Function updateActiveTime(teacherID)
 	' 更新数据库中用户使用评阅系统时间的记录
 	Dim conn,sql

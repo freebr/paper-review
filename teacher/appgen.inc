@@ -50,7 +50,7 @@ Class DetectAppGen
 		Dim template_file
 		Dim wd,doc,range,text,i
 		'On Error Resume Next
-		template_file=Server.MapPath("export")&"\jcsqb.dot"
+		template_file=Server.MapPath("/ThesisReview/teacher/export")&"\jcsqb.dot"
 		Set wd=Server.CreateObject("Word.Application")
 		Set doc=wd.Documents.Add(template_file)
 		Set range=doc.Range()
@@ -134,7 +134,7 @@ Class ReviewAppGen
 		Dim template_file
 		Dim wd,doc,range,text,i
 		'On Error Resume Next
-		template_file=Server.MapPath("export")&"\sssqb.dot"
+		template_file=Server.MapPath("/ThesisReview/teacher/export")&"\sssqb.dot"
 		Set wd=Server.CreateObject("Word.Application")
 		Set doc=wd.Documents.Add(template_file)
 		Dim val,bValid

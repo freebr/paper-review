@@ -4,6 +4,7 @@ Response.Buffer=True
 %>
 <!--#include file="inc/db.asp"-->
 <!--#include file="teacher/common.asp"-->
+<!--#include file="teacher/appgen.inc"-->
 <%
 	sql="SELECT * FROM VIEW_TEST_THESIS_REVIEW_INFO WHERE REVIEW_APP IS NULL AND REVIEW_STATUS>="&rsAgreeReview
 	GetRecordSet conn,rs,sql,result
@@ -15,6 +16,7 @@ Response.Buffer=True
 		Dim rag
 		Randomize
 		review_time=rs("SUBMIT_REVIEW_TIME")
+		If IsNull(review_time) Then review_time=Now
 		eval_text=rs("REVIEW_APP_EVAL")
 		If IsNull(eval_text) Then eval_text=""
 		filename=toDateTime(review_time,1)&Int(Timer)&Int(Rnd()*999)&".doc"
