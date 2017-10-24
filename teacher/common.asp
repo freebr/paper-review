@@ -261,7 +261,7 @@ Function getSystemStatus()
 	CloseConn conn
 End Function
 
-If 0 And Not hasPrivilege(Session("Twriteprivileges"),"I11") And Not hasPrivilege(Session("Treadprivileges"),"I11") Then
+If Not hasPrivilege(Session("Twriteprivileges"),"I11") And Not hasPrivilege(Session("Treadprivileges"),"I11") Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4">您没有权限！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 	Response.End
 End If
