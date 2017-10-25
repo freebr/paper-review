@@ -13,8 +13,10 @@ curstep=Request.QueryString("step")
 thesisID=Request.QueryString("tid")
 new_subject_ch=Upload.Form("new_subject_ch")
 new_subject_en=Upload.Form("new_subject_en")
+new_researchway_name=Upload.Form("new_researchway_name")
 new_keywords_ch=Upload.Form("new_keywords_ch")
 new_keywords_en=Upload.Form("new_keywords_en")
+new_review_type=Upload.Form("new_review_type")
 new_period_id=Upload.Form("new_period_id")
 new_reviewfilestat=Upload.Form("new_reviewfilestat")
 new_task_progress=Upload.Form("new_task_progress")
@@ -342,6 +344,11 @@ If submittype=vbNullString Then
 	Else
 		rs("THESIS_SUBJECT_EN")=new_subject_en
 	End If
+	If Len(new_researchway_name)=0 Then
+		rs("RESEARCHWAY_NAME")=Null
+	Else
+		rs("RESEARCHWAY_NAME")=new_researchway_name
+	End If
 	If Len(new_keywords_ch)=0 Then
 		rs("KEYWORDS")=Null
 	Else
@@ -351,6 +358,11 @@ If submittype=vbNullString Then
 		rs("KEYWORDS_EN")=Null
 	Else
 		rs("KEYWORDS_EN")=new_keywords_en
+	End If
+	If Len(new_review_type)=0 Then
+		rs("REVIEW_TYPE")=Null
+	Else
+		rs("REVIEW_TYPE")=new_review_type
 	End If
 End If
 rs.Update()
