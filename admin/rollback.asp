@@ -191,12 +191,15 @@ Case 3	' 撤销教务员操作
 		rs("REVIEW_STATUS")=rsAgreeDetect
 	Case 1	' 撤销匹配专家操作
 		rs("REVIEW_STATUS")=rsAgreeReview
-	Case 2	' 撤销导入答辩委员会修改意见操作
+	Case 2	' 撤销导入答辩安排操作
+		sql="DELETE FROM TEST_THESIS_DEFENCE_INFO WHERE THESIS_ID="&thesisID
+		conn.Execute sql
+	Case 3	' 撤销导入答辩委员会修改意见操作
 		sql="UPDATE TEST_THESIS_DEFENCE_INFO SET DEFENCE_EVAL=NULL WHERE THESIS_ID="&thesisID
 		conn.Execute sql
-		rs("DEFENCE_MODIFY_EVAL")=Null	' 旧字段 	 
+		rs("DEFENCE_MODIFY_EVAL")=Null	' 旧字段
 		rs("REVIEW_STATUS")=rsModifyPassed
-	Case 3	' 撤销导入教指会分会修改意见操作
+	Case 4	' 撤销导入教指会分会修改意见操作
 		rs("INSTRUCT_MODIFY_EVAL")=Null
 		rs("REVIEW_STATUS")=rsDefenceEval
 	End Select

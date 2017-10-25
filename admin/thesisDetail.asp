@@ -250,17 +250,17 @@ Case vbNullString	' 论文详情页面
 <tr><td><%=tutor_modify_eval_title%>：&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,2,4)">撤销</a><br/><%=toPlainString(rs("TUTOR_MODIFY_EVAL"))%></td></tr><%
 	End If
 	If Not IsNull(rs("DEFENCE_EVAL")) Then %>
-<tr><td>答辩委员会修改意见：&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,3,2)">撤销</a><br/><%=toPlainString(rs("DEFENCE_EVAL"))%></td></tr><%
+<tr><td>答辩委员会修改意见：&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,3,3)">撤销</a><br/><%=toPlainString(rs("DEFENCE_EVAL"))%></td></tr><%
 	End If
 	If Not IsNull(rs("INSTRUCT_MODIFY_EVAL")) Then %>
-<tr><td>学院学位评定分委员会修改意见：&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,3,3)">撤销</a><br/><%=toPlainString(rs("INSTRUCT_MODIFY_EVAL"))%></td></tr><%
+<tr><td>学院学位评定分委员会修改意见：&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,3,4)">撤销</a><br/><%=toPlainString(rs("INSTRUCT_MODIFY_EVAL"))%></td></tr><%
 	End If
 	If Not IsNull(rs("DEFENCE_MEMBER")) Then
 		Dim defence_members,defence_memo
 		defence_members=Split(rs("DEFENCE_MEMBER"),"|")
 		defence_memo=rs("MEMO")
 		If IsNull(defence_memo) Then defence_memo="-" %>
-<tr><td>答辩安排：
+<tr><td>答辩安排：&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,3,2)">撤销</a>
 <div id="defenceplan"><table cellspacing="0" cellpadding="1">
 <thead><tr style="font-weight:bold"><td width="100"><p>答辩时间</p></td><td width="100"><p>答辩地点</p></td>
 <td width="60"><p>答辩主席</p></td><td width="100"><p>答辩委员</p></td><td width="60"><p>答辩秘书</p></td><td><p>答辩委员工作单位</p></td></tr></thead>
