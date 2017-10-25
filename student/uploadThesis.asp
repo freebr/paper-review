@@ -40,13 +40,13 @@ Else
 	' 评阅状态
 	review_status=rs("REVIEW_STATUS")
 	Select Case review_status
-	Case rsNone,rsDetectThesisUploaded,rsNotAgreeDetect
+	Case rsNone,rsDetectThesisUploaded
 		' 上传送检论文
 		opr=STUCLI_OPR_DETECT
-	Case rsDetected,rsReviewThesisUploaded,rsNotAgreeReview
+	Case rsDetected,rsReviewThesisUploaded
 		' 上传送审论文
 		opr=STUCLI_OPR_REVIEW
-	Case rsReviewEval,rsModifyThesisUploaded,rsModifyUnpassed,rsDefencePlan
+	Case rsReviewEval,rsModifyThesisUploaded
 		' 上传答辩论文
 		opr=STUCLI_OPR_MODIFY
 	Case rsModifyPassed
