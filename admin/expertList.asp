@@ -16,9 +16,9 @@ Else
 	pageNo=Request.Form("pageNo2")
 End If
 '------------------------------------------------------
-If Len(finalFilter) Then finalFilter="AND "&finalFilter
+If Len(finalFilter) Then PubTerm="AND ("&finalFilter&")"
 Connect conn
-sql="SELECT * FROM VIEW_TEST_THESIS_REVIEW_EXPERT_INFO WHERE Valid=1 "&finalFilter&" ORDER BY EXPERT_NAME"
+sql="SELECT * FROM VIEW_TEST_THESIS_REVIEW_EXPERT_INFO WHERE Valid=1 "&PubTerm&" ORDER BY EXPERT_NAME"
 GetRecordSetNoLock conn,rs,sql,result
 If IsEmpty(pageSize) Or Not IsNumeric(pageSize) Then
   pageSize=-1
@@ -139,7 +139,7 @@ Next
   Next
 %></table></center></body>
 <script type="text/javascript">
-	$('#fmUpload:file').change(function() {
+	$('#fmUpload :file').change(function() {
 		var fileName = this.value;
 		var fileExt = fileName.substring(fileName.lastIndexOf('.')).toLowerCase();
 		if (fileExt != ".xls" && fileExt != ".xlsx") {
