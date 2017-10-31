@@ -143,7 +143,7 @@ Case 2	' 后台处理
 			conn.Execute sql
 		End If
 	Next
-	sql="EXEC dbo.sp_setThesisReviewExpert "&thesisID&","&expertid1&","&expertid2
+	sql="EXEC dbo.spSetThesisReviewExpert "&thesisID&","&expertid1&","&expertid2
 	conn.Execute sql
 	
 	If bFirstMatch Then

@@ -182,12 +182,9 @@ Case 3	' 数据读取，导入到数据库
 		CloseRs rsTea
 		CloseRs rsExp
 		' 调用绑定教师ID的存储过程
-		conn.Execute "EXEC sp_updateThesisReviewExpertTid"
+		conn.Execute "EXEC spUpdateThesisReviewExpertTid"
 		' 添加专家权限，使其可以进入评阅系统
-		sql="UPDATE TEACHER_INFO SET WRITEPRIVILEGETAGSTRING=dbo.addPrivilege(WRITEPRIVILEGETAGSTRING,'I10',''),"&_
-								"READPRIVILEGETAGSTRING=dbo.addPrivilege(READPRIVILEGETAGSTRING,'I10','') WHERE "&_
-								"dbo.hasPrivilege(WRITEPRIVILEGETAGSTRING,'I10')=0 AND dbo.hasPrivilege(READPRIVILEGETAGSTRING,'I10')=0 AND TEACHERID IN (SELECT TEACHER_ID FROM TEST_THESIS_REVIEW_EXPERT_INFO)"
-		connOrigin.Execute sql
+		conn.Execute "EXEC spConfigExpertPrivilege"
 		CloseConn connOrigin
 		CloseConn conn
 		Set py=Nothing
