@@ -455,7 +455,11 @@ Case 2	' 填写评语页面
 			eval_text_name="校内指导教师意见（包括对申请人的学习情况、思想表现及论文的学术评语，科研工作能力和完成科研工作情况，以及是否同意申请学位论文答辩的意见，200-2000字）"
 		End If %>
 <tr><td colspan=3><%=eval_text_name%><span id="eval_text_tip"></span></td></tr>
-<tr><td colspan=3><textarea name="eval_text" rows="15" style="width:100%"></textarea></td></tr><%
+<tr><td colspan=3><textarea name="eval_text" rows="15" style="width:100%"><%
+	If opr=4 Then
+		Response.Write eval_text
+	End If
+%></textarea></td></tr><%
 	Case 5 ' 填写论文检测意见页面（不同意时） %>
 <tr><td colspan=3>送检论文：<a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=8" target="_blank">点击下载</a>
 <tr><td colspan=3>导师对论文的意见<span class="eval_notice">（200-2000字）</span>：<span class="tip">提示：学院要求送检论文重复率是&nbsp;10%&nbsp;以内。</span>&emsp;<span id="eval_text_tip"></span></td></tr>
