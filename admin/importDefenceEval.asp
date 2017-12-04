@@ -12,6 +12,7 @@ Case vbNullstring ' 文件选择页面
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link href="../css/admin.css" rel="stylesheet" type="text/css" />
+<script src="../scripts/jquery-1.6.3.min.js" type="text/javascript"></script>
 </head>
 <body bgcolor="ghostwhite">
 <center><font size=4><b>导入答辩委员会修改意见自EXCEL文件</b><br />
@@ -72,6 +73,7 @@ Case 2	' 上传进程
 <meta name="theme-color" content="#2D79B2" />
 <title>导入答辩委员会修改意见自EXCEL文件</title>
 <link href="../css/admin.css" rel="stylesheet" type="text/css" />
+<script src="../scripts/jquery-1.6.3.min.js" type="text/javascript"></script>
 </head>
 <body bgcolor="ghostwhite">
 <center><br /><b>导入答辩委员会修改意见自EXCEL文件</b><br /><br /><%
@@ -109,7 +111,7 @@ Case 3	' 数据读取，导入到数据库
 	
 	If send_email And Len(thesisIDs) Then
 		Dim stuname,stuno,stuclass,stuspec,stumail,subject,tutorname,tutormail,filename,fieldval,bSuccess
-		Dim logtxt:logtxt="行政人员["&Session("name")&"]导入答辩委员会修改意见。"
+		Dim logtxt:logtxt="行政人员["&Session("name")&"]导入答辩委员会修改意见，"
 		Dim mail_id:mail_id=getThesisReviewSystemMailIdByType(Now)
 		' 批量发送通知邮件
 		sql="SELECT STU_NAME,STU_NO,CLASS_NAME,SPECIALITY_NAME,EMAIL,THESIS_SUBJECT,TUTOR_NAME,TUTOR_EMAIL FROM VIEW_TEST_THESIS_REVIEW_INFO WHERE ID IN ("&thesisIDs&")"
@@ -126,14 +128,14 @@ Case 3	' 数据读取，导入到数据库
 			filename="答辩委员会修改意见"
 			fieldval=Array(stuname,stuno,stuclass,stuspec,stumail,subject,tutorname,tutormail,filename)
 			bSuccess=sendAnnouncementEmail(mail_id(9),stumail,fieldval)
-			logtxt=logtxt&"，发送邮件给学生["&stuname&":"&stumail&"]"
+			logtxt=logtxt&"发送邮件给学生["&stuname&":"&stumail&"]"
 			If bSuccess Then
 				logtxt=logtxt&"成功。"
 			Else
 				logtxt=logtxt&"失败。"
 			End If
 			bSuccess=sendAnnouncementEmail(mail_id(10),tutormail,fieldval)
-			logtxt=logtxt&"，发送邮件给导师["&tutorname&":"&tutormail&"]"
+			logtxt=logtxt&"发送邮件给导师["&tutorname&":"&tutormail&"]"
 			If bSuccess Then
 				logtxt=logtxt&"成功。"
 			Else
