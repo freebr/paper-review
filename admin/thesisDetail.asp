@@ -31,13 +31,15 @@ If result=0 Then
 End If
 
 Dim review_status,numReviewed,review_result(2),reviewer_master_level(1),review_file(1),review_time(1),review_level(1)
-If rs("TEACHTYPE_ID")=5 Then
+stu_type=rs("TEACHTYPE_ID")
+If stu_type=5 Then
 	reviewfile_type=2
 Else
 	reviewfile_type=1
 End If
 tutor_id=rs("TUTOR_ID")
 review_app=rs("REVIEW_APP")
+review_type=rs("REVIEW_TYPE")
 task_progress=rs("TASK_PROGRESS")
 review_status=rs("REVIEW_STATUS")
 stat_text1=rs("STAT_TEXT1")
@@ -127,6 +129,9 @@ Case vbNullString	' 论文详情页面
 	Else
 		tutor_modify_eval_title="导师对答辩论文的意见"
 	End If
+	
+	sql="SELECT * FROM CODE_REVIEW_TYPE WHERE LEN(THESIS_FORM)>0 AND TEACHTYPE_ID="&stu_type
+	GetRecordSetNoLock conn,rs2,sql,result
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -153,13 +158,19 @@ Case vbNullString	' 论文详情页面
 	If reviewfile_type=2 Then %>
 <tr><td>领域名称：&emsp;&emsp;&emsp;<input type="text" class="txt" name="speciality" size="95%" value="<%=rs("SPECIALITY_NAME")%>" readonly /></td></tr><%
 	End If %>
-<tr><td>研究方向：&emsp;&emsp;&emsp;<input type="text" class="txt" name="researchway_name" size="95%" value="<%=rs("RESEARCHWAY_NAME")%>" readonly /></td></tr>
+<tr><td>研究方向：&emsp;&emsp;&emsp;<input type="text" class="txt" name="new_researchway_name" size="95%" value="<%=rs("RESEARCHWAY_NAME")%>" /></td></tr>
 <tr><td>论文关键词：&emsp;&emsp;<input type="text" class="txt" name="new_keywords_ch" size=85%" value="<%=rs("KEYWORDS")%>" /></td></tr>
 <tr><td>（英文）：&emsp;&emsp;&emsp;<input type="text" class="txt" name="new_keywords_en" size="85%" value="<%=rs("KEYWORDS_EN")%>" /></td></tr>
 <tr><td>院系名称：&emsp;&emsp;&emsp;<input type="text" class="txt" name="faculty" size="30%" value="工商管理学院" readonly />&nbsp;
 班级：<input type="text" class="txt" name="class" size="51%" value="<%=rs("CLASS_NAME")%>" readonly /></td></tr><%
-	If Not IsNull(rs("THESIS_FORM")) And Len(rs("THESIS_FORM")) Then %>
-<tr><td>论文形式：&emsp;&emsp;&emsp;<input type="text" class="txt" name="thesisform" size="95%" value="<%=rs("THESIS_FORM")%>" readonly /></td></tr><%
+	If Not IsNull(rs("REVIEW_TYPE")) Then %>
+<tr><td>论文形式：&emsp;&emsp;&emsp;<select id="review_type" name="new_review_type" style="width:350px"><%
+			Do While Not rs2.EOF
+%><option value="<%=rs2("ID")%>"<% If review_type=rs2("ID") Then %> selected<% End If %>><%=rs2("THESIS_FORM")%></option><%
+				rs2.MoveNext()
+			Loop
+%></select>
+	</td></tr><%
 	End If
 	If review_status>=rsAgreeDetect Then %>
 <tr><td>学位论文文字复制比：<input type="text" class="txt" name="reproduct_ratio" size="10px" value="<%=reproduct_ratio%>" />%</td></tr><%
@@ -359,6 +370,7 @@ GetMenuListPubTerm "CODE_THESIS_REVIEW_STATUS","STATUS_ID2","STATUS_NAME",review
 		}
 	}
 </script></html><%
+	CloseRs rs2
 Case 2	' 填写评语页面
 	opr=Request.Form("opr")
 	submittype=Request.Form("submittype")
