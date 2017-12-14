@@ -180,7 +180,7 @@ End If %>
 <input type="button" value="导入论文查重信息" onclick="submitForm($('#fmThesisList'),'importThesisDetInfo.asp')" />
 <input type="button" value="导入答辩安排信息" onclick="submitForm($('#fmThesisList'),'importDefencePlan.asp')" />
 <input type="button" value="导入答辩委员会修改意见" onclick="submitForm($('#fmThesisList'),'importDefenceEval.asp')" />
-<input type="button" value="导入学院学位评定分委员会修改意见" onclick="submitForm($('#fmThesisList'),'importInstructEval.asp')" /></td></tr>
+<input type="button" value="导入学院学位评定分委员会修改意见" onclick="submitForm($('#fmThesisList'),'importDegreeEval.asp')" /></td></tr>
 <tr><td colspan=2>评阅结果&nbsp;<select name="selreviewfilestat"><%
 			For i=0 To UBound(arrReviewFileStat)
 %><option value="<%=i%>"><%=arrReviewFileStat(i)%></option><%
