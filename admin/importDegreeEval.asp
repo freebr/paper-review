@@ -128,14 +128,14 @@ Case 3	' 数据读取，导入到数据库
 			filename="学院学位评定分委员会修改意见"
 			fieldval=Array(stuname,stuno,stuclass,stuspec,stumail,subject,tutorname,tutormail,filename)
 			bSuccess=sendAnnouncementEmail(mail_id(9),stumail,fieldval)
-			logtxt=logtxt&"，发送邮件给学生["&stuname&":"&stumail&"]"
+			logtxt=logtxt&"发送邮件给学生["&stuname&":"&stumail&"]"
 			If bSuccess Then
 				logtxt=logtxt&"成功。"
 			Else
 				logtxt=logtxt&"失败。"
 			End If
 			bSuccess=sendAnnouncementEmail(mail_id(10),tutormail,fieldval)
-			logtxt=logtxt&"，发送邮件给导师["&tutorname&":"&tutormail&"]"
+			logtxt=logtxt&"发送邮件给导师["&tutorname&":"&tutormail&"]"
 			If bSuccess Then
 				logtxt=logtxt&"成功。"
 			Else

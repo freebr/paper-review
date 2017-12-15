@@ -111,7 +111,7 @@ Case 3	' 数据读取，导入到数据库
 	
 	If send_email And Len(thesisIDs) Then
 		Dim stuname,stuno,stuclass,stuspec,stumail,subject,tutorname,tutormail,filename,fieldval,bSuccess
-		Dim logtxt:logtxt="行政人员["&Session("name")&"]导入答辩委员会修改意见，"
+		Dim logtxt:logtxt="行政人员["&Session("name")&"]导入答辩委员会修改意见。"
 		Dim mail_id:mail_id=getThesisReviewSystemMailIdByType(Now)
 		' 批量发送通知邮件
 		sql="SELECT STU_NAME,STU_NO,CLASS_NAME,SPECIALITY_NAME,EMAIL,THESIS_SUBJECT,TUTOR_NAME,TUTOR_EMAIL FROM VIEW_TEST_THESIS_REVIEW_INFO WHERE ID IN ("&thesisIDs&")"
