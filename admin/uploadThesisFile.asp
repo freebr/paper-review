@@ -87,7 +87,7 @@ Case vbNullString	' 论文详情页面
 <tr><td>送检论文：&emsp;&emsp;&emsp;&emsp;&emsp;<input type="file" name="uploadfile7" size="100" /></td></tr>
 <tr><td>送检论文检测报告：&emsp;<input type="file" name="uploadfile8" size="100" /></td></tr>
 <tr><td>送审论文：&emsp;&emsp;&emsp;&emsp;&emsp;<input type="file" name="uploadfile9" size="100" /></td></tr>
-<tr><td>答辩论文：&emsp;&emsp;&emsp;&emsp;<input type="file" name="uploadfile10" size="100" /></td></tr>
+<tr><td>答辩论文：&emsp;&emsp;&emsp;&emsp;&emsp;<input type="file" name="uploadfile10" size="100" /></td></tr>
 <tr><td>定稿论文：&emsp;&emsp;&emsp;&emsp;&emsp;<input type="file" name="uploadfile11" size="100" /></td></tr>
 <tr><td>答辩审批材料：&emsp;&emsp;&emsp;<input type="file" name="uploadfile12" size="100" /></td></tr>
 <tr><td>更改表格审核状态：&emsp;<select name="new_task_progress"><%
