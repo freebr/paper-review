@@ -87,7 +87,7 @@ Case vbNullString	' 论文详情页面
 <tr><td>送检论文：&emsp;&emsp;&emsp;&emsp;&emsp;<input type="file" name="uploadfile7" size="100" /></td></tr>
 <tr><td>送检论文检测报告：&emsp;<input type="file" name="uploadfile8" size="100" /></td></tr>
 <tr><td>送审论文：&emsp;&emsp;&emsp;&emsp;&emsp;<input type="file" name="uploadfile9" size="100" /></td></tr>
-<tr><td>修改后论文：&emsp;&emsp;&emsp;&emsp;<input type="file" name="uploadfile10" size="100" /></td></tr>
+<tr><td>答辩论文：&emsp;&emsp;&emsp;&emsp;<input type="file" name="uploadfile10" size="100" /></td></tr>
 <tr><td>定稿论文：&emsp;&emsp;&emsp;&emsp;&emsp;<input type="file" name="uploadfile11" size="100" /></td></tr>
 <tr><td>答辩审批材料：&emsp;&emsp;&emsp;<input type="file" name="uploadfile12" size="100" /></td></tr>
 <tr><td>更改表格审核状态：&emsp;<select name="new_task_progress"><%
@@ -156,7 +156,7 @@ Case 2	' 文件上传页面
 		Response.End
 	End If
 	
-	Dim arrFileListName:arrFileListName=Array("","开题报告表","开题论文","中期检查表","中期论文","预答辩申请表","预答辩论文","答辩及授予学位审批材料","送检论文","送审论文","修改后论文","定稿论文","送检论文检测报告")
+	Dim arrFileListName:arrFileListName=Array("","开题报告表","开题论文","中期检查表","中期论文","预答辩申请表","预答辩论文","答辩及授予学位审批材料","送检论文","送审论文","答辩论文","定稿论文","送检论文检测报告")
 	Dim arrFileListPath:arrFileListPath=Array("","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/admin/upload/report")
 	Dim arrFileListField:arrFileListField=Array("","TABLE_FILE1","TBL_THESIS_FILE1","TABLE_FILE2","TBL_THESIS_FILE2","TABLE_FILE3","TBL_THESIS_FILE3","TABLE_FILE4","THESIS_FILE","THESIS_FILE2","THESIS_FILE3","THESIS_FILE4","DETECT_REPORT")
 	Dim upFile,fso
