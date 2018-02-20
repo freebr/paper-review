@@ -35,4 +35,4 @@ CloseConn conn
 <script type="text/javascript">
 	alert("操作完成。");
 	document.all.ret.submit();
-</script>>
+</script>
