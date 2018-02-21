@@ -94,7 +94,7 @@ Case vbNullstring ' 填写信息页面
 <script src="../scripts/uploadThesis.js" type="text/javascript"></script>
 </head>
 <body bgcolor="ghostwhite">
-<table class="tblform" width="1000"><tr><td class="summary"><p><%
+<table class="tblform" width="1000"><tr><td class="summary"><p align="center"><%
 	If Not bOpen Then
 %><span class="tip">上传<%=arrStuOprName(opr)%>的时间为<%=toDateTime(startdate,1)%>至<%=toDateTime(enddate,1)%>，本专业上传通道已关闭或当前不在开放时间内，不能上传论文！</span><%
 	ElseIf Not bUpload Then
