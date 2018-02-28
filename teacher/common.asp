@@ -231,26 +231,15 @@ End Function
 
 Function getSystemStatus()
 	Dim conn,rs,sql,result
+	Dim sem_info:sem_info=getCurrentSemester()
 	Connect conn
-	If Month(Now)>=9 Or Month(Now)<=2 Then
-		If Month(Now)>=9 Then
-			curyear=Year(Now)
-		Else
-			curyear=Year(Now)-1
-		End If
-		cur_semester=1
-	Else
-		curyear=Year(Now)-1
-		cur_semester=2
-	End If
-	Connect conn
-	sql="SELECT TUTOR_STARTDATE,TUTOR_ENDDATE FROM TEST_THESIS_REVIEW_SYSTEM WHERE USE_YEAR="&curyear&" AND USE_SEMESTER="&cur_semester&" AND VALID=1"
+	sql="SELECT TUTOR_STARTDATE,TUTOR_ENDDATE FROM TEST_THESIS_REVIEW_SYSTEM WHERE USE_YEAR="&sem_info(0)&" AND USE_SEMESTER="&sem_info(1)&" AND VALID=1"
 	GetRecordSetNoLock conn,rs,sql,result
 	If rs.EOF Then
 		getSystemStatus=0
 	Else
-		startdate=rs(0)
-		enddate=rs(1)
+		startdate=rs(0).Value
+		enddate=rs(1).Value
 		If DateDiff("d",startdate,Now)<0 Or DateDiff("d",enddate,Now)>0 Then
 			getSystemStatus=1
 		Else
