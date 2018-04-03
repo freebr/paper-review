@@ -1,7 +1,7 @@
 ﻿<%Response.Charset="utf-8"
 Response.Expires=-1%>
 <!--#include file="../inc/db.asp"-->
-<%If IsEmpty(Session("user")) Then Response.Redirect("../error.asp?timeout")
+<%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 TeacherId=Request.QueryString("id")
 FormGetToSafeRequest(TeacherId)
 If Len(TeacherId)=0 Or Not IsNumeric(TeacherId) Then
@@ -28,6 +28,7 @@ End If
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link href="../css/admin.css" rel="stylesheet" type="text/css" />
+<script src="../scripts/jquery-1.6.3.min.js" type="text/javascript"></script>
 <script src="../scripts/query.js" type="text/javascript"></script>
 <script src="../scripts/utils.js" type="text/javascript"></script>
 <script src="../scripts/expert.js" type="text/javascript"></script>

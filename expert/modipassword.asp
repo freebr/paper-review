@@ -1,8 +1,8 @@
-﻿<%If IsEmpty(Session("Tuser")) Then Response.Redirect("../error.asp?timeout")%>
+﻿<%If IsEmpty(Session("TId")) Then Response.Redirect("../error.asp?timeout")%>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link href="../css/teacher.css" rel="stylesheet" type="text/css" />
+<link href="../css/tutor.css" rel="stylesheet" type="text/css" />
 <script>
 function chkInput(){
     if(document.all.newPwd.value==""){

@@ -37,6 +37,15 @@ function batchUpdateThesis(fm) {
 function showAllRecords(fm) {
 	submitForm(fm,"thesisList.asp?showAll");
 }
+function showThesisDetail(id,usertype) {
+	var client=['admin','student','tutor','expert'];
+	!window.tabmgr?window.open('thesisDetail.asp?tid='+id,'thesis'+id):
+								 window.tabmgr.newTab('/ThesisReview/'+client[usertype]+'/thesisDetail.asp?tid='+id);
+	return false;
+}
+function closeWindow() {
+	!window.tabmgr?window.close():window.tabmgr.close(window);
+}
 function rollback(tid,user,opr) {
 	if(user!=0&&user!=1&&user!=2&&user!=3) return false;
 	var msg=["确实要撤销这个文件的上传操作吗？","确实要撤销这名专家的评阅操作吗？",

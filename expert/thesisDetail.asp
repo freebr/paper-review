@@ -1,8 +1,8 @@
 ﻿<%Response.Charset="utf-8"%>
 <!--#include file="../inc/db.asp"-->
 <!--#include file="common.asp"--><%
-If IsEmpty(Session("Tuser")) Then Response.Redirect("../error.asp?timeout")
-If Not hasPrivilege(Session("Twriteprivileges"),"I10") Then Response.Redirect("../error.asp?noprivilege")
+If IsEmpty(Session("TId")) Then Response.Redirect("../error.asp?timeout")
+If Not hasPrivilege(Session("Twriteprivileges"),"I10") Then Response.Redirect("../error.asp?no-privilege")
 curstep=Request.QueryString("step")
 thesisID=Request.QueryString("tid")
 teachtype_id=Request.Form("In_TEACHTYPE_ID2")
@@ -22,11 +22,11 @@ ElseIf result=0 Then
 	errdesc="数据库没有该论文记录，或您未受邀评阅该论文！"
 ElseIf Not checkIfProfileFilledIn() Then
 	bError=True
-	errdesc="您尚未完善个人信息，<a href=""profile.asp"">请点击这里编辑。</a>"
+	errdesc="在开始评阅前，您需要完善个人信息，<a href=""profile.asp"">请点击这里编辑。</a>"
 End If
 If bError Then
-%><html><head><link href="../css/teacher.css" rel="stylesheet" type="text/css" /></head>
-<body class="exp"><center><div class="content"><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></div></center></body></html><%
+%><html><head><link href="../css/tutor.css" rel="stylesheet" type="text/css" /><script src="../scripts/thesis.js" type="text/javascript"></script></head>
+<body class="exp"><center><div class="content"><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="关 闭" onclick="closeWindow()" /></div></center></body></html><%
   CloseRs rs
   CloseConn conn
 	Response.End
@@ -88,8 +88,9 @@ Case vbNullString	' 论文详情页面
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link href="../css/teacher.css" rel="stylesheet" type="text/css" />
+<link href="../css/tutor.css" rel="stylesheet" type="text/css" />
 <script src="../scripts/utils.js" type="text/javascript"></script>
+<script src="../scripts/thesis.js" type="text/javascript"></script>
 <meta name="theme-color" content="#2D79B2" />
 <title>查看论文信息</title>
 </head>
@@ -138,7 +139,7 @@ Case vbNullString	' 论文详情页面
 %><input type="button" id="btnsubmit" name="btnsubmit" value="<%=btnsubmittext%>" />&emsp;<%
 		End If
 	End If
-%><input type="button" value="关 闭" onclick="tabmgr.close(window)" />
+%><input type="button" value="关 闭" onclick="closeWindow()" />
 </p></td></tr></table>
 <input type="hidden" name="In_TEACHTYPE_ID2" value="<%=teachtype_id%>" />
 <input type="hidden" name="In_SPECIALITY_ID2" value="<%=spec_id%>" />
@@ -196,7 +197,7 @@ Case 2	' 评阅须知
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link href="../css/teacher.css" rel="stylesheet" type="text/css" />
+<link href="../css/tutor.css" rel="stylesheet" type="text/css" />
 <script src="../scripts/jquery-1.6.3.min.js" type="text/javascript"></script>
 <script src="../scripts/utils.js" type="text/javascript"></script>
 <meta name="theme-color" content="#2D79B2" />
@@ -220,7 +221,7 @@ Case 2	' 评阅须知
 <td><p align="center">
 <input type="button" id="btnsubmit" name="btnsubmit" value="我知道了，开始评阅论文" />&emsp;
 <input type="button" value="返 回" onclick="history.go(-1)" />&emsp;
-<input type="button" value="关 闭" onclick="tabmgr.close(window)" />
+<input type="button" value="关 闭" onclick="closeWindow()" />
 </p></td></tr></table>
 <input type="hidden" name="In_TEACHTYPE_ID2" value="<%=teachtype_id%>" />
 <input type="hidden" name="In_SPECIALITY_ID2" value="<%=spec_id%>" />
@@ -287,7 +288,7 @@ Case 3	' 评阅页面
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link href="../css/teacher.css" rel="stylesheet" type="text/css" />
+<link href="../css/tutor.css" rel="stylesheet" type="text/css" />
 <script src="../scripts/jquery-1.6.3.min.js" type="text/javascript"></script>
 <script src="../scripts/utils.js" type="text/javascript"></script>
 <script src="../scripts/thesis.js" type="text/javascript"></script>
@@ -338,7 +339,7 @@ Case 3	' 评阅页面
 <tr class="trbuttons">
 <td colspan="3"><p align="center"><input type="button" id="btnsubmit" name="btnsubmit" value="提 交" />&emsp;
 <input type="button" value="返 回" onclick="history.go(-1)" />&emsp;
-<input type="button" value="关 闭" onclick="tabmgr.close(window)" />
+<input type="button" value="关 闭" onclick="closeWindow()" />
 </p></td></tr></table>
 <input type="hidden" name="In_TEACHTYPE_ID2" value="<%=teachtype_id%>" />
 <input type="hidden" name="In_SPECIALITY_ID2" value="<%=spec_id%>" />

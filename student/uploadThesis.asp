@@ -1,11 +1,10 @@
-﻿<%Response.Charset="utf-8"
+﻿<%'Response.Charset="utf-8"
 Server.ScriptTimeout=9000
-%>
-<!--#include file="../inc/upload_5xsoft.inc"-->
+%><!--#include file="../inc/ExtendedRequest.inc"-->
 <!--#include file="../inc/db.asp"-->
 <!--#include file="../inc/mail.asp"-->
 <!--#include file="common.asp"-->
-<%If IsEmpty(Session("Suser")) Then Response.Redirect("../error.asp?timeout")
+<%If IsEmpty(Session("StuId")) Then Response.Redirect("../error.asp?timeout")
 Dim opr,bOpen,bUpload,bRedirectToTableUpload,numUpload
 Dim researchway_list
 Dim conn,rs,sql,result
@@ -19,31 +18,31 @@ stu_type=Session("StuType")
 researchway_list=loadResearchwayList(stu_type)
 
 Connect conn
-sql="SELECT *,dbo.getThesisStatusText(2,REVIEW_STATUS,2) AS STAT_TEXT FROM VIEW_TEST_THESIS_REVIEW_INFO WHERE STU_ID="&Session("Stuid")&" ORDER BY PERIOD_ID DESC" 'AND PERIOD_ID="&sem_info(3)&" AND Valid=1"
+sql="SELECT *,dbo.getThesisStatusText(2,REVIEW_STATUS,2) AS STAT_TEXT FROM VIEW_TEST_THESIS_REVIEW_INFO WHERE STU_ID="&Session("StuId")&" ORDER BY PERIOD_ID DESC" 'AND PERIOD_ID="&sem_info(3)&" AND Valid=1"
 GetRecordSetNoLock conn,rs,sql,result
-sql="SELECT * FROM VIEW_STUDENT_INFO WHERE STU_ID="&Session("Stuid")
+sql="SELECT * FROM VIEW_STUDENT_INFO WHERE STU_ID="&Session("StuId")
 GetRecordSetNoLock conn,rs2,sql,result
 tutor_duty_name=getProDutyNameOf(rs2("TUTOR_ID"))
 If rs.EOF Then
 	numUpload=-2
-	opr=STUCLI_OPR_DETECT
+	opr=STUCLI_OPR_DETECT_REVIEW
 	review_status=rsNone
 	bUpload=False
 	bRedirectToTableUpload=True
-ElseIf rs("TASK_PROGRESS")<tpTbl3Passed Then
+ElseIf rs("TASK_PROGRESS").Value<tpTbl3Passed Then
 	numUpload=-2
-	opr=STUCLI_OPR_DETECT
+	opr=STUCLI_OPR_DETECT_REVIEW
 	review_status=rsNone
 	bUpload=False
 	bRedirectToTableUpload=True
 Else
 	' 评阅状态
-	review_status=rs("REVIEW_STATUS")
+	review_status=rs("REVIEW_STATUS").Value
 	Select Case review_status
-	Case rsNone,rsDetectThesisUploaded
-		' 上传送检论文
-		opr=STUCLI_OPR_DETECT
-	Case rsDetected,rsReviewThesisUploaded
+	Case rsNone,rsDetectThesisUploaded,rsNotAgreeDetect,rsDetectUnpassed
+		' 上传送检论文和送审论文
+		opr=STUCLI_OPR_DETECT_REVIEW
+	Case rsNotAgreeReview
 		' 上传送审论文
 		opr=STUCLI_OPR_REVIEW
 	Case rsReviewEval,rsModifyThesisUploaded
@@ -58,14 +57,14 @@ Else
 	Case Else
 		bUpload=False
 	End Select
-	subject_ch=rs("THESIS_SUBJECT")
-	subject_en=rs("THESIS_SUBJECT_EN")
-	keywords_ch=rs("KEYWORDS")
-	keywords_en=rs("KEYWORDS_EN")
-	researchway_name=rs("RESEARCHWAY_NAME")
-	review_type=rs("REVIEW_TYPE")
-	reproduct_ratio=toNumber(rs("REPRODUCTION_RATIO"))
-	thesis_form=rs("THESIS_FORM")
+	subject_ch=rs("THESIS_SUBJECT").Value
+	subject_en=rs("THESIS_SUBJECT_EN").Value
+	keywords_ch=rs("KEYWORDS").Value
+	keywords_en=rs("KEYWORDS_EN").Value
+	researchway_name=rs("RESEARCHWAY_NAME").Value
+	review_type=rs("REVIEW_TYPE").Value
+	reproduct_ratio=toNumber(rs("REPRODUCTION_RATIO").Value)
+	thesis_form=rs("THESIS_FORM").Value
 End If
 If opr<>0 Then
 	bOpen=stuclient.isOpenFor(stu_type,opr)
@@ -101,15 +100,15 @@ Case vbNullstring ' 填写信息页面
 		If numUpload=-2 Then
 %><span class="tip">表格审核进度未完成，不能上传论文！</span><%
 		Else
-%><span class="tip">当前论文状态为【<%=rs("STAT_TEXT")%>】，不能上传论文！</span><%
+%><span class="tip">当前论文状态为【<%=rs("STAT_TEXT").Value%>】，不能上传论文！</span><%
 		End If
 	Else
 %>当前上传的是：<span style="color:#ff0000;font-weight:bold"><%=arrStuOprName(opr)%></span><%
-		If opr=STUCLI_OPR_DETECT Or opr=STUCLI_OPR_FINAL Then
+		If opr=STUCLI_OPR_DETECT_REVIEW Or opr=STUCLI_OPR_REVIEW Or opr=STUCLI_OPR_FINAL Then
 %>&emsp;<a id="linkclaim" href="#"><img src="../images/bulb_yellow.png">查看论文提交要求</a><%
 		End If
 		Select Case opr
-		Case STUCLI_OPR_DETECT %>
+		Case STUCLI_OPR_DETECT_REVIEW %>
 <br/>请填写以下信息，然后选择上传的文件，并点击&quot;提交&quot;按钮：<%
 		Case Else %>
 <br/>请选择上传的文件，然后点击&quot;提交&quot;按钮：<%
@@ -117,7 +116,7 @@ Case vbNullstring ' 填写信息页面
 	End If %></p></td></tr>
 <tr><td align="center"><form id="fmThesis" action="?step=1" method="post" enctype="multipart/form-data">
 <input type="hidden" name="uploadid" value="_student_thesisReview_uploadThesis_asp" />
-<input type="hidden" name="stuid" value="<%=Session("Stuid")%>" />
+<input type="hidden" name="StuId" value="<%=Session("StuId")%>" />
 <table class="tblform">
 <tr><td><span class="tip">以下信息均为必填项</span></td></tr>
 <tr><td align="center">
@@ -145,7 +144,7 @@ Case vbNullstring ' 填写信息页面
 %><input type="text" name="researchway_name" size="50" value="<%=researchway_name%>" /><%
 	End If
 %></p><%
-	If opr=STUCLI_OPR_REVIEW Then	' 只在上传送审论文时显示 %>
+	If opr=STUCLI_OPR_DETECT_REVIEW OR opr=STUCLI_OPR_REVIEW Then	' 只在上传送审论文时显示 %>
 <p>论文关键词（3-5个，用；分隔）：<input type="text" name="keywords_ch" size="46" maxlength="200" value="<%=keywords_ch%>" /></p>
 <p>论文关键词（英文，3-5个，用；分隔）：<input type="text" name="keywords_en" size="39" maxlength="200" value="<%=keywords_en%>" /></p><%
 	End If
@@ -153,7 +152,7 @@ Case vbNullstring ' 填写信息页面
 <p>院系名称：<input type="text" name="faculty" size="50" value="工商管理学院" readonly /></p><%
 	If stu_type=5 Or stu_type=6 Then %>
 <p>论文形式：<%
-		If opr<>STUCLI_OPR_DETECT Then
+		If opr<>STUCLI_OPR_DETECT_REVIEW Then
 %><input type="text" size="50" value="<%=thesis_form%>" readonly /><input type="hidden" name="thesisform" value="<%=review_type%>" /><%
 		Else
 %><select id="thesisform" name="thesisform" style="width:350px"><option value="0">请选择……</option><%
@@ -169,46 +168,62 @@ Case vbNullstring ' 填写信息页面
 	End If
 	If opr=STUCLI_OPR_REVIEW Then %>
 <p>经图书馆检测，学位论文文字复制比：<input type="text" name="reproduct_ratio" size="24" value="<%=reproduct_ratio%>%" readonly /></p><%
-	End If %>
-<p>论文文件：<input type="file" name="upFile" size="50" title="论文文件" /><%
-	Dim jscall_checkFunc:jscall_checkFunc="checkIfWordRar"
-	If bUpload Then %><br/><span class="tip"><%
-		Select Case opr
-		Case STUCLI_OPR_DETECT,STUCLI_OPR_MODIFY
-			jscall_checkFunc="checkIfWordRar" %>
-Word&nbsp;格式，文件命名为：作者姓名_学号_论文题目.doc，如“张三_201120207169_管理信息系统规划与建设研究.doc”<%
-		Case STUCLI_OPR_REVIEW
-			jscall_checkFunc="checkIfPDF" %>
+	End If
+	
+	Dim callbackValidate:callbackValidate="checkIfWordRar"
+	If opr=STUCLI_OPR_DETECT_REVIEW Then
+		callbackValidate="checkIfDetectReview"
+%><p>送检论文文件：<input type="file" name="detectFile" size="50" title="送检论文文件" /><%
+		If bUpload Then
+%><br/><span class="tip">Word&nbsp;格式，文件命名为：作者姓名_学号_论文题目.doc，如“张三_201120207169_管理信息系统规划与建设研究.doc”</span><%
+		End If
+%></p><p>送审论文文件：<input type="file" name="reviewFile" size="50" title="送审论文文件" /><%
+		If bUpload Then
+%><br/><span class="tip">PDF&nbsp;格式，文件命名为“盲评论文”</span><%
+		End If
+%></p><%
+	Else
+%><p>论文文件：<input type="file" name="upFile" size="50" title="论文文件" /><%
+		If bUpload Then %><br/><span class="tip"><%
+			Select Case opr
+			Case STUCLI_OPR_REVIEW
+				callbackValidate="checkIfPdfRar" %>
 PDF&nbsp;格式，文件命名为“盲评论文”<%
-		Case STUCLI_OPR_FINAL
-			jscall_checkFunc="checkIfPDF" %>
+			Case STUCLI_OPR_MODIFY
+				callbackValidate="checkIfWordRar" %>
+Word&nbsp;格式，文件命名为：作者姓名_学号_论文题目.doc，如“张三_201120207169_管理信息系统规划与建设研究.doc”<%
+			Case STUCLI_OPR_FINAL
+				callbackValidate="checkIfPdfRar" %>
 PDF&nbsp;格式，文件命名为：作者姓名_学号_论文题目.pdf<%
-		End Select
-%></span><br/><span class="tip">提示：超过20M请先压缩成rar文件再上传，否则上传不成功</span><%
-	End If %></p><%
-	If opr=STUCLI_OPR_REVIEW Then %>
+			End Select
+%></span><%
+		End If
+%></p><%
+	End If
+%><span class="tip">提示：超过20M请先压缩成rar文件再上传，否则上传不成功</span><%
+	If opr=STUCLI_OPR_DETECT_REVIEW Or opr=STUCLI_OPR_REVIEW Then %>
 <p><span class="decl">作者声明：本人确认提交的送审论文已按照华南理工大学研究生学位论文撰写规范要求排版，并已删除本人与导师的所有信息，如有问题，责任自负。</span></p><%
 	End If %>
 <p><input type="submit" name="btnsubmit" value="提 交"<%If Not bUpload Then %> disabled<% End If %> /></p></td></tr>
 <tr><td>
 <div id="divdown"><%
-	If opr=STUCLI_OPR_DETECT Then
-%><a href="template/fzbsmb.doc" target="_blank"><img src="../images/down.png" />下载硕士学位论文文字复制比情况说明表</a><%
-	Else
-%><a href="template/sssqb.doc" target="_blank"><img src="../images/down.png" />下载硕士学位论文分会复审意见表</a><%
+	If opr=STUCLI_OPR_DETECT_REVIEW Then
+%><p><a href="template/fzbsmb.doc" target="_blank"><img src="../images/down.png" />下载硕士学位论文文字复制比情况说明表</a></p><%
 	End If
-%></div></td></tr></table></form></td></tr></table></center>
+%><p><a href="template/sssqb.doc" target="_blank"><img src="../images/down.png" />下载硕士学位论文分会复审意见表</a></p>
+</div></td></tr></table></form></td></tr></table></center>
 <div id="divclaim" class="divclaim"><%
 	Select Case opr
-	Case STUCLI_OPR_DETECT
+	Case STUCLI_OPR_DETECT_REVIEW
 %><p>送检论文提交要求：</p><p>1.电子版应为只含正文（“绪论”～“结论”部分）的Word版，须去除封面、原创性声明和使用授权书、中英文摘要、图表清单及主要符号表、目录、参考文献、附录、攻读学位期间取得的研究成果、致谢、答辩决议书、定密审批表等，电子论文命名方式为：作者姓名_学号_论文题目.doc（如“张三_201120207169_管理信息系统规划与建设研究.doc”）。电子版的格式和内容须与送审的学位论文纸质版相同。拟检测论文电子版不符合上述要求的不予检测；</p>
 <p>2.拟检测论文上传成功后由导师审批，同意检测的论文由教育中心统一送图书馆检测；</p>
 <p>3.为了保证学位论文检测的公正性和严肃性，图书馆对学位论文学术不端行为检测系统检测的结果不做任何处理，提供的《文本复制检测报告单》加盖图书馆学位论文检测章；</p>
-<p>4.每篇学位论文图书馆只能检测一次，复制比要低于10%。</p><%
+<p>4.每篇学位论文图书馆只能检测一次，复制比要低于10%。</p>
+<p>送审论文提交要求：</p><p>提交PDF版本，请按照研究生院论文撰写要求排版，只需删除个人及导师信息。</p><%
 	Case STUCLI_OPR_REVIEW
-%><p>送审论文提交要求：</p><p>提交PDF版本 ，请按照研究生院论文撰写要求排版，只需删除个人及导师信息。</p><%
+%><p>送审论文提交要求：</p><p>提交PDF版本，请按照研究生院论文撰写要求排版，只需删除个人及导师信息。</p><%
 	Case STUCLI_OPR_FINAL
-%><p>定稿论文提交要求：</p><p>提交PDF版本 ，提交前需检查：</p>
+%><p>定稿论文提交要求：</p><p>提交PDF版本，提交前需检查：</p>
 <p>1.MBA/ME论文分类号C93、MPAcc论文分类号F23、学校代码10561、学号、论文提交日期、论文答辩日期、学位授予日期、答辩委员会成员是否填写完整（如忘记请查看学位评定意见）；</p>
 <p>2.论文请勾不保密（不涉及国家机密的都不属于保密范围），原创声明一页上下作者签名、导师签名、联系电话、邮箱、地址都要填写完整，与下面的原创声明一致才是最新版本；</p>
 <p>3.论文最后一页必须附学位评定意见。</p><%
@@ -216,11 +231,11 @@ PDF&nbsp;格式，文件命名为：作者姓名_学号_论文题目.pdf<%
 <p align="center"><input type="button" id="btnclaimok" value="我知道了" /></p></div>
 <script type="text/javascript">
 	$().ready(function() {
-		$('input[name="upFile"]').change(function() {
-			if(this.value.length)<%=jscall_checkFunc%>(this);
+		$(':file').change(function() {
+			if(this.value.length)<%=callbackValidate%>(this,$(this).index());
 		});
 		$('form').submit(function() {
-			var valid=<%=jscall_checkFunc%>(this.upFile)&&checkKeywords();
+			var valid=<%=callbackValidate%>($(':file'))&&checkKeywords();
 			if(valid) submitUploadForm(this); else return false;
 		});
 		$('#btnclaimok').click(function() {
@@ -234,7 +249,7 @@ PDF&nbsp;格式，文件命名为：作者姓名_学号_论文题目.pdf<%
 		$('input[name="keywords_ch"],input[name="keywords_en"]').attr('readOnly',true);
 		$('a.linkAdd,a.linkRemove').attr('disabled',true);
 		$('input[name="researchway_name"]'.attr('readOnly',true);
-		$('input[name="upFile"]').attr('readOnly',true);
+		$(':file').attr('readOnly',true);
 		$(':submit').attr('disabled',true);<%
 		Else %>
 		$(':submit').removeAttr('disabled');<%
@@ -255,7 +270,7 @@ Case 1	' 上传进程
 		If numUpload=-2 Then
 			errdesc="表格审核进度未完成，不能上传论文！"
 		Else
-			errdesc="当前状态为【"&rs("STAT_TEXT")&"】，不能上传论文！"
+			errdesc="当前状态为【"&rs("STAT_TEXT").Value&"】，不能上传论文！"
 		End If
 	End If
 	If bError Then
@@ -266,12 +281,12 @@ Case 1	' 上传进程
 		Response.End
 	End If
 	
-	Dim fso,Upload,file
+	Dim fso,Upload,file,file2
 	Dim new_subject_ch,new_subject_en
 	Dim new_keywords_ch,new_keywords_en
 	Dim new_researchway_name,new_review_type
 	
-	Set Upload=New upload_5xsoft
+	Set Upload=New ExtendedRequest
 	new_subject_ch=Trim(Upload.Form("subject_ch"))
 	new_subject_en=Trim(Upload.Form("subject_en"))
 	new_keywords_ch=Trim(Upload.Form("keywords_ch"))
@@ -305,73 +320,99 @@ Case 1	' 上传进程
   	CloseConn conn
 		Response.End
 	End If
-	Set file=Upload.File("upFile")
-	Set fso=Server.CreateObject("Scripting.FileSystemObject")
 	
+	Set fso=Server.CreateObject("Scripting.FileSystemObject")
 	' 检查上传目录是否存在
-	strUploadPath=Server.MapPath("upload")
-	If Not fso.FolderExists(strUploadPath) Then fso.CreateFolder(strUploadPath)
-	fileExt=LCase(file.FileExt)
-	If opr=STUCLI_OPR_REVIEW Or opr=STUCLI_OPR_FINAL Then
+	uploadPath=Server.MapPath("upload")
+	If Not fso.FolderExists(uploadPath) Then fso.CreateFolder(uploadPath)
+	Select Case opr
+	Case STUCLI_OPR_DETECT_REVIEW
+		Set file=Upload.File("detectFile")
+		Set file2=Upload.File("reviewFile")
+		fileExt=LCase(file.FileExt)
+		fileExt2=LCase(file2.FileExt)
+		If fileExt<>"doc" And fileExt<>"docx" And fileExt<>"rar" Then
+			bError=True
+			errdesc="所选择的不是 Word 文件或 RAR 压缩文件！"
+		End If
+		If fileExt2<>"pdf" And fileExt2<>"rar" Then
+			bError=True
+			errdesc="所选择的不是 PDF 文件或 RAR 压缩文件！"
+		End If
+	Case STUCLI_OPR_REVIEW,STUCLI_OPR_FINAL
+		Set file=Upload.File("upFile")
+		fileExt=LCase(file.FileExt)
 		If fileExt<>"pdf" Then
 			bError=True
-			errdesc="所选择的不是 PDF 文件！"
+			errdesc="所选择的不是 PDF 文件或 RAR 压缩文件！"
 		End If
-	ElseIf fileExt<>"doc" And fileExt<>"docx" And fileExt<>"rar" Then
-		bError=True
-		errdesc="所选择的不是 Word 文件或 RAR 压缩文件！"
-'	ElseIf file.FileSize>10485760 Then
-'		filesize=Round(file.FileSize/1048576,2)
-'		bError=True
-'		errdesc="文件大小为 "&filesize&"MB，已超出限制(10MB)！"
-	End If
+	Case Else
+		Set file=Upload.File("upFile")
+		fileExt=LCase(file.FileExt)
+		If fileExt<>"doc" And fileExt<>"docx" And fileExt<>"rar" Then
+			bError=True
+			errdesc="所选择的不是 Word 文件或 RAR 压缩文件！"
+		End If
+	End Select
 	If Not bError Then
 		' 生成日期格式文件名
 		fileid=FormatDateTime(Now(),1)&Int(Timer)
-		strDestFile=fileid&"."&fileExt
-		strDestPath=strUploadPath&"\"&strDestFile
-		byteFileSize=file.FileSize
+		destFile=fileid&"."&fileExt
+		destPath=uploadPath&"\"&destFile
+		fileSize=file.FileSize
 		' 保存
-		file.SaveAs strDestPath
+		file.SaveAs destPath
 		
 		' 关联到数据库
-		sql="SELECT * FROM TEST_THESIS_REVIEW_INFO WHERE STU_ID="&Session("Stuid")&" ORDER BY PERIOD_ID DESC"
+		sql="SELECT * FROM TEST_THESIS_REVIEW_INFO WHERE STU_ID="&Session("StuId")&" ORDER BY PERIOD_ID DESC"
 		GetRecordSet conn,rs3,sql,result
 		rs3("THESIS_SUBJECT")=new_subject_ch
 		rs3("THESIS_SUBJECT_EN")=new_subject_en
 		rs3("RESEARCHWAY_NAME")=new_researchway_name
 		Select Case opr
-		Case STUCLI_OPR_DETECT ' 送检论文
-			rs3("THESIS_FILE")=strDestFile
-			rs3("REVIEW_TYPE")=new_review_type
-			If review_status<rsDetectThesisUploaded Then rs3("REVIEW_STATUS")=rsDetectThesisUploaded
-			rs3("DETECT_APP_EVAL")=Null
-		Case STUCLI_OPR_REVIEW ' 送审论文
-			rs3("THESIS_FILE2")=strDestFile
+		Case STUCLI_OPR_DETECT_REVIEW ' 送检论文和送审论文
+			destFile2=fileid&"1."&fileExt2
+			destPath2=uploadPath&"\"&destFile2
+			file2.SaveAs destPath2
+			rs3("THESIS_FILE")=destFile
+			rs3("THESIS_FILE2")=destFile2
 			rs3("KEYWORDS")=new_keywords_ch
 			rs3("KEYWORDS_EN")=new_keywords_en
-			If review_status<rsReviewThesisUploaded Then rs3("REVIEW_STATUS")=rsReviewThesisUploaded
+			rs3("REVIEW_TYPE")=new_review_type
+			rs3("REVIEW_STATUS")=rsDetectThesisUploaded
+			rs3("DETECT_APP_EVAL")=Null
+			rs3("REVIEW_APP_EVAL")=Null
+			
+			sql="EXEC spAddDetectResult "&rs3("ID").Value&","&toSqlString(destFile)
+			conn.Execute(sql)
+		Case STUCLI_OPR_REVIEW ' 送审论文
+			rs3("THESIS_FILE2")=destFile
+			rs3("KEYWORDS")=new_keywords_ch
+			rs3("KEYWORDS_EN")=new_keywords_en
+			rs3("REVIEW_STATUS")=rsRedetectPassed
 			rs3("REVIEW_APP_EVAL")=Null
 		Case STUCLI_OPR_MODIFY ' 答辩论文
-			rs3("THESIS_FILE3")=strDestFile
-			If review_status<rsModifyThesisUploaded Then rs3("REVIEW_STATUS")=rsModifyThesisUploaded
+			rs3("THESIS_FILE3")=destFile
+			rs3("REVIEW_STATUS")=rsModifyThesisUploaded
 			rs3("TUTOR_MODIFY_EVAL")=Null
 		Case STUCLI_OPR_FINAL ' 定稿论文
-			rs3("THESIS_FILE4")=strDestFile
-			If review_status<rsFinalThesisUploaded Then rs3("REVIEW_STATUS")=rsFinalThesisUploaded
+			rs3("THESIS_FILE4")=destFile
+			rs3("REVIEW_STATUS")=rsFinalThesisUploaded
 		End Select
 		rs3.Update()
 		CloseRs rs3
-		If opr<>STUCLI_OPR_FINAL Then
+		
+		' If opr<>STUCLI_OPR_FINAL Then
 			' 向导师发送审核通知邮件
-			'sendEmailToTutor arrStuOprName(opr)
-		End If
+			' sendEmailToTutor arrStuOprName(opr)
+		' End If
 		Dim logtxt
-		logtxt="学生["&Session("Stuname")&"]上传["&arrStuOprName(opr)&"]。"
-		WriteLogForReviewSystem logtxt
+		logtxt="学生["&Session("StuName")&"]上传["&arrStuOprName(opr)&"]。"
+		WriteLog logtxt
 	End If
 	Set fso=Nothing
 	Set file=Nothing
+	Set file2=Nothing
 	Set Upload=Nothing
 %><html>
 <head>
@@ -384,9 +425,7 @@ Case 1	' 上传进程
 <body bgcolor="ghostwhite">
 <center><br/><b>上传专业硕士论文</b><br/><br/><%
 	If Not bError Then %>
-<form id="fmFinish" action="default.asp" method="post">
-<input type="hidden" name="filename" value="<%=strDestFile%>" />
-<p><%=byteFileSize%> 字节已上传，正在关联数据...</p></form>
+<form id="fmFinish" action="home.asp" method="post"><input type="hidden" name="filename" value="<%=destFile%>" /></form>
 <script type="text/javascript">alert("上传成功！");$('#fmFinish').submit();</script><%
 	Else
 %>

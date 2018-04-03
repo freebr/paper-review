@@ -2,7 +2,7 @@
 <!--#include file="../inc/db.asp"-->
 <!--#include file="common.asp"-->
 <%Response.Expires=-1
-If IsEmpty(Session("user")) Then Response.Redirect("../error.asp?timeout")
+If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 stuType=Request.Form("stuType")
 If IsEmpty(stuType) Or Not IsNumeric(stuType) Then
 	stuType=0

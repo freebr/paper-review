@@ -49,7 +49,7 @@
 				return false;
 			}
 		}
-	  if(newpwd.value!=repeatpwd.value)
+	  if($(fm).find('#newpwd').size()&&newpwd.value!=repeatpwd.value)
 	  {
       alert("新密码和确认新密码不一致!");
       repeatpwd.focus();

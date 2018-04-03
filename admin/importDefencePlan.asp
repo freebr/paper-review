@@ -1,5 +1,5 @@
 ﻿<%Response.Charset="utf-8"%>
-<!--#include file="../inc/upload_5xsoft.inc"-->
+<!--#include file="../inc/ExtendedRequest.inc"-->
 <!--#include file="../inc/db.asp"-->
 <!--#include file="common.asp"--><%
 curStep=Request.QueryString("step")
@@ -34,7 +34,7 @@ Case 2	' 上传进程
 
 	Dim fso,Upload,File
 	
-	Set Upload=New upload_5xsoft
+	Set Upload=New ExtendedRequest
 	Set file=Upload.File("excelFile")
 	send_email=Upload.Form("sendemail")
 	Set fso=Server.CreateObject("Scripting.FileSystemObject")
@@ -167,7 +167,7 @@ Case 3	' 数据读取，导入到数据库
 				rsa.MoveNext()
 			Loop
 			If numInsert+numUpdate>0 Then
-				WriteLogForReviewSystem logtxt
+				WriteLog logtxt
 			End If
 		End If
 		CloseConn conn

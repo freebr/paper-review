@@ -1,6 +1,6 @@
 ﻿<%Response.Charset="utf-8"%>
 <!--#include file="../inc/db.asp"-->
-<%If IsEmpty(Session("user")) Then Response.Redirect("../error.asp?timeout")
+<%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 Dim reviewfilestat,ids
 reviewfilestat=Request.Form("reviewfilestat")
 ids=Request.Form("sel")

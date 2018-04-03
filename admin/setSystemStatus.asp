@@ -1,7 +1,7 @@
 ﻿<%Response.Charset="utf-8"%>
 <!-- #include file="../inc/db.asp" -->
 <%Response.Expires=-1%>
-<%If IsEmpty(Session("user")) Then Response.Redirect("../error.asp?timeout")%><%
+<%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")%><%
 open=Request.QueryString("open")
 If Len(open)=0 Or Not IsNumeric(open) Then open="0"
 sem_info=getCurrentSemester()

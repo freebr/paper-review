@@ -1,9 +1,9 @@
 ﻿<%Response.Charset="utf-8"%>
-<!--#include file="../inc/upload_5xsoft.inc"-->
+<!--#include file="../inc/ExtendedRequest.inc"-->
 <!--#include file="../inc/db.asp"-->
 <!--#include file="../inc/mail.asp"-->
 <!--#include file="common.asp"-->
-<%If IsEmpty(Session("Suser")) Then Response.Redirect("../error.asp?timeout")
+<%If IsEmpty(Session("StuId")) Then Response.Redirect("../error.asp?timeout")
 Dim opr,bOpen,bUpload
 Dim conn,rs,sql,result
 bOpen=True
@@ -71,7 +71,7 @@ Case vbNullstring ' 填写信息页面
 <p>文件名：<input type="file" name="thesisFile" size="50" title="<%=arrTblThesis(opr)%>" /><br/><span class="tip">Word&nbsp;或&nbsp;RAR&nbsp;格式，超过20M请先压缩成rar文件再上传，否则上传不成功</span></p>
 <p><input type="submit" name="btnsubmit" value="提 交"<%If Not bUpload Then %> disabled<% End If %> />&nbsp;
 <input type="button" name="btnUploadTable" value="返回填写表格页面" onclick="location.href='uploadTableNew.asp'" />&nbsp;
-<input type="button" name="btnreturn" value="返回首页" onclick="location.href='default.asp'" /></p></td></tr></table>
+<input type="button" name="btnreturn" value="返回首页" onclick="location.href='home.asp'" /></p></td></tr></table>
 </form></td></tr></table></center>
 <script type="text/javascript">
 	$('input[name="thesisFile"]').change(function(){if(this.value.length)checkIfWordRar(this);});
@@ -106,7 +106,7 @@ Case 1	' 上传进程
 	Dim fso,Upload,thesisfile
 	Dim new_subject_ch,new_subject_en
 		
-	Set Upload=New upload_5xsoft
+	Set Upload=New ExtendedRequest
 	new_subject_ch=Upload.Form("subject_ch")
 	new_subject_en=Upload.Form("subject_en")
 	Set thesisfile=Upload.File("thesisFile")
@@ -172,7 +172,7 @@ Case 1	' 上传进程
 	'sendEmailToTutor arrTblThesis(opr)
 	Dim logtxt
 	logtxt="学生["&Session("Stuname")&"]上传["&arrTblThesis(opr)&"]。"
-	WriteLogForReviewSystem logtxt
+	WriteLog logtxt
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -183,7 +183,7 @@ Case 1	' 上传进程
 </head>
 <body bgcolor="ghostwhite"><%
 	If Not bError Then %>
-<form id="fmFinish" action="default.asp" method="post">
+<form id="fmFinish" action="home.asp" method="post">
 <input type="hidden" name="filename" value="<%=strDestTableFile%>" />
 <p><%=byteFileSize%> 字节已上传，正在关联数据...</p></form>
 <script type="text/javascript">alert("上传成功！");$('#fmFinish').submit();</script><%

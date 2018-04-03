@@ -1,9 +1,9 @@
 ﻿<%Response.Charset="utf-8"
 Response.Expires=-1%>
 <!--#include file="../inc/db.asp"-->
-<!--#include file="../inc/upload_5xsoft.inc"-->
-<%If IsEmpty(Session("user")) Then Response.Redirect("../error.asp?timeout")
-Set upload=New upload_5xsoft
+<!--#include file="../inc/ExtendedRequest.inc"-->
+<%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
+Set upload=New ExtendedRequest
 TeacherId=upload.Form("teacherid")
 FormGetToSafeRequest(TeacherId)
 If Len(TeacherId)=0 Or Not IsNumeric(TeacherId) Then

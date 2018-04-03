@@ -1,6 +1,6 @@
-<%
+ï»¿<%
 '=========================================
-' ×¨ÒµÑ§Î»ÂÛÎÄµç×ÓÆÀÔÄÏµÍ³È«¾Ö³ÉÔ±¶¨ÒåÎÄ¼þ
+' ä¸“ä¸šå­¦ä½è®ºæ–‡ç”µå­è¯„é˜…ç³»ç»Ÿå…¨å±€æˆå‘˜å®šä¹‰æ–‡ä»¶
 ' 2016-09-11
 '=========================================
 
@@ -23,8 +23,8 @@ Const rsNone=0
 Const rsDetectThesisUploaded=1
 Const rsNotAgreeDetect=2
 Const rsAgreeDetect=3
-Const rsDetected=4
-Const rsReviewThesisUploaded=5
+Const rsDetectUnpassed=4
+Const rsRedetectPassed=5
 Const rsNotAgreeReview=6
 Const rsAgreeReview=7
 Const rsMatchExpert=8
@@ -127,7 +127,7 @@ Const STUCLI_OPR_TABLE1 = 1
 Const STUCLI_OPR_TABLE2 = 2
 Const STUCLI_OPR_TABLE3 = 3
 Const STUCLI_OPR_TABLE4 = 4
-Const STUCLI_OPR_DETECT = 5
+Const STUCLI_OPR_DETECT_REVIEW = 5
 Const STUCLI_OPR_REVIEW = 6
 Const STUCLI_OPR_MODIFY = 7
 Const STUCLI_OPR_FINAL = 8

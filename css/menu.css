@@ -1,0 +1,25 @@
+﻿ul.menu {
+	padding: 0;
+	list-style: none;
+}
+ul.menu li a {
+	display: block;
+	line-height: 200%;
+}
+ul.menu li a:visited {
+	color: blue;
+	text-decoration: none;
+}
+ul.menu li a:link {
+	color: blue;
+	text-decoration: none;
+}
+ul.menu li a:hover {
+	color: violet;
+	text-decoration: underline;
+}
+ul.menu li hr {
+	border-color: lightblue;
+	border-width: 1px;
+	border-style: solid;
+}

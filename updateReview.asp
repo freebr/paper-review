@@ -3,8 +3,8 @@ Response.Expires=-1
 Response.Buffer=True
 %>
 <!--#include file="inc/db.asp"-->
-<!--#include file="teacher/common.asp"-->
-<!--#include file="teacher/appgen.inc"-->
+<!--#include file="tutor/common.asp"-->
+<!--#include file="tutor/appgen.inc"-->
 <%
 	sql="SELECT * FROM VIEW_TEST_THESIS_REVIEW_INFO WHERE REVIEW_APP IS NULL AND REVIEW_STATUS>="&rsAgreeReview
 	GetRecordSet conn,rs,sql,result
@@ -20,7 +20,7 @@ Response.Buffer=True
 		eval_text=rs("REVIEW_APP_EVAL")
 		If IsNull(eval_text) Then eval_text=""
 		filename=toDateTime(review_time,1)&Int(Timer)&Int(Rnd()*999)&".doc"
-		filepath=Server.MapPath("/ThesisReview/teacher/export")&"\"&filename
+		filepath=Server.MapPath("/ThesisReview/tutor/export")&"\"&filename
 		Set rag=New ReviewAppGen
 		rag.Author=rs("STU_NAME")
 		rag.StuNo=rs("STU_NO")

@@ -6,7 +6,7 @@
 <!--#include file="../inc/ckfinder/ckfinder.asp"-->
 <!--#include file="../inc/global.inc"-->
 <%Response.Expires=-1
-If IsEmpty(Session("user")) Then Response.Redirect("../error.asp?timeout")
+If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 curstep=Request.QueryString("step")
 If Len(curstep)=0 Or Not IsNumeric(curstep) Then curstep="1"
 sem_info=getCurrentSemester()

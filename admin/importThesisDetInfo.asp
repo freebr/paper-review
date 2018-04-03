@@ -1,14 +1,12 @@
 ﻿<%Response.Charset="utf-8"%>
-<!--#include file="../inc/upload_5xsoft.inc"-->
+<!--#include file="../inc/ExtendedRequest.inc"-->
+<!--#include file="appgen.inc"-->
 <!--#include file="../inc/db.asp"-->
 <!--#include file="common.asp"--><%
-Dim fso
-Set fso=Server.CreateObject("Scripting.FileSystemObject")
-
 curStep=Request.QueryString("step")
 Select Case curStep
 Case vbNullstring ' 文件选择页面
-	reportNameFmt="\$stuname_\$stu_no_.*（全文标明引文）\.pdf"
+	reportNameFmt="\$stu_name_\$stu_no_.*（全文标明引文）\.pdf"
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -39,19 +37,20 @@ $(document).ready(function(){
 </script></body></html><%
 Case 2	' 上传进程
 
+	Dim fso:Set fso=Server.CreateObject("Scripting.FileSystemObject")
 	Dim Upload,tablefile,rarfile,reportNameFmt
 	
-	Set Upload=New upload_5xsoft
+	Set Upload=New ExtendedRequest
 	Set tablefile=Upload.File("excelFile")
 	Set rarfile=Upload.File("rarFile")
 	reportNameFmt=Upload.Form("reportNameFmt")
-		
+	
 	' 检查上传目录是否存在
-	strUploadTablePath = Server.MapPath("upload/xls")
-	If Not fso.FolderExists(strUploadTablePath) Then fso.CreateFolder(strUploadTablePath)
-	strReportDir = getDateTimeId(Now)
-	strUploadRarPath = Server.MapPath(reportBaseDir&strReportDir)
-	If Not fso.FolderExists(strUploadRarPath) Then fso.CreateFolder(strUploadRarPath)
+	uploadTablePath = Server.MapPath("upload/xls")
+	If Not fso.FolderExists(uploadTablePath) Then fso.CreateFolder(uploadTablePath)
+	reportDir = getDateTimeId(Now)
+	uploadRarPath = Server.MapPath(reportBaseDir&reportDir)
+	If Not fso.FolderExists(uploadRarPath) Then fso.CreateFolder(uploadRarPath)
 	
 	tableFileExt=LCase(tablefile.FileExt)
 	rarFileExt=LCase(rarfile.FileExt)
@@ -75,7 +74,7 @@ Case 2	' 上传进程
 		
 		strDestRarFile = fileid&"."&rarFileExt
 		byteFileSize = byteFileSize+rarfile.FileSize
-		rarfile.SaveAs strUploadRarPath&"\"&strDestRarFile
+		rarfile.SaveAs uploadRarPath&"\"&strDestRarFile
 	End If
 	Set tablefile=Nothing
 	Set rarfile=Nothing
@@ -94,7 +93,7 @@ Case 2	' 上传进程
 <form id="fmUploadFinish" action="?step=3" method="POST">
 <input type="hidden" name="tableFilepath" value="<%=strDestTablePath%>" />
 <input type="hidden" name="rarFilename" value="<%=strDestRarFile%>" />
-<input type="hidden" name="reportDir" value="<%=strReportDir%>" />
+<input type="hidden" name="reportDir" value="<%=reportDir%>" />
 <input type="hidden" name="reportNameFmt" value="<%=reportNameFmt%>" />
 <p><%=byteFileSize%> 字节已上传，正在导入论文查重信息和关联检测报告...</p></form>
 <script type="text/javascript">setTimeout("$('#fmUploadFinish').submit()",500);</script><%
@@ -107,23 +106,24 @@ Case 3	' 数据读取，导入到数据库
 
 	Function addData()
 		' 添加数据
-		Dim sql,sql2,conn,result,rsa
-		Dim stuid,reproduct_ratio,numThesis
-		Dim stuno,stuname,subject
+		Dim sql,sql2,conn,result,rsReview
+		Dim thesis_id,stu_id,reproduct_ratio,detect_count,new_status,numThesis
+		Dim new_stuno,new_stuname
 		Dim reportFilePath,reportFilename,bFileExists
 		Dim file,folder
 		Dim regExp:Set regExp=New RegExp
+		Dim rag:Set rag=New ReviewAppGen
 		
+		Randomize
 		regExp.IgnoreCase=True
 		numThesis=0
 		Set folder=fso.GetFolder(Server.MapPath(reportBaseDir&reportDir))
 		Connect conn
 		Do While Not rs.EOF
-			If IsNull(rs(0)) Then Exit Do
-			stuname=rs(0)
-			stuno=rs(1)
-			subject=rs(2)
-			reproduct_ratio=rs(3)
+			If IsNull(rs(0).Value) Then Exit Do
+			new_stuname=rs(0).Value
+			new_stuno=rs(1).Value
+			reproduct_ratio=rs(3).Value
 			If Right(reproduct_ratio,1)="%" Then	' 复制比为文本格式
 				reproduct_ratio=Left(reproduct_ratio,Len(reproduct_ratio)-1)
 			ElseIf IsNumeric(reproduct_ratio) Then
@@ -131,7 +131,7 @@ Case 3	' 数据读取，导入到数据库
 					reproduct_ratio=reproduct_ratio*100
 				End If
 			End If
-			reportFilename=Replace(Replace(reportNameFmt,"\$stuname",stuname),"\$stu_no",stuno)
+			reportFilename=Replace(Replace(reportNameFmt,"\$stu_name",new_stuname),"\$stu_no",new_stuno)
 			regExp.Pattern=reportFilename
 			bFileExists=False
 			For Each file In folder.Files
@@ -142,33 +142,69 @@ Case 3	' 数据读取，导入到数据库
 			Next
 			If Not IsNumeric(reproduct_ratio) Then
 				bError=True
-				errMsg=errMsg&"学生"""&stuname&"""的论文复制比为无效值。"&vbNewLine
+				errMsg=errMsg&"学生"""&stu_name&"""的论文复制比为无效值。"&vbNewLine
 			End If
 			If Not bFileExists Then
 				bError=True
-				errMsg=errMsg&"找不到学生"""&stuname&"""的检测报告文件。"&vbNewLine
+				errMsg=errMsg&"找不到学生"""&stu_name&"""的检测报告文件。"&vbNewLine
 			End If
 			If Not bError Then
 				reportFilePath=reportDir&file.Name
-				stuno=toSqlString(rs(1))
-				sql="SELECT STU_ID FROM VIEW_STUDENT_INFO WHERE STU_NO="&stuno
-				GetRecordSet conn,rsa,sql,result
-				If rsa.EOF Then
+				stu_no=toSqlString(rs(1).Value)
+				sql="SELECT ID,STU_ID,STU_NAME,SPECIALITY_NAME,THESIS_SUBJECT,THESIS_FILE,REVIEW_APP_EVAL,DETECT_COUNT,TUTOR_ID,TUTOR_NAME FROM VIEW_TEST_THESIS_REVIEW_INFO WHERE STU_NO="&stu_no
+				GetRecordSet conn,rsReview,sql,result
+				If rsReview.EOF Then
 					bError=True
-					errMsg=errMsg&"学号不存在:"""&stuno&"""。"&vbNewLine
+					errMsg=errMsg&"学号不存在:"""&stu_no&"""。"&vbNewLine
 				Else
-					stuid=rsa("STU_ID")
-					sql2=sql2&"UPDATE TEST_THESIS_REVIEW_INFO SET REPRODUCTION_RATIO="&reproduct_ratio&",DETECT_REPORT="&toSqlString(reportFilePath)&",REVIEW_STATUS="&rsDetected&" WHERE STU_ID="&stuid&";"
+					thesis_id=rsReview("ID").Value
+					stu_id=rsReview("STU_ID").Value
+					thesis_file=rsReview("THESIS_FILE").Value
+					detect_count=rsReview("DETECT_COUNT").Value
+					If reproduct_ratio<=10 Then	' 通过
+						If detect_count>1 Then	' 二次检测
+							new_status=rsRedetectPassed
+						Else
+							new_status=rsAgreeReview
+							
+							' 生成送审申请表
+							Dim author:author=rsReview("STU_NAME").Value
+							Dim tutor_info:tutor_info=rsReview("TUTOR_NAME").Value&" "&getProDutyNameOf(rsReview("TUTOR_ID").Value)
+							Dim speciality:speciality=rsReview("SPECIALITY_NAME").Value
+							Dim subject:subject=rsReview("THESIS_SUBJECT").Value
+							Dim eval_text:eval_text=rsReview("REVIEW_APP_EVAL").Value
+							Dim review_time:review_time=Now
+							Dim filename:filename=FormatDateTime(review_time,1)&Int(Timer)&Int(Rnd()*999)&".docx"
+							Dim filepath:filepath=Server.MapPath("/ThesisReview/tutor/export")&"\"&filename
+							rag.Author=author
+							rag.StuNo=new_stuno
+							rag.TutorInfo=tutor_info
+							rag.Spec=speciality
+							rag.Date=FormatDateTime(review_time,1)
+							rag.Subject=subject
+							rag.EvalText=eval_text
+							rag.ReproductRatio=reproduct_ratio
+							If rag.generateApp(filepath)=0 Then
+								bError=True
+								errMsg=errMsg&"为学生"""&stu_name&"""的论文生成送审申请表时出错。"&vbNewLine
+							End If
+						End If
+					Else												' 不通过
+						new_status=rsDetectUnpassed
+					End If
+					sql2=sql2&"UPDATE TEST_THESIS_REVIEW_INFO SET REPRODUCTION_RATIO="&reproduct_ratio&",DETECT_REPORT="&toSqlString(reportFilePath)&",REVIEW_STATUS="&new_status&" WHERE STU_ID="&stu_id&";"
+					sql2=sql2&"EXEC spAddDetectResult "&thesis_id&","&toSqlString(thesis_file)&","&toSqlString(Now)&","&toSqlString(reportFilePath)&","&reproduct_ratio&";"
 					numThesis=numThesis+1
 				End If
 			End If
-			CloseRs rsa
+			CloseRs rsReview
 			rs.MoveNext()
 		Loop
 		If Len(sql2) Then
 			conn.Execute sql2
 		End If
 		CloseConn conn
+		Set rag=Nothing
 		Set file=Nothing
 		Set flder=Nothing
 		Set regExp=Nothing
@@ -193,8 +229,8 @@ Case 3	' 数据读取，导入到数据库
 	sourcefile=Server.MapPath(reportBaseDir&reportDir&rarFilename)
 	Set fso=Server.CreateObject("Scripting.FileSystemObject")
 	Set wsh=Server.CreateObject("WScript.Shell")
-	' 打包压缩
-	cmd=""""&rarExe&""" e -or """&sourcefile&""" """&Server.MapPath(reportBaseDir&reportDir)&""""
+	' 解压缩
+	cmd=""""&rarExe&""" e -o+ """&sourcefile&""" """&Server.MapPath(reportBaseDir&reportDir)&""""
 	Set exec=wsh.Exec(cmd)
 	exec.StdOut.ReadAll()
 	Set exec=Nothing

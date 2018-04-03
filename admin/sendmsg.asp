@@ -4,7 +4,7 @@
 <!--#include file="../inc/setEditor.asp"-->
 <!--#include file="../ckeditor/ckeditor.asp"-->
 <!--#include file="../ckfinder/ckfinder.asp"-->
-<%If IsEmpty(Session("user")) Then Response.Redirect("../error.asp?timeout")%>
+<%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")%>
 <%
 	Const MAX_SMSCONTENT_LENGTH=150
 	Dim sendtype,tid

@@ -1,7 +1,7 @@
 ﻿<%Response.Charset="utf-8"%>
 <!--#include file="../inc/db.asp"-->
 <!--#include file="common.asp"--><%
-If IsEmpty(Session("user")) Then Response.Redirect("../error.asp?timeout")
+If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 curstep=Request.QueryString("step")
 thesisID=Request.QueryString("tid")
 period_id=Request.Form("In_PERIOD_ID2")
@@ -31,6 +31,8 @@ If result=0 Then
 End If
 
 Dim review_status,numReviewed,review_result(2),reviewer_master_level(1),review_file(1),review_time(1),review_level(1)
+sql="SELECT * FROM DETECT_RESULT_INFO WHERE THESIS_ID="&thesisID
+GetRecordSet conn,rsDetect,sql,result
 stu_type=rs("TEACHTYPE_ID")
 If stu_type=5 Then
 	reviewfile_type=2
@@ -58,7 +60,7 @@ Case tpTbl4Uploaded:opr=4
 End Select
 Select Case review_status
 Case rsDetectThesisUploaded:opr=5
-Case rsReviewThesisUploaded:opr=6
+Case rsRedetectPassed:opr=6
 Case rsAgreeReview
 Case rsReviewed
 Case rsModifyThesisUploaded
@@ -107,12 +109,12 @@ End If
 Select Case curstep
 Case vbNullString	' 论文详情页面
 	Dim tutor_modify_eval_title
-	arrActionUrlList=Array("?tid="&thesisID&"&step=2","updateThesis.asp?tid="&thesisID,"exp/thesisDetail.asp?tid="&thesisID&"&step=2")
+	arrActionUrlList=Array("?tid="&thesisID&"&step=2","updateThesis.asp?tid="&thesisID,"../expert/thesisDetail.asp?tid="&thesisID&"&step=2")
 	Select Case opr
-	Case 1,2,3,5
+	Case 1,2,3
 		actionUrl1=arrActionUrlList(0)
 		actionUrl2=arrActionUrlList(1)
-	Case 4,6
+	Case 4,5,6
 		actionUrl1=arrActionUrlList(0)
 		actionUrl2=actionUrl1
 	Case 7,8
@@ -131,7 +133,7 @@ Case vbNullString	' 论文详情页面
 	End If
 	
 	sql="SELECT * FROM CODE_REVIEW_TYPE WHERE LEN(THESIS_FORM)>0 AND TEACHTYPE_ID="&stu_type
-	GetRecordSetNoLock conn,rs2,sql,result
+	GetRecordSetNoLock conn,rsRevType,sql,result
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -165,9 +167,9 @@ Case vbNullString	' 论文详情页面
 班级：<input type="text" class="txt" name="class" size="51%" value="<%=rs("CLASS_NAME")%>" readonly /></td></tr><%
 	If Not IsNull(rs("REVIEW_TYPE")) Then %>
 <tr><td>论文形式：&emsp;&emsp;&emsp;<select id="review_type" name="new_review_type" style="width:350px"><%
-			Do While Not rs2.EOF
-%><option value="<%=rs2("ID")%>"<% If review_type=rs2("ID") Then %> selected<% End If %>><%=rs2("THESIS_FORM")%></option><%
-				rs2.MoveNext()
+			Do While Not rsRevType.EOF
+%><option value="<%=rsRevType("ID")%>"<% If review_type=rsRevType("ID") Then %> selected<% End If %>><%=rsRevType("THESIS_FORM")%></option><%
+				rsRevType.MoveNext()
 			Loop
 %></select>
 	</td></tr><%
@@ -202,16 +204,31 @@ Case vbNullString	' 论文详情页面
 	If review_status>=rsDetectThesisUploaded And Len(thesis_file) Then %>
 <tr><td>送检论文：&emsp;&emsp;&emsp;<a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=8" target="_blank">点击下载</a>&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,0,6)">撤销</a></td></tr><%
 	End If
-	If review_status>=rsAgreeDetect Then %>
+	If review_status>=rsDetectUnpassed Then %>
 <tr><td>送检论文检测报告：<%
 		If IsNull(rs("DETECT_REPORT")) Then %>
 未上传<%
 		Else %>
 <a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=12" target="_blank">点击下载</a>&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,3,0)">撤销</a><%
 		End If
-%>&emsp;<input type="file" name="detectreport" size="30" /></td></tr><%
+%>&emsp;<input type="file" name="detectreport" size="30" /></td></tr>
+<tr><td>论文检测记录：<ul><%
+		index=1
+		Do While Not rsDetect.EOF
+			thesis_file=rsDetect("THESIS_FILE").Value
+			detect_time=rsDetect("DETECT_TIME").Value
+			timestamp=DateDiff("s",#2000-1-1#,detect_time)
+			detect_result=rsDetect("RESULT").Value
+			detect_report=rsDetect("DETECT_REPORT").Value
+%><li><%=index%>.检测时间：<%=detect_time%>，查重结果：<%=detect_result%>%<br/>
+<a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=8&timestamp=<%=timestamp%>" target="_blank">送检论文</a>
+<a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=12&timestamp=<%=timestamp%>" target="_blank">检测报告</a></li><%
+			index=index+1
+			rsDetect.MoveNext()
+		Loop
+%></ul></td></tr><%
 	End If
-	If review_status>=rsReviewThesisUploaded And Len(thesis_file_review) Then %>
+	If review_status>=rsDetectThesisUploaded And Len(thesis_file_review) Then %>
 <tr><td>送审论文：&emsp;&emsp;&emsp;<a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=9" target="_blank">点击下载</a>&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,0,7)">撤销</a></td></tr><%
 	End If
 	If review_status>=rsAgreeReview And Not IsNull(review_app) Then %>
@@ -241,7 +258,7 @@ Case vbNullString	' 论文详情页面
 	End If
 %><tr><td height="10"></td></tr><%
 	If review_status>=rsMatchExpert Then %>
-<tr><td>评阅专家：&emsp;&emsp;&emsp;(1)<a href="/index/teacher_resume.asp?id=<%=rs("REVIEWER1")%>" target="_blank"><%=rs("EXPERT_NAME1")%></a>&emsp;(2)<a href="/index/teacher_resume.asp?id=<%=rs("REVIEWER2")%>" target="_blank"><%=rs("EXPERT_NAME2")%></a>&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,3,1)">撤销</a></td></tr>
+<tr><td>评阅专家：&emsp;&emsp;&emsp;(1)<a href="/index/tutor_resume.asp?id=<%=rs("REVIEWER1")%>" target="_blank"><%=rs("EXPERT_NAME1")%></a>&emsp;(2)<a href="/index/tutor_resume.asp?id=<%=rs("REVIEWER2")%>" target="_blank"><%=rs("EXPERT_NAME2")%></a>&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,3,1)">撤销</a></td></tr>
 <tr><td>对学位论文的总体评价&nbsp;1：<%=reviewLevelRadios("reviewlevel1",reviewfile_type,review_level(0))%></td></tr>
 <tr><td>对学位论文的总体评价&nbsp;2：<%=reviewLevelRadios("reviewlevel2",reviewfile_type,review_level(1))%></td></tr>
 <tr><td>评审结果&nbsp;1：&emsp;&emsp;<%=reviewResultList("reviewresult",review_result(0),false)%>&emsp;<span class="tip">(A→同意答辩；B→需做适当修改；C→需做重大修改；D→不同意答辩；E→尚未返回)</span></td></tr>
@@ -294,8 +311,8 @@ GetMenuListPubTerm "CODE_THESIS_REVIEW_STATUS","STATUS_ID2","STATUS_NAME",review
 <input type="button" id="unpass" name="btnsubmit" value="审核不通过<%=arrTable(opr)%>" />&emsp;
 <input type="button" id="pass" name="btnsubmit" value="审核通过<%=arrTable(opr)%>" />&emsp;<%
 	Case 5 %>
-<input type="button" id="unpass" name="btnsubmit" value="不同意检测" />&emsp;
-<input type="button" id="pass" name="btnsubmit" value="同意检测" />&emsp;<%
+<input type="button" id="unpass" name="btnsubmit" value="不同意该生论文查重、送审" />&emsp;
+<input type="button" id="pass" name="btnsubmit" value="同意该生论文查重、查重结果低于10%系统自动匹配送审" />&emsp;<%
 	Case 6 %>
 <input type="button" id="unpass" name="btnsubmit" value="不同意送审" />&emsp;
 <input type="button" id="pass" name="btnsubmit" value="同意送审" />&emsp;<%
@@ -304,6 +321,8 @@ GetMenuListPubTerm "CODE_THESIS_REVIEW_STATUS","STATUS_ID2","STATUS_NAME",review
 	Case 8 %>
 <input type="button" id="unpass" name="btnsubmit" value="不同意论文修改" />&emsp;
 <input type="button" id="pass" name="btnsubmit" value="确认修改，同意答辩" />&emsp;<%
+	Case 9 %>
+<input type="button" id="btnsubmit" name="btnsubmit" value="评阅该论文" />&emsp;<%
 	End Select
 	If review_status=rsMatchExpert Then
 %><input type="button" value="通知专家评阅" onclick="submitForm(this.form,'notifyExpert.asp?tid=<%=rs("ID")%>')" />&emsp;<%
@@ -317,7 +336,7 @@ GetMenuListPubTerm "CODE_THESIS_REVIEW_STATUS","STATUS_ID2","STATUS_NAME",review
 %><input type="button" value="<%=chooseExpertOprName%>" onclick="submitForm(this.form,'chooseExpert.asp?tid=<%=thesisID%>')" />&emsp;<%
 	End If %>
 <input type="submit" value="确 定" />&emsp;
-<input type="button" value="关 闭" onclick="tabmgr.close(window)" />
+<input type="button" value="关 闭" onclick="closeWindow()" />
 </p></td></tr></table>
 <input type="hidden" name="stuid" value="<%=rs("STU_ID")%>" />
 <input type="hidden" name="opr" value="<%=opr%>" />
@@ -370,7 +389,7 @@ GetMenuListPubTerm "CODE_THESIS_REVIEW_STATUS","STATUS_ID2","STATUS_NAME",review
 		}
 	}
 </script></html><%
-	CloseRs rs2
+	CloseRs rsRevType
 Case 2	' 填写评语页面
 	opr=Request.Form("opr")
 	submittype=Request.Form("submittype")
@@ -384,7 +403,9 @@ Case 2	' 填写评语页面
 		End If
 	Case 5
 		If isunpass Then
-			operation_name="您不同意论文检测，请填写意见"
+			operation_name="您不同意论文检测和送审，请填写审核意见"
+		Else
+			operation_name="您同意了论文检测和送审，请填写送审评语"
 		End If
 	Case 6
 		If isunpass Then
@@ -415,7 +436,7 @@ Case 2	' 填写评语页面
 <table class="tblform" width="800" cellspacing="1" cellpadding="3">
 <tr><td>作者姓名：<input type="text" class="txt" name="author" value="<%=rs("STU_NAME")%>" readonly /></td>
 <td>学号：<input type="text" class="txt" name="stuno" value="<%=rs("STU_NO")%>" readonly /></td>
-<td>导师姓名、职称：<input type="text" class="txt" name="tutorinfo" value="<%=Session("Tname")%>&nbsp;<%=tutor_duty_name%>" readonly /></td></tr>
+<td>导师姓名、职称：<input type="text" class="txt" name="tutorinfo" value="<%=rs("TUTOR_NAME")%>&nbsp;<%=tutor_duty_name%>" readonly /></td></tr>
 <tr><td colspan="2">申请学位专业名称：<input type="text" class="txt" name="speciality" size="50" value="<%=rs("SPECIALITY_NAME")%>" readonly /></td>
 <td>学院名称：<input type="text" class="txt" name="faculty" value="工商管理学院" readonly /></td></tr>
 <tr><td colspan="3">学位论文题目：<input type="text" class="txt" name="new_subject" size="70" value="<%=rs("THESIS_SUBJECT")%>"  /></td></tr><%
@@ -453,8 +474,8 @@ Case 2	' 填写评语页面
 		End If %>
 <tr><td colspan="3"><%=eval_text_name%><span id="eval_text_tip"></span></td></tr>
 <tr><td colspan="3"><textarea name="eval_text" rows="15" style="width:100%"><%=eval_text%></textarea></td></tr><%
-	Case 5 ' 填写论文检测意见页面（不同意时） %>
-<tr><td colspan="3">送检论文：<a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=8" target="_blank">点击下载</a>
+	Case 5 ' 填写论文送检送审意见页面 %>
+<tr><td colspan="3">送检论文：<a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=8" target="_blank">点击下载</a>&emsp;送审论文：<a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=9" target="_blank">点击下载</a></td></tr>
 <tr><td colspan="3">导师对论文的意见<span class="eval_notice">（200-2000字）</span>：<span class="tip">提示：学院要求送检论文重复率是&nbsp;10%&nbsp;以内。</span>&emsp;<span id="eval_text_tip"></span></td></tr>
 <tr><td colspan="3"><textarea name="eval_text" rows="15" style="width:100%"><%=eval_text%></textarea></td></tr><%
 	Case 6 ' 填写导师送审评语页面 %>
@@ -481,7 +502,7 @@ Case 2	' 填写评语页面
 <tr class="trbuttons">
 <td colspan="3"><p align="center"><input type="button" id="btnsubmit" name="btnsubmit" value="提 交" />&emsp;
 <input type="button" value="返 回" onclick="history.go(-1)" />&emsp;
-<input type="button" value="关 闭" onclick="tabmgr.close(window)" />
+<input type="button" value="关 闭" onclick="closeWindow()" />
 </p></td></tr></table>
 <input type="hidden" name="opr" value="<%=opr%>" />
 <input type="hidden" name="submittype" value="<%=submittype%>" />
@@ -520,6 +541,7 @@ Case 2	' 填写评语页面
 	}
 </script></html><%
 End Select
+CloseRs rsDetect
 CloseRs rs
 CloseConn conn
 %>

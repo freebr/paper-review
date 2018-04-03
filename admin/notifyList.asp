@@ -1,7 +1,7 @@
 ﻿<%Response.Charset="utf-8"%>
 <!--#include file="../inc/db.asp"-->
 <!--#include file="common.asp"-->
-<%If IsEmpty(Session("user")) Then Response.Redirect("../error.asp?timeout")
+<%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 
 Dim PubTerm,PageNo,PageSize
 sem_info=getCurrentSemester()

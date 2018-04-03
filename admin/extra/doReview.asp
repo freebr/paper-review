@@ -3,7 +3,7 @@ Response.Expires=-1%>
 <!--#include file="reviewgen.inc"-->
 <!--#include file="../../inc/db.asp"-->
 <!--#include file="common.asp"--><%
-If IsEmpty(Session("user")) Then Response.Redirect("../../error.asp?timeout")
+If IsEmpty(Session("Id")) Then Response.Redirect("../../error.asp?timeout")
 thesisID=Request.QueryString("tid")
 teachtype_id=Request.Form("In_TEACHTYPE_ID2")
 class_id=Request.Form("In_CLASS_ID2")

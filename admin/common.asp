@@ -1,5 +1,5 @@
 ﻿<!--#include file="../inc/global.inc"-->
-<!--#include file="pinyin.asp"-->
+<!--#include file="../inc/pinyin.asp"-->
 <%
 Function join(arr,delim)
 	If Not IsArray(arr) Then
@@ -199,7 +199,7 @@ Function sendEmailToStudent(thesisID,filetypename,ispass,ByVal evaltext)
 	Else
 		logtxt=logtxt&"失败。"
 	End If
-	WriteLogForReviewSystem logtxt
+	WriteLog logtxt
 	CloseRs rs
 	CloseConn conn
 	sendEmailToStudent=1

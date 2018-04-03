@@ -3,7 +3,7 @@ Response.Expires=-1%>
 <!--#include file="../inc/db.asp"-->
 <!--#include virtual="/pub/mail.asp"-->
 <!--#include file="common.asp"-->
-<%If IsEmpty(Session("user")) Then Response.Redirect("../error.asp?timeout")
+<%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 ids=Request.Form("sel")
 If Len(ids)=0 Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4">请选择论文记录！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%

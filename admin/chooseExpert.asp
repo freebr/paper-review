@@ -3,7 +3,7 @@ Response.Expires=-1%>
 <!--#include file="../inc/db.asp"-->
 <!--#include virtual="/pub/mail.asp"-->
 <!--#include file="common.asp"--><%
-If IsEmpty(Session("user")) Then Response.Redirect("../error.asp?timeout")
+If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 curstep=Request.QueryString("step")
 teachtype_id=Request.Form("In_TEACHTYPE_ID2")
 class_id=Request.Form("In_CLASS_ID2")
@@ -181,7 +181,7 @@ Case 2	' 后台处理
 			CloseRs rs
 		Next
 		CloseConn conn
-		'WriteLogForReviewSystem logtxt
+		'WriteLog logtxt
 	End If
 	
 	msg="操作完成，是否立即向专家发送评阅通知短信及邮件？"

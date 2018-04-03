@@ -2,7 +2,7 @@
 Response.Expires=-1%>
 <!--#include file="../inc/db.asp"-->
 <!--#include file="common.asp"-->
-<%If IsEmpty(Session("user")) Then Response.Redirect("../error.asp?timeout")
+<%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 teachertype=Request.QueryString("type")
 If IsEmpty(teachertype) Then teachertype=2
 ctrlname1=Request.QueryString("ctrl1")

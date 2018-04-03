@@ -1,6 +1,6 @@
 ﻿<%Response.Charset="utf-8"%>
 <!-- #include File="../inc/db.asp" -->
-<%If IsEmpty(Session("user")) Then Response.Redirect("../error.asp?timeout")
+<%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 filename=Request.QueryString("fn")
 If Len(filename)=0 Then
 	filename=FormatDateTime(Now(),1)&Int(Timer)
@@ -222,11 +222,11 @@ If nTurn=0 Then
 	sql="SELECT "&selectFields&" FROM VIEW_TEST_THESIS_REVIEW_INFO WHERE PERIOD_ID="&period_id&PubTerm
 	Set rs(1)=conn.Execute(sql)
 Else	' 按批次导出
-	exportFilter="PERIOD_ID="&period_id&PubTerm&" AND NOT EXIST(SELECT STU_ID FROM TEST_THESIS_REVIEW_SYSTEM_EXPORT_INFO WHERE PERIOD_ID="&period_id&" AND STU_ID=A.STU_ID)"
+	exportFilter="PERIOD_ID="&period_id&PubTerm&" AND NOT EXIST(SELECT STU_ID FROM EXPORT_INFO WHERE PERIOD_ID="&period_id&" AND STU_ID=A.STU_ID)"
 	Set rs(0)=conn.Execute("EXEC getTestThesisReviewStatsList "&period_id&",1")
 	sql="SELECT "&selectFields&" FROM VIEW_TEST_THESIS_REVIEW_INFO A WHERE "&exportFilter
 	Set rs(1)=conn.Execute(sql)
-	sql="INSERT INTO TEST_THESIS_REVIEW_SYSTEM_EXPORT_INFO (STU_ID,PERIOD_ID,TURN_ID) SELECT STU_ID,"&period_id&","&nTurn&" FROM TEST_THESIS_REVIEW_INFO A WHERE "&exportFilter
+	sql="INSERT INTO EXPORT_INFO (STU_ID,PERIOD_ID,TURN_ID) SELECT STU_ID,"&period_id&","&nTurn&" FROM TEST_THESIS_REVIEW_INFO A WHERE "&exportFilter
 	conn.Execute sql
 End If
 

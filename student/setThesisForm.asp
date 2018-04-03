@@ -24,5 +24,5 @@ conn.Execute sql
 CloseConn conn
 %><script type="text/javascript">
 	alert("操作完成。");
-	location.href='default.asp';
+	location.href='home.asp';
 </script>

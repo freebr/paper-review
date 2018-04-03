@@ -1,7 +1,7 @@
 ﻿<%Response.Charset="utf-8"
 Response.Expires=-1%>
 <!-- #include File="../inc/db.asp" -->
-<%If IsEmpty(Session("Tuser")) Then Response.Redirect("../error.asp?timeout")
+<%If IsEmpty(Session("TId")) Then Response.Redirect("../error.asp?timeout")
 
 newpwd=Request.Form("newPwd")
 repeatpwd=Request.Form("repeatPwd")
@@ -19,7 +19,7 @@ ElseIf rs.EOF Then
 	errdesc="教师不存在！"
 End If
 If bError Then
-%><html><head><link href="../css/teacher.css" rel="stylesheet" type="text/css" /></head>
+%><html><head><link href="../css/tutor.css" rel="stylesheet" type="text/css" /></head>
 <body class="exp"><center><div class="content"><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></div></body></html><%
 	CloseRs rs
   CloseConn conn
@@ -31,5 +31,5 @@ CloseConn conn
 CloseRs rs
 %><script type="text/javascript">
 	alert("修改密码成功！");
-	location.href="/teacher/mainF_exp.asp";
+	location.href="home.asp";
 </script>

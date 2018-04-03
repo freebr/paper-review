@@ -1,7 +1,7 @@
 ﻿<%Response.Charset="utf-8"%>
-<!--#include file="../inc/upload_5xsoft.inc"-->
+<!--#include file="../inc/ExtendedRequest.inc"-->
 <!--#include file="../inc/db.asp"-->
-<%If IsEmpty(Session("user")) Then Response.Redirect("../error.asp?timeout")
+<%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 Dim conn,rs,sql,result
 Connect conn
 curStep=Request.QueryString("step")
@@ -39,7 +39,7 @@ Case 1	' 后台进程
 	Dim rids,arr_rid,arr_typename,arr_teachtypeid,arr_thesisform,arr_fileid
 	Dim fso,Upload,file,bError,delim
 	
-	Set Upload=New upload_5xsoft
+	Set Upload=New ExtendedRequest
 	Set fso=Server.CreateObject("Scripting.FileSystemObject")
 	' 检查上传目录是否存在
 	strUploadPath = Server.MapPath("upload/review")

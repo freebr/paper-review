@@ -1,7 +1,7 @@
 ﻿<%Response.Charset="utf-8"%>
 <!--#include file="../inc/db.asp"-->
 <!--#include file="common.asp"-->
-<%If IsEmpty(Session("Suser")) Then Response.Redirect("../error.asp?timeout")
+<%If IsEmpty(Session("StuId")) Then Response.Redirect("../error.asp?timeout")
 stu_type=Session("StuType")
 
 Dim arrTemplateNames:arrTemplateNames=Array("开题报告表","中期检查表","预答辩意见书","审批材料表","硕士学位论文送审申请表","硕士学位论文文字复制比情况说明表","硕士学位论文分会复审意见表")

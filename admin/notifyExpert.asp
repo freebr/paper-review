@@ -3,7 +3,7 @@ Response.Expires=-1%>
 <!--#include file="../inc/db.asp"-->
 <!--#include virtual="/pub/mail.asp"-->
 <!--#include file="common.asp"-->
-<%If IsEmpty(Session("user")) Then Response.Redirect("../error.asp?timeout")
+<%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 thesisID=Request.QueryString("tid")
 If IsEmpty(thesisId) Then
 	thesisID=Request.Form("sel")
@@ -81,7 +81,7 @@ Loop
 CloseRs rs
 CloseConn conn
 
-WriteLogForReviewSystem logtxt
+WriteLog logtxt
 If InStr(thesisID,",") Then
 	returl="thesisList.asp"
 Else

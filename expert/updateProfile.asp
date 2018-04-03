@@ -1,13 +1,13 @@
 ﻿<%Response.Charset="utf-8"
 Response.Expires=-1%>
 <!--#include file="../inc/db.asp"-->
-<!--#include file="../inc/upload_5xsoft.inc"-->
-<%If IsEmpty(Session("Tuser")) Then Response.Redirect("../error.asp?timeout")
-Set upload=New upload_5xsoft
+<!--#include file="../inc/ExtendedRequest.inc"-->
+<%If IsEmpty(Session("TId")) Then Response.Redirect("../error.asp?timeout")
+Set upload=New ExtendedRequest
 TeacherId=upload.Form("teacherid")
 FormGetToSafeRequest(TeacherId)
 If Len(TeacherId)=0 Or Not IsNumeric(TeacherId) Then
-%><html><head><link href="../css/teacher.css" rel="stylesheet" type="text/css" /></head>
+%><html><head><link href="../css/tutor.css" rel="stylesheet" type="text/css" /></head>
 <body class="exp"><center><div class="content"><font color=red size="4">参数错误。</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></div></body></html><%
 	Response.End
 End If
@@ -81,7 +81,7 @@ ElseIf rs.EOF Then
 	errdesc="数据库没有记录！"
 End If
 If bError Then
-%><html><head><link href="../css/teacher.css" rel="stylesheet" type="text/css" /></head>
+%><html><head><link href="../css/tutor.css" rel="stylesheet" type="text/css" /></head>
 <body class="exp"><center><div class="content"><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></div></body></html><%
 	CloseRs rs
   CloseConn conn

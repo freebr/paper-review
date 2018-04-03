@@ -1,7 +1,7 @@
 ﻿<%Response.Charset="utf-8"%>
 <!--#include file="../../inc/db.asp"-->
 <!--#include file="common.asp"--><%
-If IsEmpty(Session("user")) Then Response.Redirect("../../error.asp?timeout")
+If IsEmpty(Session("Id")) Then Response.Redirect("../../error.asp?timeout")
 curstep=Request.QueryString("step")
 thesisID=Request.QueryString("tid")
 If IsEmpty(thesisID) Then
@@ -124,7 +124,7 @@ Case vbNullString	' 论文详情页面
 	If Len(btnsubmittext) Then
 %><input type="button" id="btnsubmit" name="btnsubmit" value="<%=btnsubmittext%>" />&emsp;<%
 	End If
-%><input type="button" value="关 闭" onclick="tabmgr.close(window)" />
+%><input type="button" value="关 闭" onclick="closeWindow()" />
 </p></td></tr></table>
 <input type="hidden" name="In_TEACHTYPE_ID2" value="<%=teachtype_id%>" />
 <input type="hidden" name="In_CLASS_ID2" value="<%=class_id%>" />
@@ -226,7 +226,7 @@ Case 2	' 评阅页面
 <tr class="trbuttons">
 <td colspan=3><p align="center"><input type="button" id="btnsubmit" name="btnsubmit" value="提 交" />&emsp;
 <input type="button" value="返 回" onclick="history.go(-1)" />&emsp;
-<input type="button" value="关 闭" onclick="tabmgr.close(window)" />
+<input type="button" value="关 闭" onclick="closeWindow()" />
 </p></td></tr></table>
 <input type="hidden" name="In_TEACHTYPE_ID2" value="<%=teachtype_id%>" />
 <input type="hidden" name="In_CLASS_ID2" value="<%=class_id%>" />

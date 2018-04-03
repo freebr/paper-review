@@ -3,9 +3,12 @@
 	Case "timeout"
 		title="会话超时"
 		notice_html="您登录的会话已超时（20分钟），请从网站首页重新登录。"
-	Case "noprivilege"
+	Case "no-privilege"
 		title="禁止访问"
 		notice_html="您没有权限访问本页面。"
+	Case "user-not-exists"
+		title="用户不存在"
+		notice_html="所输入的用户账号不存在。"
 	Case Else
 		title="未知错误"
 		notice_html="未知错误"

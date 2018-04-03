@@ -1,14 +1,14 @@
 ﻿<%Response.Charset="utf-8"
 Response.Expires=-1%>
-<!--#include file="../inc/upload_5xsoft.inc"-->
+<!--#include file="../inc/ExtendedRequest.inc"-->
 <!--#include file="appgen.inc"-->
 <!--#include file="evalappend.inc"-->
 <!--#include file="../inc/db.asp"-->
 <!--#include file="../inc/mail.asp"-->
 <!--#include file="common.asp"--><%
-If IsEmpty(Session("user")) Then Response.Redirect("../error.asp?timeout")
+If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 Dim Upload
-Set Upload=New upload_5xsoft
+Set Upload=New ExtendedRequest
 curstep=Request.QueryString("step")
 thesisID=Request.QueryString("tid")
 new_subject_ch=Upload.Form("new_subject_ch")
@@ -44,7 +44,7 @@ If Len(thesisID)=0 Or Not IsNumeric(thesisID) Or Not IsNumeric(opr) Then
 ElseIf submittype<>vbNullString And Not isMatched("[0-8]",opr) Then
 	bError=True
 	errdesc="操作无效。"
-ElseIf submittype="unpass" And opr<=5 Or submittype<>vbNullString And (opr=4 Or opr=6) Then
+ElseIf submittype="unpass" And opr<=3 Or submittype<>vbNullString And (opr=4 Or opr=5 Or opr=6) Then
 	If Len(eval_text)=0 Then
 		bError=True
 		errdesc="请填写意见（200-2000字）！"
@@ -119,33 +119,6 @@ Case 3	'  审核预答辩申请
 Case 4	'  审核答辩材料
 	filetypename="答辩审批材料"
 	If ispass Then
-'		sql="SELECT TEACHTYPE_ID,TUTOR_NAME FROM VIEW_TEST_THESIS_REVIEW_INFO WHERE ID="&thesisID
-'		GetRecordSetNoLock conn,rs2,sql,result
-'		teachtype_id=rs2(0)
-'		tutor_name=rs2(1)
-'		CloseRs rs2
-'		' 追加导师意见
-'		Dim evalap,append_time
-'		append_time=Now
-'		'Set fso=Server.CreateObject("Scripting.FileSystemObject")
-'		Set evalap=New EvalAppend
-'		evalap.TutorName=tutor_name
-'		evalap.Date=append_time
-'		evalap.EvalText=eval_text
-'		Select Case teachtype_id
-'		Case 5:filetype=1
-'		Case 6,9:filetype=2
-'		End Select
-'		uploadpath=Server.MapPath("/ThesisReview/student/upload")&"/"
-'		filepath=uploadpath&rs("TABLE_FILE4")
-'		tempfilename=FormatDateTime(append_time,1)&Int(Timer)&Int(Rnd()*999)&".doc"
-'		tempfile=uploadpath&tempfilename
-'		'fso.CopyFile filepath,tempfile
-'		bError=evalap.appendEval(tempfile,filepath,filetype)=0
-'		'fso.DeleteFile filepath
-'		Set evalap=Nothing
-'		'Set fso=Nothing
-'		rs("TABLE_FILE4")=tempfilename
 		rs("TASK_PROGRESS")=tpTbl4Passed
 	Else
 		rs("TASK_PROGRESS")=tpTbl4Unpassed
@@ -173,31 +146,17 @@ Case 5	'  同意/不同意送检操作
   	CloseConn conn
   	Response.End
 	End If
+	' 更新记录
 	If ispass Then
-		sql="SELECT STU_NAME,STU_NO,TUTOR_ID,TUTOR_NAME,SPECIALITY_NAME,TEACHTYPE_NAME,THESIS_SUBJECT,MOBILE,EMAIL,TUTOR_MOBILE,TUTOR_EMAIL FROM VIEW_TEST_THESIS_REVIEW_INFO "&_
-				"WHERE ID="&thesisID
-		GetRecordSetNoLock conn,rs2,sql,result
-		If result=1 Then
-			author=rs2("STU_NAME")
-			stuno=rs2("STU_NO")
-			tutorname=rs2("TUTOR_NAME")
-			tutorinfo=tutorname&" "&getProDutyNameOf(rs2("TUTOR_ID"))
-			speciality=rs2("SPECIALITY_NAME")
-			degreename=rs2("TEACHTYPE_NAME")
-			subject=rs2("THESIS_SUBJECT")
-			mobile=rs2("MOBILE")
-			email=rs2("EMAIL")
-			tutormobile=rs2("TUTOR_MOBILE")
-			tutormail=rs2("TUTOR_EMAIL")
-		End If
-		CloseRs rs2
-		eval_text="论文已检查，同意检测。"
-		' 更新记录
+		rs("DETECT_APP_EVAL")="论文已检查，同意检测。"
+		rs("REVIEW_APP_EVAL")=eval_text
+		rs("SUBMIT_REVIEW_TIME")=Now
 		rs("REVIEW_STATUS")=rsAgreeDetect
 	Else
+		rs("DETECT_APP_EVAL")=eval_text
+		rs("REVIEW_APP_EVAL")=Null
 		rs("REVIEW_STATUS")=rsNotAgreeDetect
 	End If
-	rs("DETECT_APP_EVAL")=eval_text
 Case 6	'  同意/不同意送审操作
 	filetypename="送审论文"
 	author=Upload.Form("author")
@@ -227,7 +186,7 @@ Case 6	'  同意/不同意送审操作
 		review_time=Now
 		Randomize
 		filename=FormatDateTime(review_time,1)&Int(Timer)&Int(Rnd()*999)&".docx"
-		filepath=Server.MapPath("/ThesisReview/teacher/export")&"\"&filename
+		filepath=Server.MapPath("/ThesisReview/tutor/export")&"\"&filename
 		Set rag=New ReviewAppGen
 		rag.Author=author
 		rag.StuNo=stuno
@@ -314,8 +273,12 @@ If submittype=vbNullString Then
 	reproduct_ratio=rs("REPRODUCTION_RATIO")
 	If Not IsNull(reproduct_ratio) And new_reproduct_ratio=vbNullString And review_status>=rsAgreeDetect Then
 		rs("REVIEW_STATUS")=rsAgreeDetect
-	ElseIf new_reproduct_ratio<>vbNullString And new_review_status<rsDetected Then
-		rs("REVIEW_STATUS")=rsDetected
+	ElseIf new_reproduct_ratio<>vbNullString And new_review_status<=rsAgreeDetect Then
+		If reproduct_ratio<=10 Then	' 通过
+			rs("REVIEW_STATUS")=rsRedetectPassed
+		Else												' 不通过
+			rs("REVIEW_STATUS")=rsDetectUnpassed
+		End If
 	End If
 	If Len(new_reproduct_ratio)=0 Then
 		rs("REPRODUCTION_RATIO")=Null

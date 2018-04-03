@@ -3,7 +3,7 @@ Response.Expires=-1%>
 <!--#include file="../inc/db.asp"-->
 <!--#include virtual="/pub/mail.asp"-->
 <!--#include file="common.asp"-->
-<%If IsEmpty(Session("user")) Then Response.Redirect("../error.asp?timeout")
+<%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 uid_type=Request("sel")
 finalFilter=Request.Form("finalFilter2")
 pageSize=Request.Form("pageSize2")
@@ -124,8 +124,7 @@ Next
 
 If Len(sql_updnotify) Then conn.Execute sql_updnotify
 CloseConn conn
-WriteLogForReviewSystem logtxt
-
+WriteLog logtxt
 notifyText="操作完成，共通知 "
 If numTutorNotify>0 Then
 	notifyText=notifyText&numTutorNotify&" 名导师，"

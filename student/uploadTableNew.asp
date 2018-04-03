@@ -3,7 +3,7 @@
 <!--#include file="../inc/mail.asp"-->
 <!--#include file="common.asp"-->
 <!--#include file="tablegen.inc"-->
-<%If IsEmpty(Session("Suser")) Then Response.Redirect("../error.asp?timeout")
+<%If IsEmpty(Session("StuId")) Then Response.Redirect("../error.asp?timeout")
 Dim opr,bOpen,bUpload,bGenerated,filetype
 Dim researchway_list
 Dim conn,rs,sql,result
@@ -161,7 +161,7 @@ Case vbNullstring ' 填写信息页面
 	If opr<>STUCLI_OPR_TABLE4 Then
 %><input type="button" id="btnuploadtblthesis" value="上传<%=arrTblThesis(opr)%>" />&nbsp;<%
 	End If
-%><input type="button" id="btnreturn" value="返回首页" onclick="location.href='default.asp'" /></p></td></tr>
+%><input type="button" id="btnreturn" value="返回首页" onclick="location.href='home.asp'" /></p></td></tr>
 <tr><td><%
 	If opr<>0 Then %>
 <div style="text-align:right"><hr />
@@ -455,7 +455,7 @@ Case 1	' 上传进程
 	
 	Dim logtxt
 	logtxt="学生["&Session("StuName")&"]提交["&arrStuOprName(opr)&"]。"
-	WriteLogForReviewSystem logtxt
+	WriteLog logtxt
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -466,7 +466,7 @@ Case 1	' 上传进程
 </head>
 <body bgcolor="ghostwhite"><%
 	If Not bError Then %>
-<form id="fmFinish" action="default.asp" method="post">
+<form id="fmFinish" action="home.asp" method="post">
 <input type="hidden" name="filename" value="<%=strDestTableFile%>" />
 </form>
 <script type="text/javascript">alert("提交成功！");$('#fmFinish').submit();</script><%

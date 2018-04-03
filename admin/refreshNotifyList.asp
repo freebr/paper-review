@@ -1,7 +1,7 @@
 ﻿<%Response.Charset="utf-8"%>
 <!--#include file="../inc/db.asp"-->
 <!--#include file="common.asp"--><%
-If IsEmpty(Session("user")) Then Response.Redirect("../error.asp?timeout")
+If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 session("Debug")=true
 Dim newTutorCount,newExpertCount:newTutorCount=0:newExpertCount=0
 Dim bError,errMsg:bError=False

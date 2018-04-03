@@ -1,7 +1,7 @@
 ﻿<%Response.Charset="utf-8"%>
 <!--#include file="../inc/db.asp"-->
 <!--#include file="common.asp"-->
-<%'If IsEmpty(Session("Suser")) Then Response.Redirect("../error.asp?timeout")
+<%'If IsEmpty(Session("StuId")) Then Response.Redirect("../error.asp?timeout")
 Dim arrFileListName,arrFileListNamePostfix,arrFileListPath,arrFileListField
 arrFileListName=Array("","开题报告表","开题论文","中期检查表","中期论文","预答辩申请表","预答辩论文","答辩及授予学位审批材料","送检论文","送审论文","答辩论文","定稿论文","送检论文检测报告","论文评阅书 1","论文评阅书 2")
 arrFileListNamePostfix=Array("","开题报告表","开题论文","中期检查表","中期论文","预答辩申请表","预答辩论文","答辩审批材料","","","","","检测报告","论文评阅书(1)","论文评阅书(2)")

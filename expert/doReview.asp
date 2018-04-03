@@ -3,7 +3,7 @@ Response.Expires=-1%>
 <!--#include file="reviewgen.inc"-->
 <!--#include file="../inc/db.asp"-->
 <!--#include file="common.asp"--><%
-If IsEmpty(Session("Tuser")) Then Response.Redirect("../error.asp?timeout")
+If IsEmpty(Session("TId")) Then Response.Redirect("../error.asp?timeout")
 thesisID=Request.QueryString("tid")
 teachtype_id=Request.Form("In_TEACHTYPE_ID2")
 spec_id=Request.Form("In_SPECIALITY_ID2")
@@ -21,7 +21,7 @@ ElseIf Not checkIfProfileFilledIn() Then
 	errdesc="您尚未完善个人信息，<a href=""profile.asp"">请点击这里编辑。</a>"
 End If
 If bError Then
-%><html><head><link href="../css/teacher.css" rel="stylesheet" type="text/css" /></head>
+%><html><head><link href="../css/tutor.css" rel="stylesheet" type="text/css" /></head>
 <body class="exp"><center><div class="content"><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></div></center></body></html><%
 	Response.End
 End If
@@ -84,7 +84,7 @@ Else
 	End If
 End If
 If bError Then
-%><html><head><link href="../css/teacher.css" rel="stylesheet" type="text/css" /></head>
+%><html><head><link href="../css/tutor.css" rel="stylesheet" type="text/css" /></head>
 <body class="exp"><center><div class="content"><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></div></center></body></html><%
   CloseRs rs
   CloseConn conn
@@ -146,7 +146,7 @@ CloseRs rs
 sql="SELECT REVIEW_FILE FROM CODE_REVIEW_TYPE WHERE ID="&review_type
 GetRecordSetNoLock conn,rs,sql,result
 If rs.EOF Then
-%><html><head><link href="../css/teacher.css" rel="stylesheet" type="text/css" /></head>
+%><html><head><link href="../css/tutor.css" rel="stylesheet" type="text/css" /></head>
 <body class="exp"><center><div class="content"><body bgcolor="ghostwhite"><center><font color=red size="4">操作不成功，找不到所需的评阅书模板文件，请联系系统管理员。</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></div></center></body></html><%
   CloseRs rs
   CloseConn conn
@@ -262,7 +262,7 @@ CloseConn conn
 updateActiveTime Session("Tid")
 
 logtxt="专家["&expert_name&"]提交评阅意见，论文：《"&subject&"》，作者："&author&"，评阅书："&fullfilename&"。"
-WriteLogForReviewSystem logtxt
+WriteLog logtxt
 %><form id="ret" action="thesisDetail.asp?tid=<%=thesisID%>" method="post">
 <input type="hidden" name="In_TEACHTYPE_ID2" value="<%=teachtype_id%>" />
 <input type="hidden" name="In_SPECIALITY_ID2" value="<%=spec_id%>" />

@@ -676,30 +676,10 @@ End Sub
 
 Function WriteLog(content)	' 添加日志记录
 	Dim logfile,fso,stream,msg
-	logfile=Server.MapPath("/log/"&toDateTime(Date,1)&".log")
+	logfile=Server.MapPath("/log/ThesisReview/"&toDateTime(Date,1)&".log")
 	Set fso=Server.CreateObject("Scripting.FileSystemObject")
 	Set stream=fso.OpenTextFile(logfile,8,true)
-	msg="["&Time&"|"&Request.ServerVariables("REMOTE_ADDR")&"]"&content
-	stream.WriteLine msg
-	stream.Close
-	Set fso=Nothing
-End Function
-Function WriteLogForReviewSystem(content)	' 添加论文电子评阅系统日志记录
-	Dim logfile,fso,stream,msg
-	logfile=Server.MapPath("/log/review/"&toDateTime(Date,1)&".log")
-	Set fso=Server.CreateObject("Scripting.FileSystemObject")
-	Set stream=fso.OpenTextFile(logfile,8,true)
-	msg="["&Time&"|"&Request.ServerVariables("REMOTE_ADDR")&"]"&content
-	stream.WriteLine msg
-	stream.Close
-	Set fso=Nothing
-End Function
-Function WriteLogForTutorSystem(content)	' 添加选导师系统日志记录
-	Dim logfile,fso,stream,msg
-	logfile=Server.MapPath("/log/tutor/"&toDateTime(Date,1)&".log")
-	Set fso=Server.CreateObject("Scripting.FileSystemObject")
-	Set stream=fso.OpenTextFile(logfile,8,true)
-	msg="["&Time&"|"&Request.ServerVariables("REMOTE_ADDR")&"]"&content
+	msg="["&Time&"]"&content
 	stream.WriteLine msg
 	stream.Close
 	Set fso=Nothing

@@ -1,7 +1,7 @@
 ﻿<%Response.Charset="utf-8"%>
 <!--#include file="../inc/db.asp"-->
 <!--#include file="common.asp"-->
-<%If IsEmpty(Session("Tuser")) Then Response.Redirect("../error.asp?timeout")
+<%If IsEmpty(Session("TId")) Then Response.Redirect("../error.asp?timeout")
 
 Dim PubTerm,PageNo,PageSize
 tid=Session("Tid")
@@ -67,7 +67,7 @@ End If
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link href="../css/teacher.css" rel="stylesheet" type="text/css" />
+<link href="../css/tutor.css" rel="stylesheet" type="text/css" />
 <script src="../scripts/jquery-1.6.3.min.js" type="text/javascript"></script>
 <script src="../scripts/query.js" type="text/javascript"></script>
 <script src="../scripts/thesis.js" type="text/javascript"></script>
@@ -177,10 +177,10 @@ Next
   		stat=arrStatText(0)
   	End If
 %><tr bgcolor="ghostwhite" height="30">
-    <td align=center><a href="#" onclick="tabmgr.newTab('/ThesisReview/expert/thesisDetail.asp?tid=<%=rs("ID")%>');return false;"><%=HtmlEncode(rs("THESIS_SUBJECT"))%></a></td>
+    <td align=center><a href="#" onclick="return showThesisDetail(<%=rs("ID")%>,3)"><%=HtmlEncode(rs("THESIS_SUBJECT"))%></a></td>
     <td align=center><%=HtmlEncode(rs("SPECIALITY_NAME"))%></td>
     <td align=center><%=rs("TEACHTYPE_NAME")%></td>
-    <td align=center><a href="#" onclick="tabmgr.newTab('/ThesisReview/expert/thesisDetail.asp?tid=<%=rs("ID")%>');return false;"><span class="<%=cssclass%>"><%=stat%></span></a></td>
+    <td align=center><a href="#" onclick="return showThesisDetail(<%=rs("ID")%>,3)"><span class="<%=cssclass%>"><%=stat%></span></a></td>
     <td align=center><%=review_time%></td></tr><%
   	rs.MoveNext()
   Next

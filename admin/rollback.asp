@@ -2,7 +2,7 @@
 Response.Expires=-1%>
 <!--#include file="../inc/db.asp"-->
 <!--#include file="common.asp"--><%
-If IsEmpty(Session("user")) Then Response.Redirect("../error.asp?timeout")
+If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 thesisID=Request.QueryString("tid")
 usertype=Request.QueryString("user")
 opr=Request.QueryString("opr")
@@ -28,6 +28,12 @@ If rs.EOF Then
   CloseConn conn
 	Response.End
 End If
+
+Dim detect_count
+sql="SELECT DETECT_COUNT FROM VIEW_TEST_THESIS_REVIEW_INFO WHERE ID="&thesisID
+GetRecordSet conn,rsDetect,sql,result
+detect_count=rsDetect(0).Value
+CloseRs rsDetect
 
 Select Case usertype
 Case 0	' 撤销学生上传操作
@@ -175,7 +181,11 @@ Case 2	' 撤销导师审核操作
 	Case 2
 		rs("REVIEW_APP")=Null
 		rs("REVIEW_APP_EVAL")=Null
-		rs("REVIEW_STATUS")=rsReviewThesisUploaded
+		If detect_count>1 Then	' 检测次数超过一次，回退到二次检测通过状态
+			rs("REVIEW_STATUS")=rsRedetectPassed
+		Else	' 一次检测通过，回退到同意检测状态
+			rs("REVIEW_STATUS")=rsAgreeDetect
+		End If
 	Case 3
 		rs("TUTOR_REVIEW_EVAL")=Null
 		rs("REVIEW_STATUS")=rsReviewed
@@ -185,7 +195,9 @@ Case 2	' 撤销导师审核操作
 	End Select
 Case 3	' 撤销教务员操作
 	Select Case opr
-	Case 0	' 撤销送检状态
+	Case 0	' 撤销送检操作
+		sql="DELETE FROM DETECT_RESULT_INFO WHERE THESIS_ID="&thesisID
+		conn.Execute sql
 		rs("DETECT_REPORT")=Null
 		rs("REPRODUCTION_RATIO")=Null
 		rs("REVIEW_STATUS")=rsAgreeDetect

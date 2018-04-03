@@ -1,47 +1,56 @@
 ﻿function getFileExt(fn) {
 	return fn.substring(fn.lastIndexOf('.')).toLowerCase();
 }
-function checkIfPdf(ctlupload) {
-	if(!ctlupload) return true;
-	var fileName=ctlupload.value;
+function checkIfPdfRar($ctlupload) {
+	if(!$ctlupload.size()) return true;
+	var ctl=$ctlupload[0];
+	var fileName=ctl.value;
 	if (!fileName.length) {
-		alert("请为"+ctlupload.title+"选择要上传的 PDF 格式论文文件！");
+		alert("请为"+ctl.title+"选择要上传的 PDF 文件或 RAR 压缩文件！");
 		return false;
 	}
 	var fileExt=getFileExt(fileName);
-	if (fileExt!=".pdf") {
-		alert("所选"+ctlupload.title+"不是 PDF 文件！");
+	if (fileExt!=".pdf"&&fileExt!=".rar") {
+		alert("所选"+ctl.title+"不是 PDF 文件或 RAR 压缩文件！");
 		return false;
 	}
 	return true;
 }
-function checkIfWord(ctlupload) {
-	if(!ctlupload) return true;
-	var fileName=ctlupload.value;
+function checkIfWord($ctlupload) {
+	if(!$ctlupload.size()) return true;
+	var ctl=$ctlupload[0];
+	var fileName=ctl.value;
 	if (!fileName.length) {
-		alert("请为"+ctlupload.title+"选择要上传的 Word 文件！");
+		alert("请为"+ctl.title+"选择要上传的 Word 文件！");
 		return false;
 	}
 	var fileExt=getFileExt(fileName);
 	if (fileExt!=".doc"&&fileExt!=".docx") {
-		alert("所选"+ctlupload.title+"不是 Word 文件！");
+		alert("所选"+ctl.title+"不是 Word 文件！");
 		return false;
 	}
 	return true;
 }
-function checkIfWordRar(ctlupload) {
-	if(!ctlupload) return true;
-	var fileName=ctlupload.value;
+function checkIfWordRar($ctlupload) {
+	if(!$ctlupload.size()) return true;
+	var ctl=$ctlupload[0];
+	var fileName=ctl.value;
 	if (!fileName.length) {
-		alert("请为"+ctlupload.title+"选择要上传的 Word 文件或 RAR 压缩文件！");
+		alert("请为"+ctl.title+"选择要上传的 Word 文件或 RAR 压缩文件！");
 		return false;
 	}
 	var fileExt=getFileExt(fileName);
 	if (fileExt!=".doc"&&fileExt!=".docx"&&fileExt!=".rar") {
-		alert("所选"+ctlupload.title+"不是 Word 文件或 RAR 压缩文件！");
+		alert("所选"+ctl.title+"不是 Word 文件或 RAR 压缩文件！");
 		return false;
 	}
 	return true;
+}
+function checkIfDetectReview($ctlupload,index) {
+	if(index==undefined)
+		return checkIfWordRar($ctlupload.eq(0))&&checkIfPdfRar($ctlupload.eq(1));
+	else
+		return index==0?checkIfWordRar($ctlupload):checkIfPdfRar($ctlupload);
 }
 function createSocket() {
 	var sck=new Object();

@@ -1,8 +1,8 @@
 ﻿<%Response.Charset="utf-8"%>
-<!--#include file="../inc/upload_5xsoft.inc"-->
+<!--#include file="../inc/ExtendedRequest.inc"-->
 <!--#include file="../inc/db.asp"-->
 <!--#include file="common.asp"--><%
-If IsEmpty(Session("user")) Then Response.Redirect("../error.asp?timeout")
+If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 thesisID=Request.QueryString("tid")
 curstep=Request.QueryString("step")
 
@@ -131,7 +131,7 @@ GetMenuListPubTerm "CODE_THESIS_REVIEW_STATUS","STATUS_ID2","STATUS_NAME",review
 Case 2	' 文件上传页面
 
 	Dim Upload
-	Set Upload=New upload_5xsoft
+	Set Upload=New ExtendedRequest
 	
 	new_task_progress=Upload.Form("new_task_progress")
 	new_review_status=Upload.Form("new_review_status")

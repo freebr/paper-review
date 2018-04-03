@@ -1,7 +1,7 @@
 ﻿<%Response.Charset="utf-8"
 Response.Expires=-1%>
 <!--#include file="../inc/db.asp"-->
-<%If IsEmpty(Session("user")) Then Response.Redirect("../error.asp?timeout")
+<%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 
 ids=Request.Form("sel")
 sel_count=Request.Form("sel").Count

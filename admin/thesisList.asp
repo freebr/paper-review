@@ -1,7 +1,7 @@
 ﻿<%Response.Charset="utf-8"%>
 <!--#include file="../inc/db.asp"-->
 <!--#include file="common.asp"-->
-<%If IsEmpty(Session("user")) Then Response.Redirect("../error.asp?timeout")
+<%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 
 Dim PubTerm,PageNo,PageSize
 sem_info=getCurrentSemester()
@@ -207,7 +207,7 @@ End If %>
     <td width="80" align=center>姓名</td>
     <td width="90" align=center>学号</td>
     <td width="120" align=center>专业</td>
-    <td width="50" align=center>学位类别</td>
+    <td width="100" align=center>学位类别</td>
     <td width="60" align=center>导师</td><%
     If Not bModified Then %>
 		<td width="80" align=center>送审结果1</td>
@@ -216,7 +216,7 @@ End If %>
 		<td width="80" align=center>处理意见</td>
 		<td width="110" align=center>状态</td>
     <td width="30" align=center>选择</td>
-    <td width="100" align=center>操作</td>
+    <td width="50" align=center>操作</td>
   </tr><%
 If Len(PubTerm) Then
   Dim review_result
@@ -244,7 +244,7 @@ If Len(PubTerm) Then
   		cssclass="thesisstat"
   	End If
   %><tr bgcolor="ghostwhite">
-    <td align=center><a href="#" onclick="tabmgr.newTab('/ThesisReview/admin/thesisDetail.asp?tid=<%=rs("ID")%>');return false;"><%=HtmlEncode(rs("THESIS_SUBJECT"))%></a></td>
+    <td align=center><a href="#" onclick="return showThesisDetail(<%=rs("ID")%>,0)"><%=HtmlEncode(rs("THESIS_SUBJECT"))%></a></td>
     <td align=center><%=HtmlEncode(rs("STU_NAME"))%></td>
     <td align=center><%=rs("STU_NO")%></td>
     <td align=center><%=HtmlEncode(rs("SPECIALITY_NAME"))%></td>
@@ -255,7 +255,7 @@ If Len(PubTerm) Then
     <td align=center><%=getReviewResult(review_result(1))%></td><%
 		End If %>
     <td align=center><%=getFinalResult(review_result(2))%></td>
-    <td align=center><a href="#" onclick="tabmgr.newTab('/ThesisReview/admin/thesisDetail.asp?tid=<%=rs("ID")%>');return false;"><span class="<%=cssclass%>"><%=stat%></span></a><%
+    <td align=center><a href="#" onclick="return showThesisDetail(<%=rs("ID")%>,0)"><span class="<%=cssclass%>"><%=stat%></span></a><%
     If Len(substat) Then
     %><br/><span class="thesissubstat"><%=substat%></span><%
     End If %></td>

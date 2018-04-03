@@ -1,5 +1,5 @@
 ﻿<%Response.Charset="utf-8"%>
-<!--#include file="../inc/upload_5xsoft.inc"-->
+<!--#include file="../inc/ExtendedRequest.inc"-->
 <!--#include file="../inc/db.asp"-->
 <!--#include file="common.asp"--><%
 curStep=Request.QueryString("step")
@@ -32,7 +32,7 @@ Case 2	' 上传进程
 
 	Dim fso,Upload,File
 	
-	Set Upload=New upload_5xsoft
+	Set Upload=New ExtendedRequest
 	Set file=Upload.File("excelFile")
 	Set fso=Server.CreateObject("Scripting.FileSystemObject")
 	

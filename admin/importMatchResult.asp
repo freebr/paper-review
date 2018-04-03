@@ -1,9 +1,9 @@
 ﻿<%Response.Charset="utf-8"%>
-<!--#include file="../inc/upload_5xsoft.inc"-->
+<!--#include file="../inc/ExtendedRequest.inc"-->
 <!--#include file="../inc/db.asp"-->
 <!--#include virtual="/pub/mail.asp"-->
 <!--#include file="common.asp"--><%
-If IsEmpty(Session("user")) Then Response.Redirect("../error.asp?timeout")
+If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 
 curStep=Request.QueryString("step")
 Select Case curStep
@@ -45,7 +45,7 @@ Case 2	' 上传进程
 
 	Dim Upload,file,fso
 	
-	Set Upload=New upload_5xsoft
+	Set Upload=New ExtendedRequest
 	Set file=Upload.File("excelFile")
 	Set fso=Server.CreateObject("Scripting.FileSystemObject")
 	
@@ -144,7 +144,7 @@ Case 3	' 数据读取，导入到数据库
 			End If
 			rs.MoveNext()
 		Loop
-		If Len(thesisIDs) Then WriteLogForReviewSystem logtxt
+		If Len(thesisIDs) Then WriteLog logtxt
 		CloseRs rs
 	End If
 	CloseConn conn

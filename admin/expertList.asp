@@ -1,6 +1,6 @@
 ﻿<%Response.Charset="utf-8"%>
 <!--#include file="../inc/db.asp"-->
-<%If IsEmpty(Session("user")) Then Response.Redirect("../error.asp?timeout")%>
+<%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")%>
 <%
 Dim finalFilter,pageNo,pageSize
 '----------------------PAGE-------------------------
@@ -119,8 +119,11 @@ Next
     <td width="30" align=center>选择</td>
   </tr>
   <%
+  Dim bSelectable
   For i=1 to rs.PageSize
       If rs.EOF Then Exit For
+      teacherno=rs("TEACHERNO").Value
+      bSelectable=teacherno<>"zhuanjia1" And teacherno<>"zhuanjia2"
   %>
   <tr bgcolor="ghostwhite">
     <td align=center><a href="expertProfile.asp?id=<%=rs("TEACHER_ID")%>"><%=HtmlEncode(rs("EXPERT_NAME"))%>&nbsp;/&nbsp;<%=HtmlEncode(rs("TEACHERNO"))%></a></td>
@@ -132,7 +135,10 @@ Next
     <td align=center><%=HtmlEncode(rs("MEMO"))%></td>
     <td align=center><a id="pwd<%=i%>" href="#" onclick="showPassword(this,'<%=rs("PASSWORD")%>');return false">显示密码</a>&emsp;&nbsp;<a href="#" onclick="window.open('/admin/UserManage/ChangeTeacherPass.asp?id=<%=rs("TEACHER_ID")%>','','width=300,height=300,status=no');return false">修改密码</a>
 <br/><a href="expertProfile.asp?id=<%=rs("TEACHER_ID")%>">查看资料</a>&emsp;<a href="#" onclick="window.open('sendmsg.asp?type=1&tid=<%=rs("TEACHER_ID")%>','','width=1010,height=420,status=no');return false">短信</a>&nbsp;<a href="#" onclick="window.open('sendmsg.asp?type=2&tid=<%=rs("TEACHER_ID")%>','','width=1010,height=420,status=no');return false">邮件</a></td>
-    <td align=center><input type="checkbox" name="sel" value="<%=rs("TEACHER_ID")%>"><input type="hidden" name="isinschool<%=rs("TEACHER_ID")%>" value="<%=Abs(rs("INSCHOOL"))%>">
+    <td align=center><%
+    	If bSelectable Then
+    %><input type="checkbox" name="sel" value="<%=rs("TEACHER_ID")%>"><input type="hidden" name="isinschool<%=rs("TEACHER_ID")%>" value="<%=Abs(rs("INSCHOOL"))%>"><%
+  		End If %>
 	</td></tr>
   <%
   	rs.MoveNext

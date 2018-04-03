@@ -1,5 +1,5 @@
 ﻿<%Response.Charset="utf-8"%>
-<!--#include file="../inc/upload_5xsoft.inc"-->
+<!--#include file="../inc/ExtendedRequest.inc"-->
 <!--#include file="../inc/db.asp"-->
 <!--#include file="common.asp"--><%
 curStep=Request.QueryString("step")
@@ -21,7 +21,7 @@ Case vbNullstring ' 文件选择页面
 <script src="../scripts/jquery-1.6.3.min.js" type="text/javascript"></script>
 </head>
 <body bgcolor="ghostwhite">
-<center><font size=4><b>导入新增论文自EXCEL文件</b><br />
+<center><font size=4><b>导入新增论文信息自EXCEL文件</b><br />
 <form id="fmUpload" action="?step=2" method="POST" enctype="multipart/form-data">
 <p>学期：<select name="periodid"><option value="0">请选择</option><%
 Do While Not rs2.EOF %>
@@ -57,7 +57,7 @@ Case 2	' 上传进程
 
 	Dim fso,Upload,File
 	
-	Set Upload=New upload_5xsoft
+	Set Upload=New ExtendedRequest
 	Set file=Upload.File("excelFile")
 	period_id=Upload.Form("periodid")
 	task_progress=Upload.Form("In_TASK_PROGRESS")
@@ -91,12 +91,12 @@ Case 2	' 上传进程
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="theme-color" content="#2D79B2" />
-<title>导入新增论文自EXCEL文件</title>
+<title>导入新增论文信息自EXCEL文件</title>
 <link href="../css/admin.css" rel="stylesheet" type="text/css" />
 <script src="../scripts/jquery-1.6.3.min.js" type="text/javascript"></script>
 </head>
 <body bgcolor="ghostwhite">
-<center><br /><b>导入新增论文自EXCEL文件</b><br /><br /><%
+<center><br /><b>导入新增论文信息自EXCEL文件</b><br /><br /><%
 	If Not bError Then %>
 <form id="fmUploadFinish" action="?step=3" method="POST">
 <input type="hidden" name="periodid" value="<%=period_id%>" />
@@ -104,7 +104,7 @@ Case 2	' 上传进程
 <input type="hidden" name="In_REVIEW_STATUS" value="<%=review_status%>" />
 <input type="hidden" name="selectmode" value="<%=select_mode%>" />
 <input type="hidden" name="filename" value="<%=strDestFile%>" />
-<p><%=byteFileSize%> 字节已上传，正在导入学生论文信息...</p></form>
+<p><%=byteFileSize%> 字节已上传，正在导入新增论文信息...</p></form>
 <script type="text/javascript">setTimeout("$('#fmUploadFinish').submit()",500);</script><%
 	Else
 %>
