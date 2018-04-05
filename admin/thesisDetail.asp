@@ -451,9 +451,11 @@ Case 2	' 填写评语页面
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link href="../css/admin.css" rel="stylesheet" type="text/css" />
+<script src="../scripts/jquery-1.6.3.min.js" type="text/javascript"></script>
 <script src="../scripts/utils.js" type="text/javascript"></script>
 <script src="../scripts/thesis.js" type="text/javascript"></script>
 <meta name="theme-color" content="#2D79B2" />
+<title>填写审核意见</title>
 <style type="text/css" />
 	input[type="text"] { background:none;border-top:0;border-left:0;border-right:0;border-bottom:1px solid dimgray }
 </style>
@@ -504,7 +506,7 @@ Case 2	' 填写评语页面
 <tr><td colspan="3"><textarea name="eval_text" rows="15" style="width:100%"><%=eval_text%></textarea></td></tr><%
 	Case 5 ' 填写论文送检送审意见页面 %>
 <tr><td colspan="3">送检论文：<a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=8" target="_blank">点击下载</a>&emsp;送审论文：<a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=9" target="_blank">点击下载</a></td></tr>
-<tr><td colspan="3">导师对论文的意见<span class="eval_notice">（200-2000字）</span>：<span class="tip">提示：学院要求送检论文重复率是&nbsp;10%&nbsp;以内。</span>&emsp;<span id="eval_text_tip"></span></td></tr>
+<tr><td colspan="3">导师对论文的意见<span class="eval_notice">（200-2000字，包含选题意义；文献资料的掌握；数据、材料的收集、论证、结论是否合理；基本论点、结论和建议有无理论意义和实践价值等）</span>：<br/><span class="tip">提示：复制比低于10%的学员，系统会自动匹配进行论文盲审。复制比高于10%的学员，由中心统一进行二次查重，二次查重所产生的费用由学员本人缴纳。</span>&emsp;<span id="eval_text_tip"></span></td></tr>
 <tr><td colspan="3"><textarea name="eval_text" rows="15" style="width:100%"><%=eval_text%></textarea></td></tr><%
 	Case 6 ' 填写导师送审评语页面 %>
 <tr><td colspan="3">送审论文：<a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=9" target="_blank">点击下载</a></td></tr>
