@@ -134,15 +134,7 @@ Case vbNullString	' 论文详情页面
 <input type="hidden" name="finalFilter2" value="<%=toPlainString(finalFilter)%>" />
 <input type="hidden" name="pageSize2" value="<%=pageSize%>" />
 <input type="hidden" name="pageNo2" value="<%=pageNo%>" /></form>
-<table width="800" border=0 cellspacing=1 cellpadding=3 bgcolor="#999999">
-<tr style="background-color: #cccccc"><td><p>评阅结果说明：</p>
-<p><ul><li>A&A=I,A&B=II,B&B=II,A&C=III,B&C=III,C&C=V,A&D=IV,B&D=IV,C&D=V,D&D=V；</li>
-<li>Ⅰ→处理意见：可以申请答辩；<br/>
-Ⅱ→处理意见：请根据所有评审专家意见修改论文并填写硕士学位论文分会复审意见表，交导师审核、签署意见，送至教务员处备案后可申请答辩；<br/>
-Ⅲ→处理意见：根据所有评审专家意见对论文进行重大修改后填写硕士学位论文分会复审意见表，并由学位评定分委员会指派三名专家对修改后的论文进行审阅，专家签字同意答辩后经学院学位分会审核，学校学位办通过后方可申请答辩；<br/>
-Ⅳ→请尽快至学院领取处理意见书，处理意见：根据所有评审专家意见，需加送两份论文由学院聘请两位外校专家评审，评审结果为“同意答辩”或“适当修改”后方可申请答辩；<br/>
-Ⅴ→请尽快至学院领取处理意见书，处理意见：根据所有评审专家意见对论文做重大修改，三个月后至一年内再重新申请学位论文答辩；<br/>
-Ⅵ→请耐心等待。</li></ul></p></td></tr></table></div></center>
+</div></center>
 <form id="ret" name="ret" action="thesisList.asp" method="post">
 <input type="hidden" name="In_TEACHTYPE_ID" value="<%=teachtype_id%>" />
 <input type="hidden" name="In_CLASS_ID" value="<%=class_id%>" />

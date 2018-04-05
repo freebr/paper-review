@@ -24,7 +24,7 @@ new_review_status=Upload.Form("new_review_status")
 new_reproduct_ratio=Upload.Form("reproduct_ratio")
 new_defence_result=Upload.Form("defenceresult")
 new_grant_degree=Upload.Form("grantdegree")
-opr=Upload.Form("opr")
+opr=Int(Upload.Form("opr"))
 submittype=Upload.Form("submittype")
 ispass=submittype="pass"
 eval_text=Upload.Form("eval_text")
@@ -72,7 +72,13 @@ If bError Then
 	Response.End
 End If
 
-Dim conn,rs,sql,result
+If Len(new_reproduct_ratio) Then
+	new_reproduct_ratio=Round(new_reproduct_ratio,4)
+Else
+	new_reproduct_ratio=Null
+End If
+
+Dim conn,rs,sql,sqlDetect,result
 Connect conn
 sql="SELECT * FROM TEST_THESIS_REVIEW_INFO WHERE ID="&thesisID
 GetRecordSet conn,rs,sql,result
@@ -254,37 +260,33 @@ If submittype=vbNullString Then
 	If Len(new_review_status) Then
 		rs("REVIEW_STATUS")=new_review_status
 	End If
+	
+	detect_thesis=rs("THESIS_FILE").Value
 	If detect_report.FileName<>vbNullString Then
 		Set fso=Server.CreateObject("Scripting.FileSystemObject")
 		reportDir=getDateTimeId(Now)
-		strUploadPath=Server.MapPath("upload/report/"&reportDir)
+		uploadPath=Server.MapPath("upload/report/"&reportDir)
 		' 检查上传目录是否存在
-		If Not fso.FolderExists(strUploadPath) Then fso.CreateFolder(strUploadPath)
+		If Not fso.FolderExists(uploadPath) Then fso.CreateFolder(uploadPath)
 		fileExt=LCase(detect_report.FileExt)
 		' 生成日期格式文件名
 		fileid=FormatDateTime(Now(),1)&Int(Timer)
-		strDestFile=fileid&"."&fileExt
-		strDestPath=strUploadPath&"\"&strDestFile
+		destFile=fileid&"."&fileExt
+		destPath=uploadPath&"\"&destFile
 		' 保存
-		detect_report.SaveAs strDestPath
-		rs("DETECT_REPORT")=reportDir&"/"&strDestFile
+		detect_report.SaveAs destPath
+		detect_report_path=reportDir&"/"&destFile
+		sqlDetect="EXEC spSetDetectResultReport "&thesisID&","&toSqlString(detect_thesis)&","&toSqlString(detect_report_path)&";"
 		Set fso=Nothing
 	End If
-	reproduct_ratio=rs("REPRODUCTION_RATIO")
-	If Not IsNull(reproduct_ratio) And new_reproduct_ratio=vbNullString And review_status>=rsAgreeDetect Then
-		rs("REVIEW_STATUS")=rsAgreeDetect
-	ElseIf new_reproduct_ratio<>vbNullString And new_review_status<=rsAgreeDetect Then
-		If reproduct_ratio<=10 Then	' 通过
-			rs("REVIEW_STATUS")=rsRedetectPassed
-		Else												' 不通过
-			rs("REVIEW_STATUS")=rsDetectUnpassed
-		End If
-	End If
-	If Len(new_reproduct_ratio)=0 Then
-		rs("REPRODUCTION_RATIO")=Null
+	
+	reproduct_ratio=rs("REPRODUCTION_RATIO").Value
+	If Not IsNull(reproduct_ratio) And IsNull(new_reproduct_ratio) Then
+		sqlDetect=sqlDetect&"EXEC spDeleteDetectResult "&thesisID&","&toSqlString(detect_thesis)&";"
 	Else
-		rs("REPRODUCTION_RATIO")=new_reproduct_ratio
+		sqlDetect=sqlDetect&"EXEC spSetDetectResultRatio "&thesisID&","&toSqlString(detect_thesis)&","&toSqlNumber(new_reproduct_ratio)&";"
 	End If
+	
 	If Len(new_period_id)=0 Then
 		rs("PERIOD_ID")=Null
 	Else
@@ -329,6 +331,9 @@ If submittype=vbNullString Then
 	End If
 End If
 rs.Update()
+If Len(sqlDetect) Then
+	conn.Execute sqlDetect
+End If
 CloseRs rs
 CloseConn conn
 If opr=7 Then

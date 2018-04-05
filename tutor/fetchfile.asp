@@ -9,6 +9,7 @@ arrFileListPath=Array("","/ThesisReview/student/upload","/ThesisReview/student/u
 arrFileListField=Array("","TABLE_FILE1","TBL_THESIS_FILE1","TABLE_FILE2","TBL_THESIS_FILE2","TABLE_FILE3","TBL_THESIS_FILE3","TABLE_FILE4","THESIS_FILE","THESIS_FILE2","THESIS_FILE3","THESIS_FILE4","DETECT_REPORT","REVIEW_APP","REVIEW_FILE1","REVIEW_FILE2")
 thesisID=Request.QueryString("tid")
 filetype=Request.QueryString("type")
+time_req=Request.QueryString("time")
 If Not IsNumeric(filetype) Then
 	bError=True
 	errdesc="参数无效。"
@@ -33,10 +34,8 @@ Dim sourcefile,fileExt,newfilename
 Dim fso,file,stream
 Set fso=Server.CreateObject("Scripting.FileSystemObject")
 
-If (filetype=8 Or filetype=12) And Not IsEmpty(timestamp) Then
-	Dim detect_time
-	detect_time=DateAdd("s",timestamp,#2000-1-1#)
-	sql="SELECT * FROM DETECT_RESULT_INFO WHERE THESIS_ID="&thesisID&" AND DETECT_TIME=CAST("&toSqlString(detect_time)&" AS datetime)"
+If (filetype=8 Or filetype=12) And Not IsEmpty(time_req) Then
+	sql="SELECT * FROM DETECT_RESULT_INFO WHERE THESIS_ID="&thesisID&" AND DETECT_TIME="&toSqlString(time_req)
 	GetRecordSet conn,rsDetect,sql,result
 	If filetype=8 Then
 		sourcefile=rsDetect("THESIS_FILE").Value

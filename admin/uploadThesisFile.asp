@@ -84,12 +84,12 @@ Case vbNullString	' 论文详情页面
 <tr><td>中期论文：&emsp;&emsp;&emsp;&emsp;&emsp;<input type="file" name="uploadfile4" size="100" /></td></tr>
 <tr><td>预答辩申请表：&emsp;&emsp;&emsp;<input type="file" name="uploadfile5" size="100" /></td></tr>
 <tr><td>预答辩论文：&emsp;&emsp;&emsp;&emsp;<input type="file" name="uploadfile6" size="100" /></td></tr>
-<tr><td>送检论文：&emsp;&emsp;&emsp;&emsp;&emsp;<input type="file" name="uploadfile7" size="100" /></td></tr>
-<tr><td>送检论文检测报告：&emsp;<input type="file" name="uploadfile8" size="100" /></td></tr>
+<tr><td>送检论文：&emsp;&emsp;&emsp;&emsp;&emsp;<input type="file" name="uploadfile8" size="100" /></td></tr>
+<tr><td>送检论文检测报告：&emsp;<input type="file" name="uploadfile12" size="100" /></td></tr>
 <tr><td>送审论文：&emsp;&emsp;&emsp;&emsp;&emsp;<input type="file" name="uploadfile9" size="100" /></td></tr>
 <tr><td>答辩论文：&emsp;&emsp;&emsp;&emsp;&emsp;<input type="file" name="uploadfile10" size="100" /></td></tr>
 <tr><td>定稿论文：&emsp;&emsp;&emsp;&emsp;&emsp;<input type="file" name="uploadfile11" size="100" /></td></tr>
-<tr><td>答辩审批材料：&emsp;&emsp;&emsp;<input type="file" name="uploadfile12" size="100" /></td></tr>
+<tr><td>答辩审批材料：&emsp;&emsp;&emsp;<input type="file" name="uploadfile7" size="100" /></td></tr>
 <tr><td>更改表格审核状态：&emsp;<select name="new_task_progress"><%
 GetMenuListPubTerm "CODE_THESIS_REVIEW_STATUS","STATUS_ID1","STATUS_NAME",task_progress,"AND STATUS_ID1 IS NOT NULL"
 %></select></td></tr>
@@ -145,7 +145,7 @@ Case 2	' 文件上传页面
 	pageSize=Upload.Form("pageSize2")
 	pageNo=Upload.Form("pageNo2")
 	
-	Dim conn,rs,sql,result
+	Dim conn,rs,sql,sqlDetect,result
 	Connect conn
 	sql="SELECT * FROM TEST_THESIS_REVIEW_INFO WHERE ID="&thesisID
 	GetRecordSet conn,rs,sql,result
@@ -166,18 +166,25 @@ Case 2	' 文件上传页面
 	Set fso=Server.CreateObject("Scripting.FileSystemObject")
 	For i=1 To UBound(arrFileListName)
 		Set upFile=Upload.File("uploadfile"&i)
-		If upFile.FileName<>vbNullString Then
+		If Len(upFile.FileName) Then
 			' 检查上传目录是否存在
-			strUploadPath=Server.MapPath(arrFileListPath(i))
-			If Not fso.FolderExists(strUploadPath) Then fso.CreateFolder(strUploadPath)
+			uploadPath=Server.MapPath(arrFileListPath(i))
+			If Not fso.FolderExists(uploadPath) Then fso.CreateFolder(uploadPath)
 			fileExt=LCase(upFile.FileExt)
 			' 生成日期格式文件名
 			fileid=FormatDateTime(Now(),1)&Int(Timer)
-			strDestFile=fileid&"."&fileExt
-			strDestPath=strUploadPath&"\"&strDestFile
+			destFile=fileid&"."&fileExt
+			destPath=uploadPath&"\"&destFile
 			' 保存
-			upFile.SaveAs strDestPath
-			rs(arrFileListField(i))=strDestFile
+			upFile.SaveAs destPath
+			If i=8 Then	' 送检论文
+				rs("THESIS_FILE").Value=destFile
+				sqlDetect=sqlDetect&"EXEC spAddDetectResult "&thesisID&","&toSqlString(destFile)&",NULL,NULL,NULL;"
+			ElseIf i=12 Then	' 送检论文检测报告
+				sqlDetect=sqlDetect&"EXEC spSetDetectResultReport "&thesisID&","&toSqlString(rs("THESIS_FILE").Value)&","&toSqlString(destFile)&";"
+			Else
+				rs(arrFileListField(i)).Value=destFile
+			End If
 			
 			msg=msg&arrFileListName(i)&"已上传成功并链接到论文的数据库记录。"&vbNewLine
 		End If
@@ -190,6 +197,9 @@ Case 2	' 文件上传页面
 		rs("REVIEW_STATUS")=new_review_status
 	End If
 	rs.Update()
+	If Len(sqlDetect) Then
+		conn.Execute sqlDetect
+	End If
 %><form id="ret" action="thesisDetail.asp?tid=<%=thesisID%>" method="post">
 <input type="hidden" name="In_PERIOD_ID2" value="<%=period_id%>">
 <input type="hidden" name="In_TEACHTYPE_ID2" value="<%=teachtype_id%>" />

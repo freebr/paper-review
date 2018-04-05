@@ -52,3 +52,6 @@ a:hover {
 }
 a.resc { background:url(../images/down.png) left center no-repeat;padding-left:20px;padding-right:5px; }
 a.fileitem { text-decoration:none; }
+ol ul {
+	padding-left: 10px;
+}

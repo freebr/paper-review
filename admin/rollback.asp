@@ -19,6 +19,7 @@ If Len(thesisID)=0 Or Not IsNumeric(thesisID) Or Len(usertype)=0 Or Not IsNumeri
 	Response.End
 End If
 
+Dim conn,rs,sql,sqlDetect,result
 Connect conn
 sql="SELECT * FROM TEST_THESIS_REVIEW_INFO WHERE ID="&thesisID
 GetRecordSet conn,rs,sql,result
@@ -181,10 +182,12 @@ Case 2	' 撤销导师审核操作
 	Case 2
 		rs("REVIEW_APP")=Null
 		rs("REVIEW_APP_EVAL")=Null
+		rs("SUBMIT_REVIEW_TIME")=Null
 		If detect_count>1 Then	' 检测次数超过一次，回退到二次检测通过状态
 			rs("REVIEW_STATUS")=rsRedetectPassed
-		Else	' 一次检测通过，回退到同意检测状态
-			rs("REVIEW_STATUS")=rsAgreeDetect
+		Else	' 一次检测通过，回退到待同意检测状态
+			rs("DETECT_APP_EVAL")=Null
+			rs("REVIEW_STATUS")=rsDetectThesisUploaded
 		End If
 	Case 3
 		rs("TUTOR_REVIEW_EVAL")=Null
@@ -196,10 +199,7 @@ Case 2	' 撤销导师审核操作
 Case 3	' 撤销教务员操作
 	Select Case opr
 	Case 0	' 撤销送检操作
-		sql="DELETE FROM DETECT_RESULT_INFO WHERE THESIS_ID="&thesisID
-		conn.Execute sql
-		rs("DETECT_REPORT")=Null
-		rs("REPRODUCTION_RATIO")=Null
+		sqlDetect="EXEC spDeleteDetectResult "&thesisID
 		rs("REVIEW_STATUS")=rsAgreeDetect
 	Case 1	' 撤销匹配专家操作
 		rs("REVIEW_STATUS")=rsAgreeReview
@@ -230,6 +230,9 @@ If rs("REVIEW_STATUS")<rsMatchExpert Then
 	rs("REVIEWER_EVAL_TIME")=Null
 End If
 rs.Update()
+If Len(sqlDetect) Then
+	conn.Execute sqlDetect
+End If
 CloseRs rs
 CloseConn conn
 %><form id="ret" action="thesisDetail.asp?tid=<%=thesisID%>" method="post">

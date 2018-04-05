@@ -4,7 +4,7 @@
 <!--#include file="../inc/setEditor.asp"-->
 <!--#include file="../inc/ckeditor/ckeditor.asp"-->
 <!--#include file="../inc/ckfinder/ckfinder.asp"-->
-<!--#include file="../inc/global.inc"-->
+<!--#include file="common.asp"-->
 <%Response.Expires=-1
 If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 curstep=Request.QueryString("step")

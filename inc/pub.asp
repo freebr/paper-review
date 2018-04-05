@@ -723,6 +723,13 @@ Function toSqlString(ByVal s)
 	End If
 	toSqlString=s
 End Function
+Function toSqlNumber(ByVal s)
+	If IsNull(s) Then
+		toSqlNumber="NULL"
+		Exit Function
+	End If
+	toSqlNumber=s
+End Function
 Function toPlainString(ByVal s)
 	If IsNull(s) Then Exit Function
 	s=Replace(s,"""","&quot;")

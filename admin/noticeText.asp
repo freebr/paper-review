@@ -38,6 +38,7 @@ If json="1" Then
 	Response.End
 Else
 	dictNotices.Add "review_eval_reference", "送审评语的基本内容参考"
+	dictNotices.Add "review_result_desc", "评阅结果说明"
 End If
 curstep=Request.QueryString("step")
 If Len(curstep)=0 Or Not IsNumeric(curstep) Then curstep="1"

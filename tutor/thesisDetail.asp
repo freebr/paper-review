@@ -205,22 +205,38 @@ Case vbNullString	' 论文详情页面
 <tr><td>送检论文：&emsp;&emsp;&emsp;<a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=8" target="_blank">点击下载</a></td></tr><%
 	End If
 	If review_status>=rsDetectUnpassed Then %>
-<tr><td>送检论文检测报告：<a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=12" target="_blank">点击下载</a></td></tr>
-<tr><td>论文检测记录：<ul><%
-		index=1
-		Do While Not rsDetect.EOF
-			thesis_file=rsDetect("THESIS_FILE").Value
-			detect_time=rsDetect("DETECT_TIME").Value
-			timestamp=DateDiff("s",#2000-1-1#,detect_time)
-			detect_result=rsDetect("RESULT").Value
-			detect_report=rsDetect("DETECT_REPORT").Value
-%><li><%=index%>.检测时间：<%=detect_time%>，查重结果：<%=detect_result%>%<br/>
-<a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=8&timestamp=<%=timestamp%>" target="_blank">送检论文</a>
-<a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=12&timestamp=<%=timestamp%>" target="_blank">检测报告</a></li><%
-			index=index+1
-			rsDetect.MoveNext()
-		Loop
-%></ul></td></tr><%
+<tr><td>送检论文检测报告：<%
+		If IsNull(rs("DETECT_REPORT")) Then %>
+未上传<%
+		Else %>
+<a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=12" target="_blank">点击下载</a><%
+		End If
+%></td></tr>
+<tr><td>论文检测记录（按检测先后顺序）：<%
+		If rsDetect.EOF Then
+%>无<%
+		Else
+%><ul><%
+			index=1
+			Do While Not rsDetect.EOF
+				thesis_file=rsDetect("THESIS_FILE").Value
+				detect_time=rsDetect("DETECT_TIME").Value
+				If IsNull(detect_time) Then detect_time="无"
+				detect_result=rsDetect("RESULT").Value
+				If IsNull(detect_result) Then detect_result="无" Else detect_result=detect_result&"%"
+				detect_report=rsDetect("DETECT_REPORT").Value
+%><li><%=index%>.检测时间：<%=detect_time%>，查重结果：<%=detect_result%><%
+				If Not IsNull(detect_report) Then %>
+<br/><a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=8&time=<%=detect_time%>" target="_blank">送检论文</a>
+<a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=12&time=<%=detect_time%>" target="_blank">检测报告</a><%
+				End If
+%></li><%
+				index=index+1
+				rsDetect.MoveNext()
+			Loop
+%></ul><%
+		End If
+%></td></tr><%
 	End If
 	If review_status>=rsDetectThesisUploaded And Len(thesis_file_review) Then %>
 <tr><td>送审论文：&emsp;&emsp;&emsp;<a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=9" target="_blank">点击下载</a></td></tr><%
@@ -336,13 +352,8 @@ Case vbNullString	' 论文详情页面
 <input type="hidden" name="pageNo2" value="<%=pageNo%>" /></form>
 <table class="tblform" width="800" cellspacing=1 cellpadding=3>
 <tr style="background-color: #cccccc"><td><p>评阅结果说明：</p>
-<p><ul><li>A&A=I,A&B=II,B&B=II,A&C=III,B&C=III,C&C=V,A&D=IV,B&D=IV,C&D=V,D&D=V；</li>
-<li>Ⅰ→处理意见：可以申请答辩；<br/>
-Ⅱ→处理意见：请根据所有评审专家意见修改论文并填写硕士学位论文分会复审意见表，交导师审核、签署意见，送至教务员处备案后可申请答辩；<br/>
-Ⅲ→处理意见：根据所有评审专家意见对论文进行重大修改后填写硕士学位论文分会复审意见表，并由学位评定分委员会指派三名专家对修改后的论文进行审阅，专家签字同意答辩后经学院学位分会审核，学校学位办通过后方可申请答辩；<br/>
-Ⅳ→请尽快至学院领取处理意见书，处理意见：根据所有评审专家意见，需加送两份论文由学院聘请两位外校专家评审，评审结果为“同意答辩”或“适当修改”后方可申请答辩；<br/>
-Ⅴ→请尽快至学院领取处理意见书，处理意见：根据所有评审专家意见对论文做重大修改，三个月后至一年内再重新申请学位论文答辩；<br/>
-Ⅵ→请耐心等待。</li></ul></p></td></tr></table></center>
+<%=getNoticeText(rs("TEACHTYPE_ID"),"review_result_desc")%>
+</td></tr></table></center>
 <form id="ret" name="ret" action="thesisList.asp" method="post">
 <input type="hidden" name="In_TEACHTYPE_ID" value="<%=teachtype_id%>" />
 <input type="hidden" name="In_SPECIALITY_ID" value="<%=spec_id%>" />

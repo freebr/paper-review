@@ -11,5 +11,8 @@ input[type="text"],select { text-align:left;font-size:12pt;background:none;borde
 select { width:415px;text-align:center }
 div.divupload { position:absolute;padding:10px;border:1px solid #cccccc;background-color:#ffface;
 								filter:alpha(opacity=80);-webkit-opacity:.8;-moz-opacity:.8;text-align:center }
-div.divclaim { position:absolute;display:none;background-color:#000000;color:#ffffff;padding:10px;left:0;top:0;width:90%;height:70%;filter:alpha(opacity=80);-moz-opacity:.8;-webkit-opacity:.8 }
-span.decl { color:#0000ff; font-weight:bold }
+div.divclaim { position:absolute;display:none;background-color:#000000;color:#ffffff;padding:10px;left:0;top:0;width:90%;height:550px;filter:alpha(opacity=80);-moz-opacity:.8;-webkit-opacity:.8 }
+div.divclaim h1 { color: cyan; font-size: 16px; font-weight: bold; }
+div.divclaim ol { font-size: 16px; }
+div.divclaim span.stress { color: red }
+p.decl { color:#0000ff; font-weight:bold; text-align: left; }

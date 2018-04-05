@@ -202,24 +202,28 @@ PDF&nbsp;格式，文件命名为：作者姓名_学号_论文题目.pdf<%
 	End If
 %><span class="tip">提示：超过20M请先压缩成rar文件再上传，否则上传不成功</span><%
 	If opr=STUCLI_OPR_DETECT_REVIEW Or opr=STUCLI_OPR_REVIEW Then %>
-<p><span class="decl">作者声明：本人确认提交的送审论文已按照华南理工大学研究生学位论文撰写规范要求排版，并已删除本人与导师的所有信息，如有问题，责任自负。</span></p><%
+<p class="decl">作者承诺：<br/>
+1．该学位论文为公开学位论文，其中不涉及国家秘密项目和其它不宜公开的内容，否则将由本人承担因学位论文涉密造成的损失和相关的法律责任；<br/>
+2．该学位论文是本人在导师的指导下独立进行研究所取得的研究成果，不存在学术不端行为。</p><%
 	End If %>
 <p><input type="submit" name="btnsubmit" value="提 交"<%If Not bUpload Then %> disabled<% End If %> /></p></td></tr>
 <tr><td>
-<div id="divdown"><%
-	If opr=STUCLI_OPR_DETECT_REVIEW Then
-%><p><a href="template/fzbsmb.doc" target="_blank"><img src="../images/down.png" />下载硕士学位论文文字复制比情况说明表</a></p><%
-	End If
-%><p><a href="template/sssqb.doc" target="_blank"><img src="../images/down.png" />下载硕士学位论文分会复审意见表</a></p>
+<div id="divdown" style="display: none">
+<p><a href="template/fzbsmb.doc" target="_blank"><img src="../images/down.png" />下载硕士学位论文文字复制比情况说明表</a></p>
+<p><a href="template/sssqb.doc" target="_blank"><img src="../images/down.png" />下载硕士学位论文分会复审意见表</a></p>
 </div></td></tr></table></form></td></tr></table></center>
 <div id="divclaim" class="divclaim"><%
 	Select Case opr
 	Case STUCLI_OPR_DETECT_REVIEW
-%><p>送检论文提交要求：</p><p>1.电子版应为只含正文（“绪论”～“结论”部分）的Word版，须去除封面、原创性声明和使用授权书、中英文摘要、图表清单及主要符号表、目录、参考文献、附录、攻读学位期间取得的研究成果、致谢、答辩决议书、定密审批表等，电子论文命名方式为：作者姓名_学号_论文题目.doc（如“张三_201120207169_管理信息系统规划与建设研究.doc”）。电子版的格式和内容须与送审的学位论文纸质版相同。拟检测论文电子版不符合上述要求的不予检测；</p>
-<p>2.拟检测论文上传成功后由导师审批，同意检测的论文由教育中心统一送图书馆检测；</p>
-<p>3.为了保证学位论文检测的公正性和严肃性，图书馆对学位论文学术不端行为检测系统检测的结果不做任何处理，提供的《文本复制检测报告单》加盖图书馆学位论文检测章；</p>
-<p>4.每篇学位论文图书馆只能检测一次，复制比要低于10%。</p>
-<p>送审论文提交要求：</p><p>提交PDF版本，请按照研究生院论文撰写要求排版，只需删除个人及导师信息。</p><%
+%><p>检测论文与送审论文要求是同一篇论文，按不同格式要求提交。</p>
+<h1>送检论文提交要求：</h1><p>电子版应为只含正文（“绪论”～“结论”部分）的Word版，须去除封面、原创性声明和使用授权书、中英文摘要、图表清单及主要符号表、目录、参考文献、附录、攻读学位期间取得的研究成果、致谢、答辩决议书、定密审批表等，电子论文命名方式为：作者姓名_学号_论文题目.doc（如“张三_201120207169_管理信息系统规划与建设研究.doc”）。</p>
+<h1>送审论文提交要求：</h1><p>PDF版本，文件命名为“盲评论文”，按照华南理工大学研究生学位论文撰写规范要求排版，学位论文中涉及个人学号、姓名及导师姓名的部分全部留空，致谢部分不出现任何人的姓名。</p>
+<p>检测论文与送审论文由导师审核通过，由MBA/MPAcc/ME教育中心统一报图书馆进行检测。</p>
+<h1>检测结果处理：</h1>
+<ol><li>复制比低于10%的学员，系统会自动匹配进行论文盲审。</li>
+<li>复制比高于10%的学员，导师应对学位论文的学术规范性进行严格把关，学员在导师的督促下对论文中存在的学术不规范部分进行修改。修改后的论文，如导师同意再次进行送审，学员需登录系统再次提交检测和送审论文，<span class="stress">由中心统一进行二次查重，二次查重所产生的费用由学员本人缴纳。</span></li>
+<li>导师若发现学位论文存在学术不端行为的情况将上报学院，学院根据《华南理工大学研究生学术道德规范及学术不端行为处理办法》提出初步处理意见并上报学位办，由学校作出处理。</li></ol>
+<h1>评审结果处理：</h1><p>评审结果分为同意答辩、适当修改后可答辩、须做重大修改后方可答辩、不同意答辩四种情况。具体的参照《论文撰写规范及流程》执行</p><%
 	Case STUCLI_OPR_REVIEW
 %><p>送审论文提交要求：</p><p>提交PDF版本，请按照研究生院论文撰写要求排版，只需删除个人及导师信息。</p><%
 	Case STUCLI_OPR_FINAL
@@ -382,9 +386,6 @@ Case 1	' 上传进程
 			rs3("REVIEW_STATUS")=rsDetectThesisUploaded
 			rs3("DETECT_APP_EVAL")=Null
 			rs3("REVIEW_APP_EVAL")=Null
-			
-			sql="EXEC spAddDetectResult "&rs3("ID").Value&","&toSqlString(destFile)
-			conn.Execute(sql)
 		Case STUCLI_OPR_REVIEW ' 送审论文
 			rs3("THESIS_FILE2")=destFile
 			rs3("KEYWORDS")=new_keywords_ch
