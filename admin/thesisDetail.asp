@@ -49,7 +49,7 @@ review_status=rs("REVIEW_STATUS")
 stat_text1=rs("STAT_TEXT1")
 stat_text2=rs("STAT_TEXT2")
 reviewfilestat=rs("REVIEW_FILE_STATUS")
-reproduct_ratio=toNumber(rs("REPRODUCTION_RATIO"))
+reproduct_ratio=rs("REPRODUCTION_RATIO")
 defence_result=rs("DEFENCE_RESULT")
 grant_degree=rs("GRANT_DEGREE")
 opr=0
@@ -396,7 +396,7 @@ GetMenuListPubTerm "CODE_THESIS_REVIEW_STATUS","STATUS_ID2","STATUS_NAME",review
 		}
 	}
 <%
-	If review_status=rsAgreeDetect Then
+	If review_status=rsAgreeDetect Or review_status=rsDetectUnpassed Or review_status=rsRedetectPassed Or review_status=rsAgreeReview Then
 		Dim new_review_status_passed
 		If detect_count>1 Then
 			new_review_status_passed=rsRedetectPassed
@@ -408,6 +408,10 @@ GetMenuListPubTerm "CODE_THESIS_REVIEW_STATUS","STATUS_ID2","STATUS_NAME",review
 	var new_review_status=document.getElementsByName("new_review_status")[0];
 	reproduct_ratio.onchange=function() {
 		if(isNaN(this.value)) return;
+		if(!this.value.trim().length) {
+			new_review_status.value=<%=rsAgreeDetect%>;
+			return;
+		}
 		var value=parseFloat(this.value);
 		if(value<=10) {
 			new_review_status.value=<%=new_review_status_passed%>;

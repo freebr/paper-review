@@ -283,7 +283,7 @@ If submittype=vbNullString Then
 	reproduct_ratio=rs("REPRODUCTION_RATIO").Value
 	If Not IsNull(reproduct_ratio) And IsNull(new_reproduct_ratio) Then
 		sqlDetect=sqlDetect&"EXEC spDeleteDetectResult "&thesisID&","&toSqlString(detect_thesis)&";"
-	Else
+	ElseIf Not IsNull(new_reproduct_ratio) Then
 		sqlDetect=sqlDetect&"EXEC spSetDetectResultRatio "&thesisID&","&toSqlString(detect_thesis)&","&toSqlNumber(new_reproduct_ratio)&";"
 	End If
 	
