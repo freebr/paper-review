@@ -1,4 +1,4 @@
-﻿<%'Response.Charset="utf-8"
+﻿<%Response.Charset="utf-8"
 Server.ScriptTimeout=9000
 %><!--#include file="../inc/ExtendedRequest.inc"-->
 <!--#include file="../inc/db.asp"-->
@@ -146,7 +146,7 @@ Case vbNullstring ' 填写信息页面
 %><option value="<%=option_name%>"<% If researchway_name=option_name Then %> selected<% End If %>><%=option_name%></option><%
 			End If
 		Next
-%></select><%
+%></select><br/><span class="tip">请务必认真选择，系统根据研究方向匹配专家</span><%
 	Else
 %><input type="text" name="researchway_name" size="50" value="<%=researchway_name%>" /><%
 	End If

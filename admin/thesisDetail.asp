@@ -396,7 +396,7 @@ GetMenuListPubTerm "CODE_THESIS_REVIEW_STATUS","STATUS_ID2","STATUS_NAME",review
 		}
 	}
 <%
-	If review_status=rsAgreeDetect Or review_status=rsDetectUnpassed Or review_status=rsRedetectUnpassed Or review_status=rsRedetectPassed Or review_status=rsAgreeReview Then
+	If review_status=rsAgreeDetect Or review_status=rsDetectUnpassed Or review_status=rsRedetectUnpassed Or review_status=rsRedetectPassed Or review_status=rsNotAgreeReview Or review_status=rsAgreeReview Then
 		Dim new_review_status_passed
 		Dim new_review_status_unpassed
 		If detect_count>1 Then
