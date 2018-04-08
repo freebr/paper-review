@@ -190,7 +190,11 @@ Case 3	' 数据读取，导入到数据库
 							End If
 						End If
 					Else												' 不通过
-						new_status=rsDetectUnpassed
+						If detect_count>1 Then	' 二次检测
+							new_status=rsRedetectUnpassed
+						Else
+							new_status=rsDetectUnpassed
+						End If
 					End If
 					sql2=sql2&"UPDATE TEST_THESIS_REVIEW_INFO SET REPRODUCTION_RATIO="&reproduct_ratio&",DETECT_REPORT="&toSqlString(reportFilePath)&",REVIEW_STATUS="&new_status&" WHERE STU_ID="&stu_id&";"
 					sql2=sql2&"EXEC spAddDetectResult "&thesis_id&","&toSqlString(thesis_file)&","&toSqlString(Now)&","&toSqlString(reportFilePath)&","&reproduct_ratio&";"

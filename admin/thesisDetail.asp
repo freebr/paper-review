@@ -211,17 +211,17 @@ Case vbNullString	' 论文详情页面
 		If IsNull(rs("DETECT_REPORT")) Then %>
 未上传<%
 		Else %>
-<a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=12" target="_blank">点击下载</a>&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,3,0)">撤销</a><%
+<a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=12" target="_blank">点击下载</a><%
 		End If
 %>&emsp;<input type="file" name="detectreport" size="30" /></td></tr>
 <tr><td>论文检测记录（按检测先后顺序）：<%
 		If rsDetect.EOF Then
 %>无<%
 		Else
-%><ul><%
+%>&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,3,0)">撤销</a>
+<ul><%
 			index=1
 			Do While Not rsDetect.EOF
-				thesis_file=rsDetect("THESIS_FILE").Value
 				detect_time=rsDetect("DETECT_TIME").Value
 				If IsNull(detect_time) Then detect_time="无"
 				detect_result=rsDetect("RESULT").Value
@@ -363,7 +363,7 @@ GetMenuListPubTerm "CODE_THESIS_REVIEW_STATUS","STATUS_ID2","STATUS_NAME",review
 <input type="hidden" name="pageSize2" value="<%=pageSize%>" />
 <input type="hidden" name="pageNo2" value="<%=pageNo%>" /></form>
 <table class="tblform" width="800" cellspacing=1 cellpadding=3>
-<tr style="background-color: #cccccc"><td><p>评阅结果说明：</p>
+<tr style="background-color: #cccccc"><td><p>论文检测结果及论文评审结果说明：</p>
 <%=getNoticeText(rs("TEACHTYPE_ID"),"review_result_desc")%>
 </td></tr></table></center>
 <form id="ret" name="ret" action="thesisList.asp" method="post">
@@ -396,12 +396,15 @@ GetMenuListPubTerm "CODE_THESIS_REVIEW_STATUS","STATUS_ID2","STATUS_NAME",review
 		}
 	}
 <%
-	If review_status=rsAgreeDetect Or review_status=rsDetectUnpassed Or review_status=rsRedetectPassed Or review_status=rsAgreeReview Then
+	If review_status=rsAgreeDetect Or review_status=rsDetectUnpassed Or review_status=rsRedetectUnpassed Or review_status=rsRedetectPassed Or review_status=rsAgreeReview Then
 		Dim new_review_status_passed
+		Dim new_review_status_unpassed
 		If detect_count>1 Then
 			new_review_status_passed=rsRedetectPassed
+			new_review_status_unpassed=rsRedetectUnpassed
 		Else
 			new_review_status_passed=rsAgreeReview
+			new_review_status_unpassed=rsDetectUnpassed
 		End If
 %>
 	var reproduct_ratio=document.getElementsByName("reproduct_ratio")[0];
@@ -416,7 +419,7 @@ GetMenuListPubTerm "CODE_THESIS_REVIEW_STATUS","STATUS_ID2","STATUS_NAME",review
 		if(value<=10) {
 			new_review_status.value=<%=new_review_status_passed%>;
 		} else {
-			new_review_status.value=<%=rsDetectUnpassed%>;
+			new_review_status.value=<%=new_review_status_unpassed%>;
 		}
 	}<%
 	End If

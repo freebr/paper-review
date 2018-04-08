@@ -154,10 +154,18 @@ Case 5	'  同意/不同意送检操作
 	End If
 	' 更新记录
 	If ispass Then
-		rs("DETECT_APP_EVAL")="论文已检查，同意检测。"
+		sql="SELECT * FROM DETECT_RESULT_INFO WHERE THESIS_ID="&thesisID
+		GetRecordSet conn,rsDetect,sql,result
+		detect_count=result
+		If detect_count>1 Then
+			rs("DETECT_APP_EVAL")="该生已对论文进行修改，并已经导师检查，同意二次检测。"
+		Else
+			rs("DETECT_APP_EVAL")="论文已检查，同意检测。"
+		End If
 		rs("REVIEW_APP_EVAL")=eval_text
 		rs("SUBMIT_REVIEW_TIME")=Now
 		rs("REVIEW_STATUS")=rsAgreeDetect
+		CloseRs rsDetect
 	Else
 		rs("DETECT_APP_EVAL")=eval_text
 		rs("REVIEW_APP_EVAL")=Null

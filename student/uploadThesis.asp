@@ -71,6 +71,12 @@ If opr<>0 Then
 	startdate=stuclient.getOpentime(opr,STUCLI_OPENTIME_START)
 	enddate=stuclient.getOpentime(opr,STUCLI_OPENTIME_END)
 	If Not bOpen Then bUpload=False
+	uploadTypename=arrStuOprName(opr)
+	If opr=STUCLI_OPR_DETECT_REVIEW Then
+		n=Sgn(rs("DETECT_COUNT").Value)
+		subtype=Array("一次","二次")(n)
+		uploadTypename=subtype&uploadTypename
+	End If
 End If
 
 If bRedirectToTableUpload Then
@@ -103,7 +109,7 @@ Case vbNullstring ' 填写信息页面
 %><span class="tip">当前论文状态为【<%=rs("STAT_TEXT").Value%>】，不能上传论文！</span><%
 		End If
 	Else
-%>当前上传的是：<span style="color:#ff0000;font-weight:bold"><%=arrStuOprName(opr)%></span><%
+%>当前上传的是：<span style="color:#ff0000;font-weight:bold"><%=uploadTypename%></span><%
 		If opr=STUCLI_OPR_DETECT_REVIEW Or opr=STUCLI_OPR_REVIEW Or opr=STUCLI_OPR_FINAL Then
 %>&emsp;<a id="linkclaim" href="#"><img src="../images/bulb_yellow.png">查看论文提交要求</a><%
 		End If

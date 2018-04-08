@@ -9,9 +9,9 @@ Dim review_result(2)
 Dim defence_member,defence_members,defence_memo
 Dim defence_result,grant_degree
 
-arrFileListName=Array("","开题报告表","开题论文","中期检查表","中期论文","预答辩申请表","预答辩论文","答辩及授予学位审批材料","送检论文","送审论文","答辩论文","定稿论文","送检论文检测报告","论文评阅书 1","论文评阅书 2")
-arrFileListPath=Array("","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/admin/upload/report","/ThesisReview/expert/export","/ThesisReview/expert/export")
-arrFileListField=Array("","TABLE_FILE1","TBL_THESIS_FILE1","TABLE_FILE2","TBL_THESIS_FILE2","TABLE_FILE3","TBL_THESIS_FILE3","TABLE_FILE4","THESIS_FILE","THESIS_FILE2","THESIS_FILE3","THESIS_FILE4","DETECT_REPORT","REVIEW_FILE1","REVIEW_FILE2")
+arrFileListName=Array("","开题报告表","开题论文","中期检查表","中期论文","预答辩申请表","预答辩论文","答辩及授予学位审批材料","一次送检论文","二次送检论文","送审论文","答辩论文","定稿论文","一次送检论文检测报告","二次送检论文检测报告","论文评阅书 1","论文评阅书 2")
+arrFileListPath=Array("","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/admin/upload/report","/ThesisReview/admin/upload/report","/ThesisReview/expert/export","/ThesisReview/expert/export")
+arrFileListField=Array("","TABLE_FILE1","TBL_THESIS_FILE1","TABLE_FILE2","TBL_THESIS_FILE2","TABLE_FILE3","TBL_THESIS_FILE3","TABLE_FILE4","DETECT_THESIS1","DETECT_THESIS2","THESIS_FILE2","THESIS_FILE3","THESIS_FILE4","DETECT_REPORT1","DETECT_REPORT2","REVIEW_FILE1","REVIEW_FILE2")
 sem_info=getCurrentSemester()
 task_progress=0
 stu_type=Session("StuType")
@@ -61,9 +61,9 @@ Else
 	End If
 End If
 Function showStepInfo(stepDisplay,stepCounter,bHidden)
-	If stepDisplay=rsRedetectPassed And detect_count>1 And (review_status=rsNotAgreeReview Or review_status=rsAgreeReview) Then
+	If stepDisplay=rsRedetectPassed And detect_count>1 And (review_status=rsAgreeReview Or review_status=rsNotAgreeReview) Then
 		showStepInfo=True
-	ElseIf review_status<>stepDisplay And (stepDisplay=rsNotAgreeDetect Or stepDisplay=rsDetectUnpassed Or stepDisplay=rsRedetectPassed Or stepDisplay=rsNotAgreeReview Or stepDisplay=rsModifyUnpassed) Then
+	ElseIf review_status<>stepDisplay And (stepDisplay=rsNotAgreeDetect Or stepDisplay=rsDetectUnpassed Or stepDisplay=rsRedetectUnpassed Or stepDisplay=rsRedetectPassed Or stepDisplay=rsNotAgreeReview Or stepDisplay=rsModifyUnpassed) Then
 		showStepInfo=False
 		Exit Function
 	Else
@@ -86,13 +86,16 @@ Function showStepInfo(stepDisplay,stepCounter,bHidden)
 %><span style="color:dimgray">导师不同意您的论文进行检测，请修改论文后重新上传。<br/>送检意见：<%=toPlainString(rs("DETECT_APP_EVAL"))%></span><%
 	Case rsAgreeDetect
 %><span style="color:dimgray">导师已同意您的论文进行检测。</span><%
-	Case rsDetectUnpassed,rsRedetectPassed
+	Case rsDetectUnpassed,rsRedetectUnpassed,rsRedetectPassed
 %><span style="color:dimgray"><%
-		If stepDisplay=rsDetectUnpassed Then
+		Select Case stepDisplay
+		Case rsDetectUnpassed
 %>经过检测，您的送检论文文字复制比为&nbsp;<%=reproduct_ratio%>%，不符合学院送检论文重复率低于10%的要求，请对论文修改后重新上传进行二次检测。<%
-		Else
+		Case rsRedetectUnpassed
+%>经过二次检测，您的送检论文文字复制比为&nbsp;<%=reproduct_ratio%>%，不符合学院送检论文重复率低于10%的要求。<%
+		Case Else
 %>您的论文已通过二次查重检测，请等待导师同意送审。<br/>检测结果摘要：经图书馆检测，学位论文文字复制比为&nbsp;<%=reproduct_ratio%>%。<%
-		End If
+		End Select
 %><br/><a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=12" target="_blank">点此下载检测报告</a></span><%
 	Case rsNotAgreeReview
 %><span style="color:dimgray">导师不同意您的论文送审，请对照导师意见修改送审论文后重新上传。<br/>送审意见：<%=toPlainString(rs("REVIEW_APP_EVAL"))%></span><%
@@ -190,7 +193,7 @@ End Function
 	div#defenceplan table thead tr { background-color:#3399dd;color:white }
 	div#defenceplan table td { padding:5px }
 	ul.filelist { padding:0 }
-	ul.filelist li { display:inline;padding:5px 0px;list-style:none;text-align:center }
+	ul.filelist li { display:inline-block;width:70px;padding:5px 0px;list-style:none;text-align:center;vertical-align:top }
 	span.filedesc { color:#666666 }
 	a.fileitem { display:inline-block;padding:3px;text-align:center }
 	a.fileitem:visited { background-color:none }
@@ -294,7 +297,7 @@ End Function
 		For i=1 To UBound(arrFileListName)
 			filename=rs(arrFileListField(i))
 			If Not IsNull(filename) Then
-				If i=13 Or i=14 Then
+				If i=15 Or i=16 Then
 					' 根据评阅书显示设置决定是否显示文件
 					If Not bReviewFileVisible Then filename=""
 				End If
@@ -303,8 +306,7 @@ End Function
 				If fso.FileExists(fullfilepath) Then
 					Set file=fso.GetFile(fullfilepath)
 					fileExt=fso.GetExtensionName(filename) %>
-<li><a class="fileitem" href="fetchfile.asp?tid=<%=thesisID%>&type=<%=i%>" target="_blank" title="点击下载此文件"><img src="../images/student/<%=fileExt%>.png" title="<%=UCase(fileExt)%>格式" /><div><%=arrFileListName(i)%>
-<br/><span class="filedesc"><%=toDataSizeString(file.Size)%><br/><%=FormatDateTime(file.DateCreated,2)&" "&FormatDateTime(file.DateCreated,4)%></span></div></a></li><%
+<li><a class="fileitem" href="fetchfile.asp?tid=<%=thesisID%>&type=<%=i%>" target="_blank" title="大小：<%=toDataSizeString(file.Size)%>&#10;创建时间：<%=FormatDateTime(file.DateCreated,2)&" "&FormatDateTime(file.DateCreated,4)%>&#10;点击下载此文件"><img src="../images/student/<%=fileExt%>.png" title="<%=UCase(fileExt)%>格式" /><div><%=arrFileListName(i)%></div></a></li><%
 					Set file=Nothing
 				End If
 			End If
