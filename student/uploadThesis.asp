@@ -69,7 +69,7 @@ Else
 End If
 If opr<>0 Then
 	bOpen=stuclient.isOpenFor(stu_type,opr)
-	startdate=gstuclient.getOpentime(opr,STUCLI_OPENTIME_START)
+	startdate=stuclient.getOpentime(opr,STUCLI_OPENTIME_START)
 	enddate=stuclient.getOpentime(opr,STUCLI_OPENTIME_END)
 	If Not bOpen Then bUpload=False
 	uploadTypename=arrStuOprName(opr)
