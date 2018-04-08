@@ -5,13 +5,14 @@ Server.ScriptTimeout=9000
 <!--#include file="../inc/mail.asp"-->
 <!--#include file="common.asp"-->
 <%If IsEmpty(Session("StuId")) Then Response.Redirect("../error.asp?timeout")
-Dim opr,bOpen,bUpload,bRedirectToTableUpload,numUpload
+Dim opr,bOpen,bUpload,bRedirectToTableUpload,bTableReady
 Dim researchway_list
 Dim conn,rs,sql,result
 
 bOpen=True
 bUpload=True
 bRedirectToTableUpload=False
+bTableReady=True
 opr=0
 sem_info=getCurrentSemester()
 stu_type=Session("StuType")
@@ -24,13 +25,13 @@ sql="SELECT * FROM VIEW_STUDENT_INFO WHERE STU_ID="&Session("StuId")
 GetRecordSetNoLock conn,rs2,sql,result
 tutor_duty_name=getProDutyNameOf(rs2("TUTOR_ID"))
 If rs.EOF Then
-	numUpload=-2
+	bTableReady=False
 	opr=STUCLI_OPR_DETECT_REVIEW
 	review_status=rsNone
 	bUpload=False
 	bRedirectToTableUpload=True
 ElseIf rs("TASK_PROGRESS").Value<tpTbl3Passed Then
-	numUpload=-2
+	bTableReady=False
 	opr=STUCLI_OPR_DETECT_REVIEW
 	review_status=rsNone
 	bUpload=False
@@ -68,7 +69,7 @@ Else
 End If
 If opr<>0 Then
 	bOpen=stuclient.isOpenFor(stu_type,opr)
-	startdate=stuclient.getOpentime(opr,STUCLI_OPENTIME_START)
+	startdate=gstuclient.getOpentime(opr,STUCLI_OPENTIME_START)
 	enddate=stuclient.getOpentime(opr,STUCLI_OPENTIME_END)
 	If Not bOpen Then bUpload=False
 	uploadTypename=arrStuOprName(opr)
@@ -103,7 +104,7 @@ Case vbNullstring ' 填写信息页面
 	If Not bOpen Then
 %><span class="tip">上传<%=arrStuOprName(opr)%>的时间为<%=toDateTime(startdate,1)%>至<%=toDateTime(enddate,1)%>，本专业上传通道已关闭或当前不在开放时间内，不能上传论文！</span><%
 	ElseIf Not bUpload Then
-		If numUpload=-2 Then
+		If Not bTableReady Then
 %><span class="tip">表格审核进度未完成，不能上传论文！</span><%
 		Else
 %><span class="tip">当前论文状态为【<%=rs("STAT_TEXT").Value%>】，不能上传论文！</span><%
@@ -277,7 +278,7 @@ Case 1	' 上传进程
 		errdesc="上传"&arrStuOprName(opr)&"的时间为"&FormatDateTime(startdate,1)&"至"&FormatDateTime(enddate,1)&"，本专业上传通道已关闭或当前不在开放时间内，不能上传论文！"
 	ElseIf Not bUpload Then
 		bError=True
-		If numUpload=-2 Then
+		If Not bTableReady Then
 			errdesc="表格审核进度未完成，不能上传论文！"
 		Else
 			errdesc="当前状态为【"&rs("STAT_TEXT").Value&"】，不能上传论文！"
@@ -295,6 +296,7 @@ Case 1	' 上传进程
 	Dim new_subject_ch,new_subject_en
 	Dim new_keywords_ch,new_keywords_en
 	Dim new_researchway_name,new_review_type
+	Dim sqlDetect
 	
 	Set Upload=New ExtendedRequest
 	new_subject_ch=Trim(Upload.Form("subject_ch"))
@@ -384,14 +386,21 @@ Case 1	' 上传进程
 			destFile2=fileid&"1."&fileExt2
 			destPath2=uploadPath&"\"&destFile2
 			file2.SaveAs destPath2
+			
+			If review_status=rsDetectThesisUploaded Then
+				sqlDetect="EXEC spDeleteDetectResult "&rs("ID").Value&","&toSqlString(rs3("THESIS_FILE").Value)&";"
+			End If
+			sqlDetect=sqlDetect&"EXEC spAddDetectResult "&rs("ID").Value&","&toSqlString(destFile)&",NULL,NULL,NULL;"
 			rs3("THESIS_FILE")=destFile
 			rs3("THESIS_FILE2")=destFile2
 			rs3("KEYWORDS")=new_keywords_ch
 			rs3("KEYWORDS_EN")=new_keywords_en
 			rs3("REVIEW_TYPE")=new_review_type
 			rs3("REVIEW_STATUS")=rsDetectThesisUploaded
-			rs3("DETECT_APP_EVAL")=Null
-			rs3("REVIEW_APP_EVAL")=Null
+			If rs("DETECT_COUNT").Value=0 Then
+				rs3("DETECT_APP_EVAL")=Null
+				rs3("REVIEW_APP_EVAL")=Null
+			End If
 		Case STUCLI_OPR_REVIEW ' 送审论文
 			rs3("THESIS_FILE2")=destFile
 			rs3("KEYWORDS")=new_keywords_ch
@@ -409,6 +418,9 @@ Case 1	' 上传进程
 		rs3.Update()
 		CloseRs rs3
 		
+		If Len(sqlDetect) Then
+			conn.Execute sqlDetect
+		End If
 		' If opr<>STUCLI_OPR_FINAL Then
 			' 向导师发送审核通知邮件
 			' sendEmailToTutor arrStuOprName(opr)
