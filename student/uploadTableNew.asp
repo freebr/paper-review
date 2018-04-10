@@ -169,20 +169,25 @@ Case vbNullstring ' 填写信息页面
 	End If %></td></tr></table></form></td></tr></table></center>
 <script type="text/javascript">
 <%
-	If opr=STUCLI_OPR_TABLE1 And (stu_type=5 Or stu_type=6) Then %>
-		initResearchFieldSelectBox($('#research_field_select'),<%=stu_type%>);
-		$('#school_tutor_research_field_select').change(function(){
-			$('input[name="school_tutor_research_field"]').val(this.options[this.selectedIndex].innerText);
-		});
-		$('#research_field_select').change(function(){
-			initSubResearchFieldSelectBox($('#school_tutor_research_field_select'),$(this),this.selectedIndex);
-			$('#school_tutor_research_field_select').change();
-			$('input[name="research_field"]').val(this.options[this.selectedIndex].innerText);
-		});<%
-	End If %>
-	$('form').submit(function() {
+If opr=STUCLI_OPR_TABLE1 And (stu_type=5 Or stu_type=6) Then %>
+	initResearchFieldSelectBox($('#research_field_select'),<%=stu_type%>);
+	$('#school_tutor_research_field_select').change(function(){
+		$('input[name="school_tutor_research_field"]').val(this.options[this.selectedIndex].innerText);
+	});
+	$('#research_field_select').change(function(){
+		initSubResearchFieldSelectBox($('#school_tutor_research_field_select'),$(this),this.selectedIndex);
+		$('#school_tutor_research_field_select').change();
+		$('input[name="research_field"]').val(this.options[this.selectedIndex].innerText);
+	});<%
+End If %>
+	$('form').submit(function() {<%
+If opr=STUCLI_OPR_TABLE1 Then %>
+			if(!checkKeywords()) return false;
+<%
+End If
+%>
 			return submitUploadForm(this);
-		}).find(':submit').attr('disabled',<%=LCase(Not bUpload)%>);
+	}).find(':submit').attr('disabled',<%=LCase(Not bUpload)%>);
 	$(':button#btnuploadtblthesis').click(
 		function() {
 			window.location.href='uploadTableThesis.asp';

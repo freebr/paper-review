@@ -243,10 +243,10 @@ PDF&nbsp;格式，文件命名为：作者姓名_学号_论文题目.pdf<%
 <script type="text/javascript">
 	$().ready(function() {
 		$(':file').change(function() {
-			if(this.value.length)<%=callbackValidate%>(this,$(this).index());
+			if(this.value.length)<%=callbackValidate%>($(this),$(':file').index(this));
 		});
 		$('form').submit(function() {
-			var valid=<%=callbackValidate%>($(':file'))&&checkKeywords();
+			var valid=<%=callbackValidate%>($(':file'));
 			if(valid) submitUploadForm(this); else return false;
 		});
 		$('#btnclaimok').click(function() {
