@@ -311,10 +311,10 @@ Case 1	' 上传进程
 	ElseIf Len(new_subject_en)=0 Then
 		bError=True
 		errdesc="请填写论文题目（英文）！"
-	ElseIf opr=STUCLI_OPR_REVIEW And Len(new_keywords_ch)=0 Then
+	ElseIf (opr=STUCLI_OPR_DETECT_REVIEW Or opr=STUCLI_OPR_REVIEW) And Len(new_keywords_ch)=0 Then
 		bError=True
 		errdesc="请填写论文关键词！"
-	ElseIf opr=STUCLI_OPR_REVIEW And Len(new_keywords_en)=0 Then
+	ElseIf (opr=STUCLI_OPR_DETECT_REVIEW Or opr=STUCLI_OPR_REVIEW) And Len(new_keywords_en)=0 Then
 		bError=True
 		errdesc="请填写论文关键词（英文）！"
 	ElseIf Len(new_researchway_name)=0 Or new_researchway_name="0" Then
