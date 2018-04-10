@@ -169,7 +169,7 @@ Case vbNullstring ' 填写信息页面
 	End If %></td></tr></table></form></td></tr></table></center>
 <script type="text/javascript">
 <%
-If opr=STUCLI_OPR_TABLE1 And (stu_type=5 Or stu_type=6) Then %>
+If opr=STUCLI_OPR_TABLE1 Then %>
 	initResearchFieldSelectBox($('#research_field_select'),<%=stu_type%>);
 	$('#school_tutor_research_field_select').change(function(){
 		$('input[name="school_tutor_research_field"]').val(this.options[this.selectedIndex].innerText);
@@ -429,6 +429,10 @@ Case 1	' 上传进程
 	tg.generateTable strDestTablePath,template_name
 	Set tg=Nothing
 	
+	Dim bInitThesisInfo
+	' 开题报告（EMBA为预答辩申请表），录入论文基本信息
+	bInitThesisInfo=opr=STUCLI_OPR_TABLE1 Or stu_type=7 And opr=STUCLI_OPR_TABLE3
+	
 	Dim arrTableFieldName,arrNewTaskProgress
 	arrTableFieldName=Array("","TABLE_FILE1","TABLE_FILE2","TABLE_FILE3","TABLE_FILE4")
 	arrNewTaskProgress=Array(0,tpTbl1Uploaded,tpTbl2Uploaded,tpTbl3Uploaded,tpTbl4Uploaded)
@@ -439,7 +443,7 @@ Case 1	' 上传进程
 		' 添加记录
 		rs3.AddNew()
 	End If
-	If opr=STUCLI_OPR_TABLE1 Then	' 开题报告，录入论文基本信息
+	If bInitThesisInfo Then
 		rs3("STU_ID")=Session("StuId")
 		rs3("REVIEW_TYPE")=new_review_type
 		rs3("REVIEW_STATUS")=rsNone

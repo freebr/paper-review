@@ -135,7 +135,7 @@ Case vbNullstring ' 填写信息页面
 <p>领域名称：<input type="text" name="speciality" size="50" value="<%=rs2("SPECIALITY_NAME")%>" readonly /></p><%
 	End If %>
 <p>研究方向：<%
-	If stu_type=5 Or stu_type=6 Then %>
+	If stu_type=5 Or stu_type=6 Or stu_type=7 Then %>
 <select name="researchway_name" style="width:350px"><option value="0">请选择……</option><%
 		For i=0 To UBound(researchway_list)
 			option_name=researchway_list(i)
