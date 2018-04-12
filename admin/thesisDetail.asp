@@ -31,9 +31,10 @@ If result=0 Then
 End If
 
 Dim review_status,numReviewed,review_result(2),reviewer_master_level(1),review_file(1),review_time(1),review_level(1)
+Dim rsDetect
+
 sql="SELECT * FROM DETECT_RESULT_INFO WHERE THESIS_ID="&thesisID
 GetRecordSet conn,rsDetect,sql,result
-detect_count=result
 
 stu_type=rs("TEACHTYPE_ID")
 If stu_type=5 Then
@@ -48,6 +49,7 @@ task_progress=rs("TASK_PROGRESS")
 review_status=rs("REVIEW_STATUS")
 stat_text1=rs("STAT_TEXT1")
 stat_text2=rs("STAT_TEXT2")
+detect_count=rs("DETECT_COUNT")
 reviewfilestat=rs("REVIEW_FILE_STATUS")
 reproduct_ratio=rs("REPRODUCTION_RATIO")
 defence_result=rs("DEFENCE_RESULT")

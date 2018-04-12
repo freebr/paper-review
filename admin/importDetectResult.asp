@@ -162,7 +162,7 @@ Case 3	' 数据读取，导入到数据库
 					thesis_file=rsReview("THESIS_FILE").Value
 					detect_count=rsReview("DETECT_COUNT").Value
 					If reproduct_ratio<=10 Then	' 通过
-						If detect_count>1 Then	' 二次检测
+						If detect_count>=1 Then	' 二次检测
 							new_status=rsRedetectPassed
 						Else
 							new_status=rsAgreeReview
@@ -173,7 +173,8 @@ Case 3	' 数据读取，导入到数据库
 							Dim speciality:speciality=rsReview("SPECIALITY_NAME").Value
 							Dim subject:subject=rsReview("THESIS_SUBJECT").Value
 							Dim eval_text:eval_text=rsReview("REVIEW_APP_EVAL").Value
-							Dim review_time:review_time=Now
+							Dim review_time:review_time=rsReview("SUBMIT_REVIEW_TIME").Value
+							If IsNull(review_time) Then review_time=Now
 							Dim filename:filename=FormatDateTime(review_time,1)&Int(Timer)&Int(Rnd()*999)&".docx"
 							Dim filepath:filepath=Server.MapPath("/ThesisReview/tutor/export")&"\"&filename
 							rag.Author=author
@@ -187,10 +188,12 @@ Case 3	' 数据读取，导入到数据库
 							If rag.generateApp(filepath)=0 Then
 								bError=True
 								errMsg=errMsg&"为学生"""&stu_name&"""的论文生成送审申请表时出错。"&vbNewLine
+							Else
+								sql2=sql2&"UPDATE TEST_THESIS_REVIEW_INFO SET REVIEW_APP="&toSqlString(filename)&" WHERE STU_ID="&stu_id&";"
 							End If
 						End If
 					Else												' 不通过
-						If detect_count>1 Then	' 二次检测
+						If detect_count>=1 Then	' 二次检测
 							new_status=rsRedetectUnpassed
 						Else
 							new_status=rsDetectUnpassed
