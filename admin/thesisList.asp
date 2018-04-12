@@ -177,7 +177,7 @@ End If %>
 <input type="button" value="显示全部" onclick="showAllRecords(this.form)">
 &nbsp;全选<input type="checkbox" onclick="checkAll()" id="chk" /></td></tr>
 <tr><td colspan=2><input type="button" value="导入新增论文信息" onclick="submitForm($('#fmThesisList'),'importNewThesis.asp')" />
-<input type="button" value="导入论文查重信息" onclick="submitForm($('#fmThesisList'),'importThesisDetInfo.asp')" />
+<input type="button" value="导入论文查重信息" onclick="submitForm($('#fmThesisList'),'importDetectResult.asp')" />
 <input type="button" value="导入答辩安排信息" onclick="submitForm($('#fmThesisList'),'importDefencePlan.asp')" />
 <input type="button" value="导入答辩委员会修改意见" onclick="submitForm($('#fmThesisList'),'importDefenceEval.asp')" />
 <input type="button" value="导入学院学位评定分委员会修改意见" onclick="submitForm($('#fmThesisList'),'importDegreeEval.asp')" /></td></tr>
