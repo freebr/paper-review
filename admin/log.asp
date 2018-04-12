@@ -23,7 +23,7 @@ End If
 <center><br>
 <font size="3"><strong>用户操作日志(<%=logDate%>)</strong></font>
 <form name="fmViewlog" method="post">
-<table width="400" border=0 cellspacing=1 cellpadding=3 bgcolor="#999999">
+<table width="400" border="0" cellspacing="1" cellpadding="3" bgcolor="gainsboro">
 	<tr bgcolor="#ffffff">
 		<td width="70">输入日期：</td>
 		<td align="center"><input type="text" size="15" name="logdate" style="text-align:center" value="<%=logDate%>" /></td>
