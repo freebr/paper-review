@@ -6,7 +6,7 @@
 curStep=Request.QueryString("step")
 Select Case curStep
 Case vbNullstring ' 文件选择页面
-	reportNameFmt="\$stu_name_\$stu_no_.*（全文标明引文）\.pdf"
+	reportNameFmt="\$stu_name_\$stu_no_.+\.(pdf|mht)"
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -108,7 +108,7 @@ Case 3	' 数据读取，导入到数据库
 		' 添加数据
 		Dim sql,sql2,conn,result,rsReview
 		Dim thesis_id,stu_id,reproduct_ratio,detect_count,new_status,numThesis
-		Dim new_stuno,new_stuname
+		Dim stu_no,stu_name
 		Dim reportFilePath,reportFilename,bFileExists
 		Dim file,folder
 		Dim regExp:Set regExp=New RegExp
@@ -121,8 +121,8 @@ Case 3	' 数据读取，导入到数据库
 		Connect conn
 		Do While Not rs.EOF
 			If IsNull(rs(0).Value) Then Exit Do
-			new_stuname=rs(0).Value
-			new_stuno=rs(1).Value
+			stu_name=rs(0).Value
+			stu_no=rs(1).Value
 			reproduct_ratio=rs(3).Value
 			If Right(reproduct_ratio,1)="%" Then	' 复制比为文本格式
 				reproduct_ratio=Left(reproduct_ratio,Len(reproduct_ratio)-1)
@@ -131,7 +131,7 @@ Case 3	' 数据读取，导入到数据库
 					reproduct_ratio=reproduct_ratio*100
 				End If
 			End If
-			reportFilename=Replace(Replace(reportNameFmt,"\$stu_name",new_stuname),"\$stu_no",new_stuno)
+			reportFilename=Replace(Replace(reportNameFmt,"\$stu_name",stu_name),"\$stu_no",stu_no)
 			regExp.Pattern=reportFilename
 			bFileExists=False
 			For Each file In folder.Files
@@ -177,7 +177,7 @@ Case 3	' 数据读取，导入到数据库
 							Dim filename:filename=FormatDateTime(review_time,1)&Int(Timer)&Int(Rnd()*999)&".docx"
 							Dim filepath:filepath=Server.MapPath("/ThesisReview/tutor/export")&"\"&filename
 							rag.Author=author
-							rag.StuNo=new_stuno
+							rag.StuNo=stu_no
 							rag.TutorInfo=tutor_info
 							rag.Spec=speciality
 							rag.Date=FormatDateTime(review_time,1)
