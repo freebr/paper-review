@@ -88,15 +88,18 @@ Function showStepInfo(stepDisplay,stepCounter,bHidden)
 %><span style="color:dimgray">导师已同意您的论文进行检测。</span><%
 	Case rsDetectUnpassed,rsRedetectUnpassed,rsRedetectPassed
 %><span style="color:dimgray"><%
+		Dim filetype:filetype=13
 		Select Case stepDisplay
 		Case rsDetectUnpassed
 %>经过检测，您的送检论文文字复制比为&nbsp;<%=reproduct_ratio%>%，不符合学院送检论文重复率低于10%的要求，请对论文修改后重新上传进行二次检测。<%
 		Case rsRedetectUnpassed
+			filetype=14
 %>经过二次检测，您的送检论文文字复制比为&nbsp;<%=reproduct_ratio%>%，不符合学院送检论文重复率低于10%的要求。<%
 		Case Else
+			filetype=14
 %>您的论文已通过二次查重检测，请等待导师同意送审。<br/>检测结果摘要：经图书馆检测，学位论文文字复制比为&nbsp;<%=reproduct_ratio%>%。<%
 		End Select
-%><br/><a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=12" target="_blank">点此下载检测报告</a></span><%
+%><br/><a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=<%=filetype%>" target="_blank">点此下载检测报告</a></span><%
 	Case rsNotAgreeReview
 %><span style="color:dimgray">导师不同意您的论文送审，请对照导师意见修改送审论文后重新上传。<br/>送审意见：<%=toPlainString(rs("REVIEW_APP_EVAL"))%></span><%
 	Case rsAgreeReview
