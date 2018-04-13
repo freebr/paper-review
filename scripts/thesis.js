@@ -2,7 +2,7 @@
 	if(typeof(fm.size)==='function')fm=fm[0];
 	if(!!action)fm.action=action;
 	if(fm.name=='query_nocheck') {
-		var ctls=['TEACHTYPE_ID','CLASS_ID','ENTER_YEAR'];
+		var ctls=['TEACHTYPE_ID','ENTER_YEAR','CLASS_ID'];
 		for(i=0;i<ctls.length;i++) {
 			var selindex=fm[ctls[i]].selectedIndex;
 			if(selindex<=0) {

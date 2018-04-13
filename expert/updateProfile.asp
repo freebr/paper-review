@@ -9,7 +9,7 @@ FormGetToSafeRequest(TeacherId)
 If Len(TeacherId)=0 Or Not IsNumeric(TeacherId) Then
 %><html><head><link href="../css/tutor.css" rel="stylesheet" type="text/css" /></head>
 <body class="exp"><center><div class="content"><font color=red size="4">参数错误。</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></div></body></html><%
-	Response.End
+	Response.End()
 End If
 
 teachername=upload.Form("teachername")
@@ -85,7 +85,7 @@ If bError Then
 <body class="exp"><center><div class="content"><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></div></body></html><%
 	CloseRs rs
   CloseConn conn
-	Response.End
+	Response.End()
 End If
 
 If rs("IFTEACHER")=3 Then

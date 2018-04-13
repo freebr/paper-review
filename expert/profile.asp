@@ -31,6 +31,7 @@ End If
 <script src="../scripts/query.js" type="text/javascript"></script>
 <script src="../scripts/utils.js" type="text/javascript"></script>
 <script src="../scripts/expert.js" type="text/javascript"></script>
+<title>个人信息编辑</title>
 </head>
 <body class="exp"><center><div class="content">
 <form id="profile" action="updateProfile.asp" method="post" enctype="multipart/form-data">

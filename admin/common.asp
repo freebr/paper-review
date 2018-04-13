@@ -207,6 +207,7 @@ End Function
 
 Function semesterList(ctlname,sel)	' 显示学期选择框
 	Dim conn,comm,pmSem,rs
+	Dim period_id
 	Connect conn
 	Set comm=Server.CreateObject("ADODB.Command")
 	comm.ActiveConnection=conn
@@ -216,8 +217,9 @@ Function semesterList(ctlname,sel)	' 显示学期选择框
 	comm.Parameters.Append pmSem
 	Set rs=comm.Execute()
 	%><select id="<%=ctlname%>" name="<%=ctlname%>"><option value="0">请选择</option><%
-	Do While Not rs.EOF %>
-	<option value="<%=rs("PERIOD_ID")%>"<% If sel=rs("PERIOD_ID") Then %> selected<% End If %>><%=rs("PERIOD_NAME")%></option><%
+	Do While Not rs.EOF
+		period_id=rs("PERIOD_ID").Value
+%><option value="<%=period_id%>"<% If sel=period_id Then %> selected<% End If %>><%=rs("PERIOD_NAME").Value%></option><%
 		rs.MoveNext()
 	Loop
 	Set pmSem=Nothing

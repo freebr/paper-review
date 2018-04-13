@@ -702,7 +702,7 @@ Function getCurrentSemester()
 		cur_semester=2
 		semester_name="下"
 	End If
-	period_id=start_year&cur_semester
+	period_id=Int(start_year&cur_semester)
 	arr(0)=start_year
 	arr(1)=cur_semester
 	arr(2)=semester_name

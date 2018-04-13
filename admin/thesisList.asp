@@ -3,7 +3,7 @@
 <!--#include file="common.asp"-->
 <%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 
-Dim PubTerm,PageNo,PageSize
+Dim PubTerm,PageNo,PageSize,bQuery,bSearch
 sem_info=getCurrentSemester()
 period_id=Request.Form("In_PERIOD_ID")
 teachtype_id=Request.Form("In_TEACHTYPE_ID")
@@ -12,12 +12,15 @@ enter_year=Request.Form("In_ENTER_YEAR")
 query_task_progress=Request.Form("In_TASK_PROGRESS")
 query_review_status=Request.Form("In_REVIEW_STATUS")
 finalFilter=Request.Form("finalFilter")
+bSearch=Not IsEmpty(Request.Form("btnsearch"))
 If Len(finalFilter) Then PubTerm="AND ("&finalFilter&")"
-If Len(period_id) And period_id<>"0" Then
-	period_id=Int(period_id)
-	PubTerm=PubTerm&" AND PERIOD_ID="&toSqlString(period_id)
-Else
+If Len(period_id)=0 Then
 	period_id=sem_info(3)
+Else
+	period_id=Int(period_id)
+	If period_id<>0 Then
+		PubTerm=PubTerm&" AND PERIOD_ID="&period_id
+	End If
 End If
 If Len(teachtype_id) And teachtype_id<>"0" Then
 	teachtype_id=Int(teachtype_id)
@@ -43,7 +46,7 @@ End If
 If Len(query_review_status) And query_review_status<>"-1" Then
 	PubTerm=PubTerm&" AND REVIEW_STATUS="&toSqlString(query_review_status)
 End If
-
+bQuery=bSearch Or Len(PubTerm)>0
 '----------------------PAGE-------------------------
 PageNo=""
 PageSize=""
@@ -59,11 +62,9 @@ If bShowAll Then PageSize=-1
 '------------------------------------------------------
 Dim arrReviewFileStat
 arrReviewFileStat=getReviewFileStatTxtArray()
-If Len(PubTerm) Then
+If bQuery Then
 	Connect conn
-	sql="SELECT ID,THESIS_SUBJECT,STU_NAME,STU_NO,SPECIALITY_NAME,TEACHTYPE_ID,TEACHTYPE_NAME,TUTOR_NAME,REVIEW_STATUS,TASK_PROGRESS,dbo.getThesisStatusText(1,TASK_PROGRESS,1) AS STAT_TEXT1,dbo.getThesisStatusText(2,REVIEW_STATUS,1) AS STAT_TEXT2,REVIEWER1,REVIEWER2,REVIEW_RESULT,REVIEW_FILE_STATUS,"&_
-			"CASE WHEN TASK_PROGRESS IN (1,4,7,10) THEN 1 WHEN REVIEW_STATUS=3 THEN 1 WHEN REVIEW_STATUS=7 AND (REVIEWER1 IS NULL OR REVIEWER2 IS NULL) THEN 1 ELSE 0 END AS UNHANDLED FROM VIEW_TEST_THESIS_REVIEW_INFO "&_
-			"WHERE VALID=1 "&PubTerm&" ORDER BY UNHANDLED DESC,CLASS_ID DESC,REVIEW_STATUS DESC,TASK_PROGRESS DESC"
+	sql="SELECT * FROM ViewAdminClientThesisInfo WHERE 1=1 "&PubTerm
 	GetRecordSetNoLock conn,rs,sql,result
 	If IsEmpty(pageSize) Or Not IsNumeric(pageSize) Then
 	  pageSize=60
@@ -99,7 +100,7 @@ End If
 <font size=4><b>专业硕士论文列表</b></font>
 <table cellspacing="4" cellpadding="0">
 <form id="query_nocheck" method="post" onsubmit="if(Chk_Select())return chkField();else return false">
-<tr><td>学期&nbsp;<%=semesterList("In_PERIOD_ID",Int(period_id))%></td>
+<tr><td>学期&nbsp;<%=semesterList("In_PERIOD_ID",period_id)%></td>
 <td><table width="100%" cellspacing="4" cellpadding="0"><%
 Dim ArrayList(2,5),k
 
@@ -148,9 +149,9 @@ GetMenuListPubTerm "CODE_THESIS_REVIEW_STATUS","STATUS_ID2","STATUS_NAME",query_
 </select>
 <input type="text" name="filter" size="10" onkeypress="checkKey()">
 <input type="hidden" name="finalFilter" value="<%=toPlainString(finalFilter)%>">
-<input type="submit" value="查找" onclick="genFilter()">
+<input type="submit" name="btnsearch" value="查找" onclick="genFilter()">
 <input type="submit" value="在结果中查找" onclick="genFinalFilter()"><%
-If Len(PubTerm) Then %>
+If bQuery Then %>
 &nbsp;每页
 <select name="pageSize" onchange="if(Chk_Select())submitForm(this.form)">
 <option value="-1" <%If pageSize=-1 Then%>selected<%End If%>>全部</option>
@@ -218,7 +219,7 @@ End If %>
     <td width="30" align=center>选择</td>
     <td width="50" align=center>操作</td>
   </tr><%
-If Len(PubTerm) Then
+If bQuery Then
   Dim review_result
   For i=1 to rs.PageSize
     If rs.EOF Then Exit For

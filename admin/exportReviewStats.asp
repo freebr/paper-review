@@ -21,9 +21,13 @@ finalFilter=Request.Form("finalFilter2")
 FormGetToSafeRequest(period_id)
 If period_id="" Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4">信息不完整或格式不正确！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
-	Response.End
+	Response.End()
 End If
 If Len(finalFilter) Then PubTerm=" AND "&finalFilter
+period_id=Int(period_id)
+If period_id<>0 Then
+	PubTerm=PubTerm&" AND PERIOD_ID="&period_id
+End If
 If Len(teachtype_id) And teachtype_id<>"0" Then
 	PubTerm=PubTerm&" AND TEACHTYPE_ID="&toSqlString(teachtype_id)
 Else
@@ -219,14 +223,14 @@ If nTurn=0 Then
 	' 导出送审结果统计表
 	Set rs(0)=conn.Execute("EXEC getTestThesisReviewStatsList "&period_id&",0")
 	' 导出送审论文列表
-	sql="SELECT "&selectFields&" FROM VIEW_TEST_THESIS_REVIEW_INFO WHERE PERIOD_ID="&period_id&PubTerm
+	sql="SELECT "&selectFields&" FROM VIEW_TEST_THESIS_REVIEW_INFO WHERE VALID=1 "&PubTerm
 	Set rs(1)=conn.Execute(sql)
 Else	' 按批次导出
-	exportFilter="PERIOD_ID="&period_id&PubTerm&" AND NOT EXIST(SELECT STU_ID FROM EXPORT_INFO WHERE PERIOD_ID="&period_id&" AND STU_ID=A.STU_ID)"
+	exportFilter=PubTerm&" AND NOT EXISTS(SELECT STU_ID FROM EXPORT_INFO WHERE PERIOD_ID="&period_id&" AND STU_ID=A.STU_ID)"
 	Set rs(0)=conn.Execute("EXEC getTestThesisReviewStatsList "&period_id&",1")
-	sql="SELECT "&selectFields&" FROM VIEW_TEST_THESIS_REVIEW_INFO A WHERE "&exportFilter
+	sql="SELECT "&selectFields&" FROM VIEW_TEST_THESIS_REVIEW_INFO A WHERE VALID=1 "&exportFilter
 	Set rs(1)=conn.Execute(sql)
-	sql="INSERT INTO EXPORT_INFO (STU_ID,PERIOD_ID,TURN_ID) SELECT STU_ID,"&period_id&","&nTurn&" FROM TEST_THESIS_REVIEW_INFO A WHERE "&exportFilter
+	sql="INSERT INTO EXPORT_INFO (STU_ID,PERIOD_ID,TURN_ID) SELECT STU_ID,"&period_id&","&nTurn&" FROM TEST_THESIS_REVIEW_INFO A WHERE VALID=1 "&exportFilter
 	conn.Execute sql
 End If
 
