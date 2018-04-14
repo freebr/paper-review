@@ -4,42 +4,55 @@ Class DetectAppGen
 	Dim m_author,m_stuno,m_tutorname,m_tutorinfo,m_spec,m_degreename,m_date,m_thesis_subject,m_eval_text,m_mobile,m_email,m_tutormobile,m_tutormail
 	Dim m_err_desc
 	Public Property Let Author(val)
+		If IsNull(val) Then val=""
 		m_author=val
 	End Property
 	Public Property Let StuNo(val)
+		If IsNull(val) Then val=""
 		m_stuno=val
 	End Property
 	Public Property Let TutorName(val)
+		If IsNull(val) Then val=""
 		m_tutorname=val
 	End Property
 	Public Property Let TutorInfo(val)
+		If IsNull(val) Then val=""
 		m_tutorinfo=val
 	End Property
 	Public Property Let Spec(val)
+		If IsNull(val) Then val=""
 		m_spec=val
 	End Property
 	Public Property Let DegreeName(val)
+		If IsNull(val) Then val=""
 		m_degreename=val
 	End Property
 	Public Property Let Date(val)
+		If IsNull(val) Then val=""
 		m_date=val
 	End Property
 	Public Property Let Subject(val)
+		If IsNull(val) Then val=""
 		m_thesis_subject=val
 	End Property
 	Public Property Let EvalText(val)
+		If IsNull(val) Then val=""
 		m_eval_text=val
 	End Property
 	Public Property Let Mobile(val)
+		If IsNull(val) Then val=""
 		m_mobile=val
 	End Property
 	Public Property Let Email(val)
+		If IsNull(val) Then val=""
 		m_email=val
 	End Property
 	Public Property Let TutorMobile(val)
+		If IsNull(val) Then val=""
 		m_tutormobile=val
 	End Property
 	Public Property Let TutorMail(val)
+		If IsNull(val) Then val=""
 		m_tutormail=val
 	End Property
 	Public Property Get ErrorDesc()
@@ -103,27 +116,35 @@ Class ReviewAppGen
 	Dim m_author,m_stuno,m_tutorinfo,m_spec,m_date,m_thesis_subject,m_eval_text,m_reproduct_ratio
 	Dim m_err_desc
 	Public Property Let Author(val)
+		If IsNull(val) Then val=""
 		m_author=val
 	End Property
 	Public Property Let StuNo(val)
+		If IsNull(val) Then val=""
 		m_stuno=val
 	End Property
 	Public Property Let TutorInfo(val)
+		If IsNull(val) Then val=""
 		m_tutorinfo=val
 	End Property
 	Public Property Let Spec(val)
+		If IsNull(val) Then val=""
 		m_spec=val
 	End Property
 	Public Property Let Date(val)
+		If IsNull(val) Then val=""
 		m_date=val
 	End Property
 	Public Property Let Subject(val)
+		If IsNull(val) Then val=""
 		m_thesis_subject=val
 	End Property
 	Public Property Let EvalText(val)
+		If IsNull(val) Then val=""
 		m_eval_text=val
 	End Property
 	Public Property Let ReproductRatio(val)
+		If IsNull(val) Then val=""
 		m_reproduct_ratio=val
 	End Property
 	Public Property Get ErrorDesc()

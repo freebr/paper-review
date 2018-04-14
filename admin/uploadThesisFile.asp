@@ -146,6 +146,7 @@ Case 2	' 文件上传页面
 	pageNo=Upload.Form("pageNo2")
 	
 	Dim conn,rs,sql,sqlDetect,result
+	sqlDetect=""
 	Connect conn
 	sql="SELECT * FROM TEST_THESIS_REVIEW_INFO WHERE ID="&thesisID
 	GetRecordSet conn,rs,sql,result
@@ -178,8 +179,11 @@ Case 2	' 文件上传页面
 			' 保存
 			upFile.SaveAs destPath
 			If i=8 Then	' 送检论文
-				rs("THESIS_FILE").Value=destFile
+				If rs("REVIEW_STATUS").Value=rsDetectThesisUploaded Then
+					sqlDetect=sqlDetect&"EXEC spDeleteDetectResult "&rs("ID").Value&","&toSqlString(rs("THESIS_FILE").Value)&";"
+				End If
 				sqlDetect=sqlDetect&"EXEC spAddDetectResult "&thesisID&","&toSqlString(destFile)&",NULL,NULL,NULL;"
+				rs("THESIS_FILE").Value=destFile
 			ElseIf i=12 Then	' 送检论文检测报告
 				sqlDetect=sqlDetect&"EXEC spSetDetectResultReport "&thesisID&","&toSqlString(rs("THESIS_FILE").Value)&","&toSqlString(destFile)&";"
 			Else
