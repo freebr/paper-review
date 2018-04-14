@@ -130,7 +130,7 @@ Case 5	'  同意/不同意送检送审操作
 	End If
 	' 更新记录
 	If ispass Then
-		sql="SELECT * FROM DETECT_RESULT_INFO WHERE THESIS_ID="&thesisID
+		sql="SELECT dbo.getDetectResultCount("&thesisID&")"
 		GetRecordSet conn,rsDetect,sql,result
 		detect_count=result
 		If detect_count>=1 Then
