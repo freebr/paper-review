@@ -426,7 +426,7 @@ Case 1	' 上传进程
 			' sendEmailToTutor arrStuOprName(opr)
 		' End If
 		Dim logtxt
-		logtxt="学生["&Session("StuName")&"]上传["&arrStuOprName(opr)&"]。"
+		logtxt="学生["&Session("StuName")&"]上传["&uploadTypename&"]。"
 		WriteLog logtxt
 	End If
 	Set fso=Nothing
