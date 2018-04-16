@@ -34,7 +34,7 @@ Dim sourcefile,fileExt,newfilename
 Dim fso,file,stream
 Set fso=Server.CreateObject("Scripting.FileSystemObject")
 
-If (filetype=8 Or filetype=12) And Not IsEmpty(time_req) Then
+If (filetype=8 Or filetype=12) And Len(time_req) Then
 	sql="SELECT * FROM DETECT_RESULT_INFO WHERE THESIS_ID="&thesisID&" AND DETECT_TIME="&toSqlString(time_req)
 	GetRecordSet conn,rsDetect,sql,result
 	If filetype=8 Then

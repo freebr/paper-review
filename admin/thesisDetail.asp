@@ -208,7 +208,7 @@ Case vbNullString	' 论文详情页面
 	If review_status>=rsDetectThesisUploaded And Len(thesis_file) Then %>
 <tr><td>送检论文：&emsp;&emsp;&emsp;<a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=8" target="_blank">点击下载</a>&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,0,6)">撤销</a></td></tr><%
 	End If
-	If review_status>=rsAgreeDetect Then %>
+	If review_status>=rsDetectThesisUploaded Then %>
 <tr><td>送检论文检测报告：<%
 		If IsNull(rs("DETECT_REPORT")) Then %>
 未上传<%
@@ -222,16 +222,17 @@ Case vbNullString	' 论文详情页面
 		Else
 %>&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,3,0)">撤销</a>
 <ul><%
-			index=1
+			Dim index:index=1
+			Dim detect_time,detect_time_text,detect_result_text
 			Do While Not rsDetect.EOF
 				detect_time=rsDetect("DETECT_TIME").Value
-				If IsNull(detect_time) Then detect_time="无"
-				detect_result=rsDetect("RESULT").Value
-				If IsNull(detect_result) Then detect_result="无" Else detect_result=detect_result&"%"
+				If IsNull(detect_time) Then detect_time_text="无" Else detect_time_text=detect_time
+				detect_result_text=rsDetect("RESULT").Value
+				If IsNull(detect_result_text) Then detect_result_text="无" Else detect_result_text=detect_result_text&"%"
 				detect_report=rsDetect("DETECT_REPORT").Value
-%><li><%=index%>.检测时间：<%=detect_time%>，查重结果：<%=detect_result%><%
+%><li><%=index%>.检测时间：<%=detect_time_text%>，查重结果：<%=detect_result_text%>
+<br/><a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=8&time=<%=detect_time%>" target="_blank">送检论文</a><%
 				If Not IsNull(detect_report) Then %>
-<br/><a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=8&time=<%=detect_time%>" target="_blank">送检论文</a>
 <a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=12&time=<%=detect_time%>" target="_blank">检测报告</a><%
 				End If
 %></li><%
