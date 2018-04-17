@@ -14,7 +14,7 @@ query_review_status=Request.Form("In_REVIEW_STATUS2")
 finalFilter=Request.Form("finalFilter2")
 pageSize=Request.Form("pageSize2")
 pageNo=Request.Form("pageNo2")
-If Len(thesisID)=0 Or Not IsNumeric(thesisID) Or Len(detect_time)=0 Or Len(opr)=0 Or Not IsNumeric(opr) Or Not (opr=0 Or opr=1) Then
+If Len(thesisID)=0 Or Not IsNumeric(thesisID) Or Len(hash)=0 Or Len(opr)=0 Or Not IsNumeric(opr) Or Not (opr=0 Or opr=1) Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4">参数无效。</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 	Response.End()
 End If
