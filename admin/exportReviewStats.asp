@@ -1,5 +1,5 @@
 ﻿<%Response.Charset="utf-8"%>
-<!-- #include File="../inc/db.asp" -->
+<!--#include file="../inc/db.asp"-->
 <%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 filename=Request.QueryString("fn")
 If Len(filename)=0 Then
@@ -10,6 +10,8 @@ Else
 End If
 retlink=Request.QueryString("ret")
 nTurn=Request.QueryString("turn")
+
+ids=Request.Form("sel")
 period_id=Request.Form("In_PERIOD_ID")
 If Len(period_id)=0 Then period_id=Request.Form("In_PERIOD_ID2")
 teachtype_id=Request.Form("In_TEACHTYPE_ID2")
@@ -19,15 +21,12 @@ query_task_progress=Request.Form("In_TASK_PROGRESS2")
 query_review_status=Request.Form("In_REVIEW_STATUS2")
 finalFilter=Request.Form("finalFilter2")
 FormGetToSafeRequest(period_id)
-If period_id="" Then
-%><body bgcolor="ghostwhite"><center><font color=red size="4">信息不完整或格式不正确！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
-	Response.End()
-End If
-If Len(finalFilter) Then PubTerm=" AND "&finalFilter
+
+Dim PubTerm:PubTerm=""
+If Not IsEmpty(ids) Then PubTerm=PubTerm&" AND ID IN ("&ids&")"
+If Len(finalFilter) Then PubTerm=PubTerm&" AND "&finalFilter
 period_id=Int(period_id)
-If period_id<>0 Then
-	PubTerm=PubTerm&" AND PERIOD_ID="&period_id
-End If
+If period_id<>0 Then PubTerm=PubTerm&" AND PERIOD_ID="&period_id
 If Len(teachtype_id) And teachtype_id<>"0" Then
 	PubTerm=PubTerm&" AND TEACHTYPE_ID="&toSqlString(teachtype_id)
 Else
@@ -218,7 +217,8 @@ arrSheetName=Array("送审结果统计表"&turnPostfix,"全部论文列表"&turn
 Connect conn
 selectFields="dbo.getThesisStatusText(1,TASK_PROGRESS,1)+'，'+dbo.getThesisStatusText(2,REVIEW_STATUS,1),THESIS_SUBJECT,STU_NAME,(''''+STU_NO) AS STU_NO,SPECIALITY_NAME,RESEARCHWAY_NAME,THESIS_FORM,TUTOR_NAME,"&_
 						 "dbo.getStatusOfReviewFile(ID,0,0),dbo.getStatusOfReviewFile(ID,0,1),dbo.getStatusOfReviewFile(ID,0,2),dbo.getStatusOfReviewFile(ID,0,3),"&_
-						 "dbo.getDetectResultString(ID) AS RATIO,EXPERT_NAME1,EXPERT_WORKPLACE1,EXPERT_NAME2,EXPERT_WORKPLACE2,dbo.getReviewResultText(LEFT(REVIEW_RESULT,1)) AS REVIEW_RESULT1,dbo.getReviewResultText(SUBSTRING(REVIEW_RESULT,3,1)) AS REVIEW_RESULT2,dbo.getFinalResultText(RIGHT(REVIEW_RESULT,1)) AS FINAL_RESULT,DEFENCE_EVAL,dbo.getDefenceResultText(DEFENCE_RESULT),INSTRUCT_MODIFY_EVAL"
+						 "dbo.getDetectResultString(ID) AS RATIO,EXPERT_NAME1,EXPERT_WORKPLACE1,EXPERT_NAME2,EXPERT_WORKPLACE2,"&_
+						 "dbo.getReviewResultText(LEFT(REVIEW_RESULT,1)) AS REVIEW_RESULT1,dbo.getReviewResultText(SUBSTRING(REVIEW_RESULT,3,1)) AS REVIEW_RESULT2,dbo.getFinalResultText(RIGHT(REVIEW_RESULT,1)) AS FINAL_RESULT,DEFENCE_EVAL,dbo.getDefenceResultText(DEFENCE_RESULT),INSTRUCT_MODIFY_EVAL"
 If nTurn=0 Then
 	' 导出送审结果统计表
 	Set rs(0)=conn.Execute("EXEC getTestThesisReviewStatsList "&period_id&",0")
