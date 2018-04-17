@@ -1,5 +1,4 @@
 ﻿<%Response.Charset="utf-8"%>
-<!--#include virtual="/pub/mail.asp"-->
 <!--#include file="../inc/db.asp"-->
 <!--#include file="../inc/setEditor.asp"-->
 <!--#include file="../inc/ckeditor/ckeditor.asp"-->

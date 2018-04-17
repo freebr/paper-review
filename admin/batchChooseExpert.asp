@@ -1,7 +1,5 @@
-﻿<%Response.Charset="utf-8"
-Response.Expires=-1%>
+﻿<%Response.Charset="utf-8"%>
 <!--#include file="../inc/db.asp"-->
-<!--#include virtual="/pub/mail.asp"-->
 <!--#include file="common.asp"-->
 <%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 ids=Request.Form("sel")

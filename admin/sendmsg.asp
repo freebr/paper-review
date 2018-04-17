@@ -1,9 +1,8 @@
 ﻿<%Response.Charset="utf-8"%>
 <!--#include file="../inc/db.asp"-->
-<!--#include virtual="/pub/mail.asp"-->
 <!--#include file="../inc/setEditor.asp"-->
-<!--#include file="../ckeditor/ckeditor.asp"-->
-<!--#include file="../ckfinder/ckfinder.asp"-->
+<!--#include file="../inc/ckeditor/ckeditor.asp"-->
+<!--#include file="../inc/ckfinder/ckfinder.asp"-->
 <%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")%>
 <%
 	Const MAX_SMSCONTENT_LENGTH=150

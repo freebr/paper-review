@@ -1,7 +1,6 @@
 ﻿<%Response.Charset="utf-8"%>
 <!--#include file="../inc/ExtendedRequest.inc"-->
 <!--#include file="../inc/db.asp"-->
-<!--#include virtual="/pub/mail.asp"-->
 <!--#include file="common.asp"--><%
 If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 
