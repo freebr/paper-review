@@ -3,8 +3,7 @@
 <!--#include file="../inc/setEditor.asp"-->
 <!--#include file="../inc/ckeditor/ckeditor.asp"-->
 <!--#include file="../inc/ckfinder/ckfinder.asp"-->
-<%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")%>
-<%
+<%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 	Const MAX_SMSCONTENT_LENGTH=150
 	Dim sendtype,tid
 	sendtype=Request("type")
@@ -15,7 +14,7 @@
 	pageNo=Request.Form("pageNo2")
 	If Len(sendtype)=0 Or Not IsNumeric(sendtype) Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4">参数错误！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
-		Response.End
+		Response.End()
 	End If
 	If IsEmpty(batch) Then batch=0
 	
@@ -25,7 +24,7 @@
 		If IsEmpty(tid) Then tid=Request("sel")
 		If IsEmpty(tid) Then
 	%><body bgcolor="ghostwhite"><center><font color=red size="4">请选择要通知的专家！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
-			Response.End
+			Response.End()
 		End If
 		Connect conn
 		sql="SELECT TEACHERNAME,MOBILE,EMAIL FROM VIEW_TEACHER_INFO WHERE TEACHERID IN ("&tid&")"
@@ -99,17 +98,17 @@
 		rcpt=Request.Form("rcpt")
 		If Len(content)=0 Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4">请填写内容！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
-			Response.End
+			Response.End()
 		ElseIf sendtype=1 Then
 			content=toPlainText(content)
 			If Len(content)>MAX_SMSCONTENT_LENGTH Then
 				%><body bgcolor="ghostwhite"><center><font color=red size="4">短信内容不能超过<%=MAX_SMSCONTENT_LENGTH%>字，请缩减后再发送或分段发送！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
-				Response.End
+				Response.End()
 			End If
 		ElseIf sendtype=2 Then
 			If Len(subject)=0 Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4">请填写邮件标题！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
-				Response.End
+				Response.End()
 			End If
 		End If
 		

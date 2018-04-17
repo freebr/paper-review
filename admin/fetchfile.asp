@@ -1,7 +1,7 @@
 ﻿<%Response.Charset="utf-8"%>
 <!--#include file="../inc/db.asp"-->
-<!--#include file="common.asp"-->
-<%'If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
+<!--#include file="common.asp"--><%
+If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 Dim arrFileListName,arrFileListNamePostfix,arrFileListPath,arrFileListField
 arrFileListName=Array("","开题报告表","开题论文","中期检查表","中期论文","预答辩申请表","预答辩论文","答辩及授予学位审批材料","送检论文","送审论文","答辩论文","定稿论文","送检论文检测报告","硕士学位论文送审申请表","论文评阅书 1","论文评阅书 2")
 arrFileListNamePostfix=Array("","开题报告表","开题论文","中期检查表","中期论文","预答辩申请表","预答辩论文","答辩审批材料","","","","","检测报告","送审审核表","论文评阅书(1)","论文评阅书(2)")
@@ -9,7 +9,7 @@ arrFileListPath=Array("","/ThesisReview/student/upload","/ThesisReview/student/u
 arrFileListField=Array("","TABLE_FILE1","TBL_THESIS_FILE1","TABLE_FILE2","TBL_THESIS_FILE2","TABLE_FILE3","TBL_THESIS_FILE3","TABLE_FILE4","THESIS_FILE","THESIS_FILE2","THESIS_FILE3","THESIS_FILE4","DETECT_REPORT","REVIEW_APP","REVIEW_FILE1","REVIEW_FILE2")
 thesisID=Request.QueryString("tid")
 filetype=Request.QueryString("type")
-time_req=Request.QueryString("time")
+hash=Request.QueryString("hash")
 If Not IsNumeric(filetype) Then
 	bError=True
 	errdesc="参数无效。"
@@ -19,7 +19,7 @@ ElseIf filetype<1 Or filetype>15 Then
 End If
 If bError Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="关 闭" onclick="window.close()" /></center></body><%
-	Response.End
+	Response.End()
 End If
 
 Connect conn
@@ -27,15 +27,15 @@ sql="SELECT *,LEFT(REVIEW_FILE,CHARINDEX(',',REVIEW_FILE)-1) AS REVIEW_FILE1,RIG
 GetRecordSet conn,rs,sql,result
 If rs.EOF Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4">数据库没有该论文记录！</font><br /><input type="button" value="关 闭" onclick="window.close()" /></center></body><%
-	Response.End
+	Response.End()
 End If
 
 Dim sourcefile,fileExt,newfilename
 Dim fso,file,stream
 Set fso=Server.CreateObject("Scripting.FileSystemObject")
 
-If (filetype=8 Or filetype=12) And Len(time_req) Then
-	sql="SELECT * FROM DETECT_RESULT_INFO WHERE THESIS_ID="&thesisID&" AND DETECT_TIME="&toSqlString(time_req)
+If (filetype=8 Or filetype=12) And Len(hash) Then
+	sql="SELECT * FROM VIEW_DETECT_RESULT_INFO WHERE THESIS_ID="&thesisID&" AND HASH="&toSqlString(hash)
 	GetRecordSet conn,rsDetect,sql,result
 	If filetype=8 Then
 		sourcefile=rsDetect("THESIS_FILE").Value
@@ -55,7 +55,7 @@ End If
 If Not fso.FileExists(sourcefile) Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4">该论文暂无<%=arrFileListName(filetype)%>或已被删除！</font><br /><input type="button" value="关 闭" onclick="window.close()" /></center></body><%
 	Set fso=Nothing
-	Response.End
+	Response.End()
 End If
 Set file=fso.GetFile(sourcefile)
 If Len(arrFileListNamePostfix(filetype)) Then

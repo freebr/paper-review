@@ -4,7 +4,6 @@ Response.Expires=-1%>
 <!--#include file="appgen.inc"-->
 <!--#include file="evalappend.inc"-->
 <!--#include file="../inc/db.asp"-->
-<!--#include file="../inc/mail.asp"-->
 <!--#include file="common.asp"--><%
 If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 Dim Upload
@@ -69,7 +68,7 @@ If bError Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4"><%=errdesc%></font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 	CloseRs rs
 	CloseConn conn
-	Response.End
+	Response.End()
 End If
 
 If Len(new_reproduct_ratio) Then
@@ -86,7 +85,7 @@ If rs.EOF Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4">数据库没有该论文记录！</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
   CloseRs rs
   CloseConn conn
-	Response.End
+	Response.End()
 End If
 
 If submittype=vbNullString Then
@@ -150,7 +149,7 @@ Case 5	'  同意/不同意送检操作
 		%><body bgcolor="ghostwhite"><center><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 		CloseRs rs
   	CloseConn conn
-  	Response.End
+  	Response.End()
 	End If
 	' 更新记录
 	If ispass Then
@@ -192,7 +191,7 @@ Case 6	'  同意/不同意送审操作
 		%><body bgcolor="ghostwhite"><center><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 		CloseRs rs
   	CloseConn conn
-  	Response.End
+  	Response.End()
 	End If
 	If ispass Then
 		' 生成送审申请表
@@ -229,7 +228,7 @@ Case 7	' 评阅书审阅确认操作
 		%><body bgcolor="ghostwhite"><center><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 		CloseRs rs
   	CloseConn conn
-  	Response.End
+  	Response.End()
 	End If
 	' 更新记录
 	rs("TUTOR_REVIEW_EVAL_TIME")=Now
@@ -244,7 +243,7 @@ Case 8	'  提交论文修改意见操作
 		%><body bgcolor="ghostwhite"><center><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 		CloseRs rs
   	CloseConn conn
-  	Response.End
+  	Response.End()
 	End If
 	' 更新记录
 	If ispass Then

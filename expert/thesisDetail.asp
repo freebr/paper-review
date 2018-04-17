@@ -29,7 +29,7 @@ If bError Then
 <body class="exp"><center><div class="content"><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="关 闭" onclick="closeWindow()" /></div></center></body></html><%
   CloseRs rs
   CloseConn conn
-	Response.End
+	Response.End()
 End If
 
 Dim author_stu_type,reviewer,review_status

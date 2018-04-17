@@ -2,7 +2,6 @@
 Server.ScriptTimeout=9000
 %><!--#include file="../inc/ExtendedRequest.inc"-->
 <!--#include file="../inc/db.asp"-->
-<!--#include file="../inc/mail.asp"-->
 <!--#include file="common.asp"-->
 <%If IsEmpty(Session("StuId")) Then Response.Redirect("../error.asp?timeout")
 Dim opr,bOpen,bUpload,bRedirectToTableUpload,bTableReady
@@ -289,7 +288,7 @@ Case 1	' 上传进程
   	CloseRs rs
   	CloseRs rs2
   	CloseConn conn
-		Response.End
+		Response.End()
 	End If
 	
 	Dim fso,Upload,file,file2
@@ -330,7 +329,7 @@ Case 1	' 上传进程
 		CloseRs rs
   	CloseRs rs2
   	CloseConn conn
-		Response.End
+		Response.End()
 	End If
 	
 	Set fso=Server.CreateObject("Scripting.FileSystemObject")

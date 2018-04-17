@@ -21,7 +21,7 @@ End If
 If bError Then
 %><html><head><link href="../../css/admin.css" rel="stylesheet" type="text/css" /></head>
 <body><center><div><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></div></center></body></html><%
-	Response.End
+	Response.End()
 End If
 
 expert_master_level=Request.Form("masterlevel")
@@ -80,7 +80,7 @@ If bError Then
 <body><center><div><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></div></center></body></html><%
   CloseRs rs
   CloseConn conn
-	Response.End
+	Response.End()
 End If
 
 Dim review_result(2),reviewer_master_level(1),review_file(1),review_time(1),review_level(1)
@@ -139,7 +139,7 @@ If rs.EOF Then
 <body><center><div><body bgcolor="ghostwhite"><center><font color=red size="4">操作不成功，找不到所需的评阅书模板文件。</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></div></center></body></html><%
   CloseRs rs
   CloseConn conn
-	Response.End
+	Response.End()
 End If
 ' 生成评阅书
 Dim rg,reviewtime,templatefile,reviewfile_type,filepath,filename,fullfilename

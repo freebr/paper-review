@@ -6,7 +6,7 @@ reviewfilestat=Request.Form("reviewfilestat")
 ids=Request.Form("sel")
 If Len(ids)=0 Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4">请选择论文记录！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
-	Response.End
+	Response.End()
 End If
 
 teachtype_id=Request.Form("In_TEACHTYPE_ID2")

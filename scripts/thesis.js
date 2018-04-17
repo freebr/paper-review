@@ -56,6 +56,14 @@ function rollback(tid,user,opr) {
 	}
 	return false;
 }
+function deleteDetectResult(tid,hash,opr) {
+	var msg=["确实要删除该送检报告吗（送检论文仍将保留）？","确实要删除该条送检记录吗﹙送检论文和报告将被删除﹚？"];
+	if (confirm(msg[opr])) {
+		submitForm(document.all.fmDetail,"delDetectResult.asp?tid="+tid+"&hash="+hash+"&opr="+opr);
+		return true;
+	}
+	return false;
+}
 function modifyReview(tid,rid) {
 	submitForm(document.all.fmDetail,"extra/thesisDetail.asp?tid="+tid+"&rev="+rid+"&step=2");
 	return false;

@@ -19,7 +19,7 @@ Case vbNullString	' 论文详情页面
 	pageNo=Request.Form("pageNo2")
 	If Len(thesisID)=0 Or Not IsNumeric(thesisID) Then
 	%><body bgcolor="ghostwhite"><center><font color=red size="4">参数无效。</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
-		Response.End
+		Response.End()
 	End If
 	Dim table_file(4)
 	Connect conn
@@ -29,7 +29,7 @@ Case vbNullString	' 论文详情页面
 	%><body bgcolor="ghostwhite"><center><font color=red size="4">数据库没有该论文记录！</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 	  CloseRs rs
 	  CloseConn conn
-		Response.End
+		Response.End()
 	End If
 	
 	tutor_id=rs("TUTOR_ID")
@@ -154,7 +154,7 @@ Case 2	' 文件上传页面
 	%><body bgcolor="ghostwhite"><center><font color=red size="4">数据库没有该论文记录！</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 	  CloseRs rs
 	  CloseConn conn
-		Response.End
+		Response.End()
 	End If
 	
 	Dim arrFileListName:arrFileListName=Array("","开题报告表","开题论文","中期检查表","中期论文","预答辩申请表","预答辩论文","答辩及授予学位审批材料","送检论文","送审论文","答辩论文","定稿论文","送检论文检测报告")

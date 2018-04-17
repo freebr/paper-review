@@ -23,7 +23,7 @@ End If
 If bError Then
 %><html><head><link href="../css/tutor.css" rel="stylesheet" type="text/css" /></head>
 <body class="exp"><center><div class="content"><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></div></center></body></html><%
-	Response.End
+	Response.End()
 End If
 expert_master_level=Request.Form("masterlevel")
 correlation_type=Request.Form("correlationtype")
@@ -88,7 +88,7 @@ If bError Then
 <body class="exp"><center><div class="content"><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></div></center></body></html><%
   CloseRs rs
   CloseConn conn
-	Response.End
+	Response.End()
 End If
 
 Dim reviewer_type
@@ -150,7 +150,7 @@ If rs.EOF Then
 <body class="exp"><center><div class="content"><body bgcolor="ghostwhite"><center><font color=red size="4">操作不成功，找不到所需的评阅书模板文件，请联系系统管理员。</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></div></center></body></html><%
   CloseRs rs
   CloseConn conn
-	Response.End
+	Response.End()
 End If
 ' 生成评阅书
 Dim rg,reviewtime,templatefile,reviewfile_type,filepath,filename,fullfilename

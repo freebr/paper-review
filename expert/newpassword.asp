@@ -23,7 +23,7 @@ If bError Then
 <body class="exp"><center><div class="content"><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></div></body></html><%
 	CloseRs rs
   CloseConn conn
-	Response.End
+	Response.End()
 End If
 sql="UPDATE TEACHER_INFO SET USER_PASSWORD="&toSqlString(newpwd)&" WHERE TEACHERID="&Session("Tid")&" AND VALID=0"
 conn.Execute sql

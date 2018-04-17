@@ -287,6 +287,6 @@ nSystemStatus=getSystemStatus()
 If nSystemStatus=0 Then
 %><html><head><link href="../css/tutor.css" rel="stylesheet" type="text/css" /></head>
 <body class="exp"><center><div class="content"><font color=red size="4">电子评阅系统未启用！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></div></body></html><%
-	Response.End
+	Response.End()
 End If
 %>

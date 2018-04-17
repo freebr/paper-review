@@ -18,7 +18,7 @@ ElseIf filetype<1 Or filetype>3 Then
 End If
 If bError Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="关 闭" onclick="window.close()" /></center></body><%
-	Response.End
+	Response.End()
 End If
 
 Connect conn
@@ -26,7 +26,7 @@ sql="SELECT *,LEFT(REVIEW_FILE,CHARINDEX(',',REVIEW_FILE)-1) AS REVIEW_FILE1,RIG
 GetRecordSetNoLock conn,rs,sql,result
 If result<>1 Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4">数据库没有该论文记录！</font><br /><input type="button" value="关 闭" onclick="window.close()" /></center></body><%
-	Response.End
+	Response.End()
 End If
 
 Dim sourcefile,fileExt,newfilename
@@ -48,7 +48,7 @@ If Not fso.FileExists(sourcefile) Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4">该论文暂无<%=arrFileListName(filetype)%>或已被删除！
 （文件&quot;<%=sourcefile%>&quot;不存在）</font><br /><input type="button" value="关 闭" onclick="window.close()" /></center></body><%
 	Set fso=Nothing
-	Response.End
+	Response.End()
 End If
 Set file=fso.GetFile(sourcefile)
 If Len(arrFileListNamePostfix(filetype)) Then

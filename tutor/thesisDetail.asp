@@ -16,7 +16,7 @@ pageNo=Request.Form("pageNo2")
 tid=Session("Tid")
 If Len(thesisID)=0 Or Not IsNumeric(thesisID) Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4">参数无效。</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
-	Response.End
+	Response.End()
 End If
 
 Dim table_file(4)
@@ -27,14 +27,14 @@ If result=0 Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4">数据库没有该论文记录！</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
   CloseRs rs
   CloseConn conn
-	Response.End
+	Response.End()
 End If
 
 Dim arrCaptionAgree:arrCaptionAgree=Array("","审核通过开题报告表，同意参加开题报告","审核通过中期检查表","审核通过预答辩申请表，同意参加预答辩","审核通过审批材料，同意参加答辩")
 Dim arrCaptionNotAgree:arrCaptionNotAgree=Array("","审核不通过，不同意参加开题报告（延期3-6个月重新做开题报告）","审核不通过中期检查表","审核不通过预答辩申请表，不同意参加预答辩","审核不通过审批材料，不同意参加答辩")
 Dim review_status,numReviewed,review_result(2),reviewer_master_level(1),review_file(1),review_time(1),review_level(1)
 
-sql="SELECT * FROM DETECT_RESULT_INFO WHERE THESIS_ID="&thesisID
+sql="SELECT * FROM VIEW_DETECT_RESULT_INFO WHERE THESIS_ID="&thesisID
 GetRecordSet conn,rsDetect,sql,result
 If rs("REVIEWER1")=tid Then
 	reviewer=0
@@ -218,17 +218,18 @@ Case vbNullString	' 论文详情页面
 		Else
 %><ul><%
 			Dim index:index=1
-			Dim detect_time,detect_time_text,detect_result_text
+			Dim hash,detect_time,detect_result
 			Do While Not rsDetect.EOF
+				hash=rsDetect("HASH").Value
 				detect_time=rsDetect("DETECT_TIME").Value
-				If IsNull(detect_time) Then detect_time_text="无" Else detect_time_text=detect_time
-				detect_result_text=rsDetect("RESULT").Value
-				If IsNull(detect_result_text) Then detect_result_text="无" Else detect_result_text=detect_result_text&"%"
+				If IsNull(detect_time) Then detect_time="无"
+				detect_result=rsDetect("RESULT").Value
+				If IsNull(detect_result) Then detect_result="无" Else detect_result=detect_result&"%"
 				detect_report=rsDetect("DETECT_REPORT").Value
-%><li><%=index%>.检测时间：<%=detect_time_text%>，查重结果：<%=detect_result_text%>
-<br/><a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=8&time=<%=detect_time%>" target="_blank">送检论文</a><%
+%><li><%=index%>.检测时间：<%=detect_time%>，查重结果：<%=detect_result%>
+<br/><a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=8&hash=<%=hash%>" target="_blank">送检论文</a><%
 				If Not IsNull(detect_report) Then %>
-<a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=12&time=<%=detect_time%>" target="_blank">检测报告</a><%
+&emsp;<a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=12&hash=<%=hash%>" target="_blank">检测报告</a><%
 				End If
 %></li><%
 				index=index+1

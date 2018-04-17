@@ -59,12 +59,12 @@ Sub Save_Visit_UserIP(Visit_Module,Visit_UserIp,Visit_UserNo,Visit_FrontURL)				
 		Response.write "alert('超时，请重新登陆');"
 		Response.write "window.location.href='../admin/err/timeout.asp'"
 		Response.write "</SCRIPT>"
-		Response.end
+		Response.End()
 	Else
 		InsStr="Insert Into Visit_Info (Visit_UserIp,Visit_UserNo,Visit_Module,Visit_FrontURL) VALUES ("&"'"&Visit_UserIp&"','"&Visit_UserNo&"','"&Visit_Module&"','"&Visit_FrontURL&"')"
 	End If 
 	'Response.write InsStr
-	'Response.end
+	'Response.End()
 	conn.Execute InsStr
 End Sub
 
@@ -660,7 +660,7 @@ Sub SafeRequest(SqlStr, StrType)
 			Response.write "alert('非法操作');"
 			Response.write "window.history.back();"
 			Response.write "</script>"
-			Response.end
+			Response.End()
 		End If 
 	Next
 End Sub

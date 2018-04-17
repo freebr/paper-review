@@ -81,7 +81,7 @@ Case 2	' 下载页面
 	End If
 	If bError Then
 	%><body bgcolor="ghostwhite"><center><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
-		Response.End
+		Response.End()
 	End If
 	
 	rarFilename=Trim(Request.Form("rarfilename"))
@@ -95,7 +95,7 @@ Case 2	' 下载页面
 	GetRecordSet conn,rs,sql,result
 	If rs.EOF Then
 	%><body bgcolor="ghostwhite"><center><font color=red size="4">所选记录不存在！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
-		Response.End
+		Response.End()
 	End If
 	' 打包文件
 	Dim sourcefile,fileExt,oldfilename,newfilename
@@ -185,7 +185,7 @@ Case 2	' 下载页面
 	fso.DeleteFolder rarDir
 	If numSucceeded=0 Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4">所选论文没有<%=arrFileListName(filetype)%>！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
-		Response.End
+		Response.End()
 	End If
 	' 添加压缩文件注释
 	comment="打包报告："&vbNewLine&numSucceeded&" 个成功，"&numFailed&" 个失败。"&errMsg

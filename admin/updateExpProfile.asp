@@ -8,7 +8,7 @@ TeacherId=upload.Form("teacherid")
 FormGetToSafeRequest(TeacherId)
 If Len(TeacherId)=0 Or Not IsNumeric(TeacherId) Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4">参数无效。</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
-	Response.End
+	Response.End()
 End If
 
 teachername=upload.Form("teachername")
@@ -84,7 +84,7 @@ If bError Then
 	CloseRs rs
   CloseConn connOrigin
   CloseConn conn
-	Response.End
+	Response.End()
 End If
 
 If rs("IFTEACHER")=3 Then

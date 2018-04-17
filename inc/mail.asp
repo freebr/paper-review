@@ -1,5 +1,4 @@
-﻿<%
-<!--#include virtual="/pub/sms.inc"-->
+﻿<!--#include virtual="/pub/sms.inc"--><%
 Function newEmailTemplate(template_name,mailsubject,mailcontent,fieldlist)
 	' 新建邮件模板并返回模板编号
 	Dim sql,rs,conn,result,updateTime
@@ -154,7 +153,7 @@ Function sendSMS(mail_id,rcpt,arr_fieldval)
 	If IsNull(mail_id) Then Exit Function
 	Dim sql,rs,conn,result,i
 	Dim arr_fieldname
-	Dim sms,mailcontent,mailbody
+	Dim mailcontent,mailbody
 	Dim ret
 	' 查询邮件模板内容、变量等信息
 	sql="SELECT * FROM EMAIL_TEMPLATE WHERE ID="&mail_id
@@ -175,10 +174,9 @@ Function sendSMS(mail_id,rcpt,arr_fieldval)
 	If Len(rcpt) Then
 		mailbody=toPlainText(mailcontent&"(本短信为系统自动发出，请勿回复)")
 		'On Error Resume Next
-		Set msg=New Messenger
+		Dim msg:Set msg=New Messenger
 		msg.MsgType=0
 		ret=msg.sendMessage(rcpt, mailbody)
-		If ret=0 Then ret=1
 		Set msg=Nothing
 	Else
 		ret=1
@@ -215,14 +213,14 @@ Function sendCustomEmail(mailrcpt,subject,content)
 	sendCustomEmail=bSuccess
 End Function
 Function sendCustomSMS(rcpt,content)
-	Dim mailbody,sms,ret
+	Dim mailbody,ret
 	If Len(rcpt) Then
 		mailbody=toPlainText(content&"(本短信为系统自动发出，请勿回复)")
 		'On Error Resume Next
-		' 发送请求到WebService
-		Set sms=Server.CreateObject("SmsSender.SmsService")
-		ret=sms.sendSMS(rcpt,mailbody)
-		Set sms=Nothing
+		Dim msg:Set msg=New Messenger
+		msg.MsgType=0
+		ret=msg.sendMessage(rcpt, mailbody)
+		Set msg=Nothing
 	Else
 		ret=-1
 	End If

@@ -12,7 +12,7 @@ If bError Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4"><%=errdesc%></font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 	CloseRs rs
 	CloseConn conn
-	Response.End
+	Response.End()
 End If
 
 Connect conn
@@ -22,7 +22,7 @@ If rs.EOF Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4">数据库没有记录！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 	CloseRs rs
   CloseConn conn
-	Response.End
+	Response.End()
 End If
 %><html>
 <head>

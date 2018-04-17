@@ -35,7 +35,7 @@ If bError Then
 <body><center><div><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></div></center></body></html><%
   CloseRs rs
   CloseConn conn
-	Response.End
+	Response.End()
 End If
 
 Dim review_status

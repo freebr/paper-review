@@ -22,7 +22,7 @@ If Len(thesisID)=0 Then
 End If
 If bError Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
-	Response.End
+	Response.End()
 End If
 
 Dim mail_id

@@ -1,6 +1,5 @@
 ﻿<%Response.Charset="utf-8"%>
 <!--#include file="../inc/db.asp"-->
-<!--#include file="../inc/mail.asp"-->
 <!--#include file="common.asp"-->
 <!--#include file="tablegen.inc"-->
 <%If IsEmpty(Session("StuId")) Then Response.Redirect("../error.asp?timeout")
@@ -211,7 +210,7 @@ Case 1	' 上传进程
   	CloseRs rs
   	CloseRs rs2
   	CloseConn conn
-		Response.End
+		Response.End()
 	End If
 	
 	Dim fso
@@ -320,7 +319,7 @@ Case 1	' 上传进程
 			CloseRs rs
 	  	CloseRs rs2
 	  	CloseConn conn
-			Response.End
+			Response.End()
 		End If
 		
 		tg.addInfo "StuName",Session("StuName")

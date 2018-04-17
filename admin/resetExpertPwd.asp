@@ -5,6 +5,11 @@ Response.Expires=-1%>
 
 ids=Request.Form("sel")
 sel_count=Request.Form("sel").Count
+If sel_count=0 Then
+%><body bgcolor="ghostwhite"><center><font color=red size="4">请选择要重置密码的专家！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
+	Response.End()
+End If
+
 FormGetToSafeRequest(ids)
 finalFilter=Request.Form("finalFilter2")
 pageSize=Request.Form("pageSize2")

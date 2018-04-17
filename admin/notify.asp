@@ -13,7 +13,7 @@ If Len(uid_type)=0 Then
 End If
 If bError Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
-	Response.End
+	Response.End()
 End If
 
 Dim arr,arr2,user_type,user_id

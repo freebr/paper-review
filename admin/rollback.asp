@@ -16,7 +16,7 @@ pageSize=Request.Form("pageSize2")
 pageNo=Request.Form("pageNo2")
 If Len(thesisID)=0 Or Not IsNumeric(thesisID) Or Len(usertype)=0 Or Not IsNumeric(usertype) Or Len(opr)=0 Or Not IsNumeric(opr) Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4">参数无效。</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
-	Response.End
+	Response.End()
 End If
 
 Dim conn,rs,sql,sqlDetect,result
@@ -27,7 +27,7 @@ If rs.EOF Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4">数据库没有该论文记录！</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
   CloseRs rs
   CloseConn conn
-	Response.End
+	Response.End()
 End If
 
 Dim detect_count

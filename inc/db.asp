@@ -95,7 +95,7 @@ Sub GetMenu(table,fieldName,optionText,filter,fieldValue)
 	rsMenu.activeConnection=conn
 	rsMenu.source="SELECT "&fieldName&","&optionText&" FROM "&table&" WHERE VALID=0 AND "&filter
 	'Response.write rsMenu.source
-	'Response.end
+	'Response.End()
 	rsMenu.Open , ,AdOpenKeyset
 	While Not rsMenu.EOF
 	Response.write "<OPTION VALUE='"&HtmlEncode(rsMenu(fieldName))&"'"
@@ -112,7 +112,7 @@ Sub GetDistinctMenu(table,fieldName,fieldId,optionText,filter,fieldValue)
 	rsMenu.activeConnection=conn
 	rsMenu.source="SELECT "&fieldName&","&fieldId&","&optionText&" FROM "&table&" WHERE VALID=0 AND "&filter
 	'Response.write rsMenu.source
-	'Response.end
+	'Response.End()
 	rsMenu.Open , ,AdOpenKeyset
 	While Not rsMenu.EOF
 	Response.write "<OPTION VALUE='"&HtmlEncode(rsMenu(fieldId))&"'"
@@ -191,7 +191,7 @@ Sub GetMenuListPubTerm(table,FieldID,FieldName,fieldValue,TermStr)
 		rsMenu.source=rsMenu.source&fieldName&" FROM "&table&" WHERE VALID=0 "&TermStr
 	End If
 	'Response.write rsMenu.source
-	'Response.END
+	'Response.End()
 
 	rsMenu.Open , ,AdOpenKeyset
 	'Response.write Cstr(rsMenu(fieldID))
@@ -225,7 +225,7 @@ Sub GetMenuListPubOrder(table,FieldID,FieldName,fieldValue,TermStr)
 	rsMenu.source=rsMenu.source&" order by "&FieldID&" desc"
 
 	'Response.write rsMenu.source
-	'Response.END
+	'Response.End()
 
 	rsMenu.Open , ,AdOpenKeyset
 	'Response.write Cstr(rsMenu(fieldID))
@@ -320,28 +320,28 @@ Function PSafeRequest(SqlStr)
 '		Response.write "alert('非法操作');"
 '		Response.write "window.history.back();"
 '		Response.write "</script>"
-'		Response.end
+'		Response.End()
 '	End If 
 	If Cint(RegExpTest("select",sqlStr))>1 Then 
 		Response.write "<SCRIPT LANGUAGE='JavaScript'>"
 		Response.write "alert('非法操作');"
 		Response.write "window.history.back();"
 		Response.write "</script>"
-		Response.end
+		Response.End()
 	End If 
 	If Cint(RegExpTest("exec",sqlStr))>=1 Then
 		Response.write "<SCRIPT LANGUAGE='JavaScript'>"
 		Response.write "alert('非法操作');"
 		Response.write "window.history.back();"
 		Response.write "</script>"
-		Response.end
+		Response.End()
 	End If 
 	If Cint(RegExpTest("0x",sqlStr))>=1 Then
 		Response.write "<SCRIPT LANGUAGE='JavaScript'>"
 		Response.write "alert('非法操作');"
 		Response.write "window.history.back();"
 		Response.write "</script>"
-		Response.end
+		Response.End()
 	End If 
 End Function
 '===================================================
@@ -353,28 +353,28 @@ Function FormProcSafeRequest(SqlStr)
 		Response.write "alert('非法操作');"
 		Response.write "window.history.back();"
 		Response.write "</script>"
-		Response.end
+		Response.End()
 	End If 
 	If Cint(RegExpTest("select",sqlStr))>=1 Then
 		Response.write "<SCRIPT LANGUAGE='JavaScript'>"
 		Response.write "alert('非法操作');"
 		Response.write "window.history.back();"
 		Response.write "</script>"
-		Response.end
+		Response.End()
 	End If 
 	If Cint(RegExpTest("exec",sqlStr))>=2 Then
 		Response.write "<SCRIPT LANGUAGE='JavaScript'>"
 		Response.write "alert('非法操作');"
 		Response.write "window.history.back();"
 		Response.write "</script>"
-		Response.end
+		Response.End()
 	End If 
 	If Cint(RegExpTest("0x",sqlStr))>=1 Then
 		Response.write "<SCRIPT LANGUAGE='JavaScript'>"
 		Response.write "alert('非法操作');"
 		Response.write "window.history.back();"
 		Response.write "</script>"
-		Response.end
+		Response.End()
 	End If 
 End Function
 
@@ -388,35 +388,35 @@ Function FormGetToSafeRequest(SqlStr)
 		Response.write "alert('非法操作');"
 		Response.write "window.history.back();"
 		Response.write "</script>"
-		Response.end
+		Response.End()
 	End If 
 	If Cint(RegExpTest("'",sqlStr))>=1 Then
 		Response.write "<SCRIPT LANGUAGE='JavaScript'>"
 		Response.write "alert('非法操作');"
 		Response.write "window.history.back();"
 		Response.write "</script>"
-		Response.end
+		Response.End()
 	End If 
 	If Cint(RegExpTest("select",sqlStr))>=1 Then
 		Response.write "<SCRIPT LANGUAGE='JavaScript'>"
 		Response.write "alert('非法操作');"
 		Response.write "window.history.back();"
 		Response.write "</script>"
-		Response.end
+		Response.End()
 	End If 
 	If Cint(RegExpTest("exec",sqlStr))>=1 Then 
 		Response.write "<SCRIPT LANGUAGE='JavaScript'>"
 		Response.write "alert('非法操作');"
 		Response.write "window.history.back();"
 		Response.write "</script>"
-		Response.end
+		Response.End()
 	End If 
 	If Cint(RegExpTest("0x",sqlStr))>=1 Then
 		Response.write "<SCRIPT LANGUAGE='JavaScript'>"
 		Response.write "alert('非法操作');"
 		Response.write "window.history.back();"
 		Response.write "</script>"
-		Response.end
+		Response.End()
 	End If 
 End Function
 Function FormGetToSafeRequest2(SqlStr)
@@ -426,28 +426,28 @@ Function FormGetToSafeRequest2(SqlStr)
 		Response.write "alert('非法操作');"
 		Response.write "window.history.back();"
 		Response.write "</script>"
-		Response.end
+		Response.End()
 	End If 
 	If Cint(RegExpTest("seLect",sqlStr))>=1 Then 
 		Response.write "<SCRIPT LANGUAGE='JavaScript'>"
 		Response.write "alert('非法操作');"
 		Response.write "window.history.back();"
 		Response.write "</script>"
-		Response.end
+		Response.End()
 	End If 
 	If Cint(RegExpTest("exec",sqlStr))>=1 Then
 		Response.write "<SCRIPT LANGUAGE='JavaScript'>"
 		Response.write "alert('非法操作');"
 		Response.write "window.history.back();"
 		Response.write "</script>"
-		Response.end
+		Response.End()
 	End If 
 	If Cint(RegExpTest("0x",sqlStr))>=1 Then
 		Response.write "<SCRIPT LANGUAGE='JavaScript'>"
 		Response.write "alert('非法操作');"
 		Response.write "window.history.back();"
 		Response.write "</script>"
-		Response.end
+		Response.End()
 	End If 
 End Function
 '===================================================

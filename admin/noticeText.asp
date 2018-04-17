@@ -35,7 +35,7 @@ If json="1" Then
 	End If
 	CloseRs rs
 	CloseConn conn
-	Response.End
+	Response.End()
 Else
 	dictNotices.Add "review_eval_reference", "送审评语的基本内容参考"
 	dictNotices.Add "review_result_desc", "评阅结果说明"

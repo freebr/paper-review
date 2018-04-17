@@ -15,14 +15,14 @@ If open="0" Then
 	CloseRs rs
 	If result=0 Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4">未设置系统开放时间！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
-		Response.end
+		Response.End()
 	End If
 	
 	sql="SELECT VALID FROM TEST_THESIS_REVIEW_SYSTEM"&wherestr
 	GetRecordSet conn,rs,sql,result
 	If rs("VALID") Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4">系统已经开放！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
-		Response.end
+		Response.End()
 	Else
 		' 开放系统
 		rs("VALID")=True
@@ -38,7 +38,7 @@ ElseIf open="101" Then
 	GetRecordSet conn,rs,sql,result
 	If rs("VALID") Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4">系统正在运行，不能删除数据！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
-		Response.end
+		Response.End()
 	End If
 	sql="DELETE FROM TEST_THESIS_REVIEW_INFO"
 	conn.Execute sql

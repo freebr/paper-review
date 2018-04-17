@@ -81,7 +81,7 @@ Case 1	' 后台进程
 	
 	If bError Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
-		Response.End
+		Response.End()
 	End If
 	
 	' 获取表单上旧条目的ID

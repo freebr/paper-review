@@ -183,13 +183,13 @@ Function getClientInfo(cli)
 End Function
 If 0 And Not hasPrivilege(Session("writeprivileges"),"SA8") And Not hasPrivilege(Session("readprivileges"),"SA8") Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4">您没有权限！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
-	Response.End
+	Response.End()
 End If
 Dim stuclient:Set stuclient=New StudentClientInfo
 getClientInfo(stuclient)
 If stuclient.SystemStatus=STUCLI_STATUS_CLOSED Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4">电子评阅系统未启用！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
-	Response.End
+	Response.End()
 End If
 Dim arrTable,arrTblThesis,arrTableStatText,arrStuOprName,arrStep
 arrTable=Array("","开题报告表","中期检查表","预答辩申请表","答辩及授予学位审批材料")
