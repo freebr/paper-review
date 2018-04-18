@@ -314,14 +314,14 @@ Case 3	' 评阅页面
 <tr><td align="center" rowspan=2>对学位论文的总体评价</td><td align="center" colspan="2"><span id="reviewleveltext">&nbsp;</span></td></tr>
 <tr><td colspan="2"><p>优秀：总分≥85；良好：84≥总分≥70；合格：69≥总分≥60；不合格：总分≤59。<input type="hidden" name="reviewlevel" /></p></td></tr><%
 	Case 6
-		strJsArrRemarkStd="[{'name':'优','min':90},{'name':'良','min':76},{'name':'中','min':60},{'name':'差','min':0}]"
+		strJsArrRemarkStd="[{'name':'优秀','min':90},{'name':'良好','min':75},{'name':'合格','min':60},{'name':'不合格','min':0}]"
 	%>
 <tr><td align="center" colspan="3" style="padding:0"><p style="font-size:10pt;font-weight:bold"><%=rs("TEACHTYPE_NAME")%>学位论文评价指标</p></td></tr>
 <tr><td colspan="3"><p>说明：请评审专家在各二级指标得分空格处按百分制打分，系统将自动生成各一级指标得分并最后汇总计算出总分。</p><table class="tblform" width="100%" cellspacing=1 cellpadding=3>
-<tr><td width="20" align="center">一级指标</td><td align="center">二级指标</td><td width="350" align="center">评分标准：优（90-100分），良（76-89分），中（60-75分），差（59分以下）</td><td align="center">一级指标得分</td></tr>
+<tr><td width="20" align="center">一级指标</td><td align="center">二级指标</td><td width="350" align="center">评分标准（优秀：≥90；良好：89-75；合格：74-60；不合格：≤59）</td><td align="center">一级指标得分</td></tr>
 <%=scoringtbl_code%><tr><td align="center">总分</td><td align="center" colspan="3"><span id="totalscore"></span></td></tr></table></td></tr>
 <tr><td align="center" rowspan=2>对学位论文的总体评价</td><td align="center" colspan="3"><span id="reviewleveltext">&nbsp;</span></td></tr>
-<tr><td colspan="3"><p>优（90-100分），良（76-89分），中（60-75分），差（59分以下）。<input type="hidden" name="reviewlevel" /></p></td></tr><%
+<tr><td colspan="3"><p>优秀：≥90；良好：89-75；合格：74-60；不合格：≤59。<input type="hidden" name="reviewlevel" /></p></td></tr><%
 	Case Else %>
 <tr><td align="center">对学位论文的总体评价</td><td align="center" colspan="2"><%=reviewLevelRadios("reviewlevel",1,review_level(reviewer))%></td></tr><%
 	End Select %>
