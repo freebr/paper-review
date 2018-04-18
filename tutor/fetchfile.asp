@@ -34,7 +34,7 @@ Dim sourcefile,fileExt,newfilename
 Dim fso,file,stream
 Set fso=Server.CreateObject("Scripting.FileSystemObject")
 
-If (filetype=8 Or filetype=12) And Len(time_req) Then
+If (filetype=8 Or filetype=12) And Len(hash) Then
 	sql="SELECT * FROM VIEW_DETECT_RESULT_INFO WHERE THESIS_ID="&thesisID&" AND HASH="&toSqlString(hash)
 	GetRecordSet conn,rsDetect,sql,result
 	If filetype=8 Then
