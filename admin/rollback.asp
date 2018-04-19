@@ -41,7 +41,7 @@ Case 0	' 撤销学生上传操作
 	Select Case opr
 	Case 0
 		rs("TABLE_FILE1")=Null
-		rs("TASK_EVAL")=Null
+		'rs("TASK_EVAL")=Null
 		If IsNull(rs("TBL_THESIS_FILE1")) Then
 			rs("TASK_PROGRESS")=0
 		Else
@@ -50,7 +50,7 @@ Case 0	' 撤销学生上传操作
 		rs("REVIEW_STATUS")=0
 	Case 1
 		rs("TBL_THESIS_FILE1")=Null
-		rs("TASK_EVAL")=Null
+		'rs("TASK_EVAL")=Null
 		If IsNull(rs("TABLE_FILE1")) Then
 			rs("TASK_PROGRESS")=0
 		Else
@@ -59,7 +59,7 @@ Case 0	' 撤销学生上传操作
 		rs("REVIEW_STATUS")=0
 	Case 2
 		rs("TABLE_FILE2")=Null
-		rs("TASK_EVAL")=Null
+		'rs("TASK_EVAL")=Null
 		If IsNull(rs("TBL_THESIS_FILE2")) Then
 			rs("TASK_PROGRESS")=tpTbl1Passed
 		Else
@@ -68,7 +68,7 @@ Case 0	' 撤销学生上传操作
 		rs("REVIEW_STATUS")=0
 	Case 3
 		rs("TBL_THESIS_FILE2")=Null
-		rs("TASK_EVAL")=Null
+		'rs("TASK_EVAL")=Null
 		If IsNull(rs("TABLE_FILE2")) Then
 			rs("TASK_PROGRESS")=tpTbl1Passed
 		Else
@@ -77,7 +77,7 @@ Case 0	' 撤销学生上传操作
 		rs("REVIEW_STATUS")=0
 	Case 4
 		rs("TABLE_FILE3")=Null
-		rs("TASK_EVAL")=Null
+		'rs("TASK_EVAL")=Null
 		If IsNull(rs("TBL_THESIS_FILE3")) Then
 			rs("TASK_PROGRESS")=tpTbl2Passed
 		Else
@@ -86,7 +86,7 @@ Case 0	' 撤销学生上传操作
 		rs("REVIEW_STATUS")=0
 	Case 5
 		rs("TBL_THESIS_FILE3")=Null
-		rs("TASK_EVAL")=Null
+		'rs("TASK_EVAL")=Null
 		If IsNull(rs("TABLE_FILE3")) Then
 			rs("TASK_PROGRESS")=tpTbl2Passed
 		Else
@@ -95,23 +95,23 @@ Case 0	' 撤销学生上传操作
 		rs("REVIEW_STATUS")=0
 	Case 6
 		rs("THESIS_FILE")=Null
-		rs("DETECT_APP_EVAL")=Null
+		'rs("DETECT_APP_EVAL")=Null
 		rs("TASK_PROGRESS")=tpTbl3Passed
 		rs("REVIEW_STATUS")=0
 	Case 7
 		rs("THESIS_FILE2")=Null
-		rs("REVIEW_APP_EVAL")=Null
+		'rs("REVIEW_APP_EVAL")=Null
 		rs("REVIEW_STATUS")=rsAgreeDetect
 	Case 8
 		rs("THESIS_FILE3")=Null
-		rs("TUTOR_MODIFY_EVAL")=Null
+		'rs("TUTOR_MODIFY_EVAL")=Null
 		rs("REVIEW_STATUS")=rsReviewEval
 	Case 9
 		rs("THESIS_FILE4")=Null
 		rs("REVIEW_STATUS")=rsInstructEval
 	Case 10
 		rs("TABLE_FILE4")=Null
-		rs("TASK_EVAL")=Null
+		'rs("TASK_EVAL")=Null
 		rs("TASK_PROGRESS")=tpTbl3Passed
 	End Select
 Case 1	' 撤销专家评阅操作

@@ -176,7 +176,7 @@ Case 3	' 数据读取，导入到数据库
 						
 						sql_upd_apply=sql_upd_apply&"IF NOT EXISTS(SELECT STU_ID FROM TUTOR_STUDENT_APPLY_INFO WHERE STU_ID="&stuid&" AND RECRUIT_ID="&recid&") BEGIN;"&_
 													"DELETE FROM TUTOR_STUDENT_APPLY_INFO WHERE STU_ID="&stuid&" AND TURN_NUM=1;"&_
-													"INSERT INTO TUTOR_STUDENT_APPLY_INFO (STU_ID,TUTOR_ID,RECRUIT_ID,TURN_NUM,APPLY_TIME,TUTOR_REPLY_TIME,APPLY_STATUS) VALUES("&stuid&","&tutorid&","&recid&",1,'"&Now&"','"&Now&"',3); END;"
+													"INSERT INTO TUTOR_STUDENT_APPLY_INFO (STU_ID,TUTOR_ID,RECRUIT_ID,PERIOD_ID,TURN_NUM,APPLY_TIME,TUTOR_REPLY_TIME,APPLY_STATUS) VALUES("&stuid&","&tutorid&","&recid&","&period_id&",1,'"&Now&"','"&Now&"',3); END;"
 						
 						numThesis=numThesis+1
 					Else
