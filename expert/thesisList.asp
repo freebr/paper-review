@@ -171,6 +171,7 @@ Next
   		cssclass="thesisstat"
   		stat=arrStatText(1)
   	Else
+  		review_time=vbNullString
   		cssclass="thesisstat_unhandled"
   		stat=arrStatText(0)
   	End If
