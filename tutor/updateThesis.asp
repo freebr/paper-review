@@ -131,7 +131,7 @@ Case 5	'  同意/不同意送检送审操作
 	If ispass Then
 		sql="SELECT dbo.getDetectResultCount("&thesisID&")"
 		GetRecordSet conn,rsDetect,sql,result
-		detect_count=result
+		detect_count=rsDetect(0).Value
 		If detect_count>=1 Then
 			rs("DETECT_APP_EVAL")="该生已对论文进行修改，并已经导师检查，同意二次检测。"
 		Else
