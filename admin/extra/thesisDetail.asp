@@ -208,7 +208,7 @@ Case 2	' 评阅页面
 <tr><td colspan="3"><p>说明：请评审专家在各二级指标得分空格处按百分制打分，系统将自动生成各一级指标得分并最后汇总计算出总分。</p><table class="tblform" width="100%" cellspacing=1 cellpadding=3>
 <tr><td width="20" align="center">一级指标</td><td align="center">二级指标</td><td width="350" align="center">评分标准（优秀：≥90；良好：89-75；合格：74-60；不合格：≤59）</td><td align="center">一级指标得分</td></tr>
 <%=scoringtbl_code%><tr><td align="center">总分</td><td align="center" colspan="3"><span id="totalscore"></span></td></tr></table></td></tr>
-<tr><td align="center" rowspan=2>对学位论文的总体评价</td><td align="center" colspan="3"><span id="reviewleveltext">&nbsp;</span></td></tr>
+<tr><td align="center" rowspan="2">对学位论文的总体评价</td><td align="center" colspan="3"><span id="reviewleveltext">&nbsp;</span></td></tr>
 <tr><td colspan="3"><p>优秀：≥90；良好：89-75；合格：74-60；不合格：≤59。<input type="hidden" name="reviewlevel" /></p></td></tr><%
 	Case Else %>
 <tr><td align="center">对学位论文的总体评价</td><td align="center" colspan="2"><%=reviewLevelRadios("reviewlevel",1,review_level(reviewer))%></td></tr><%

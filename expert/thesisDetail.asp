@@ -311,7 +311,7 @@ Case 3	' 评阅页面
 <tr><td align="center" colspan="3" style="padding:0"><p style="font-size:10pt;font-weight:bold"><%=rs("TEACHTYPE_NAME")%>学位论文评价指标</p><table class="tblform" width="100%" cellspacing=1 cellpadding=3>
 <tr><td width="20" align="center">一级指标</td><td align="center">二级指标</td><td align="center">主要观测点</td><td align="center">参考权重</td><td align="center">得分（百分制）</td></tr>
 <%=scoringtbl_code%><tr><td align="center" colspan="3">加权总分</td><td align="center" colspan="2"><span id="totalscore"></span></td></tr></table></td></tr>
-<tr><td align="center" rowspan=2>对学位论文的总体评价</td><td align="center" colspan="2"><span id="reviewleveltext">&nbsp;</span></td></tr>
+<tr><td align="center" rowspan="2">对学位论文的总体评价</td><td align="center" colspan="2"><span id="reviewleveltext">&nbsp;</span></td></tr>
 <tr><td colspan="2"><p>优秀：总分≥85；良好：84≥总分≥70；合格：69≥总分≥60；不合格：总分≤59。<input type="hidden" name="reviewlevel" /></p></td></tr><%
 	Case 6
 		strJsArrRemarkStd="[{'name':'优秀','min':90},{'name':'良好','min':75},{'name':'合格','min':60},{'name':'不合格','min':0}]"

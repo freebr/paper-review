@@ -1,4 +1,5 @@
-﻿<!--#include virtual="/pub/sms.inc"--><%
+﻿<!--#include virtual="/pub/sms.inc"-->
+<%
 Function newEmailTemplate(template_name,mailsubject,mailcontent,fieldlist)
 	' 新建邮件模板并返回模板编号
 	Dim sql,rs,conn,result,updateTime

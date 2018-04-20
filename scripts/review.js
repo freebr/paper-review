@@ -37,25 +37,33 @@
 	var $totalscore=$('span#totalscore');
 	var $reviewleveltext=$('span#reviewleveltext');
 	var $reviewlevel=$(':hidden[name="reviewlevel"]');
+	var $reviewresult=$('label[for^="reviewresult"]');
 	if(!totalValid) {
 		$reviewleveltext.html('&nbsp;');
 		return;
 	}
 	sum=Math.round(sum);
 	$totalscore.text(sum);
-	if(sum<document.remarkStd[2].min) {
+	$reviewresult.hide();
+	if(sum<document.remarkStd[2].min) {	// 不合格
 		$totalscore.css('color','#ff0000');
 		$reviewleveltext.css('color','#ff0000');
 		level=document.remarkStd[3].name;i=4;
+		$reviewresult.eq(3).show().find(':radio').attr('checked',true);
 	} else {
 		$totalscore.css('color',"#000000");
 		$reviewleveltext.css('color',"#000000");
-		if(sum>=document.remarkStd[0].min) {
+		if(sum>=document.remarkStd[0].min) {	// 优秀
 			level=document.remarkStd[0].name;i=1;
-		} else if(sum>=document.remarkStd[1].min) {
+			$reviewresult.eq(0).show().find(':radio').attr('checked',true);
+		} else if(sum>=document.remarkStd[1].min) {	// 良好
 			level=document.remarkStd[1].name;i=2;
-		} else {
+			$reviewresult.eq(0).show().find(':radio').attr('checked',true);
+			$reviewresult.eq(1).show();
+		} else {	// 合格
 			level=document.remarkStd[2].name;i=3;
+			$reviewresult.eq(1).show().find(':radio').attr('checked',true);
+			$reviewresult.eq(2).show();
 		}
 	}
 	$reviewleveltext.text(level);

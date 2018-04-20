@@ -143,6 +143,7 @@ GetMenuListPubTerm "CODE_THESIS_REVIEW_STATUS","STATUS_ID2","STATUS_NAME",query_
 <option value="s_THESIS_SUBJECT">论文题目</option>
 <option value="s_TUTOR_NAME">导师姓名</option>
 <option value="ms_EXPERT_NAME1|EXPERT_NAME2">专家姓名</option>
+<option value="n_DETECT_COUNT">论文送检次数</option>
 </select>
 <select name="operator">
 <script>ReloadOperator()</script>

@@ -144,4 +144,7 @@ Const STUCLI_STATUS_DEBUG = 2
 
 Dim arrStuTypeId:arrStuTypeId=Array(0,5,6,7,9)
 Dim arrStuTypeName:arrStuTypeName=Array("","ME","MBA","EMBA","MPAcc")
+
+' 禁止缓存，仅在需要客户端重新请求 JS/CSS/HTML 等静态文件时使用
+Response.CacheControl="no-cache"
 %>

@@ -275,7 +275,7 @@ Case vbNullString	' 论文详情页面
 	End If
 %><tr><td height="10"></td></tr><%
 	If review_status>=rsMatchExpert Then %>
-<tr><td>评阅专家：&emsp;&emsp;&emsp;(1)<a href="/index/tutor_resume.asp?id=<%=rs("REVIEWER1")%>" target="_blank"><%=rs("EXPERT_NAME1")%></a>&emsp;(2)<a href="/index/tutor_resume.asp?id=<%=rs("REVIEWER2")%>" target="_blank"><%=rs("EXPERT_NAME2")%></a>&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,3,1)">撤销</a></td></tr>
+<tr><td>评阅专家：&emsp;&emsp;&emsp;(1)<a href="/index/teacher_resume.asp?id=<%=rs("REVIEWER1")%>" target="_blank"><%=rs("EXPERT_NAME1")%></a>&emsp;(2)<a href="/index/teacher_resume.asp?id=<%=rs("REVIEWER2")%>" target="_blank"><%=rs("EXPERT_NAME2")%></a>&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,3,1)">撤销</a></td></tr>
 <tr><td>对学位论文的总体评价&nbsp;1：<%=reviewLevelRadios("reviewlevel1",reviewfile_type,review_level(0))%></td></tr>
 <tr><td>对学位论文的总体评价&nbsp;2：<%=reviewLevelRadios("reviewlevel2",reviewfile_type,review_level(1))%></td></tr>
 <tr><td>评审结果&nbsp;1：&emsp;&emsp;<%=reviewResultList("reviewresult",review_result(0),false)%>&emsp;<span class="tip">(A→同意答辩；B→需做适当修改；C→需做重大修改；D→不同意答辩；E→尚未返回)</span></td></tr>
@@ -292,7 +292,7 @@ Case vbNullString	' 论文详情页面
 <tr><td>导师送审意见（<%=rs("SUBMIT_REVIEW_TIME")%>）：&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,2,2)">撤销</a><br/><%=toPlainString(rs("REVIEW_APP_EVAL"))%></td></tr><%
 	End If
 	If Not IsNull(rs("TUTOR_MODIFY_EVAL")) Then %>
-<tr><td><%=tutor_modify_eval_title%>：&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,2,4)">撤销</a><br/><%=toPlainString(rs("TUTOR_MODIFY_EVAL"))%></td></tr><%
+<tr><td><%=tutor_modify_eval_title%>：&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,2,3)">撤销</a><br/><%=toPlainString(rs("TUTOR_MODIFY_EVAL"))%></td></tr><%
 	End If
 	If Not IsNull(rs("DEFENCE_EVAL")) Then %>
 <tr><td>答辩委员会修改意见：&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,3,3)">撤销</a><br/><%=toPlainString(rs("DEFENCE_EVAL"))%></td></tr><%

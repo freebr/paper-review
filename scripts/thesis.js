@@ -48,9 +48,14 @@ function closeWindow() {
 }
 function rollback(tid,user,opr) {
 	if(user!=0&&user!=1&&user!=2&&user!=3) return false;
-	var msg=["确实要撤销这个文件的上传操作吗？","确实要撤销这名专家的评阅操作吗？",
+	var msg_templ=["确实要撤销这个文件吗？","确实要撤销这名专家的评阅操作吗？",
 					"确实要撤销导师的审核操作吗？","确实要撤销该项操作吗？"];
-	if (confirm(msg[user])) {
+	var msg_templ_ps=[["开题报告表","开题论文","中期检查表","中期论文","预答辩申请表","预答辩论文","最新上传的送检论文","送审论文","答辩论文","定稿论文","答辩审批材料"],
+							["第一位专家的评阅书和评阅意见","第二位专家的评阅书和评阅意见"],
+							["导师对表格材料的审核意见","导师的送检意见","导师的送审意见","导师对答辩论文的意见"],
+							["该学生的所有送检论文和送检报告","该论文的匹配专家结果","该论文的答辩安排信息","该论文的答辩委员会修改意见","该论文的教指会分会修改意见"]]
+	var msg=msg_templ[user]+msg_templ_ps[user][opr]+"将会被删除且不可恢复！"
+	if (confirm(msg)) {
 		submitForm(document.all.fmDetail,"rollback.asp?tid="+tid+"&user="+user+"&opr="+opr);
 		return true;
 	}

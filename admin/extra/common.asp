@@ -109,7 +109,7 @@ Function correlationTypeRadios(ctlname,sel)	' 显示相关程度单选按钮组
 	arr=Array("","相关","不相关")
 	For i=1 To UBound(arr)
 		If i>1 Then Response.Write "&emsp;"
-%><input type="radio" name="<%=ctlname%>" id="<%=ctlname&i%>" value="<%=i%>"<% If sel=i Then %> checked="true"<% End If %>><label for="<%=ctlname&i%>"><%=arr(i)%></label><%
+%><label for="<%=ctlname&i%>"><input type="radio" name="<%=ctlname%>" id="<%=ctlname&i%>" value="<%=i%>"<% If sel=i Then %> checked="true"<% End If %>><%=arr(i)%></label><%
 	Next
 End Function
 
@@ -118,7 +118,7 @@ Function masterLevelRadios(ctlname,sel)	' 显示对论文内容熟悉程度单�
 	arr=Array("","很熟悉","熟悉","一般")
 	For i=1 To UBound(arr)
 		If i>1 Then Response.Write "&emsp;"
-%><input type="radio" name="<%=ctlname%>" id="<%=ctlname&i%>" value="<%=i%>"<% If sel=i Then %> checked="true"<% End If %>><label for="<%=ctlname&i%>"><%=arr(i)%></label><%
+%><label for="<%=ctlname&i%>"><input type="radio" name="<%=ctlname%>" id="<%=ctlname&i%>" value="<%=i%>"<% If sel=i Then %> checked="true"<% End If %>><%=arr(i)%></label><%
 	Next
 End Function
 
@@ -131,7 +131,7 @@ Function reviewLevelRadios(ctlname,rev_type,sel)	' 显示对学位论文的总�
 	End If
 	For i=1 To UBound(arr)
 		If i>1 Then Response.Write "&emsp;"
-%><input type="radio" name="<%=ctlname%>" id="<%=ctlname&i%>" value="<%=i%>"<% If sel=i Then %> checked="true"<% End If %>><label for="<%=ctlname&i%>"><%=arr(i)%></label><%
+%><label for="<%=ctlname&i%>"><input type="radio" name="<%=ctlname%>" id="<%=ctlname&i%>" value="<%=i%>"<% If sel=i Then %> checked="true"<% End If %>><%=arr(i)%></label><%
 	Next
 End Function
 
@@ -140,7 +140,7 @@ Function reviewResultRadios(ctlname,sel)	' 显示评审结果单选按钮组
 	arr=Array("","同意答辩","适当修改后答辩","需做重大修改后方可答辩","不同意答辩")
 	For i=1 To UBound(arr)
 		If i>1 Then Response.Write "&emsp;"
-%><input type="radio" name="<%=ctlname%>" id="<%=ctlname&i%>" value="<%=i%>"<% If sel=i Then %> checked="true"<% End If %>><label for="<%=ctlname&i%>"><%=arr(i)%></label><%
+%><label for="<%=ctlname&i%>"><input type="radio" name="<%=ctlname%>" id="<%=ctlname&i%>" value="<%=i%>"<% If sel=i Then %> checked="true"<% End If %>><%=arr(i)%></label><%
 	Next
 End Function
 
