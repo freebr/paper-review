@@ -351,13 +351,15 @@ Case 3	' 评阅页面
 <input type="hidden" name="pageNo" value="<%=pageNo%>" /></form></body>
 <script type="text/javascript">
 	$(document).ready(function(){
-		$('[name="eval_text"]').keyup(function(){checkLength(this,2000)});
+		$('[name="eval_text"]').keyup(function(){checkLength(this,2000)});<%
+				If reviewfile_type=2 Then %>
 		if ($('#totalscore').size()>0) {
 			this.powers={'power1':<%=power1code%>,'power2':<%=power2code%>};
 			this.remarkStd=<%=strJsArrRemarkStd%>;
 			addScoreEventListener();
 			showTotalScore();
-		}
+		}<%
+				End If %>
 		if($('#btnsubmit').size()>0) {
 			$('#btnsubmit').click(function() {<%
 				If reviewfile_type=2 Then %>
