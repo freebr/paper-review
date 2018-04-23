@@ -210,11 +210,9 @@ End If %>
     <td width="90" align=center>学号</td>
     <td width="120" align=center>专业</td>
     <td width="100" align=center>学位类别</td>
-    <td width="60" align=center>导师</td><%
-    If Not bModified Then %>
+    <td width="60" align=center>导师</td>
 		<td width="80" align=center>送审结果1</td>
-		<td width="80" align=center>送审结果2</td><%
-		End If %>
+		<td width="80" align=center>送审结果2</td>
 		<td width="80" align=center>处理意见</td>
 		<td width="110" align=center>状态</td>
     <td width="30" align=center>选择</td>
@@ -222,12 +220,15 @@ End If %>
   </tr><%
 If bQuery Then
   Dim review_result
+  Dim review_result_text(1)
   For i=1 to rs.PageSize
     If rs.EOF Then Exit For
     If Not IsNull(rs("REVIEW_RESULT")) Then
     	review_result=Split(rs("REVIEW_RESULT"),",")
+    	review_result_text(0)=HtmlEncode(rs("EXPERT_NAME1"))&"<br/>"&getReviewResult(review_result(0))
+    	review_result_text(1)=HtmlEncode(rs("EXPERT_NAME2"))&"<br/>"&getReviewResult(review_result(1))
     Else
-    	ReDim review_result(2)
+    	
     End If
     substat=vbNullString
 		If rs("TASK_PROGRESS")>=tpTbl4Uploaded Then
@@ -251,11 +252,9 @@ If bQuery Then
     <td align=center><%=rs("STU_NO")%></td>
     <td align=center><%=HtmlEncode(rs("SPECIALITY_NAME"))%></td>
     <td align=center><%=rs("TEACHTYPE_NAME")%></td>
-    <td align=center><%=HtmlEncode(rs("TUTOR_NAME"))%></td><%
-    If Not bModified Then %>
-		<td align=center><%=getReviewResult(review_result(0))%></td>
-    <td align=center><%=getReviewResult(review_result(1))%></td><%
-		End If %>
+    <td align=center><%=HtmlEncode(rs("TUTOR_NAME"))%></td>
+		<td align=center><%=review_result_text(0)%></td>
+    <td align=center><%=review_result_text(1)%></td>
     <td align=center><%=getFinalResult(review_result(2))%></td>
     <td align=center><a href="#" onclick="return showThesisDetail(<%=rs("ID")%>,0)"><span class="<%=cssclass%>"><%=stat%></span></a><%
     If Len(substat) Then
