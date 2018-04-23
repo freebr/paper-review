@@ -130,7 +130,7 @@ Case 3	' 数据读取，导入到数据库
 			tutormail=rs("TUTOR_EMAIL")
 			fieldval=Array(stuname,stuno,stuclass,stuspec,stumail,subject,tutorname,tutormail)
 			bSuccess=sendAnnouncementEmail(mail_id(1),stumail,fieldval)
-			logtxt=logtxt&"，发送邮件给学生["&stuname&":"&stumail&"]"
+			logtxt=logtxt&"发送邮件给学生["&stuname&":"&stumail&"]"
 			If bSuccess Then
 				logtxt=logtxt&"成功。"
 			Else

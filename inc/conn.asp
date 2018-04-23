@@ -64,5 +64,4 @@ Function ExecNonQuery(conn,sql,params)
 	cmd.Execute(countAffected)
 	ExecNonQuery=countAffected
 End Function
-'========================  
 %>

@@ -1,14 +1,14 @@
 ﻿<!--#include file="inc/db.asp"--><%
 If Request.QueryString()="logout" Then
 	If Len(Session("Name")) Then
-		msg="行政人员["&Session("Name")&"]登出."
+		msg="行政人员["&Session("Name")&"]登出。"
 	ElseIf Len(Session("StuName")) Then
-		msg="学生["&Session("StuName")&"]登出."
+		msg="学生["&Session("StuName")&"]登出。"
 	ElseIf Len(Session("TName")) Then
 		If Session("IsExpert") Then
-			msg="评阅专家["&Session("TName")&"]登出."
+			msg="评阅专家["&Session("TName")&"]登出。"
 		Else
-			msg="教师["&Session("TName")&"]登出."
+			msg="教师["&Session("TName")&"]登出。"
 		End If
 	End If
 	If Session("LoginFromCAS") Then
