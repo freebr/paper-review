@@ -97,32 +97,35 @@ Case 3	' 数据读取，导入到数据库
 		sql="SELECT * FROM TEACHER_INFO"
 		GetRecordSet connOrigin,rsTea,sql,result
 		Do While Not rs.EOF
-			If IsNull(rs(0)) Then Exit Do
+			If IsNull(rs(0).Value) Then Exit Do
 			bIsUpdated=False
 			' 是否校外专家
-			bIsInschool=(rs(6)="否")
+			If IsNull(rs(6).Value) Or rs(6).Value="否" Then
+				bIsInschool=True
+			Else
+				bIsInschool=False
+			End If
+			
 			' 姓名
-			s=Trim(rs(0))
+			s=Trim(rs(0).Value)
 			If bIsInschool Then i=getTeacherIdByName(s)
 			If bIsInschool And i=-1 Then
 				bError=True
-				errMsg=errMsg&"教师不存在:"""&s&"""。"&vbNewLine
-				'addData=-1
-				'Exit Function
+				errMsg=errMsg&""""&s&"""按校内教师导入，但该教师不存在。"&vbNewLine
 			Else
 				fieldValue(0)=s
 				' 职称
-				fieldValue(1)=rs(1)
+				fieldValue(1)=rs(1).Value
 				' 学科专长
-				fieldValue(2)=rs(2)
+				fieldValue(2)=rs(2).Value
 				' 单位（住址）
-				fieldValue(3)=rs(3)
+				fieldValue(3)=rs(3).Value
 				' 联系方式
-				fieldValue(4)=rs(4)
+				fieldValue(4)=rs(4).Value
 				' 邮箱
-				fieldValue(5)=rs(5)
+				fieldValue(5)=rs(5).Value
 				' 备注
-				fieldValue(6)=rs(6)
+				fieldValue(6)=rs(6).Value
 				
 				sql="EXPERT_NAME='"&fieldValue(0)&"' AND INSCHOOL="&Abs(Int(bIsInschool))
 				rsExp.Filter=sql
@@ -141,40 +144,40 @@ Case 3	' 数据读取，导入到数据库
 							CloseRs rsTmp
 							i=i+1
 						Loop While result>0
-						rsTea("TEACHERNO")=s
-						rsTea("TEACHERNAME")=fieldValue(0)
-						rsTea("USER_PASSWORD")="12345678" ' generatePassword()
-						rsTea("IFTEACHER")=3
-						rsTea("OFFICE_ADDRESS")=fieldValue(3)
-						rsTea("MOBILE")=fieldValue(4)
-						rsTea("EMAIL")=fieldValue(5)
-						rsTea("PRO_DUTYID")=18	' 职称为其他
+						rsTea("TEACHERNO").Value=s
+						rsTea("TEACHERNAME").Value=fieldValue(0)
+						rsTea("USER_PASSWORD").Value="12345678" ' generatePassword()
+						rsTea("IFTEACHER").Value=3
+						rsTea("OFFICE_ADDRESS").Value=fieldValue(3)
+						rsTea("MOBILE").Value=fieldValue(4)
+						rsTea("EMAIL").Value=fieldValue(5)
+						rsTea("PRO_DUTYID").Value=18	' 职称为其他
 						rsTea.Update()
 						numNewExTeacher=numNewExTeacher+1
 					End If
 					numNewTeacher=numNewTeacher+1
 				Else							' 更新记录
 					If Not bIsInschool Then	' 更新校外专家在教师信息表中的记录
-						rsTea.Find("TEACHERID="&rsExp("TEACHER_ID"))
+						rsTea.Find("TEACHERID="&rsExp("TEACHER_ID").Value)
 						If Not rsTea.EOF Then
-							rsTea("USER_PASSWORD")="12345678" ' generatePassword()
-							rsTea("OFFICE_ADDRESS")=fieldValue(3)
-							rsTea("MOBILE")=fieldValue(4)
-							rsTea("EMAIL")=fieldValue(5)
-							rsTea("VALID")=0
+							rsTea("USER_PASSWORD").Value="12345678" ' generatePassword()
+							rsTea("OFFICE_ADDRESS").Value=fieldValue(3)
+							rsTea("MOBILE").Value=fieldValue(4)
+							rsTea("EMAIL").Value=fieldValue(5)
+							rsTea("VALID").Value=0
 							rsTea.Update()
 						End If
 					End If
 					numUpdTeacher=numUpdTeacher+1
 				End If
-				rsExp("EXPERT_NAME")=fieldValue(0)
-				rsExp("PRO_DUTY_NAME")=fieldValue(1)
-				rsExp("EXPERTISE")=fieldValue(2)
-				rsExp("WORKPLACE")=fieldValue(3)
-				rsExp("MOBILE")=fieldValue(4)
-				rsExp("EMAIL")=fieldValue(5)
-				rsExp("MEMO")=fieldValue(6)
-				rsExp("INSCHOOL")=Abs(bIsInschool)
+				rsExp("EXPERT_NAME").Value=fieldValue(0)
+				rsExp("PRO_DUTY_NAME").Value=fieldValue(1)
+				rsExp("EXPERTISE").Value=fieldValue(2)
+				rsExp("WORKPLACE").Value=fieldValue(3)
+				rsExp("MOBILE").Value=fieldValue(4)
+				rsExp("EMAIL").Value=fieldValue(5)
+				rsExp("MEMO").Value=fieldValue(6)
+				rsExp("INSCHOOL").Value=Abs(bIsInschool)
 				rsExp.Update()
 			End If
 			rs.MoveNext()
@@ -203,8 +206,8 @@ Case 3	' 数据读取，导入到数据库
 	
 	Set rs=connExcel.OpenSchema(adSchemaTables)
 	Do While Not rs.EOF
-		If rs("TABLE_TYPE")="TABLE" Then
-			table_name=rs("TABLE_NAME")
+		If rs("TABLE_TYPE").Value="TABLE" Then
+			table_name=rs("TABLE_NAME").Value
 			If InStr("Sheet1$",table_name) Then Exit Do
 		End If
 		rs.MoveNext()
@@ -218,7 +221,7 @@ Case 3	' 数据读取，导入到数据库
 	CloseConn connExcel
 %><script type="text/javascript"><%
 	If bError Then %>
-	alert("导入时出错，其他记录已导入成功。出错原因为：\n<%=toJsString(errMsg)%>");
+	alert("导入时出错，<%=arr(0)%>条记录已导入，<%=arr(1)%>条记录已更新。出错原因为：\n<%=toJsString(errMsg)%>");
 <%Else %>
 	alert("操作成功，<%=arr(0)%>条记录已导入，<%=arr(1)%>条记录已更新。");
 <%End If
