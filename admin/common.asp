@@ -229,6 +229,15 @@ Function semesterList(ctlname,sel)	' 显示学期选择框
 	%></select><%
 End Function
 
+Function diplomaList(ctlname,sel)	' 显示学历选择框
+	Dim i
+%><div class="divcontrol"><select name="<%=ctlname%>"><option value="0">请选择</option><%
+	For i=1 To UBound(arrDiplomaName)
+%><option value="<%=i%>"<% If sel=i Then Response.Write " selected"%>><%=arrDiplomaName(i)%></option><%
+	Next %>
+</select></div><%
+End Function
+
 Function reviewLevelRadios(ctlname,rev_type,sel)	' 显示对学位论文的总体评价单选按钮组
 	Dim arr,i
 	If rev_type=1 Then

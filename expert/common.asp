@@ -104,6 +104,15 @@ Function updateActiveTime(teacherID)
 	updateActiveTime=1
 End Function
 
+Function diplomaList(ctlname,sel)	' 显示学历选择框
+	Dim i
+%><div class="divcontrol"><select name="<%=ctlname%>"><option value="0">请选择</option><%
+	For i=1 To UBound(arrDiplomaName)
+%><option value="<%=i%>"<% If sel=i Then Response.Write " selected"%>><%=arrDiplomaName(i)%></option><%
+	Next %>
+</select></div><%
+End Function
+
 Function correlationTypeRadios(ctlname,sel)	' 显示相关程度单选按钮组
 	Dim arr,i
 	arr=Array("","相关","不相关")

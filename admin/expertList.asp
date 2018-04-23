@@ -1,9 +1,7 @@
-﻿<%Response.Charset="utf-8"%>
-<!--#include file="../inc/db.asp"-->
-<%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")%>
-<%
+﻿<!--#include file="../inc/db.asp"-->
+<!--#include file="common.asp"-->
+<%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 Dim finalFilter,pageNo,pageSize
-'----------------------PAGE-------------------------
 pageNo=""
 pageSize=""
 If Request.Form("finalFilter2").Count=0 Then
@@ -15,7 +13,6 @@ Else
 	pageSize=Request.Form("pageSize2")
 	pageNo=Request.Form("pageNo2")
 End If
-'------------------------------------------------------
 If Len(finalFilter) Then PubTerm="AND ("&finalFilter&")"
 Connect conn
 sql="SELECT * FROM VIEW_TEST_THESIS_REVIEW_EXPERT_INFO WHERE Valid=1 "&PubTerm&" ORDER BY EXPERT_NAME"
@@ -108,15 +105,15 @@ Next
 <input type="hidden" name="batch" value="1" />
 <table width="1000" cellpadding="2" cellspacing="1" bgcolor="dimgray">
   <tr bgcolor="gainsboro" align="center" height="25">
-    <td width="120" align=center>姓名/登录名</td>
-    <td width="80" align=center>职称</td>
-    <td width="120" align=center>学科专长</td>
-		<td align=center>单位（住址）</td>
-		<td width="100" align=center>联系电话</td>
-		<td width="120" align=center>邮箱</td>
-		<td align=center>备注</td>
-		<td width="120" align=center>操作</td>
-    <td width="30" align=center>选择</td>
+    <td width="160">姓名/登录名</td>
+    <td width="80">职称</td>
+    <td width="80">最高学历</td>
+    <td width="100">学科专长</td>
+		<td>单位（住址）</td>
+		<td width="100">联系电话</td>
+		<td width="120">邮箱</td>
+		<td width="120">操作</td>
+    <td width="30">选择</td>
   </tr>
   <%
   Dim bSelectable
@@ -126,18 +123,18 @@ Next
       bSelectable=teacherno<>"zhuanjia1" And teacherno<>"zhuanjia2"
   %>
   <tr bgcolor="ghostwhite">
-    <td align=center><a href="expertProfile.asp?id=<%=rs("TEACHER_ID")%>"><%=HtmlEncode(rs("EXPERT_NAME"))%>&nbsp;/&nbsp;<%=HtmlEncode(rs("TEACHERNO"))%></a></td>
-    <td align=center><%=HtmlEncode(rs("PRO_DUTY_NAME"))%></td>
-    <td align=center><%=HtmlEncode(rs("EXPERTISE"))%></td>
-    <td align=center><%=HtmlEncode(rs("WORKPLACE"))%></td>
-    <td align=center><%=HtmlEncode(rs("MOBILE"))%></td>
-    <td align=center><%=HtmlEncode(rs("EMAIL"))%></td>
-    <td align=center><%=HtmlEncode(rs("MEMO"))%></td>
-    <td align=center><a id="pwd<%=i%>" href="#" onclick="showPassword(this,'<%=rs("PASSWORD")%>');return false">显示密码</a>&emsp;&nbsp;<a href="#" onclick="window.open('/admin/UserManage/ChangeTeacherPass.asp?id=<%=rs("TEACHER_ID")%>','','width=300,height=300,status=no');return false">修改密码</a>
-<br/><a href="expertProfile.asp?id=<%=rs("TEACHER_ID")%>">查看资料</a>&emsp;<a href="#" onclick="window.open('sendmsg.asp?type=1&tid=<%=rs("TEACHER_ID")%>','','width=1010,height=420,status=no');return false">短信</a>&nbsp;<a href="#" onclick="window.open('sendmsg.asp?type=2&tid=<%=rs("TEACHER_ID")%>','','width=1010,height=420,status=no');return false">邮件</a></td>
+    <td align=center><a href="expertProfile.asp?id=<%=rs("TEACHER_ID").Value%>"><%=HtmlEncode(rs("EXPERT_NAME").Value)%>&nbsp;/&nbsp;<%=HtmlEncode(teacherno)%></a></td>
+    <td align=center><%=HtmlEncode(rs("PRO_DUTY_NAME").Value)%></td>
+    <td align=center><%=arrDiplomaName(rs("LAST_DIPLOMA").Value)%></td>
+    <td align=center><%=HtmlEncode(rs("EXPERTISE").Value)%></td>
+    <td align=center><%=HtmlEncode(rs("WORKPLACE").Value)%></td>
+    <td align=center><%=HtmlEncode(rs("MOBILE").Value)%></td>
+    <td align=center><%=HtmlEncode(rs("EMAIL").Value)%></td>
+    <td align=center><a id="pwd<%=i%>" href="#" onclick="return showPassword(this,'<%=rs("PASSWORD").Value%>')">显示密码</a>
+    <a href="expertProfile.asp?id=<%=rs("TEACHER_ID").Value%>">查看资料</a><br/><a href="#" onclick="window.open('sendmsg.asp?type=1&tid=<%=rs("TEACHER_ID").Value%>','','width=1010,height=420,status=no');return false">发送短信</a>&nbsp;<a href="#" onclick="window.open('sendmsg.asp?type=2&tid=<%=rs("TEACHER_ID").Value%>','','width=1010,height=420,status=no');return false">发送邮件</a></td>
     <td align=center><%
-    	If True Or bSelectable Then
-    %><input type="checkbox" name="sel" value="<%=rs("TEACHER_ID")%>"><input type="hidden" name="isinschool<%=rs("TEACHER_ID")%>" value="<%=Abs(rs("INSCHOOL"))%>"><%
+    	If bSelectable Then
+    %><input type="checkbox" name="sel" value="<%=rs("TEACHER_ID").Value%>"><input type="hidden" name="isinschool<%=rs("TEACHER_ID").Value%>" value="<%=Abs(rs("INSCHOOL").Value)%>"><%
   		End If %>
 	</td></tr>
   <%
