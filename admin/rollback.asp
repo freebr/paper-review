@@ -153,7 +153,7 @@ Case 1	' 撤销专家评阅操作
 	rs("REVIEW_RESULT").Value=join(review_result,",")
 	rs("REVIEW_LEVEL").Value=join(review_level,",")
 	rs("REVIEWER_MASTER_LEVEL").Value=join(reviewer_master_level,",")
-	rs("REVIEWER_EVAL"&(opr+1).Value)=eval_text
+	rs("REVIEWER_EVAL"&(opr+1)).Value=eval_text
 	rs("REVIEW_FILE").Value=join(review_file,",")
 	rs("REVIEWER_EVAL_TIME").Value=join(review_time,",")
 	rs("TUTOR_REVIEW_EVAL").Value=Null
