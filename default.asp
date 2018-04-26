@@ -42,7 +42,7 @@ Else
 	Case "student"
 		stuno=Request.QueryString("no")
 		If IsEmpty(stuno) Then stuno="201200000000"
-		sql="SELECT * FROM VIEW_STUDENT_INFO WHERE STU_NO='"&stuno&"' AND VALID=0"
+		sql="SELECT * FROM VIEW_STUDENT_INFO WHERE STU_NO="&toSqlString(stuno)&" AND VALID=0"
 	  GetRecordSetNoLock conn,rs,sql,result
 	  If result>0 Then
 		  Session("StuId")=rs("STU_ID").Value

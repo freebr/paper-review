@@ -28,7 +28,7 @@
 		}
 		sumPart*=power1[i];
 		if($scorep.size()&&partValid) {
-			$scorep[i].value=Math.round(sumPart);
+			$scorep[i].value=Math.round(sumPart*100)/100;
 		}
 		if(totalValid) {
 			sum+=sumPart;
