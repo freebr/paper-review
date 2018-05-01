@@ -25,7 +25,7 @@ ElseIf Not checkIfProfileFilledIn() Then
 	errdesc="在开始评阅前，您需要完善个人信息，<a href=""profile.asp"">请点击这里编辑。</a>"
 End If
 If bError Then
-%><html><head><link href="../css/tutor.css" rel="stylesheet" type="text/css" /><script src="../scripts/thesis.js" type="text/javascript"></script></head>
+%><html><head><link href="../css/tutor.css" rel="stylesheet" type="text/css" /><script src="../scripts/thesis.js" type="text/javascript"></script><title>查看论文信息</title></head>
 <body class="exp"><center><div class="content"><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="关 闭" onclick="closeWindow()" /></div></center></body></html><%
   CloseRs rs
   CloseConn conn
