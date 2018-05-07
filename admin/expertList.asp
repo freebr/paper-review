@@ -116,16 +116,18 @@ Next
     <td width="30">选择</td>
   </tr>
   <%
-  Dim bSelectable
+  Dim teacherno,last_diploma,bSelectable
   For i=1 to rs.PageSize
       If rs.EOF Then Exit For
       teacherno=rs("TEACHERNO").Value
+      last_diploma=rs("LAST_DIPLOMA").Value
+      If IsNull(last_diploma) Then last_diploma=0
       bSelectable=teacherno<>"zhuanjia1" And teacherno<>"zhuanjia2"
   %>
   <tr bgcolor="ghostwhite">
     <td align=center><a href="expertProfile.asp?id=<%=rs("TEACHER_ID").Value%>"><%=HtmlEncode(rs("EXPERT_NAME").Value)%>&nbsp;/&nbsp;<%=HtmlEncode(teacherno)%></a></td>
     <td align=center><%=HtmlEncode(rs("PRO_DUTY_NAME").Value)%></td>
-    <td align=center><%=arrDiplomaName(rs("LAST_DIPLOMA").Value)%></td>
+    <td align=center><%=arrDiplomaName(last_diploma)%></td>
     <td align=center><%=HtmlEncode(rs("EXPERTISE").Value)%></td>
     <td align=center><%=HtmlEncode(rs("WORKPLACE").Value)%></td>
     <td align=center><%=HtmlEncode(rs("MOBILE").Value)%></td>

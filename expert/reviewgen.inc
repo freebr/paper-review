@@ -108,7 +108,7 @@ Class ReviewGen
 				Case "$expert_master_level":val=String(m_expert_master_level,vbTab)&"√"
 				Case "$correlation_type":val=String(m_correlation_type,vbTab)&"√"
 				Case "$review_result"
-					If reviewfile_type=1 Then
+					If reviewfile_type=1 Or m_thesistype>=12 Then
 						val=String(m_reviewresult,vbTab)&"√"
 					Else
 						val=String((m_reviewresult-1)\2,vbNewLine)&String((m_reviewresult-1)Mod 2+1,vbTab)&"√"
