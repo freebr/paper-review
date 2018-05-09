@@ -27,7 +27,7 @@ Sub SetEditor(cont)
     editor.config("height") = 300
     editor.config("extraPlugins") = "video"
     editor.config("filebrowserVideoBrowseUrl") = "../inc/ckfinder/ckfinder.html?Type=Videos"
-    editor.instanceConfig("skin") = "office2003"
+    editor.instanceConfig("skin") = "office2013"
     editor.instanceConfig("font_names") = "Arial/Arial;Georgia/Georgia;宋体/宋体;黑体/黑体;仿宋/仿宋_GB2312;楷体/楷体_GB2312;隶书/隶书;幼圆/幼圆;微软雅黑/微软雅黑;"
     '嵌入图片上传模块
     CKFinder_SetupCKEditor editor, "../inc/ckfinder/", empty, empty
@@ -47,7 +47,7 @@ Sub SetEditorWithName(name,cont,height)
     If IsNull(height) Then height=300
     If Not IsNumeric(height) Then height=300
     editor.config("height") = height
-    editor.instanceConfig("skin") = "office2003"
+    editor.instanceConfig("skin") = "office2013"
     editor.instanceConfig("font_names") = "Arial/Arial;Georgia/Georgia;宋体/宋体;黑体/黑体;仿宋/仿宋_GB2312;楷体/楷体_GB2312;隶书/隶书;幼圆/幼圆;微软雅黑/微软雅黑;"
     
     '嵌入图片上传模块
