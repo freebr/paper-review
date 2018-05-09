@@ -10,6 +10,8 @@ spec_id=Request.Form("In_SPECIALITY_ID2")
 finalFilter=Request.Form("finalFilter2")
 pageSize=Request.Form("pageSize2")
 pageNo=Request.Form("pageNo2")
+finishReview=Request.Form("finishReview")
+willUpdateList=LCase(finishReview="1")
 
 Connect conn
 sql="SELECT * FROM VIEW_TEST_THESIS_REVIEW_INFO WHERE ID="&thesisID&" AND "&Session("Tid")&" IN (REVIEWER1,REVIEWER2)"
@@ -138,7 +140,7 @@ Case vbNullString	' 论文详情页面
 %><input type="button" id="btnsubmit" name="btnsubmit" value="<%=btnsubmittext%>" />&emsp;<%
 		End If
 	End If
-%><input type="button" value="关 闭" onclick="closeWindow()" />
+%><input type="button" value="关 闭" onclick="closeWindow(<%=willUpdateList%>)" />
 </p></td></tr></table>
 <input type="hidden" name="In_TEACHTYPE_ID2" value="<%=teachtype_id%>" />
 <input type="hidden" name="In_SPECIALITY_ID2" value="<%=spec_id%>" />

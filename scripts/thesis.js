@@ -43,8 +43,19 @@ function showThesisDetail(id,usertype) {
 								 window.tabmgr.newTab('/ThesisReview/'+client[usertype]+'/thesisDetail.asp?tid='+id);
 	return false;
 }
-function closeWindow() {
-	!window.tabmgr?window.close():window.tabmgr.close(window);
+function closeWindow(updateList) {
+	if(!window.tabmgr)
+		window.close()
+	else {
+		window.tabmgr.close(window);
+		if(updateList) {
+			window.tabmgr.tabs.forEach(function(tab) {
+				if(tab.url.indexOf("thesisList.asp")!==-1) {
+					tab.window.location.reload();
+				}
+			});
+		}
+	}
 }
 function rollback(tid,user,opr) {
 	if(user!=0&&user!=1&&user!=2&&user!=3) return false;

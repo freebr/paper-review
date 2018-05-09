@@ -268,7 +268,8 @@ WriteLog logtxt
 <input type="hidden" name="In_SPECIALITY_ID2" value="<%=spec_id%>" />
 <input type="hidden" name="finalFilter2" value="<%=toPlainString(finalFilter)%>" />
 <input type="hidden" name="pageSize2" value="<%=pageSize%>" />
-<input type="hidden" name="pageNo2" value="<%=pageNo%>" /></form>
+<input type="hidden" name="pageNo2" value="<%=pageNo%>" />
+<input type="hidden" name="finishReview" value="1" /></form>
 <script type="text/javascript">
 	alert("提交成功，感谢您参与本论文评阅！");
 	document.all.ret.submit();
