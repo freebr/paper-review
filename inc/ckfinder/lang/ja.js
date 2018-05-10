@@ -1,8 +1,8 @@
 ﻿/*
  * CKFinder
  * ========
- * http://ckfinder.com
- * Copyright (C) 2007-2012, CKSource - Frederico Knabben. All rights reserved.
+ * http://cksource.com/ckfinder
+ * Copyright (C) 2007-2015, CKSource - Frederico Knabben. All rights reserved.
  *
  * The software, this file, and its contents are subject to the CKFinder
  * License. Please read the license.txt file before using, installing, copying,
@@ -29,18 +29,18 @@ CKFinder.lang['ja'] =
 	{
 		// Put the voice-only part of the label in the span.
 		unavailable		: '%1<span class="cke_accessibility">, は利用できません。</span>',
-		confirmCancel	: '変更された项目があります。ウィンドウを闭じてもいいですか？',
-		ok				: '适用',
+		confirmCancel	: '変更された項目があります。ウィンドウを閉じてもいいですか？',
+		ok				: 'OK',
 		cancel			: 'キャンセル',
-		confirmationTitle	: '确认',
+		confirmationTitle	: '確認',
 		messageTitle	: 'インフォメーション',
-		inputTitle		: '质问',
+		inputTitle		: '質問',
 		undo			: '元に戻す',
 		redo			: 'やり直す',
 		skip			: 'スキップ',
 		skipAll			: 'すべてスキップ',
 		makeDecision	: 'どうしますか？',
-		rememberDecision: '注意：'
+		rememberDecision: '全てに適用する'
 	},
 
 
@@ -68,37 +68,37 @@ CKFinder.lang['ja'] =
 	DateAmPm : ['AM', 'PM'],
 
 	// Folders
-	FoldersTitle	: 'Folders',
+	FoldersTitle	: 'フォルダ',
 	FolderLoading	: '読み込み中...',
 	FolderNew		: '新しいフォルダ名を入力してください: ',
 	FolderRename	: '新しいフォルダ名を入力してください: ',
 	FolderDelete	: '本当にフォルダ「"%1"」を削除してもよろしいですか？',
 	FolderRenaming	: ' (リネーム中...)',
 	FolderDeleting	: ' (削除中...)',
-	DestinationFolder	: 'Destination Folder', // MISSING
+	DestinationFolder	: '適用するフォルダ',
 
 	// Files
 	FileRename		: '新しいファイル名を入力してください: ',
-	FileRenameExt	: 'ファイルが使えなくなる可能性がありますが、本当に拡张子を変更してもよろしいですか？',
+	FileRenameExt	: 'ファイルが使えなくなる可能性がありますが、本当に拡張子を変更してもよろしいですか？',
 	FileRenaming	: 'リネーム中...',
 	FileDelete		: '本当に「"%1"」を削除してもよろしいですか？',
-	FilesDelete	: 'Are you sure you want to delete %1 files?', // MISSING
+	FilesDelete	: 'これらの %1 つのファイルを削除してもよろしいですか？ ',
 	FilesLoading	: '読み込み中...',
 	FilesEmpty		: 'ファイルがありません',
-	DestinationFile	: 'Destination File', // MISSING
-	SkippedFiles	: 'List of skipped files:', // MISSING
+	DestinationFile	: '適用するファイル',
+	SkippedFiles	: 'スキップしたファイルのリスト:',
 
 	// Basket
 	BasketFolder		: 'Basket',
 	BasketClear			: 'バスケットを空にする',
 	BasketRemove		: 'バスケットから削除',
-	BasketOpenFolder	: '亲フォルダを开く',
+	BasketOpenFolder	: '親フォルダを開く',
 	BasketTruncateConfirm : '本当にバスケットの中身を空にしますか？',
 	BasketRemoveConfirm	: '本当に「"%1"」をバスケットから削除しますか？',
 	BasketRemoveConfirmMultiple	: 'Do you really want to remove %1 files from the basket?', // MISSING
 	BasketEmpty			: 'バスケットの中にファイルがありません。このエリアにドラッグ＆ドロップして追加することができます。',
 	BasketCopyFilesHere	: 'バスケットからファイルをコピー',
-	BasketMoveFilesHere	: 'バスケットからファイルを移动',
+	BasketMoveFilesHere	: 'バスケットからファイルを移動',
 
 	// Global messages
 	OperationCompletedSuccess	: 'Operation completed successfully.', // MISSING
@@ -120,18 +120,18 @@ CKFinder.lang['ja'] =
 	HelpTip		: 'ヘルプ',
 
 	// Context Menus
-	Select			: 'この画像を选択',
-	SelectThumbnail : 'この画像のサムネイルを选択',
+	Select			: 'この画像を選択',
+	SelectThumbnail : 'この画像のサムネイルを選択',
 	View			: '画像だけを表示',
 	Download		: 'ダウンロード',
 
 	NewSubFolder	: '新しいフォルダに入れる',
 	Rename			: 'ファイル名の変更',
 	Delete			: '削除',
-	DeleteFiles		: 'Delete Files', // MISSING
+	DeleteFiles		: 'ファイルを削除する',
 
 	CopyDragDrop	: 'コピーするファイルをここにドロップしてください',
-	MoveDragDrop	: '移动するファイルをここにドロップしてください',
+	MoveDragDrop	: '移動するファイルをここにドロップしてください',
 
 	// Dialogs
 	RenameDlgTitle		: 'リネーム',
@@ -139,60 +139,60 @@ CKFinder.lang['ja'] =
 	FileExistsDlgTitle	: 'ファイルはすでに存在します。',
 	SysErrorDlgTitle : 'システムエラー',
 
-	FileOverwrite	: '上书き',
-	FileAutorename	: 'A自动でリネーム',
-	ManuallyRename	: 'Manually rename', // MISSING
+	FileOverwrite	: '上書き',
+	FileAutorename	: '自動でリネーム',
+	ManuallyRename	: '手動でリネーム',
 
 	// Generic
 	OkBtn		: 'OK',
 	CancelBtn	: 'キャンセル',
-	CloseBtn	: '闭じる',
+	CloseBtn	: '閉じる',
 
 	// Upload Panel
 	UploadTitle			: 'ファイルのアップロード',
-	UploadSelectLbl		: 'アップロードするファイルを选択してください',
+	UploadSelectLbl		: 'アップロードするファイルを選択してください',
 	UploadProgressLbl	: '(ファイルのアップロード中...)',
 	UploadBtn			: 'アップロード',
 	UploadBtnCancel		: 'キャンセル',
 
-	UploadNoFileMsg		: 'ファイルを选んでください。',
-	UploadNoFolder		: 'アップロードの前にフォルダを选択してください。',
+	UploadNoFileMsg		: 'ファイルを選んでください。',
+	UploadNoFolder		: 'アップロードの前にフォルダを選択してください。',
 	UploadNoPerms		: 'ファイルのアップロード権限がありません。',
-	UploadUnknError		: 'ファイルの送信に失败しました。',
-	UploadExtIncorrect	: '选択されたファイルの拡张子は许可されていません。',
+	UploadUnknError		: 'ファイルの送信に失敗しました。',
+	UploadExtIncorrect	: '選択されたファイルの拡張子は許可されていません。',
 
 	// Flash Uploads
-	UploadLabel			: 'Files to Upload', // MISSING
-	UploadTotalFiles	: 'Total Files:', // MISSING
-	UploadTotalSize		: 'Total Size:', // MISSING
+	UploadLabel			: 'アップロード',
+	UploadTotalFiles	: 'アップロードしたファイル数:',
+	UploadTotalSize		: 'ファイルサイズ:',
 	UploadSend			: 'アップロード',
-	UploadAddFiles		: 'Add Files', // MISSING
-	UploadClearFiles	: 'Clear Files', // MISSING
-	UploadCancel		: 'Cancel Upload', // MISSING
-	UploadRemove		: 'Remove', // MISSING
-	UploadRemoveTip		: 'Remove !f', // MISSING
-	UploadUploaded		: 'Uploaded !n%', // MISSING
-	UploadProcessing	: 'Processing...', // MISSING
+	UploadAddFiles		: 'ファイルを追加',
+	UploadClearFiles	: 'クリア',
+	UploadCancel		: 'キャンセル',
+	UploadRemove		: '削除',
+	UploadRemoveTip		: '!fを削除しました',
+	UploadUploaded		: '!n%をアップロードしました',
+	UploadProcessing	: 'アップロード中...',
 
 	// Settings Panel
 	SetTitle		: '表示のカスタマイズ',
 	SetView			: '表示方法:',
 	SetViewThumb	: 'サムネイル',
 	SetViewList		: '表示形式',
-	SetDisplay		: '表示する项目:',
+	SetDisplay		: '表示する項目:',
 	SetDisplayName	: 'ファイル名',
-	SetDisplayDate	: '日时',
+	SetDisplayDate	: '日時',
 	SetDisplaySize	: 'ファイルサイズ',
-	SetSort			: '表示の顺番:',
+	SetSort			: '表示の順番:',
 	SetSortName		: 'ファイル名',
 	SetSortDate		: '日付',
 	SetSortSize		: 'サイズ',
-	SetSortExtension		: 'by Extension', // MISSING
+	SetSortExtension		: '拡張子',
 
 	// Status Bar
 	FilesCountEmpty : '<フォルダ内にファイルがありません>',
 	FilesCountOne	: '１つのファイル',
-	FilesCountMany	: '%1个のファイル',
+	FilesCountMany	: '%1個のファイル',
 
 	// Size and Speed
 	Kb				: '%1 KB',
@@ -201,49 +201,49 @@ CKFinder.lang['ja'] =
 	SizePerSecond	: '%1/s', // MISSING
 
 	// Connector Error Messages.
-	ErrorUnknown	: 'リクエストの処理に失败しました。 (Error %1)',
+	ErrorUnknown	: 'リクエストの処理に失敗しました。 (Error %1)',
 	Errors :
 	{
 	 10 : '不正なコマンドです。',
 	 11 : 'リソースタイプが特定できませんでした。',
 	 12 : '要求されたリソースのタイプが正しくありません。',
 	102 : 'ファイル名/フォルダ名が正しくありません。',
-	103 : 'リクエストを完了できませんでした。认证エラーです。',
-	104 : 'リクエストを完了できませんでした。ファイルのパーミッションが许可されていません。',
-	105 : '拡张子が正しくありません。',
+	103 : 'リクエストを完了できませんでした。認証エラーです。',
+	104 : 'リクエストを完了できませんでした。ファイルのパーミッションが許可されていません。',
+	105 : '拡張子が正しくありません。',
 	109 : '不正なリクエストです。',
 	110 : '不明なエラーが発生しました。',
 	111 : 'It was not possible to complete the request due to resulting file size.', // MISSING
 	115 : '同じ名前のファイル/フォルダがすでに存在しています。',
-	116 : 'フォルダが见つかりませんでした。ページを更新して再度お试し下さい。',
-	117 : 'ファイルが见つかりませんでした。ページを更新して再度お试し下さい。',
-	118 : '対象が移动元と同じ场所を指定されています。',
+	116 : 'フォルダが見つかりませんでした。ページを更新して再度お試し下さい。',
+	117 : 'ファイルが見つかりませんでした。ページを更新して再度お試し下さい。',
+	118 : '対象が移動元と同じ場所を指定されています。',
 	201 : '同じ名前のファイルがすでに存在しています。"%1" にリネームして保存されました。',
 	202 : '不正なファイルです。',
 	203 : 'ファイルのサイズが大きすぎます。',
 	204 : 'アップロードされたファイルは壊れています。',
-	205 : 'サーバ内の一时作业フォルダが利用できません。',
+	205 : 'サーバ内の一時作業フォルダが利用できません。',
 	206 : 'セキュリティ上の理由からアップロードが取り消されました。このファイルにはHTMLに似たデータが含まれています。',
 	207 : 'ファイルは "%1" にリネームして保存されました。',
-	300 : 'ファイルの移动に失败しました。',
-	301 : 'ファイルのコピーに失败しました。',
-	500 : 'ファイルブラウザはセキュリティ上の制限から无効になっています。システム担当者に连络をして、CKFinderの设定をご确认下さい。',
-	501 : 'サムネイル机能は无効になっています。'
+	300 : 'ファイルの移動に失敗しました。',
+	301 : 'ファイルのコピーに失敗しました。',
+	500 : 'ファイルブラウザはセキュリティ上の制限から無効になっています。システム担当者に連絡をして、CKFinderの設定をご確認下さい。',
+	501 : 'サムネイル機能は無効になっています。'
 	},
 
 	// Other Error Messages.
 	ErrorMsg :
 	{
 		FileEmpty		: 'ファイル名を入力してください',
-		FileExists		: ' %s はすでに存在しています。别の名前を入力してください。',
-		FolderEmpty		: 'フォルダ名を入力してください',
-		FolderExists	: 'Folder %s already exists.', // MISSING
-		FolderNameExists	: 'Folder already exists.', // MISSING
+		FileExists		: ' %s はすでに存在しています。別の名前を入力してください。',
+		FolderEmpty		: 'フォルダ名を入力してください。',
+		FolderExists	: 'フォルダ %s は既に存在しています。',
+		FolderNameExists	: 'フォルダは既に存在しています。',
 
 		FileInvChar		: 'ファイルに以下の文字は使えません: \n\\ / : * ? " < > |',
 		FolderInvChar	: 'フォルダに以下の文字は使えません: \n\\ / : * ? " < > |',
 
-		PopupBlockView	: 'ファイルを新しいウィンドウで开くことに失败しました。 お使いのブラウザの设定でポップアップをブロックする设定を解除してください。',
+		PopupBlockView	: 'ファイルを新しいウィンドウで開くことに失敗しました。 お使いのブラウザの設定でポップアップをブロックする設定を解除してください。',
 		XmlError		: 'It was not possible to properly load the XML response from the web server.', // MISSING
 		XmlEmpty		: 'It was not possible to load the XML response from the web server. The server returned an empty response.', // MISSING
 		XmlRawResponse	: 'Raw response from the server: %s' // MISSING
@@ -266,7 +266,7 @@ CKFinder.lang['ja'] =
 		invalidWidth	: '幅の値が不正です。',
 		invalidName		: 'ファイル名が不正です。',
 		newImage		: '新しい画像を作成',
-		noExtensionChange : '拡张子は変更できません。',
+		noExtensionChange : '拡張子は変更できません。',
 		imageSmall		: '元画像が小さすぎます。',
 		contextMenuName	: 'リサイズ',
 		lockRatio		: 'ロック比率',
@@ -277,9 +277,9 @@ CKFinder.lang['ja'] =
 	Fileeditor :
 	{
 		save			: '保存',
-		fileOpenError	: 'ファイルを开けませんでした。',
+		fileOpenError	: 'ファイルを開けませんでした。',
 		fileSaveSuccess	: 'ファイルの保存が完了しました。',
-		contextMenuName	: '编集',
+		contextMenuName	: '編集',
 		loadingFile		: 'ファイルの読み込み中...'
 	},
 
@@ -296,12 +296,17 @@ CKFinder.lang['ja'] =
 
 	Zip :
 	{
-		extractHereLabel	: 'Extract here', // MISSING
-		extractToLabel		: 'Extract to...', // MISSING
-		downloadZipLabel	: 'Download as zip', // MISSING
-		compressZipLabel	: 'Compress to zip', // MISSING
-		removeAndExtract	: 'Remove existing and extract', // MISSING
-		extractAndOverwrite	: 'Extract overwriting existing files', // MISSING
-		extractSuccess		: 'File extracted successfully.' // MISSING
+		extractHereLabel	: 'ここに解凍する',
+		extractToLabel		: 'フォルダを指定して解凍する',
+		downloadZipLabel	: 'zipファイルでダウンロード',
+		compressZipLabel	: 'zipファイルにする',
+		removeAndExtract	: '既存のファイルを削除して解凍しました。',
+		extractAndOverwrite	: '解凍して既存のファイルに上書きしました。',
+		extractSuccess		: '解凍が完了しました。'
+	},
+
+	Search :
+	{
+		searchPlaceholder : '検索'
 	}
 };

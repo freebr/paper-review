@@ -1,4 +1,4 @@
-﻿Sources of Intellectual Property Included in the gallery plugin:
+Sources of Intellectual Property Included in the gallery plugin:
 
 ColorBox - A lightweight customizable lightbox plugin for jQuery created by
 Jack Moore is released under the MIT License.

@@ -1,8 +1,8 @@
 ﻿<script runat="server" language="VBScript">
 ' CKFinder
 ' ========
-' http://ckfinder.com
-' Copyright (C) 2007-2012, CKSource - Frederico Knabben. All rights reserved.
+' http://cksource.com/ckfinder
+' Copyright (C) 2007-2015, CKSource - Frederico Knabben. All rights reserved.
 '
 ' The software, this file and its contents are subject to the CKFinder
 ' License. Please read the license.txt file before using, installing, copying,
@@ -131,13 +131,23 @@ class CKFinder_Connector_Utils_FileSystem
 		End if
 	End Function
 
-	'' Get file extension (only last part - e.g. extension of file.foo.bar.jpg = jpg)
+	'' Get file extension (if lastPart is true, only last part is returned - e.g. extension of file.foo.bar.jpg = jpg)
 	 '
 	 ' @param string fileName
 	 ' @return string
 	 '
-	Public Function GetExtension(filename)
-		GetExtension = oFSO.GetExtensionName(filename)
+	Public Function GetExtension( filename, lastPart )
+		If lastPart Then
+			GetExtension = oFSO.GetExtensionName(filename)
+		Else
+			Dim DotPos
+			DotPos = Instr(fileName, "." )
+			If DotPos < Len(fileName) Then
+				GetExtension = Mid(fileName, DotPos + 1)
+			Else
+				GetExtension = ""
+			End If
+		End If
 	End Function
 
 	Public Function GetFileName(filename)
@@ -383,8 +393,18 @@ class CKFinder_Connector_Utils_FileSystem
 	 ' @param string fileName
 	 ' @return string
 	 '
-	function getFileNameWithoutExtension(fileName)
-		getFileNameWithoutExtension = oFSO.getBaseName(fileName)
+	function getFileNameWithoutExtension( fileName, withoutLastPart )
+		if (withoutLastPart) Then
+			getFileNameWithoutExtension = oFSO.getBaseName(fileName)
+		Else
+			Dim DotPos
+			DotPos = Instr(fileName, "." )
+			If DotPos < Len(fileName) Then
+				getFileNameWithoutExtension = Mid(fileName, 1, DotPos-1)
+			Else
+				getFileNameWithoutExtension = fileName
+			End If
+		End If
 	End function
 
 
@@ -399,6 +419,12 @@ class CKFinder_Connector_Utils_FileSystem
 		Dim dir
 		dir = path
 		If (Right(dir, 1)="\") Then dir = Left(dir, Len(dir)-1)
+
+		' Check for empty path. This shouldn't happen
+		If (dir = "") Then
+			createDirectoryRecursively = false
+			Exit function
+		End If
 
 		If oFSO.FolderExists(dir) Then
 			createDirectoryRecursively = true
@@ -449,9 +475,9 @@ class CKFinder_Connector_Utils_FileSystem
 		Dim iCounter, baseName, extension, tempFileName, destinationFilePath, folder
 		iCounter = 1
 		folder = GetParentFolderName(fileName)
-		baseName = getFileNameWithoutExtension(fileName)
+		baseName = getFileNameWithoutExtension(fileName, false)
 		baseName = combinePaths(folder, baseName)
-		extension = getExtension(fileName)
+		extension = getExtension(fileName, false)
 		do
 			tempFileName = baseName & "(" & iCounter & ")." & extension
 
@@ -674,7 +700,7 @@ class CKFinder_Connector_Utils_FileSystem
 	' false : everything is OK
 	Public Function detectHtml( filePath )
 		Dim sExtension, data
-		sExtension = getExtension( filePath )
+		sExtension = getExtension( filePath, true )
 
 		If IsHtmlExtension( sExtension ) Then
 			detectHtml = false

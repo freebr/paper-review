@@ -1,8 +1,8 @@
 ﻿<script runat="server" language="VBScript">
 ' CKFinder
 ' ========
-' http://ckfinder.com
-' Copyright (C) 2007-2012, CKSource - Frederico Knabben. All rights reserved.
+' http://cksource.com/ckfinder
+' Copyright (C) 2007-2015, CKSource - Frederico Knabben. All rights reserved.
 '
 ' The software, this file and its contents are subject to the CKFinder
 ' License. Please read the license.txt file before using, installing, copying,
@@ -50,7 +50,7 @@ class CKFinder_Connector_ErrorHandler_QuickUpload
 	'
 	function throwError(number, uploaded, debugText)
 		If (base.SkipError(number)) Then Exit Function
-		
+
 '		response.clear
 		Dim sFileName, sResponse, sFileUrl, errorMessage, funcNum
 		sFileName = oCKFinder_Factory.Registry.Item("FileUpload_fileName")
@@ -82,24 +82,48 @@ class CKFinder_Connector_ErrorHandler_QuickUpload
 			response.write "alert('" & sResponse & "');"
 			response.write "</scr" & "ipt>"
 		Else
-			response.write "<meta http-equiv=""content-type"" content=""text/html; charset=utf-8"" /><scr" & "ipt type=""text/javascript"">"
+			If (Not(IsEmpty(request.QueryString("responseType"))) And (request.QueryString("responseType") = "json")) then
+				Response.ContentType = "application/json"
 
-			If Not(IsEmpty(request.QueryString("CKEditor"))) then
-				errorMessage = oCKFinder_Factory.Translator.getErrorMessage(number, sFileName)
-				If Not(uploaded) Then
-					sFileName = ""
-					sFileUrl = ""
-				End If
-				funcNum = oCKFinder_Factory.RegExp.ReplacePattern( "[^0-9]", Request.QueryString("CKEditorFuncNum"), "")
-				response.write("window.parent.CKEDITOR.tools.callFunction(" & funcNum & ", '" & replace(sFileUrl & oCKFinder_Factory.Config.encodeURIComponent(sFileName), "'", "\'") & "','" & replace(errorMessage, "'", "\'") & "') ;")
-			else
-				If ( Not(uploaded) ) Then
-					response.write "window.parent.OnUploadCompleted(" & number &  ") ;"
+				Dim data
+				Set data = jsObject()
+
+				data("fileName") = sFileName
+				If (uploaded) Then
+					data("uploaded") = 1
+					data("url") = sFileUrl & oCKFinder_Factory.Config.encodeURIComponent(sFileName)
 				Else
-					response.write "window.parent.OnUploadCompleted(" & number &  ",'" & replace(sFileUrl & oCKFinder_Factory.Config.encodeURIComponent(sFileName), "'", "\'") & "','" & replace(sFileName, "'", "\'") & "') ;"
+					data("uploaded") = 0
 				End If
+
+				If number <> CKFinder_Connector_Error_None then
+					Set data("error") = jsObject()
+					data("error")("number") = number
+					data("error")("message") = oCKFinder_Factory.Translator.getErrorMessage(number, sFileName)
+				End if
+
+				response.write(toJSON(data))
+			else
+				response.write "<scr" & "ipt type=""text/javascript"">"
+
+				If Not(IsEmpty(request.QueryString("CKEditor"))) then
+					errorMessage = oCKFinder_Factory.Translator.getErrorMessage(number, sFileName)
+					If Not(uploaded) Then
+						sFileName = ""
+						sFileUrl = ""
+					End If
+					funcNum = oCKFinder_Factory.RegExp.ReplacePattern( "[^0-9]", Request.QueryString("CKEditorFuncNum"), "")
+					response.write("window.parent.CKEDITOR.tools.callFunction(" & funcNum & ", '" & replace(sFileUrl & oCKFinder_Factory.Config.encodeURIComponent(sFileName), "'", "\'") & "','" & replace(errorMessage, "'", "\'") & "') ;")
+				else
+					If ( Not(uploaded) ) Then
+						response.write "window.parent.OnUploadCompleted(" & number &  ") ;"
+					Else
+						response.write "window.parent.OnUploadCompleted(" & number &  ",'" & replace(sFileUrl & oCKFinder_Factory.Config.encodeURIComponent(sFileName), "'", "\'") & "','" & replace(sFileName, "'", "\'") & "') ;"
+					End If
+				End if
+
+				response.write "</scr" & "ipt>"
 			End if
-			response.write "</scr" & "ipt>"
 		End if
 		response.end
 	end Function

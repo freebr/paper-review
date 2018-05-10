@@ -1,8 +1,8 @@
 ﻿/*
  * CKFinder
  * ========
- * http://ckfinder.com
- * Copyright (C) 2007-2012, CKSource - Frederico Knabben. All rights reserved.
+ * http://cksource.com/ckfinder
+ * Copyright (C) 2007-2015, CKSource - Frederico Knabben. All rights reserved.
  *
  * The software, this file, and its contents are subject to the CKFinder
  * License. Please read the license.txt file before using, installing, copying,
@@ -28,19 +28,19 @@ CKFinder.lang['vi'] =
 	common :
 	{
 		// Put the voice-only part of the label in the span.
-		unavailable		: '%1<span class="cke_accessibility">, kh?ng kh? d?ng</span>',
-		confirmCancel	: 'Vài tùy ch?n ?? thay ??i. B?n có mu?n ?óng h?p tho?i?',
+		unavailable		: '%1<span class="cke_accessibility">, không khả dụng</span>',
+		confirmCancel	: 'Vài tùy chọn đã thay đổi. Bạn có muốn đóng hộp thoại?',
 		ok				: 'OK',
-		cancel			: 'H?y',
-		confirmationTitle	: 'Xác nh?n',
-		messageTitle	: 'Th?ng tin',
-		inputTitle		: 'Cau h?i',
+		cancel			: 'Hủy',
+		confirmationTitle	: 'Xác nhận',
+		messageTitle	: 'Thông tin',
+		inputTitle		: 'Câu hỏi',
 		undo			: 'Hoàn tác',
-		redo			: 'Làm l?i',
-		skip			: 'B? qua',
-		skipAll			: 'B? qua t?t c?',
-		makeDecision	: 'Ch?n hành ??ng nào?',
-		rememberDecision: 'Ghi nh? quy?t ??nh này'
+		redo			: 'Làm lại',
+		skip			: 'Bỏ qua',
+		skipAll			: 'Bỏ qua tất cả',
+		makeDecision	: 'Chọn hành động nào?',
+		rememberDecision: 'Ghi nhớ quyết định này'
 	},
 
 
@@ -68,37 +68,37 @@ CKFinder.lang['vi'] =
 	DateAmPm : ['SA', 'CH'],
 
 	// Folders
-	FoldersTitle	: 'Th? m?c',
-	FolderLoading	: '?ang t?i...',
-	FolderNew		: 'Xin ch?n tên cho th? m?c m?i: ',
-	FolderRename	: 'Xin ch?n tên m?i cho th? m?c: ',
-	FolderDelete	: 'B?n có ch?c mu?n xóa th? m?c "%1"?',
-	FolderRenaming	: ' (?ang ??i tên...)',
-	FolderDeleting	: ' (?ang xóa...)',
+	FoldersTitle	: 'Thư mục',
+	FolderLoading	: 'Đang tải...',
+	FolderNew		: 'Xin chọn tên cho thư mục mới: ',
+	FolderRename	: 'Xin chọn tên mới cho thư mục: ',
+	FolderDelete	: 'Bạn có chắc muốn xóa thư mục "%1"?',
+	FolderRenaming	: ' (Đang đổi tên...)',
+	FolderDeleting	: ' (Đang xóa...)',
 	DestinationFolder	: 'Destination Folder', // MISSING
 
 	// Files
-	FileRename		: 'Xin nh?p tên t?p tin m?i: ',
-	FileRenameExt	: 'B?n có ch?c mu?n ??i ph?n m? r?ng? T?p tin có th? s? kh?ng dùng ???c.',
-	FileRenaming	: '?ang ??i tên...',
-	FileDelete		: 'B?n có ch?c mu?n xóa t?p tin "%1"?',
+	FileRename		: 'Xin nhập tên tập tin mới: ',
+	FileRenameExt	: 'Bạn có chắc muốn đổi phần mở rộng? Tập tin có thể sẽ không dùng được.',
+	FileRenaming	: 'Đang đổi tên...',
+	FileDelete		: 'Bạn có chắc muốn xóa tập tin "%1"?',
 	FilesDelete	: 'Are you sure you want to delete %1 files?', // MISSING
-	FilesLoading	: '?ang t?i...',
-	FilesEmpty		: 'Th? m?c tr?ng.',
+	FilesLoading	: 'Đang tải...',
+	FilesEmpty		: 'Thư mục trống.',
 	DestinationFile	: 'Destination File', // MISSING
 	SkippedFiles	: 'List of skipped files:', // MISSING
 
 	// Basket
-	BasketFolder		: 'R?',
-	BasketClear			: 'D?n r?',
-	BasketRemove		: 'Xóa kh?i r?',
-	BasketOpenFolder	: 'M? th? m?c cha',
-	BasketTruncateConfirm : 'B?n có ch?c mu?n b? t?t c? t?p tin trong r??',
-	BasketRemoveConfirm	: 'B?n có ch?c mu?n b? t?p tin "%1" kh?i r??',
+	BasketFolder		: 'Rổ',
+	BasketClear			: 'Dọn rổ',
+	BasketRemove		: 'Xóa khỏi rổ',
+	BasketOpenFolder	: 'Mở thư mục cha',
+	BasketTruncateConfirm : 'Bạn có chắc muốn bỏ tất cả tập tin trong rổ?',
+	BasketRemoveConfirm	: 'Bạn có chắc muốn bỏ tập tin "%1" khỏi rổ?',
 	BasketRemoveConfirmMultiple	: 'Do you really want to remove %1 files from the basket?', // MISSING
-	BasketEmpty			: 'Kh?ng có t?p tin trong r?, h?y kéo và th? t?p tin vào r?.',
-	BasketCopyFilesHere	: 'Chép t?p tin t? r?',
-	BasketMoveFilesHere	: 'Chuy?n t?p tin t? r?',
+	BasketEmpty			: 'Không có tập tin trong rổ, hãy kéo và thả tập tin vào rổ.',
+	BasketCopyFilesHere	: 'Chép tập tin từ rổ',
+	BasketMoveFilesHere	: 'Chuyển tập tin từ rổ',
 
 	// Global messages
 	OperationCompletedSuccess	: 'Operation completed successfully.', // MISSING
@@ -112,87 +112,87 @@ CKFinder.lang['vi'] =
 	CopyFailedList		: 'The following files could not be copied:<br />%s', // MISSING
 
 	// Toolbar Buttons (some used elsewhere)
-	Upload		: 'T?i lên',
-	UploadTip	: 'T?i t?p tin m?i',
-	Refresh		: 'Làm t??i',
-	Settings	: 'Thi?t l?p',
-	Help		: 'H??ng d?n',
-	HelpTip		: 'H??ng d?n',
+	Upload		: 'Tải lên',
+	UploadTip	: 'Tải tập tin mới',
+	Refresh		: 'Làm tươi',
+	Settings	: 'Thiết lập',
+	Help		: 'Hướng dẫn',
+	HelpTip		: 'Hướng dẫn',
 
 	// Context Menus
-	Select			: 'Ch?n',
-	SelectThumbnail : 'Ch?n ?nh m?u',
+	Select			: 'Chọn',
+	SelectThumbnail : 'Chọn ảnh mẫu',
 	View			: 'Xem',
-	Download		: 'T?i v?',
+	Download		: 'Tải về',
 
-	NewSubFolder	: 'T?o th? m?c con',
-	Rename			: '??i tên',
+	NewSubFolder	: 'Tạo thư mục con',
+	Rename			: 'Đổi tên',
 	Delete			: 'Xóa',
 	DeleteFiles		: 'Delete Files', // MISSING
 
-	CopyDragDrop	: 'Sao chép ? ?ay',
-	MoveDragDrop	: 'Di chuy?n ? ?ay',
+	CopyDragDrop	: 'Sao chép ở đây',
+	MoveDragDrop	: 'Di chuyển ở đây',
 
 	// Dialogs
-	RenameDlgTitle		: '??i tên',
-	NewNameDlgTitle		: 'Tên m?i',
-	FileExistsDlgTitle	: 'T?p tin ?? t?n t?i',
-	SysErrorDlgTitle : 'L?i h? th?ng',
+	RenameDlgTitle		: 'Đổi tên',
+	NewNameDlgTitle		: 'Tên mới',
+	FileExistsDlgTitle	: 'Tập tin đã tồn tại',
+	SysErrorDlgTitle : 'Lỗi hệ thống',
 
-	FileOverwrite	: 'Ghi ?è',
-	FileAutorename	: 'T? ??i tên',
+	FileOverwrite	: 'Ghi đè',
+	FileAutorename	: 'Tự đổi tên',
 	ManuallyRename	: 'Manually rename', // MISSING
 
 	// Generic
 	OkBtn		: 'OK',
-	CancelBtn	: 'H?y b?',
-	CloseBtn	: '?óng',
+	CancelBtn	: 'Hủy bỏ',
+	CloseBtn	: 'Đóng',
 
 	// Upload Panel
-	UploadTitle			: 'T?i t?p tin m?i',
-	UploadSelectLbl		: 'Ch?n t?p tin t?i lên',
-	UploadProgressLbl	: '(?ang t?i lên, vui lòng ch?...)',
-	UploadBtn			: 'T?i t?p tin ?? ch?n',
-	UploadBtnCancel		: 'H?y b?',
+	UploadTitle			: 'Tải tập tin mới',
+	UploadSelectLbl		: 'Chọn tập tin tải lên',
+	UploadProgressLbl	: '(Đang tải lên, vui lòng chờ...)',
+	UploadBtn			: 'Tải tập tin đã chọn',
+	UploadBtnCancel		: 'Hủy bỏ',
 
-	UploadNoFileMsg		: 'Xin ch?n m?t t?p tin trong máy tính.',
-	UploadNoFolder		: 'Xin ch?n th? m?c tr??c khi t?i lên.',
-	UploadNoPerms		: 'Kh?ng ???c phép t?i lên.',
-	UploadUnknError		: 'L?i khi t?i t?p tin.',
-	UploadExtIncorrect	: 'Ki?u t?p tin kh?ng ???c ch?p nh?n trong th? m?c này.',
+	UploadNoFileMsg		: 'Xin chọn một tập tin trong máy tính.',
+	UploadNoFolder		: 'Xin chọn thư mục trước khi tải lên.',
+	UploadNoPerms		: 'Không được phép tải lên.',
+	UploadUnknError		: 'Lỗi khi tải tập tin.',
+	UploadExtIncorrect	: 'Kiểu tập tin không được chấp nhận trong thư mục này.',
 
 	// Flash Uploads
-	UploadLabel			: 'T?p tin s? t?i:',
-	UploadTotalFiles	: 'T?ng s? t?p tin:',
-	UploadTotalSize		: 'Dung l??ng t?ng c?ng:',
-	UploadSend			: 'T?i lên',
-	UploadAddFiles		: 'Thêm t?p tin',
-	UploadClearFiles	: 'Xóa t?p tin',
-	UploadCancel		: 'H?y t?i',
+	UploadLabel			: 'Tập tin sẽ tải:',
+	UploadTotalFiles	: 'Tổng số tập tin:',
+	UploadTotalSize		: 'Dung lượng tổng cộng:',
+	UploadSend			: 'Tải lên',
+	UploadAddFiles		: 'Thêm tập tin',
+	UploadClearFiles	: 'Xóa tập tin',
+	UploadCancel		: 'Hủy tải',
 	UploadRemove		: 'Xóa',
 	UploadRemoveTip		: 'Xóa !f',
-	UploadUploaded		: '?? t?i !n%',
-	UploadProcessing	: '?ang x? lí...',
+	UploadUploaded		: 'Đã tải !n%',
+	UploadProcessing	: 'Đang xử lí...',
 
 	// Settings Panel
-	SetTitle		: 'Thi?t l?p',
+	SetTitle		: 'Thiết lập',
 	SetView			: 'Xem:',
-	SetViewThumb	: '?nh m?u',
+	SetViewThumb	: 'Ảnh mẫu',
 	SetViewList		: 'Danh sách',
-	SetDisplay		: 'Hi?n th?:',
-	SetDisplayName	: 'Tên t?p tin',
+	SetDisplay		: 'Hiển thị:',
+	SetDisplayName	: 'Tên tập tin',
 	SetDisplayDate	: 'Ngày',
-	SetDisplaySize	: 'Dung l??ng',
-	SetSort			: 'S?p x?p:',
+	SetDisplaySize	: 'Dung lượng',
+	SetSort			: 'Sắp xếp:',
 	SetSortName		: 'theo tên',
 	SetSortDate		: 'theo ngày',
-	SetSortSize		: 'theo dung l??ng',
-	SetSortExtension		: 'theo ph?n m? r?ng',
+	SetSortSize		: 'theo dung lượng',
+	SetSortExtension		: 'theo phần mở rộng',
 
 	// Status Bar
-	FilesCountEmpty : '<Th? m?c r?ng>',
-	FilesCountOne	: '1 t?p tin',
-	FilesCountMany	: '%1 t?p tin',
+	FilesCountEmpty : '<Thư mục rỗng>',
+	FilesCountOne	: '1 tập tin',
+	FilesCountMany	: '%1 tập tin',
 
 	// Size and Speed
 	Kb				: '%1 KB',
@@ -201,97 +201,97 @@ CKFinder.lang['vi'] =
 	SizePerSecond	: '%1/s',
 
 	// Connector Error Messages.
-	ErrorUnknown	: 'Kh?ng th? hoàn t?t yêu c?u. (L?i %1)',
+	ErrorUnknown	: 'Không thể hoàn tất yêu cầu. (Lỗi %1)',
 	Errors :
 	{
-	 10 : 'L?nh kh?ng h?p l?.',
-	 11 : 'Ki?u tài nguyên kh?ng ???c ch? ??nh trong yêu c?u.',
-	 12 : 'Ki?u tài nguyên yêu c?u kh?ng h?p l?.',
-	102 : 'Tên t?p tin hay th? m?c kh?ng h?p l?.',
-	103 : 'Kh?ng th? hoàn t?t yêu c?u vì gi?i h?n quy?n.',
-	104 : 'Kh?ng th? hoàn t?t yêu c?u vì gi?i h?n quy?n c?a h? th?ng t?p tin.',
-	105 : 'Ph?n m? r?ng t?p tin kh?ng h?p l?.',
-	109 : 'Yêu c?u kh?ng h?p l?.',
-	110 : 'L?i kh?ng xác ??nh.',
+	 10 : 'Lệnh không hợp lệ.',
+	 11 : 'Kiểu tài nguyên không được chỉ định trong yêu cầu.',
+	 12 : 'Kiểu tài nguyên yêu cầu không hợp lệ.',
+	102 : 'Tên tập tin hay thư mục không hợp lệ.',
+	103 : 'Không thể hoàn tất yêu cầu vì giới hạn quyền.',
+	104 : 'Không thể hoàn tất yêu cầu vì giới hạn quyền của hệ thống tập tin.',
+	105 : 'Phần mở rộng tập tin không hợp lệ.',
+	109 : 'Yêu cầu không hợp lệ.',
+	110 : 'Lỗi không xác định.',
 	111 : 'It was not possible to complete the request due to resulting file size.', // MISSING
-	115 : 'T?p tin ho?c th? m?c cùng tên ?? t?n t?i.',
-	116 : 'Kh?ng th?y th? m?c. H?y làm t??i và th? l?i.',
-	117 : 'Kh?ng th?y t?p tin. H?y làm t??i và th? l?i.',
-	118 : '???ng d?n ngu?n và ?ích gi?ng nhau.',
-	201 : 'T?p tin cùng tên ?? t?n t?i. T?p tin v?a t?i lên ???c ??i tên thành "%1".',
-	202 : 'T?p tin kh?ng h?p l?.',
-	203 : 'T?p tin kh?ng h?p l?. Dung l??ng quá l?n.',
-	204 : 'T?p tin t?i lên b? h?ng.',
-	205 : 'Kh?ng có th? m?c t?m ?? t?i t?p tin.',
-	206 : 'Hu? t?i lên vì lí do b?o m?t. T?p tin ch?a d? li?u gi?ng HTML.',
-	207 : 'T?p tin ???c ??i tên thành "%1".',
-	300 : 'Di chuy?n t?p tin th?t b?i.',
-	301 : 'Chép t?p tin th?t b?i.',
-	500 : 'Trình duy?t t?p tin b? v? hi?u vì lí do b?o m?t. Xin liên h? qu?n tr? h? th?ng và ki?m tra t?p tin c?u hình CKFinder.',
-	501 : 'Ch?c n?ng h? tr? ?nh m?u b? v? hi?u.'
+	115 : 'Tập tin hoặc thư mục cùng tên đã tồn tại.',
+	116 : 'Không thấy thư mục. Hãy làm tươi và thử lại.',
+	117 : 'Không thấy tập tin. Hãy làm tươi và thử lại.',
+	118 : 'Đường dẫn nguồn và đích giống nhau.',
+	201 : 'Tập tin cùng tên đã tồn tại. Tập tin vừa tải lên được đổi tên thành "%1".',
+	202 : 'Tập tin không hợp lệ.',
+	203 : 'Tập tin không hợp lệ. Dung lượng quá lớn.',
+	204 : 'Tập tin tải lên bị hỏng.',
+	205 : 'Không có thư mục tạm để tải tập tin.',
+	206 : 'Huỷ tải lên vì lí do bảo mật. Tập tin chứa dữ liệu giống HTML.',
+	207 : 'Tập tin được đổi tên thành "%1".',
+	300 : 'Di chuyển tập tin thất bại.',
+	301 : 'Chép tập tin thất bại.',
+	500 : 'Trình duyệt tập tin bị vô hiệu vì lí do bảo mật. Xin liên hệ quản trị hệ thống và kiểm tra tập tin cấu hình CKFinder.',
+	501 : 'Chức năng hỗ trợ ảnh mẫu bị vô hiệu.'
 	},
 
 	// Other Error Messages.
 	ErrorMsg :
 	{
-		FileEmpty		: 'Kh?ng th? ?? tr?ng tên t?p tin.',
-		FileExists		: 'T?p tin %s ?? t?n t?i.',
-		FolderEmpty		: 'Kh?ng th? ?? tr?ng tên th? m?c.',
+		FileEmpty		: 'Không thể để trống tên tập tin.',
+		FileExists		: 'Tập tin %s đã tồn tại.',
+		FolderEmpty		: 'Không thể để trống tên thư mục.',
 		FolderExists	: 'Folder %s already exists.', // MISSING
 		FolderNameExists	: 'Folder already exists.', // MISSING
 
-		FileInvChar		: 'Tên t?p tin kh?ng th? ch?a các kí t?: \n\\ / : * ? " < > |',
-		FolderInvChar	: 'Tên th? m?c kh?ng th? ch?a các kí t?: \n\\ / : * ? " < > |',
+		FileInvChar		: 'Tên tập tin không thể chưa các kí tự: \n\\ / : * ? " < > |',
+		FolderInvChar	: 'Tên thư mục không thể chứa các kí tự: \n\\ / : * ? " < > |',
 
-		PopupBlockView	: 'Kh?ng th? m? t?p tin trong c?a s? m?i. H?y ki?m tra trình duy?t và t?t ch?c n?ng ch?n popup trên trang web này.',
-		XmlError		: 'Kh?ng th? n?p h?i ?áp XML t? máy ch? web.',
-		XmlEmpty		: 'Kh?ng th? n?p h?i ?áp XML t? máy ch? web. D? li?u r?ng.',
-		XmlRawResponse	: 'H?i ?áp th? t? máy ch?: %s'
+		PopupBlockView	: 'Không thể mở tập tin trong cửa sổ mới. Hãy kiểm tra trình duyệt và tắt chức năng chặn popup trên trang web này.',
+		XmlError		: 'Không thể nạp hồi đáp XML từ máy chủ web.',
+		XmlEmpty		: 'Không thể nạp hồi đáp XML từ máy chủ web. Dữ liệu rỗng.',
+		XmlRawResponse	: 'Hồi đáp thô từ máy chủ: %s'
 	},
 
 	// Imageresize plugin
 	Imageresize :
 	{
-		dialogTitle		: '??i kích th??c %s',
-		sizeTooBig		: 'Kh?ng th? ??t chi?u cao ho?c r?ng to h?n kích th??c g?c (%size).',
-		resizeSuccess	: '??i kích th??c ?nh thành c?ng.',
-		thumbnailNew	: 'T?o ?nh m?u m?i',
-		thumbnailSmall	: 'Nh? (%s)',
-		thumbnailMedium	: 'V?a (%s)',
-		thumbnailLarge	: 'L?n (%s)',
-		newSize			: 'Ch?n kích th??c m?i',
-		width			: 'R?ng',
+		dialogTitle		: 'Đổi kích thước %s',
+		sizeTooBig		: 'Không thể đặt chiều cao hoặc rộng to hơn kích thước gốc (%size).',
+		resizeSuccess	: 'Đổi kích thước ảnh thành công.',
+		thumbnailNew	: 'Tạo ảnh mẫu mới',
+		thumbnailSmall	: 'Nhỏ (%s)',
+		thumbnailMedium	: 'Vừa (%s)',
+		thumbnailLarge	: 'Lớn (%s)',
+		newSize			: 'Chọn kích thước mới',
+		width			: 'Rộng',
 		height			: 'Cao',
-		invalidHeight	: 'Chi?u cao kh?ng h?p l?.',
-		invalidWidth	: 'Chi?u r?ng kh?ng h?p l?.',
-		invalidName		: 'Tên t?p tin kh?ng h?p l?.',
-		newImage		: 'T?o ?nh m?i',
-		noExtensionChange : 'Kh?ng th? thay ??i ph?n m? r?ng.',
-		imageSmall		: '?nh ngu?n quá nh?.',
-		contextMenuName	: '??i kích th??c',
-		lockRatio		: 'Khoá t? l?',
-		resetSize		: '??t l?i kích th??c'
+		invalidHeight	: 'Chiều cao không hợp lệ.',
+		invalidWidth	: 'Chiều rộng không hợp lệ.',
+		invalidName		: 'Tên tập tin không hợp lệ.',
+		newImage		: 'Tạo ảnh mới',
+		noExtensionChange : 'Không thể thay đổi phần mở rộng.',
+		imageSmall		: 'Ảnh nguồn quá nhỏ.',
+		contextMenuName	: 'Đổi kích thước',
+		lockRatio		: 'Khoá tỉ lệ',
+		resetSize		: 'Đặt lại kích thước'
 	},
 
 	// Fileeditor plugin
 	Fileeditor :
 	{
-		save			: 'L?u',
-		fileOpenError	: 'Kh?ng th? m? t?p tin.',
-		fileSaveSuccess	: 'L?u t?p tin thành c?ng.',
-		contextMenuName	: 'S?a',
-		loadingFile		: '?ang t?i t?p tin, xin ch?...'
+		save			: 'Lưu',
+		fileOpenError	: 'Không thể mở tập tin.',
+		fileSaveSuccess	: 'Lưu tập tin thành công.',
+		contextMenuName	: 'Sửa',
+		loadingFile		: 'Đang tải tập tin, xin chờ...'
 	},
 
 	Maximize :
 	{
-		maximize : 'C?c ??i hóa',
-		minimize : 'C?c ti?u hóa'
+		maximize : 'Cực đại hóa',
+		minimize : 'Cực tiểu hóa'
 	},
 
 	Gallery :
 	{
-		current : 'Hình th? {current} trên {total}'
+		current : 'Hình thứ {current} trên {total}'
 	},
 
 	Zip :
@@ -303,5 +303,10 @@ CKFinder.lang['vi'] =
 		removeAndExtract	: 'Remove existing and extract', // MISSING
 		extractAndOverwrite	: 'Extract overwriting existing files', // MISSING
 		extractSuccess		: 'File extracted successfully.' // MISSING
+	},
+
+	Search :
+	{
+		searchPlaceholder : 'Tìm kiếm'
 	}
 };

@@ -1,8 +1,8 @@
 ﻿/*
  * CKFinder
  * ========
- * http://ckfinder.com
- * Copyright (C) 2007-2012, CKSource - Frederico Knabben. All rights reserved.
+ * http://cksource.com/ckfinder
+ * Copyright (C) 2007-2015, CKSource - Frederico Knabben. All rights reserved.
  *
  * The software, this file, and its contents are subject to the CKFinder
  * License. Please read the license.txt file before using, installing, copying,
@@ -29,16 +29,16 @@ CKFinder.lang['cs'] =
 	{
 		// Put the voice-only part of the label in the span.
 		unavailable		: '%1<span class="cke_accessibility">, nedostupné</span>',
-		confirmCancel	: 'Některá z nastavení byla změněna. Skute?ně chcete dialogové okno zav?ít?',
+		confirmCancel	: 'Některá z nastavení byla změněna. Skutečně chcete dialogové okno zavřít?',
 		ok				: 'OK',
-		cancel			: 'Zru?it',
+		cancel			: 'Zrušit',
 		confirmationTitle	: 'Potvrzení',
 		messageTitle	: 'Informace',
 		inputTitle		: 'Otázka',
 		undo			: 'Zpět',
 		redo			: 'Znovu',
-		skip			: 'P?esko?it',
-		skipAll			: 'P?esko?it v?e',
+		skip			: 'Přeskočit',
+		skipAll			: 'Přeskočit vše',
 		makeDecision	: 'Co by se mělo provést?',
 		rememberDecision: 'Zapamatovat si mé rozhodnutí'
 	},
@@ -68,37 +68,37 @@ CKFinder.lang['cs'] =
 	DateAmPm : ['AM', 'PM'],
 
 	// Folders
-	FoldersTitle	: 'Slo?ky',
-	FolderLoading	: 'Na?ítání...',
-	FolderNew		: 'Zadejte název nové slo?ky: ',
-	FolderRename	: 'Zadejte novy název slo?ky: ',
-	FolderDelete	: 'Opravdu chcete slo?ku "%1" smazat?',
-	FolderRenaming	: ' (P?ejmenovávání...)',
+	FoldersTitle	: 'Složky',
+	FolderLoading	: 'Načítání...',
+	FolderNew		: 'Zadejte název nové složky: ',
+	FolderRename	: 'Zadejte nový název složky: ',
+	FolderDelete	: 'Opravdu chcete složku "%1" smazat?',
+	FolderRenaming	: ' (Přejmenovávání...)',
 	FolderDeleting	: ' (Mazání...)',
 	DestinationFolder	: 'Destination Folder', // MISSING
 
 	// Files
-	FileRename		: 'Zadejte novy název souboru: ',
-	FileRenameExt	: 'Opravdu chcete změnit p?íponu souboru? Soubor se m??e stát nepou?itelnym.',
-	FileRenaming	: 'P?ejmenovávání...',
+	FileRename		: 'Zadejte nový název souboru: ',
+	FileRenameExt	: 'Opravdu chcete změnit příponu souboru? Soubor se může stát nepoužitelným.',
+	FileRenaming	: 'Přejmenovávání...',
 	FileDelete		: 'Opravdu chcete smazat soubor "%1"?',
 	FilesDelete	: 'Are you sure you want to delete %1 files?', // MISSING
-	FilesLoading	: 'Na?ítání...',
-	FilesEmpty		: 'Prázdná slo?ka.',
+	FilesLoading	: 'Načítání...',
+	FilesEmpty		: 'Prázdná složka.',
 	DestinationFile	: 'Destination File', // MISSING
 	SkippedFiles	: 'List of skipped files:', // MISSING
 
 	// Basket
-	BasketFolder		: 'Ko?ík',
-	BasketClear			: 'Vy?istit Ko?ík',
-	BasketRemove		: 'Odstranit z Ko?íku',
-	BasketOpenFolder	: 'Otev?ít nad?azenou slo?ku',
-	BasketTruncateConfirm : 'Opravdu chcete z Ko?íku odstranit v?echny soubory?',
-	BasketRemoveConfirm	: 'Opravdu chcete odstranit soubor "%1" z Ko?íku?',
+	BasketFolder		: 'Košík',
+	BasketClear			: 'Vyčistit Košík',
+	BasketRemove		: 'Odstranit z Košíku',
+	BasketOpenFolder	: 'Otevřít nadřazenou složku',
+	BasketTruncateConfirm : 'Opravdu chcete z Košíku odstranit všechny soubory?',
+	BasketRemoveConfirm	: 'Opravdu chcete odstranit soubor "%1" z Košíku?',
 	BasketRemoveConfirmMultiple	: 'Do you really want to remove %1 files from the basket?', // MISSING
-	BasketEmpty			: 'V Ko?íku nejsou ?ádné soubory, tak sem některé p?etáhněte.',
-	BasketCopyFilesHere	: 'Kopírovat soubory z Ko?íku',
-	BasketMoveFilesHere	: 'P?esunout soubory z Ko?íku',
+	BasketEmpty			: 'V Košíku nejsou žádné soubory, tak sem některé přetáhněte.',
+	BasketCopyFilesHere	: 'Kopírovat soubory z Košíku',
+	BasketMoveFilesHere	: 'Přesunout soubory z Košíku',
 
 	// Global messages
 	OperationCompletedSuccess	: 'Operation completed successfully.', // MISSING
@@ -113,8 +113,8 @@ CKFinder.lang['cs'] =
 
 	// Toolbar Buttons (some used elsewhere)
 	Upload		: 'Nahrát',
-	UploadTip	: 'Nahrát novy soubor',
-	Refresh		: 'Znovu na?íst',
+	UploadTip	: 'Nahrát nový soubor',
+	Refresh		: 'Znovu načíst',
 	Settings	: 'Nastavení',
 	Help		: 'Nápověda',
 	HelpTip		: 'Nápověda',
@@ -123,52 +123,52 @@ CKFinder.lang['cs'] =
 	Select			: 'Vybrat',
 	SelectThumbnail : 'Vybrat náhled',
 	View			: 'Zobrazit',
-	Download		: 'Ulo?it jako',
+	Download		: 'Uložit jako',
 
-	NewSubFolder	: 'Nová podslo?ka',
-	Rename			: 'P?ejmenovat',
+	NewSubFolder	: 'Nová podsložka',
+	Rename			: 'Přejmenovat',
 	Delete			: 'Smazat',
 	DeleteFiles		: 'Delete Files', // MISSING
 
 	CopyDragDrop	: 'Zkopírovat sem',
-	MoveDragDrop	: 'P?esunout sem',
+	MoveDragDrop	: 'Přesunout sem',
 
 	// Dialogs
-	RenameDlgTitle		: 'P?ejmenovat',
-	NewNameDlgTitle		: 'Novy název',
-	FileExistsDlgTitle	: 'Soubor ji? existuje',
+	RenameDlgTitle		: 'Přejmenovat',
+	NewNameDlgTitle		: 'Nový název',
+	FileExistsDlgTitle	: 'Soubor již existuje',
 	SysErrorDlgTitle : 'Chyba systému',
 
-	FileOverwrite	: 'P?epsat',
-	FileAutorename	: 'Automaticky p?ejmenovat',
+	FileOverwrite	: 'Přepsat',
+	FileAutorename	: 'Automaticky přejmenovat',
 	ManuallyRename	: 'Manually rename', // MISSING
 
 	// Generic
 	OkBtn		: 'OK',
-	CancelBtn	: 'Zru?it',
-	CloseBtn	: 'Zav?ít',
+	CancelBtn	: 'Zrušit',
+	CloseBtn	: 'Zavřít',
 
 	// Upload Panel
-	UploadTitle			: 'Nahrát novy soubor',
+	UploadTitle			: 'Nahrát nový soubor',
 	UploadSelectLbl		: 'Zvolit soubor k nahrání',
-	UploadProgressLbl	: '(Probíhá nahrávání, ?ekejte...)',
-	UploadBtn			: 'Nahrát zvoleny soubor',
-	UploadBtnCancel		: 'Zru?it',
+	UploadProgressLbl	: '(Probíhá nahrávání, čekejte...)',
+	UploadBtn			: 'Nahrát zvolený soubor',
+	UploadBtnCancel		: 'Zrušit',
 
-	UploadNoFileMsg		: 'Vyberte prosím soubor z Va?eho po?íta?e.',
-	UploadNoFolder		: 'P?ed nahráváním vyberte slo?ku prosím.',
-	UploadNoPerms		: 'Nahrávání soubor? není povoleno.',
-	UploadUnknError		: 'Chyba p?i posílání souboru.',
-	UploadExtIncorrect	: 'P?ípona souboru není v této slo?ce povolena.',
+	UploadNoFileMsg		: 'Vyberte prosím soubor z Vašeho počítače.',
+	UploadNoFolder		: 'Před nahráváním vyberte složku prosím.',
+	UploadNoPerms		: 'Nahrávání souborů není povoleno.',
+	UploadUnknError		: 'Chyba při posílání souboru.',
+	UploadExtIncorrect	: 'Přípona souboru není v této složce povolena.',
 
 	// Flash Uploads
 	UploadLabel			: 'Soubory k nahrání',
-	UploadTotalFiles	: 'Celkem soubor?:',
+	UploadTotalFiles	: 'Celkem souborů:',
 	UploadTotalSize		: 'Celková velikost:',
 	UploadSend			: 'Nahrát',
-	UploadAddFiles		: 'P?idat soubory',
-	UploadClearFiles	: 'Vy?istit soubory',
-	UploadCancel		: 'Zru?it nahrávání',
+	UploadAddFiles		: 'Přidat soubory',
+	UploadClearFiles	: 'Vyčistit soubory',
+	UploadCancel		: 'Zrušit nahrávání',
 	UploadRemove		: 'Odstranit',
 	UploadRemoveTip		: 'Odstranit !f',
 	UploadUploaded		: 'Nahráno !n%',
@@ -183,16 +183,16 @@ CKFinder.lang['cs'] =
 	SetDisplayName	: 'Název',
 	SetDisplayDate	: 'Datum',
 	SetDisplaySize	: 'Velikost',
-	SetSort			: 'Se?azení:',
+	SetSort			: 'Seřazení:',
 	SetSortName		: 'Podle názvu',
 	SetSortDate		: 'Podle data',
 	SetSortSize		: 'Podle velikosti',
-	SetSortExtension		: 'Podle p?ípony',
+	SetSortExtension		: 'Podle přípony',
 
 	// Status Bar
-	FilesCountEmpty : '<Prázdná slo?ka>',
+	FilesCountEmpty : '<Prázdná složka>',
 	FilesCountOne	: '1 soubor',
-	FilesCountMany	: '%1 soubor?',
+	FilesCountMany	: '%1 souborů',
 
 	// Size and Speed
 	Kb				: '%1 KB',
@@ -201,86 +201,86 @@ CKFinder.lang['cs'] =
 	SizePerSecond	: '%1/s',
 
 	// Connector Error Messages.
-	ErrorUnknown	: 'P?íkaz nebylo mo?né dokon?it. (Chyba %1)',
+	ErrorUnknown	: 'Příkaz nebylo možné dokončit. (Chyba %1)',
 	Errors :
 	{
-	 10 : 'Neplatny p?íkaz.',
-	 11 : 'Typ zdroje nebyl v po?adavku ur?en.',
-	 12 : 'Po?adovany typ zdroje není platny.',
-	102 : '?patné název souboru, nebo slo?ky.',
-	103 : 'Nebylo mo?né p?íkaz dokon?it kv?li omezení oprávnění.',
-	104 : 'Nebylo mo?né p?íkaz dokon?it kv?li omezení oprávnění souborového systému.',
-	105 : 'Neplatná p?ípona souboru.',
-	109 : 'Neplatny po?adavek.',
+	 10 : 'Neplatný příkaz.',
+	 11 : 'Typ zdroje nebyl v požadavku určen.',
+	 12 : 'Požadovaný typ zdroje není platný.',
+	102 : 'Špatné název souboru, nebo složky.',
+	103 : 'Nebylo možné příkaz dokončit kvůli omezení oprávnění.',
+	104 : 'Nebylo možné příkaz dokončit kvůli omezení oprávnění souborového systému.',
+	105 : 'Neplatná přípona souboru.',
+	109 : 'Neplatný požadavek.',
 	110 : 'Neznámá chyba.',
 	111 : 'It was not possible to complete the request due to resulting file size.', // MISSING
-	115 : 'Soubor nebo slo?ka se stejnym názvem ji? existuje.',
-	116 : 'Slo?ka nenalezena, prosím obnovte a zkuste znovu.',
-	117 : 'Soubor nenalezen, prosím obnovte seznam soubor? a zkuste znovu.',
+	115 : 'Soubor nebo složka se stejným názvem již existuje.',
+	116 : 'Složka nenalezena, prosím obnovte a zkuste znovu.',
+	117 : 'Soubor nenalezen, prosím obnovte seznam souborů a zkuste znovu.',
 	118 : 'Cesty zdroje a cíle jsou stejné.',
-	201 : 'Soubor se stejnym názvem je ji? dostupny, nahrany soubor byl p?ejmenován na "%1".',
-	202 : 'Neplatny soubor.',
-	203 : 'Neplatny soubor. Velikost souboru je p?íli? velká.',
-	204 : 'Nahrany soubor je po?kozen.',
-	205 : 'Na serveru není dostupná do?asná slo?ka pro nahrávání.',
-	206 : 'Nahrávání zru?eno z bezpe?nostních d?vod?. Soubor obsahuje data podobná HTML.',
-	207 : 'Nahrany soubor byl p?ejmenován na "%1".',
-	300 : 'P?esunování souboru(?) selhalo.',
-	301 : 'Kopírování souboru(?) selhalo.',
-	500 : 'Pr?zkumník soubor? je z bezpe?nostních d?vod? zakázán. Zdělte to prosím správci systému a zkontrolujte soubor nastavení CKFinder.',
-	501 : 'Podpora náhled? je zakázána.'
+	201 : 'Soubor se stejným názvem je již dostupný, nahraný soubor byl přejmenován na "%1".',
+	202 : 'Neplatný soubor.',
+	203 : 'Neplatný soubor. Velikost souboru je příliš velká.',
+	204 : 'Nahraný soubor je poškozen.',
+	205 : 'Na serveru není dostupná dočasná složka pro nahrávání.',
+	206 : 'Nahrávání zrušeno z bezpečnostních důvodů. Soubor obsahuje data podobná HTML.',
+	207 : 'Nahraný soubor byl přejmenován na "%1".',
+	300 : 'Přesunování souboru(ů) selhalo.',
+	301 : 'Kopírování souboru(ů) selhalo.',
+	500 : 'Průzkumník souborů je z bezpečnostních důvodů zakázán. Zdělte to prosím správci systému a zkontrolujte soubor nastavení CKFinder.',
+	501 : 'Podpora náhledů je zakázána.'
 	},
 
 	// Other Error Messages.
 	ErrorMsg :
 	{
-		FileEmpty		: 'Název souboru nem??e byt prázdny.',
-		FileExists		: 'Soubor %s ji? existuje.',
-		FolderEmpty		: 'Název slo?ky nem??e byt prázdny.',
+		FileEmpty		: 'Název souboru nemůže být prázdný.',
+		FileExists		: 'Soubor %s již existuje.',
+		FolderEmpty		: 'Název složky nemůže být prázdný.',
 		FolderExists	: 'Folder %s already exists.', // MISSING
 		FolderNameExists	: 'Folder already exists.', // MISSING
 
 		FileInvChar		: 'Název souboru nesmí obsahovat následující znaky: \n\\ / : * ? " < > |',
-		FolderInvChar	: 'Název slo?ky nesmí obsahovat následující znaky: \n\\ / : * ? " < > |',
+		FolderInvChar	: 'Název složky nesmí obsahovat následující znaky: \n\\ / : * ? " < > |',
 
-		PopupBlockView	: 'Soubor nebylo mo?né otev?ít do nového okna. Prosím nastavte si Vá? prohlí?e? a zaka?te ve?keré blokování vyskakovacích oken.',
-		XmlError		: 'Nebylo mo?né správně na?íst XML odpově? z internetového serveru.',
-		XmlEmpty		: 'Nebylo mo?né na?íst XML odpově? z internetového serveru. Server vrátil prázdnou odpově?.',
-		XmlRawResponse	: '?istá odpově? od serveru: %s'
+		PopupBlockView	: 'Soubor nebylo možné otevřít do nového okna. Prosím nastavte si Váš prohlížeč a zakažte veškeré blokování vyskakovacích oken.',
+		XmlError		: 'Nebylo možné správně načíst XML odpověď z internetového serveru.',
+		XmlEmpty		: 'Nebylo možné načíst XML odpověď z internetového serveru. Server vrátil prázdnou odpověď.',
+		XmlRawResponse	: 'Čistá odpověď od serveru: %s'
 	},
 
 	// Imageresize plugin
 	Imageresize :
 	{
 		dialogTitle		: 'Změnit velikost %s',
-		sizeTooBig		: 'Nelze nastavit ?í?ku ?i vy?ku obrázku na hodnotu vy??í ne? p?vodní velikost (%size).',
-		resizeSuccess	: 'úspě?ně změněna velikost obrázku.',
-		thumbnailNew	: 'Vytvo?it novy náhled',
-		thumbnailSmall	: 'Maly (%s)',
-		thumbnailMedium	: 'St?ední (%s)',
-		thumbnailLarge	: 'Velky (%s)',
+		sizeTooBig		: 'Nelze nastavit šířku či výšku obrázku na hodnotu vyšší než původní velikost (%size).',
+		resizeSuccess	: 'Úspěšně změněna velikost obrázku.',
+		thumbnailNew	: 'Vytvořit nový náhled',
+		thumbnailSmall	: 'Malý (%s)',
+		thumbnailMedium	: 'Střední (%s)',
+		thumbnailLarge	: 'Velký (%s)',
 		newSize			: 'Nastavit novou velikost',
-		width			: '?í?ka',
-		height			: 'Vy?ka',
-		invalidHeight	: 'Neplatná vy?ka.',
-		invalidWidth	: 'Neplatná ?í?ka.',
-		invalidName		: 'Neplatny název souboru.',
-		newImage		: 'Vytvo?it novy obrázek',
-		noExtensionChange : 'P?íponu souboru nelze změnit.',
-		imageSmall		: 'Zdrojovy obrázek je p?íli? maly.',
+		width			: 'Šířka',
+		height			: 'Výška',
+		invalidHeight	: 'Neplatná výška.',
+		invalidWidth	: 'Neplatná šířka.',
+		invalidName		: 'Neplatný název souboru.',
+		newImage		: 'Vytvořit nový obrázek',
+		noExtensionChange : 'Příponu souboru nelze změnit.',
+		imageSmall		: 'Zdrojový obrázek je příliš malý.',
 		contextMenuName	: 'Změnit velikost',
 		lockRatio		: 'Uzamknout poměr',
-		resetSize		: 'P?vodní velikost'
+		resetSize		: 'Původní velikost'
 	},
 
 	// Fileeditor plugin
 	Fileeditor :
 	{
-		save			: 'Ulo?it',
-		fileOpenError	: 'Soubor nelze otev?ít.',
-		fileSaveSuccess	: 'Soubor úspě?ně ulo?en.',
+		save			: 'Uložit',
+		fileOpenError	: 'Soubor nelze otevřít.',
+		fileSaveSuccess	: 'Soubor úspěšně uložen.',
 		contextMenuName	: 'Upravit',
-		loadingFile		: 'Na?ítání souboru, ?ekejte prosím...'
+		loadingFile		: 'Načítání souboru, čekejte prosím...'
 	},
 
 	Maximize :
@@ -303,5 +303,10 @@ CKFinder.lang['cs'] =
 		removeAndExtract	: 'Remove existing and extract', // MISSING
 		extractAndOverwrite	: 'Extract overwriting existing files', // MISSING
 		extractSuccess		: 'File extracted successfully.' // MISSING
+	},
+
+	Search :
+	{
+		searchPlaceholder : 'Hledat'
 	}
 };

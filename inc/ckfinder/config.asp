@@ -1,4 +1,4 @@
-﻿<%
+﻿<script runat="server" language="VBScript">
 ' You can increase the time allowed for the script to avoid problems with large uploads
 ' Server.ScriptTimeout = 120
 '
@@ -33,8 +33,8 @@ function CheckAuthentication()
 	'
 	' ... where Session( "IsAuthorized" ) is set to "true" as soon as the
 	' user logs in your system.
-
-	CheckAuthentication = true
+	Dim isLogon:isLogon = Not IsEmpty(Session("user"))
+	CheckAuthentication = isLogon
 End function
 
 ' In order to find out what's wrong if you have some problems setting up the editor you
@@ -206,18 +206,23 @@ CKFinder_Config.Add "AccessControl", accessControl
 'Available options are: G, M, K (case insensitive).
 '1M equals 1048576 bytes (one Megabyte), 1K equals 1024 bytes (one Kilobyte), 1G equals one Gigabyte.
 'Example: 'maxSize' => "8M",
+' ==============================================================================
+' ATTENTION: Flash files with `swf' extension, just like HTML files, can be used
+' to execute JavaScript code and to e.g. perform an XSS attack. Grant permission
+' to upload `.swf` files only if you understand and can accept this risk.
+' ==============================================================================
 
 CKFinder_Config.Add "DefaultResourceTypes", ""
 
 'Change the number to match the number of resource types that you want to use minus one (it starts at 0)
-Dim ResourceTypes(3)
+Dim ResourceTypes(2)
 
 Set ResourceTypes(0) = DefineResourceType( _
 	"Files", _
 	baseUrl & "files", _
 	baseDir & "files", _
 	0, _
-	"7z,aiff,asf,avi,bmp,csv,doc,docx,fla,flv,gif,gz,gzip,jpeg,jpg,mid,mov,mp3,mp4,mpc,mpeg,mpg,ods,odt,ogg,pdf,png,ppt,pptx,pxd,qt,ram,rar,rm,rmi,rmvb,rtf,sdc,sitd,swf,sxc,sxw,tar,tgz,tif,tiff,txt,vsd,wav,wma,wmv,xls,xlsx,zip", _
+	"7z,aiff,asf,avi,bmp,csv,doc,docx,fla,flv,gif,gz,gzip,jpeg,jpg,mid,mov,mp3,mp4,mpc,mpeg,mpg,ods,odt,pdf,png,ppt,pptx,pxd,qt,ram,rar,rm,rmi,rmvb,rtf,sdc,sitd,swf,sxc,sxw,tar,tgz,tif,tiff,txt,vsd,wav,wma,wmv,xls,xlsx,zip", _
 	"" _
 	)
 
@@ -236,15 +241,6 @@ Set ResourceTypes(2) = DefineResourceType( _
 	baseDir & "flash", _
 	0, _
 	"swf,flv", _
-	"" _
-	)
-
-Set ResourceTypes(3) = DefineResourceType( _
-	"Videos", _
-	baseUrl & "videos", _
-	baseDir & "videos", _
-	0, _
-	"asf,avi,mov,mp4,mpeg,mpg,ogg,qt,rm,rmi,rmvb,wmv", _
 	"" _
 	)
 'Remember to increase the index for each new resource type that you add.
@@ -290,7 +286,8 @@ CKFinder_Config.Add "HtmlExtensions", "html,htm,xml,js"
 ' paths are accepted, only the folder name.
 ' The * and ? wildcards are accepted.
 ' put different options separated by the pipe |
-CKFinder_Config.Add "HideFolders", ".svn|CVS"
+' By default folders starting with a dot character are disallowed.
+CKFinder_Config.Add "HideFolders", ".*|CVS"
 
 ' Files to not display in CKFinder, no matter their location. No
 ' paths are accepted, only the file name, including extension.
@@ -305,7 +302,23 @@ CKFinder_Config.Add "SecureImageUploads", true
 ' IIS 6.0 has security issues related to certain characters used in paths.
 ' This setting should always be set to true unless you have a very good reason to change it.
 CKFinder_Config.Add "DisallowUnsafeCharacters", true
-%>
+
+' Enables protection in the connector.
+' The default CSRF protection mechanism is based on double submit cookies, where
+' connector checks if the request contains a valid token that matches the token
+' sent in the cookie
+'
+' https://www.owasp.org/index.php/Cross-Site_Request_Forgery_%28CSRF%29_Prevention_Cheat_Sheet#Double_Submit_Cookies
+CKFinder_Config.Add "EnableCsrfProtection", true
+
+' If the CKFinder directory is protected with Basic Authentication,
+' the call to asp.net will fail because the .net page will be called
+' without the authentication
+' In order to solve the problem you must provide here the credentials
+CKFinder_Config.Add "ServerUserName", ""
+CKFinder_Config.Add "ServerUserPassword", ""
+
+</script>
 
 
 <!-- #INCLUDE file="plugins/imageresize/plugin.asp" -->

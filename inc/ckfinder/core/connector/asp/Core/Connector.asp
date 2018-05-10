@@ -1,8 +1,8 @@
 ﻿<script runat="server" language="VBScript">
 ' CKFinder
 ' ========
-' http://ckfinder.com
-' Copyright (C) 2007-2012, CKSource - Frederico Knabben. All rights reserved.
+' http://cksource.com/ckfinder
+' Copyright (C) 2007-2015, CKSource - Frederico Knabben. All rights reserved.
 '
 ' The software, this file and its contents are subject to the CKFinder
 ' License. Please read the license.txt file before using, installing, copying,
@@ -24,9 +24,17 @@
 	'
 
 Class CKFinder_Connector_Core_Connector
+	Private CsrfTokenName
+	Private MinCsrfTokenLength
+	Private Upload
+
 	private oErrorHandler
+	private oCurrentFolder
 
 	Private Sub Class_Initialize()
+		Set oCurrentFolder = oCKFinder_Factory.FolderHandler
+		CsrfTokenName = "ckCsrfToken"
+		MinCsrfTokenLength = 32
 	End Sub
 
 	Private Sub Class_Terminate()
@@ -48,6 +56,8 @@ Class CKFinder_Connector_Core_Connector
 		If Not(oCKFinder_Factory.Hooks.run("BeforeExecuteCommand", args)) Then
 			Exit sub
 		End if
+
+		VerifyRequest()
 
 		Dim commandHandler
 		If IsEmpty(sCommand) Then
@@ -116,6 +126,37 @@ Class CKFinder_Connector_Core_Connector
 		End If
 		Set ErrorHandler = oErrorHandler
 	End Property
+
+	Private Sub VerifyRequest()
+		Dim config, upload
+		Set config = oCKFinder_Factory.Config
+		Set upload = oCKFinder_Factory.Request
+
+		If Request.ServerVariables("REQUEST_METHOD") = "POST" Then
+			If config.getEnableCsrfProtection() And Not CheckCsrfToken() Then
+				ErrorHandler.throwError CKFINDER_CONNECTOR_ERROR_INVALID_REQUEST, "", "Invalid request"
+			End If
+		End If
+	End Sub
+
+	Private Function CheckCsrfToken()
+		Dim cookieToken, paramToken, upload
+		Set upload = oCKFinder_Factory.Request
+		Set cookieToken = Request.Cookies(CsrfTokenName)
+
+		paramToken = upload.Form(CsrfTokenName)
+		If paramToken = "" Then
+			CheckCsrfToken = False
+			Exit Function
+		End If
+
+		If cookieToken Is Nothing Then
+			CheckCsrfToken = False
+			Exit Function
+		End If
+
+		CheckCsrfToken = Len(cookieToken) >= MinCsrfTokenLength And Len(paramToken) >= MinCsrfTokenLength And cookieToken = paramToken
+	End Function
 
 End Class
 

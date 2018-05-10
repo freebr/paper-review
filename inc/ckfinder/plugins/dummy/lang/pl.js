@@ -1,6 +1,6 @@
 ﻿/*
-Copyright (c) 2003-2012, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.html or http://ckeditor.com/license
+Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see license.txt or http://cksource.com/ckfinder/license
 */
 
 CKFinder.setPluginLang( 'dummy', 'pl',
@@ -9,6 +9,6 @@ CKFinder.setPluginLang( 'dummy', 'pl',
 			{
 				title : 'Testowe okienko',
 				menuItem : 'Otwórz okienko dummy',
-				typeText : 'Podaj jaki? tekst.'
+				typeText : 'Podaj jakiś tekst.'
 			}
 		});

@@ -1,8 +1,8 @@
 ﻿<script runat="server" language="VBScript">
 ' CKFinder
 ' ========
-' http://ckfinder.com
-' Copyright (C) 2007-2012, CKSource - Frederico Knabben. All rights reserved.
+' http://cksource.com/ckfinder
+' Copyright (C) 2007-2015, CKSource - Frederico Knabben. All rights reserved.
 '
 ' The software, this file and its contents are subject to the CKFinder
 ' License. Please read the license.txt file before using, installing, copying,
@@ -104,7 +104,7 @@ class CKFinder_Connector_CommandHandler_Thumbnail
 
 		' Mime type for Jpg images is image/jpeg, not image/jpg
 		Dim extension
-		extension = LCase(oCKFinder_Factory.UtilsFileSystem.GetExtension( thumbFilePath ) )
+		extension = LCase(oCKFinder_Factory.UtilsFileSystem.GetExtension( thumbFilePath, true ) )
 		If (extension="jpg") Then extension="jpeg"
 
 		contentType = "image/" & extension & _

@@ -1,8 +1,8 @@
 ﻿<script runat="server" language="VBScript">
 ' CKFinder
 ' ========
-' http://ckfinder.com
-' Copyright (C) 2007-2012, CKSource - Frederico Knabben. All rights reserved.
+' http://cksource.com/ckfinder
+' Copyright (C) 2007-2015, CKSource - Frederico Knabben. All rights reserved.
 '
 ' The software, this file and its contents are subject to the CKFinder
 ' License. Please read the license.txt file before using, installing, copying,
@@ -41,6 +41,12 @@ Class CKFinder_Connector_CommandHandler_CommandHandlerInit
 		if not(config.getIsEnabled()) then
 			base.raiseError CKFinder_Connector_Error_ConnectorDisabled, "", ""
 		end if
+
+		If config.getEnableCsrfProtection() Then
+			connectorInfo.addAttribute "csrfProtection", "true"
+		Else
+			connectorInfo.addAttribute "csrfProtection", "false"
+		End If
 
 		Dim c, ln, lc
 		lc = UCase(config.getLicenseKey()) & "                              "

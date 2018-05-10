@@ -1,8 +1,8 @@
 ﻿<script runat="server" language="VBScript">
 ' CKFinder
 ' ========
-' http://ckfinder.com
-' Copyright (C) 2007-2012, CKSource - Frederico Knabben. All rights reserved.
+' http://cksource.com/ckfinder
+' Copyright (C) 2007-2015, CKSource - Frederico Knabben. All rights reserved.
 '
 ' The software, this file and its contents are subject to the CKFinder
 ' License. Please read the license.txt file before using, installing, copying,
@@ -250,20 +250,24 @@ class CKFinder_Connector_Core_ResourceTypeConfig
 			checkExtension = true
 		else
 			' Check only the last extension (ex. in file.php.jpg, only "jpg").
-			checkExtension = checkSingleExtension( LCase(oCKFinder_Factory.UtilsFileSystem.GetExtension(fileName)) )
+			checkExtension = checkSingleExtension( LCase(oCKFinder_Factory.UtilsFileSystem.GetExtension(fileName, true)) )
 		End If
 	End function
 
 	' Checks that the extension is allowed
 	Private function checkSingleExtension(extension)
-		If deniedExtensions<>"" And oCKFinder_Factory.RegExp.MatchesPattern( deniedExtensions, extension ) Then
-			checkSingleExtension = False
-			Exit function
+		If deniedExtensions<>"" Then
+			If Instr("|" & deniedExtensions & "|" , "|" & LCase(extension) & "|" ) Then
+				checkSingleExtension = False
+				Exit function
+			End If
 		End If
 
-		If allowedExtensions<>"" And Not oCKFinder_Factory.RegExp.MatchesPattern( allowedExtensions, extension ) Then
-			checkSingleExtension = False
-			Exit function
+		If allowedExtensions<>"" Then
+			If (Instr("|" & allowedExtensions & "|" , "|" & LCase(extension) & "|" )=0) Then
+				checkSingleExtension = False
+				Exit function
+			End If
 		End If
 
 		checkSingleExtension = true

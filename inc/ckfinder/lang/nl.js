@@ -1,8 +1,8 @@
 ﻿/*
  * CKFinder
  * ========
- * http://ckfinder.com
- * Copyright (C) 2007-2012, CKSource - Frederico Knabben. All rights reserved.
+ * http://cksource.com/ckfinder
+ * Copyright (C) 2007-2015, CKSource - Frederico Knabben. All rights reserved.
  *
  * The software, this file, and its contents are subject to the CKFinder
  * License. Please read the license.txt file before using, installing, copying,
@@ -97,7 +97,7 @@ CKFinder.lang['nl'] =
 	BasketRemoveConfirm	: 'Weet je zeker dat je het bestand "%1" uit het mandje wilt verwijderen?',
 	BasketRemoveConfirmMultiple	: 'Do you really want to remove %1 files from the basket?', // MISSING
 	BasketEmpty			: 'Geen bestanden in het mandje, sleep bestanden hierheen.',
-	BasketCopyFilesHere	: 'Bestanden kopi?ren uit het mandje',
+	BasketCopyFilesHere	: 'Bestanden kopiëren uit het mandje',
 	BasketMoveFilesHere	: 'Bestanden verplaatsen uit het mandje',
 
 	// Global messages
@@ -130,7 +130,7 @@ CKFinder.lang['nl'] =
 	Delete			: 'Verwijderen',
 	DeleteFiles		: 'Delete Files', // MISSING
 
-	CopyDragDrop	: 'Hierheen kopi?ren',
+	CopyDragDrop	: 'Hierheen kopiëren',
 	MoveDragDrop	: 'Hierheen verplaatsen',
 
 	// Dialogs
@@ -226,7 +226,7 @@ CKFinder.lang['nl'] =
 	206 : 'Het uploaden van het bestand is om veiligheidsredenen afgebroken. Er is HTML code in het bestand aangetroffen.',
 	207 : 'Het geüploade bestand is hernoemd naar: "%1".',
 	300 : 'Bestand(en) verplaatsen is mislukt.',
-	301 : 'Bestand(en) kopi?ren is mislukt.',
+	301 : 'Bestand(en) kopiëren is mislukt.',
 	500 : 'Het uploaden van een bestand is momenteel niet mogelijk. Contacteer de beheerder en controleer het CKFinder configuratiebestand.',
 	501 : 'De ondersteuning voor miniatuurafbeeldingen is uitgeschakeld.'
 	},
@@ -303,5 +303,10 @@ CKFinder.lang['nl'] =
 		removeAndExtract	: 'Remove existing and extract', // MISSING
 		extractAndOverwrite	: 'Extract overwriting existing files', // MISSING
 		extractSuccess		: 'File extracted successfully.' // MISSING
+	},
+
+	Search :
+	{
+		searchPlaceholder : 'Zoeken'
 	}
 };

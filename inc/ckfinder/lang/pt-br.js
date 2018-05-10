@@ -1,8 +1,8 @@
 ﻿/*
  * CKFinder
  * ========
- * http://ckfinder.com
- * Copyright (C) 2007-2012, CKSource - Frederico Knabben. All rights reserved.
+ * http://cksource.com/ckfinder
+ * Copyright (C) 2007-2015, CKSource - Frederico Knabben. All rights reserved.
  *
  * The software, this file, and its contents are subject to the CKFinder
  * License. Please read the license.txt file before using, installing, copying,
@@ -29,18 +29,18 @@ CKFinder.lang['pt-br'] =
 	{
 		// Put the voice-only part of the label in the span.
 		unavailable		: '%1<span class="cke_accessibility">, indisponível</span>',
-		confirmCancel	: 'Algumas op??es foram modificadas. Deseja fechar a janela realmente?',
+		confirmCancel	: 'Algumas opções foram modificadas. Deseja fechar a janela realmente?',
 		ok				: 'OK',
 		cancel			: 'Cancelar',
-		confirmationTitle	: 'Confirma??o',
-		messageTitle	: 'Informa??o',
+		confirmationTitle	: 'Confirmação',
+		messageTitle	: 'Informação',
 		inputTitle		: 'Pergunta',
 		undo			: 'Desfazer',
 		redo			: 'Refazer',
 		skip			: 'Ignorar',
 		skipAll			: 'Ignorar todos',
-		makeDecision	: 'Que a??o deve ser tomada?',
-		rememberDecision: 'Lembra minha decis?o'
+		makeDecision	: 'Que ação deve ser tomada?',
+		rememberDecision: 'Lembra minha decisão'
 	},
 
 
@@ -79,7 +79,7 @@ CKFinder.lang['pt-br'] =
 
 	// Files
 	FileRename		: 'Favor informar o nome do novo arquivo: ',
-	FileRenameExt	: 'Você tem certeza que deseja alterar a extens?o do arquivo? O arquivo pode ser danificado.',
+	FileRenameExt	: 'Você tem certeza que deseja alterar a extensão do arquivo? O arquivo pode ser danificado.',
 	FileRenaming	: 'Renomeando...',
 	FileDelete		: 'Você tem certeza que deseja apagar o arquivo "%1"?',
 	FilesDelete	: 'Are you sure you want to delete %1 files?', // MISSING
@@ -115,7 +115,7 @@ CKFinder.lang['pt-br'] =
 	Upload		: 'Enviar arquivo',
 	UploadTip	: 'Enviar novo arquivo',
 	Refresh		: 'Atualizar',
-	Settings	: 'Configura??es',
+	Settings	: 'Configurações',
 	Help		: 'Ajuda',
 	HelpTip		: 'Ajuda',
 
@@ -157,9 +157,9 @@ CKFinder.lang['pt-br'] =
 
 	UploadNoFileMsg		: 'Favor selecionar o arquivo no seu computador.',
 	UploadNoFolder		: 'Favor selecionar a pasta antes the enviar o arquivo.',
-	UploadNoPerms		: 'N?o é permitido o envio de arquivos.',
+	UploadNoPerms		: 'Não é permitido o envio de arquivos.',
 	UploadUnknError		: 'Erro no envio do arquivo.',
-	UploadExtIncorrect	: 'A extens?o deste arquivo n?o é permitida nesat pasta.',
+	UploadExtIncorrect	: 'A extensão deste arquivo não é permitida nesat pasta.',
 
 	// Flash Uploads
 	UploadLabel			: 'Arquivos para Enviar',
@@ -175,7 +175,7 @@ CKFinder.lang['pt-br'] =
 	UploadProcessing	: 'Processando...',
 
 	// Settings Panel
-	SetTitle		: 'Configura??es',
+	SetTitle		: 'Configurações',
 	SetView			: 'Visualizar:',
 	SetViewThumb	: 'Miniaturas',
 	SetViewList		: 'Lista',
@@ -187,7 +187,7 @@ CKFinder.lang['pt-br'] =
 	SetSortName		: 'por Nome do arquivo',
 	SetSortDate		: 'por Data',
 	SetSortSize		: 'por Tamanho',
-	SetSortExtension		: 'por Extens?o',
+	SetSortExtension		: 'por Extensão',
 
 	// Status Bar
 	FilesCountEmpty : '<Pasta vazia>',
@@ -201,51 +201,51 @@ CKFinder.lang['pt-br'] =
 	SizePerSecond	: '%1/s',
 
 	// Connector Error Messages.
-	ErrorUnknown	: 'N?o foi possível completer o seu pedido. (Erro %1)',
+	ErrorUnknown	: 'Não foi possível completer o seu pedido. (Erro %1)',
 	Errors :
 	{
 	 10 : 'Comando inválido.',
-	 11 : 'O tipo de recurso n?o foi especificado na solicita??o.',
-	 12 : 'O recurso solicitado n?o é válido.',
+	 11 : 'O tipo de recurso não foi especificado na solicitação.',
+	 12 : 'O recurso solicitado não é válido.',
 	102 : 'Nome do arquivo ou pasta inválido.',
-	103 : 'N?o foi possível completar a solicita??o por restri??es de acesso.',
-	104 : 'N?o foi possível completar a solicita??o por restri??es de acesso do sistema de arquivos.',
-	105 : 'Extens?o de arquivo inválida.',
-	109 : 'Solicita??o inválida.',
+	103 : 'Não foi possível completar a solicitação por restrições de acesso.',
+	104 : 'Não foi possível completar a solicitação por restrições de acesso do sistema de arquivos.',
+	105 : 'Extensão de arquivo inválida.',
+	109 : 'Solicitação inválida.',
 	110 : 'Erro desconhecido.',
 	111 : 'It was not possible to complete the request due to resulting file size.', // MISSING
 	115 : 'Uma arquivo ou pasta já existe com esse nome.',
-	116 : 'Pasta n?o encontrada. Atualize e tente novamente.',
-	117 : 'Arquivo n?o encontrado. Atualize a lista de arquivos e tente novamente.',
-	118 : 'Origem e destino s?o iguais.',
+	116 : 'Pasta não encontrada. Atualize e tente novamente.',
+	117 : 'Arquivo não encontrado. Atualize a lista de arquivos e tente novamente.',
+	118 : 'Origem e destino são iguais.',
 	201 : 'Um arquivo com o mesmo nome já está disponível. O arquivo enviado foi renomeado para "%1".',
 	202 : 'Arquivo inválido.',
 	203 : 'Arquivo inválido. O tamanho é muito grande.',
 	204 : 'O arquivo enviado está corrompido.',
 	205 : 'Nenhuma pasta temporária para envio está disponível no servidor.',
-	206 : 'Transmiss?o cancelada por raz?es de seguran?a. O arquivo contem dados HTML.',
+	206 : 'Transmissão cancelada por razões de segurança. O arquivo contem dados HTML.',
 	207 : 'O arquivo enviado foi renomeado para "%1".',
-	300 : 'N?o foi possível mover o(s) arquivo(s).',
-	301 : 'N?o foi possível copiar o(s) arquivos(s).',
-	500 : 'A navega??o de arquivos está desativada por raz?es de seguran?a. Contacte o administrador do sistema.',
+	300 : 'Não foi possível mover o(s) arquivo(s).',
+	301 : 'Não foi possível copiar o(s) arquivos(s).',
+	500 : 'A navegação de arquivos está desativada por razões de segurança. Contacte o administrador do sistema.',
 	501 : 'O suporte a miniaturas está desabilitado.'
 	},
 
 	// Other Error Messages.
 	ErrorMsg :
 	{
-		FileEmpty		: 'O nome do arquivo n?o pode ser vazio.',
+		FileEmpty		: 'O nome do arquivo não pode ser vazio.',
 		FileExists		: 'O nome %s já é em uso.',
-		FolderEmpty		: 'O nome da pasta n?o pode ser vazio.',
+		FolderEmpty		: 'O nome da pasta não pode ser vazio.',
 		FolderExists	: 'Folder %s already exists.', // MISSING
 		FolderNameExists	: 'Folder already exists.', // MISSING
 
-		FileInvChar		: 'O nome do arquivo n?o pode conter nenhum desses caracteres: \n\\ / : * ? " < > |',
-		FolderInvChar	: 'O nome da pasta n?o pode conter nenhum desses caracteres: \n\\ / : * ? " < > |',
+		FileInvChar		: 'O nome do arquivo não pode conter nenhum desses caracteres: \n\\ / : * ? " < > |',
+		FolderInvChar	: 'O nome da pasta não pode conter nenhum desses caracteres: \n\\ / : * ? " < > |',
 
-		PopupBlockView	: 'N?o foi possível abrir o arquivo em outra janela. Configure seu navegador e desabilite o bloqueio a popups para esse site.',
-		XmlError		: 'N?o foi possível carregar a resposta XML enviada pelo servidor.',
-		XmlEmpty		: 'N?o foi possível carregar a resposta XML enviada pelo servidor. Resposta vazia..',
+		PopupBlockView	: 'Não foi possível abrir o arquivo em outra janela. Configure seu navegador e desabilite o bloqueio a popups para esse site.',
+		XmlError		: 'Não foi possível carregar a resposta XML enviada pelo servidor.',
+		XmlEmpty		: 'Não foi possível carregar a resposta XML enviada pelo servidor. Resposta vazia..',
 		XmlRawResponse	: 'Resposta original enviada pelo servidor: %s'
 	},
 
@@ -253,23 +253,23 @@ CKFinder.lang['pt-br'] =
 	Imageresize :
 	{
 		dialogTitle		: 'Redimensionar %s',
-		sizeTooBig		: 'N?o possível usar dimens?es maiores do que as originais (%size).',
+		sizeTooBig		: 'Não possível usar dimensões maiores do que as originais (%size).',
 		resizeSuccess	: 'Imagem redimensionada corretamente.',
 		thumbnailNew	: 'Cria nova anteprima',
 		thumbnailSmall	: 'Pequeno (%s)',
 		thumbnailMedium	: 'Médio (%s)',
 		thumbnailLarge	: 'Grande (%s)',
-		newSize			: 'Novas dimens?es',
+		newSize			: 'Novas dimensões',
 		width			: 'Largura',
 		height			: 'Altura',
 		invalidHeight	: 'Altura incorreta.',
 		invalidWidth	: 'Largura incorreta.',
-		invalidName		: 'O nome do arquivo n?o é válido.',
+		invalidName		: 'O nome do arquivo não é válido.',
 		newImage		: 'Cria nova imagem',
-		noExtensionChange : 'A extens?o do arquivo n?o pode ser modificada.',
+		noExtensionChange : 'A extensão do arquivo não pode ser modificada.',
 		imageSmall		: 'A imagem original é muito pequena.',
 		contextMenuName	: 'Redimensionar',
-		lockRatio		: 'Travar Propor??es',
+		lockRatio		: 'Travar Proporções',
 		resetSize		: 'Redefinir para o Tamanho Original'
 	},
 
@@ -277,7 +277,7 @@ CKFinder.lang['pt-br'] =
 	Fileeditor :
 	{
 		save			: 'Salva',
-		fileOpenError	: 'N?o é possível abrir o arquivo.',
+		fileOpenError	: 'Não é possível abrir o arquivo.',
 		fileSaveSuccess	: 'Arquivo salvado corretamente.',
 		contextMenuName	: 'Modificar',
 		loadingFile		: 'Carregando arquivo. Por favor aguarde...'
@@ -303,5 +303,10 @@ CKFinder.lang['pt-br'] =
 		removeAndExtract	: 'Remove existing and extract', // MISSING
 		extractAndOverwrite	: 'Extract overwriting existing files', // MISSING
 		extractSuccess		: 'File extracted successfully.' // MISSING
+	},
+
+	Search :
+	{
+		searchPlaceholder : 'Pesquisar'
 	}
 };

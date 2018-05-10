@@ -1,8 +1,8 @@
 ﻿/*
  * CKFinder
  * ========
- * http://ckfinder.com
- * Copyright (C) 2007-2012, CKSource - Frederico Knabben. All rights reserved.
+ * http://cksource.com/ckfinder
+ * Copyright (C) 2007-2015, CKSource - Frederico Knabben. All rights reserved.
  *
  * The software, this file, and its contents are subject to the CKFinder
  * License. Please read the license.txt file before using, installing, copying,
@@ -29,18 +29,18 @@ CKFinder.lang['ro'] =
 	{
 		// Put the voice-only part of the label in the span.
 		unavailable		: '%1<span class="cke_accessibility">, indisponibil</span>',
-		confirmCancel	: 'Unele op?iuni au fost schimbate. E?ti sigur c? vrei s? ?nchizi fereastra de dialog?',
+		confirmCancel	: 'Unele opțiuni au fost schimbate. Ești sigur că vrei să închizi fereastra de dialog?',
 		ok				: 'OK',
-		cancel			: 'Anuleaz?',
-		confirmationTitle	: 'Confirm?',
-		messageTitle	: 'Informa?ii',
-		inputTitle		: '?ntreab?',
-		undo			: 'Starea anterioar?',
-		redo			: 'Starea ulterioar?(redo)',
-		skip			: 'S?ri',
-		skipAll			: 'S?ri peste toate',
-		makeDecision	: 'Ce ac?iune trebuie luat??',
-		rememberDecision: 'Re?ine ac?iunea pe viitor'
+		cancel			: 'Anulează',
+		confirmationTitle	: 'Confirmă',
+		messageTitle	: 'Informații',
+		inputTitle		: 'Întreabă',
+		undo			: 'Starea anterioară',
+		redo			: 'Starea ulterioară(redo)',
+		skip			: 'Sări',
+		skipAll			: 'Sări peste toate',
+		makeDecision	: 'Ce acțiune trebuie luată?',
+		rememberDecision: 'Reține acțiunea pe viitor'
 	},
 
 
@@ -69,36 +69,36 @@ CKFinder.lang['ro'] =
 
 	// Folders
 	FoldersTitle	: 'Dosare',
-	FolderLoading	: '?nc?rcare...',
-	FolderNew		: 'Te rug?m s? introduci numele dosarului nou: ',
-	FolderRename	: 'Te rug?m s? introduci numele nou al dosarului: ',
-	FolderDelete	: 'E?ti sigur c? vrei s? ?tergi dosarul "%1"?',
+	FolderLoading	: 'Încărcare...',
+	FolderNew		: 'Te rugăm să introduci numele dosarului nou: ',
+	FolderRename	: 'Te rugăm să introduci numele nou al dosarului: ',
+	FolderDelete	: 'Ești sigur că vrei să ștergi dosarul "%1"?',
 	FolderRenaming	: ' (Redenumire...)',
-	FolderDeleting	: ' (?tergere...)',
+	FolderDeleting	: ' (Ștergere...)',
 	DestinationFolder	: 'Destination Folder', // MISSING
 
 	// Files
-	FileRename		: 'Te rug?m s? introduci numele nou al fi?ierului: ',
-	FileRenameExt	: 'E?ti sigur c? vrei s? schimbi extensia fi?ierului? Fi?ierul poate deveni inutilizabil.',
+	FileRename		: 'Te rugăm să introduci numele nou al fișierului: ',
+	FileRenameExt	: 'Ești sigur că vrei să schimbi extensia fișierului? Fișierul poate deveni inutilizabil.',
 	FileRenaming	: 'Redenumire...',
-	FileDelete		: 'E?ti sigur c? vrei s? ?tergi fi?ierul "%1"?',
+	FileDelete		: 'Ești sigur că vrei să ștergi fișierul "%1"?',
 	FilesDelete	: 'Are you sure you want to delete %1 files?', // MISSING
-	FilesLoading	: '?nc?rcare...',
+	FilesLoading	: 'Încărcare...',
 	FilesEmpty		: 'Dosarul este gol.',
 	DestinationFile	: 'Destination File', // MISSING
 	SkippedFiles	: 'List of skipped files:', // MISSING
 
 	// Basket
-	BasketFolder		: 'Co?',
-	BasketClear			: 'Gole?te co?',
-	BasketRemove		: 'Elimin? din co?',
-	BasketOpenFolder	: 'Deschide dosarul p?rinte',
-	BasketTruncateConfirm : 'Sigur dore?ti s? elimini toate fi?ierele din co??',
-	BasketRemoveConfirm	: 'Sigur dore?ti s? elimini fi?ierul "%1" din co??',
+	BasketFolder		: 'Coș',
+	BasketClear			: 'Golește coș',
+	BasketRemove		: 'Elimină din coș',
+	BasketOpenFolder	: 'Deschide dosarul părinte',
+	BasketTruncateConfirm : 'Sigur dorești să elimini toate fișierele din coș?',
+	BasketRemoveConfirm	: 'Sigur dorești să elimini fișierul "%1" din coș?',
 	BasketRemoveConfirmMultiple	: 'Do you really want to remove %1 files from the basket?', // MISSING
-	BasketEmpty			: 'Niciun fi?ier ?n co?, trage ?i a?eaz? cu mouse-ul.',
-	BasketCopyFilesHere	: 'Copiaz? fi?iere din co?',
-	BasketMoveFilesHere	: 'Mut? fi?iere din co?',
+	BasketEmpty			: 'Niciun fișier în coș, trage și așează cu mouse-ul.',
+	BasketCopyFilesHere	: 'Copiază fișiere din coș',
+	BasketMoveFilesHere	: 'Mută fișiere din coș',
 
 	// Global messages
 	OperationCompletedSuccess	: 'Operation completed successfully.', // MISSING
@@ -112,31 +112,31 @@ CKFinder.lang['ro'] =
 	CopyFailedList		: 'The following files could not be copied:<br />%s', // MISSING
 
 	// Toolbar Buttons (some used elsewhere)
-	Upload		: '?ncarc?',
-	UploadTip	: '?ncarc? un fi?ier nou',
-	Refresh		: 'Re?mprosp?tare',
-	Settings	: 'Set?ri',
+	Upload		: 'Încarcă',
+	UploadTip	: 'Încarcă un fișier nou',
+	Refresh		: 'Reîmprospătare',
+	Settings	: 'Setări',
 	Help		: 'Ajutor',
 	HelpTip		: 'Ajutor',
 
 	// Context Menus
-	Select			: 'Selecteaz?',
-	SelectThumbnail : 'Selecteaz? Thumbnail',
-	View			: 'Vizualizeaz?',
-	Download		: 'Descarc?',
+	Select			: 'Selectează',
+	SelectThumbnail : 'Selectează Thumbnail',
+	View			: 'Vizualizează',
+	Download		: 'Descarcă',
 
 	NewSubFolder	: 'Subdosar nou',
-	Rename			: 'Redenume?te',
-	Delete			: '?terge',
+	Rename			: 'Redenumește',
+	Delete			: 'Șterge',
 	DeleteFiles		: 'Delete Files', // MISSING
 
-	CopyDragDrop	: 'Copiaz? aici',
-	MoveDragDrop	: 'Mut? aici',
+	CopyDragDrop	: 'Copiază aici',
+	MoveDragDrop	: 'Mută aici',
 
 	// Dialogs
-	RenameDlgTitle		: 'Redenume?te',
+	RenameDlgTitle		: 'Redenumește',
 	NewNameDlgTitle		: 'Nume nou',
-	FileExistsDlgTitle	: 'Fi?ierul exist? deja',
+	FileExistsDlgTitle	: 'Fișierul există deja',
 	SysErrorDlgTitle : 'Eroare de sistem',
 
 	FileOverwrite	: 'Suprascriere',
@@ -145,54 +145,54 @@ CKFinder.lang['ro'] =
 
 	// Generic
 	OkBtn		: 'OK',
-	CancelBtn	: 'Anuleaz?',
-	CloseBtn	: '?nchide',
+	CancelBtn	: 'Anulează',
+	CloseBtn	: 'Închide',
 
 	// Upload Panel
-	UploadTitle			: '?ncarc? un fi?ier nou',
-	UploadSelectLbl		: 'Selecteaz? un fi?ier de ?nc?rcat',
-	UploadProgressLbl	: '(?nc?rcare ?n progres, te rog a?teapt?...)',
-	UploadBtn			: '?ncarc? fi?ierul selectat',
-	UploadBtnCancel		: 'Anuleaz?',
+	UploadTitle			: 'Încarcă un fișier nou',
+	UploadSelectLbl		: 'Selectează un fișier de încărcat',
+	UploadProgressLbl	: '(Încărcare în progres, te rog așteaptă...)',
+	UploadBtn			: 'Încarcă fișierul selectat',
+	UploadBtnCancel		: 'Anulează',
 
-	UploadNoFileMsg		: 'Te rug?m s? selectezi un fi?ier din computer.',
-	UploadNoFolder		: 'Te rug?m s? selectezi un dosar ?nainte de a ?nc?rca.',
-	UploadNoPerms		: '?nc?rcare fi?ier nepermis?.',
-	UploadUnknError		: 'Eroare la trimiterea fi?ierului.',
-	UploadExtIncorrect	: 'Extensie fi?ier nepermis? ?n acest dosar.',
+	UploadNoFileMsg		: 'Te rugăm să selectezi un fișier din computer.',
+	UploadNoFolder		: 'Te rugăm să selectezi un dosar înainte de a încărca.',
+	UploadNoPerms		: 'Încărcare fișier nepermisă.',
+	UploadUnknError		: 'Eroare la trimiterea fișierului.',
+	UploadExtIncorrect	: 'Extensie fișier nepermisă în acest dosar.',
 
 	// Flash Uploads
-	UploadLabel			: 'Fi?iere de ?nc?rcat',
-	UploadTotalFiles	: 'Total fi?iere:',
-	UploadTotalSize		: 'Total m?rime:',
-	UploadSend			: '?ncarc?',
-	UploadAddFiles		: 'Adaug? fi?iere',
-	UploadClearFiles	: 'Renun?? la toate',
-	UploadCancel		: 'Anuleaz? ?nc?rcare',
-	UploadRemove		: 'Elimin?',
-	UploadRemoveTip		: 'Elimin? !f',
-	UploadUploaded		: '?ncarc? !n%',
+	UploadLabel			: 'Fișiere de încărcat',
+	UploadTotalFiles	: 'Total fișiere:',
+	UploadTotalSize		: 'Total mărime:',
+	UploadSend			: 'Încarcă',
+	UploadAddFiles		: 'Adaugă fișiere',
+	UploadClearFiles	: 'Renunță la toate',
+	UploadCancel		: 'Anulează încărcare',
+	UploadRemove		: 'Elimină',
+	UploadRemoveTip		: 'Elimină !f',
+	UploadUploaded		: 'Încarcă !n%',
 	UploadProcessing	: 'Prelucrare...',
 
 	// Settings Panel
-	SetTitle		: 'Set?ri',
-	SetView			: 'Vizualizeaz?:',
+	SetTitle		: 'Setări',
+	SetView			: 'Vizualizează:',
 	SetViewThumb	: 'Thumbnails',
-	SetViewList		: 'List?',
-	SetDisplay		: 'Afi?eaz?:',
-	SetDisplayName	: 'Nume fi?ier',
-	SetDisplayDate	: 'Dat?',
-	SetDisplaySize	: 'M?rime fi?ier',
+	SetViewList		: 'Listă',
+	SetDisplay		: 'Afișează:',
+	SetDisplayName	: 'Nume fișier',
+	SetDisplayDate	: 'Dată',
+	SetDisplaySize	: 'Mărime fișier',
 	SetSort			: 'Sortare:',
-	SetSortName		: 'dup? nume fi?ier',
-	SetSortDate		: 'dup? dat?',
-	SetSortSize		: 'dup? m?rime',
-	SetSortExtension		: 'dup? extensie',
+	SetSortName		: 'după nume fișier',
+	SetSortDate		: 'după dată',
+	SetSortSize		: 'după mărime',
+	SetSortExtension		: 'după extensie',
 
 	// Status Bar
 	FilesCountEmpty : '<Dosar Gol>',
-	FilesCountOne	: '1 fi?ier',
-	FilesCountMany	: '%1 fi?iere',
+	FilesCountOne	: '1 fișier',
+	FilesCountMany	: '%1 fișiere',
 
 	// Size and Speed
 	Kb				: '%1 KB',
@@ -201,86 +201,86 @@ CKFinder.lang['ro'] =
 	SizePerSecond	: '%1/s',
 
 	// Connector Error Messages.
-	ErrorUnknown	: 'Nu a fost posibil? finalizarea cererii. (Eroare %1)',
+	ErrorUnknown	: 'Nu a fost posibilă finalizarea cererii. (Eroare %1)',
 	Errors :
 	{
-	 10 : 'Comand? invalid?.',
-	 11 : 'Tipul de resurs? nu a fost specificat ?n cerere.',
-	 12 : 'Tipul de resurs? cerut nu este valid.',
-	102 : 'Nume fi?ier sau nume dosar invalid.',
-	103 : 'Nu a fost posibili? finalizarea cererii din cauza restric?iilor de autorizare.',
-	104 : 'Nu a fost posibili? finalizarea cererii din cauza restric?iilor de permisiune la sistemul de fi?iere.',
-	105 : 'Extensie fi?ier invalid?.',
-	109 : 'Cerere invalid?.',
-	110 : 'Eroare necunoscut?.',
+	 10 : 'Comandă invalidă.',
+	 11 : 'Tipul de resursă nu a fost specificat în cerere.',
+	 12 : 'Tipul de resursă cerut nu este valid.',
+	102 : 'Nume fișier sau nume dosar invalid.',
+	103 : 'Nu a fost posibiliă finalizarea cererii din cauza restricțiilor de autorizare.',
+	104 : 'Nu a fost posibiliă finalizarea cererii din cauza restricțiilor de permisiune la sistemul de fișiere.',
+	105 : 'Extensie fișier invalidă.',
+	109 : 'Cerere invalidă.',
+	110 : 'Eroare necunoscută.',
 	111 : 'It was not possible to complete the request due to resulting file size.', // MISSING
-	115 : 'Exist? deja un fi?ier sau un dosar cu acela?i nume.',
-	116 : 'Dosar neg?sit. Te rog ?mprosp?teaz? ?i ?ncearc? din nou.',
-	117 : 'Fi?ier neg?sit. Te rog ?mprosp?teaz? lista de fi?iere ?i ?ncearc? din nou.',
-	118 : 'Calea sursei ?i a ?intei sunt egale.',
-	201 : 'Un fi?ier cu acela?i nume este deja disponibil. Fi?ierul ?nc?rcat a fost redenumit cu "%1".',
-	202 : 'Fi?ier invalid.',
-	203 : 'Fi?ier invalid. M?rimea fi?ierului este prea mare.',
-	204 : 'Fi?ierul ?nc?rcat este corupt.',
-	205 : 'Niciun dosar temporar nu este disponibil pentru ?nc?rcarea pe server.',
-	206 : '?nc?rcare anulat? din motive de securitate. Fi?ierul con?ine date asem?n?toare cu HTML.',
-	207 : 'Fi?ierul ?nc?rcat a fost redenumit cu "%1".',
-	300 : 'Mutare fi?ier(e) e?uat?.',
-	301 : 'Copiere fi?ier(e) e?uat?.',
-	500 : 'Browser-ul de fi?iere este dezactivat din motive de securitate. Te rog contacteaz? administratorul de sistem ?i verific? configurarea de fi?iere CKFinder.',
-	501 : 'Func?ionalitatea de creat thumbnails este dezactivat?.'
+	115 : 'Există deja un fișier sau un dosar cu același nume.',
+	116 : 'Dosar negăsit. Te rog împrospătează și încearcă din nou.',
+	117 : 'Fișier negăsit. Te rog împrospătează lista de fișiere și încearcă din nou.',
+	118 : 'Calea sursei și a țintei sunt egale.',
+	201 : 'Un fișier cu același nume este deja disponibil. Fișierul încărcat a fost redenumit cu "%1".',
+	202 : 'Fișier invalid.',
+	203 : 'Fișier invalid. Mărimea fișierului este prea mare.',
+	204 : 'Fișierul încărcat este corupt.',
+	205 : 'Niciun dosar temporar nu este disponibil pentru încărcarea pe server.',
+	206 : 'Încărcare anulată din motive de securitate. Fișierul conține date asemănătoare cu HTML.',
+	207 : 'Fișierul încărcat a fost redenumit cu "%1".',
+	300 : 'Mutare fișier(e) eșuată.',
+	301 : 'Copiere fișier(e) eșuată.',
+	500 : 'Browser-ul de fișiere este dezactivat din motive de securitate. Te rog contactează administratorul de sistem și verifică configurarea de fișiere CKFinder.',
+	501 : 'Funcționalitatea de creat thumbnails este dezactivată.'
 	},
 
 	// Other Error Messages.
 	ErrorMsg :
 	{
-		FileEmpty		: 'Numele fi?ierului nu poate fi gol.',
-		FileExists		: 'Fi?ierul %s exist? deja.',
+		FileEmpty		: 'Numele fișierului nu poate fi gol.',
+		FileExists		: 'Fișierul %s există deja.',
 		FolderEmpty		: 'Numele dosarului nu poate fi gol.',
 		FolderExists	: 'Folder %s already exists.', // MISSING
 		FolderNameExists	: 'Folder already exists.', // MISSING
 
-		FileInvChar		: 'Numele fi?ierului nu poate con?ine niciunul din urm?toarele caractere: \n\\ / : * ? " < > |',
-		FolderInvChar	: 'Numele dosarului nu poate con?ine niciunul din urm?toarele caractere: \n\\ / : * ? " < > |',
+		FileInvChar		: 'Numele fișierului nu poate conține niciunul din următoarele caractere: \n\\ / : * ? " < > |',
+		FolderInvChar	: 'Numele dosarului nu poate conține niciunul din următoarele caractere: \n\\ / : * ? " < > |',
 
-		PopupBlockView	: 'Nu a fost posibil? deschiderea fi?ierului ?ntr-o fereastr? nou?. Te rug?m s? configurezi browser-ul ?i s? dezactivezi toate popup-urile blocate pentru acest site.',
-		XmlError		: 'Nu a fost posibil? ?nc?rcarea ?n mod corespunz?tor a r?spunsului XML de pe serverul web.',
-		XmlEmpty		: 'Nu a fost posibil? ?nc?rcarea r?spunsului XML de pe serverul web. Serverul a returnat un r?spuns gol.',
-		XmlRawResponse	: 'R?spuns brut de la server: %s'
+		PopupBlockView	: 'Nu a fost posibilă deschiderea fișierului într-o fereastră nouă. Te rugăm să configurezi browser-ul și să dezactivezi toate popup-urile blocate pentru acest site.',
+		XmlError		: 'Nu a fost posibilă încărcarea în mod corespunzător a răspunsului XML de pe serverul web.',
+		XmlEmpty		: 'Nu a fost posibilă încărcarea răspunsului XML de pe serverul web. Serverul a returnat un răspuns gol.',
+		XmlRawResponse	: 'Răspuns brut de la server: %s'
 	},
 
 	// Imageresize plugin
 	Imageresize :
 	{
-		dialogTitle		: 'Redimensioneaz? %s',
-		sizeTooBig		: 'Nu se pot seta ?n?l?imea sau l??imea unei imagini la o valoare mai mare decat dimesiunea original? (%size).',
-		resizeSuccess	: 'Imagine redimensionat? cu succes.',
-		thumbnailNew	: 'Creaz? un thumbnail nou',
+		dialogTitle		: 'Redimensionează %s',
+		sizeTooBig		: 'Nu se pot seta înălțimea sau lățimea unei imagini la o valoare mai mare decât dimesiunea originală (%size).',
+		resizeSuccess	: 'Imagine redimensionată cu succes.',
+		thumbnailNew	: 'Crează un thumbnail nou',
 		thumbnailSmall	: 'Mic (%s)',
 		thumbnailMedium	: 'Mediu (%s)',
 		thumbnailLarge	: 'Mare (%s)',
-		newSize			: 'Seteaz? o dimensiune nou?',
-		width			: 'L??ime',
-		height			: '?n?l?ime',
-		invalidHeight	: '?n?l?ime invalid?.',
-		invalidWidth	: 'L??ime invalid?.',
-		invalidName		: 'Nume fi?ier invalid.',
-		newImage		: 'Creeaz? o imagine nou?',
-		noExtensionChange : 'Extensia fi?ierului nu poate fi schimbat?.',
-		imageSmall		: 'Imaginea surs? este prea mic?.',
-		contextMenuName	: 'Redimensioneaz?',
-		lockRatio		: 'Blocheaz? raport',
-		resetSize		: 'Reseteaz? dimensiunea'
+		newSize			: 'Setează o dimensiune nouă',
+		width			: 'Lățime',
+		height			: 'Înălțime',
+		invalidHeight	: 'Înălțime invalidă.',
+		invalidWidth	: 'Lățime invalidă.',
+		invalidName		: 'Nume fișier invalid.',
+		newImage		: 'Creează o imagine nouă',
+		noExtensionChange : 'Extensia fișierului nu poate fi schimbată.',
+		imageSmall		: 'Imaginea sursă este prea mică.',
+		contextMenuName	: 'Redimensionează',
+		lockRatio		: 'Blochează raport',
+		resetSize		: 'Resetează dimensiunea'
 	},
 
 	// Fileeditor plugin
 	Fileeditor :
 	{
-		save			: 'Salveaz?',
-		fileOpenError	: 'Fi?ierul nu a putut fi deschis.',
-		fileSaveSuccess	: 'Fi?ier salvat cu succes.',
-		contextMenuName	: 'Editeaz?',
-		loadingFile		: '?nc?rcare fi?ier, te rog a?teapt?...'
+		save			: 'Salvează',
+		fileOpenError	: 'Fișierul nu a putut fi deschis.',
+		fileSaveSuccess	: 'Fișier salvat cu succes.',
+		contextMenuName	: 'Editează',
+		loadingFile		: 'Încărcare fișier, te rog așteaptă...'
 	},
 
 	Maximize :
@@ -303,5 +303,10 @@ CKFinder.lang['ro'] =
 		removeAndExtract	: 'Remove existing and extract', // MISSING
 		extractAndOverwrite	: 'Extract overwriting existing files', // MISSING
 		extractSuccess		: 'File extracted successfully.' // MISSING
+	},
+
+	Search :
+	{
+		searchPlaceholder : 'Căutare'
 	}
 };

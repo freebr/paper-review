@@ -1,8 +1,8 @@
 ﻿/*
  * CKFinder
  * ========
- * http://ckfinder.com
- * Copyright (C) 2007-2012, CKSource - Frederico Knabben. All rights reserved.
+ * http://cksource.com/ckfinder
+ * Copyright (C) 2007-2015, CKSource - Frederico Knabben. All rights reserved.
  *
  * The software, this file, and its contents are subject to the CKFinder
  * License. Please read the license.txt file before using, installing, copying,
@@ -29,16 +29,16 @@ CKFinder.lang['sl'] =
 	{
 		// Put the voice-only part of the label in the span.
 		unavailable		: '%1<span class="cke_accessibility">, nedostopen</span>',
-		confirmCancel	: 'Nekatere opcije so bile spremenjene. Ali res ?elite zapreti pogovorno okno?',
+		confirmCancel	: 'Nekatere opcije so bile spremenjene. Ali res želite zapreti pogovorno okno?',
 		ok				: 'Potrdi',
-		cancel			: 'Prekli?i',
+		cancel			: 'Prekliči',
 		confirmationTitle	: 'Potrditev',
 		messageTitle	: 'Informacija',
-		inputTitle		: 'Vpra?anje',
+		inputTitle		: 'Vprašanje',
 		undo			: 'Razveljavi',
 		redo			: 'Obnovi',
-		skip			: 'Presko?i',
-		skipAll			: 'Presko?i vse',
+		skip			: 'Preskoči',
+		skipAll			: 'Preskoči vse',
 		makeDecision	: 'Katera aktivnost naj se izvede?',
 		rememberDecision: 'Zapomni si mojo izbiro'
 	},
@@ -72,16 +72,16 @@ CKFinder.lang['sl'] =
 	FolderLoading	: 'Nalagam...',
 	FolderNew		: 'Vnesite ime za novo mapo: ',
 	FolderRename	: 'Vnesite ime nove mape: ',
-	FolderDelete	: 'Ali ste prepri?ani, da ?elite zbrisati mapo "%1"?',
+	FolderDelete	: 'Ali ste prepričani, da želite zbrisati mapo "%1"?',
 	FolderRenaming	: ' (Preimenujem...)',
-	FolderDeleting	: ' (Bri?em...)',
+	FolderDeleting	: ' (Brišem...)',
 	DestinationFolder	: 'Destination Folder', // MISSING
 
 	// Files
 	FileRename		: 'Vnesite novo ime datoteke: ',
-	FileRenameExt	: 'Ali ste prepri?ani, da ?elite spremeniti kon?nico datoteke? Mo?no je, da potem datoteka ne bo uporabna.',
+	FileRenameExt	: 'Ali ste prepričani, da želite spremeniti končnico datoteke? Možno je, da potem datoteka ne bo uporabna.',
 	FileRenaming	: 'Preimenujem...',
-	FileDelete		: 'Ali ste prepri?ani, da ?elite izbrisati datoteko "%1"?',
+	FileDelete		: 'Ali ste prepričani, da želite izbrisati datoteko "%1"?',
 	FilesDelete	: 'Are you sure you want to delete %1 files?', // MISSING
 	FilesLoading	: 'Nalagam...',
 	FilesEmpty		: 'Prazna mapa',
@@ -89,16 +89,16 @@ CKFinder.lang['sl'] =
 	SkippedFiles	: 'List of skipped files:', // MISSING
 
 	// Basket
-	BasketFolder		: 'Ko?',
-	BasketClear			: 'Izprazni ko?',
-	BasketRemove		: 'Odstrani iz ko?a',
+	BasketFolder		: 'Koš',
+	BasketClear			: 'Izprazni koš',
+	BasketRemove		: 'Odstrani iz koša',
 	BasketOpenFolder	: 'Odpri izvorno mapo',
-	BasketTruncateConfirm : 'Ali res ?elite odstraniti vse datoteke iz ko?a?',
-	BasketRemoveConfirm	: 'Ali res ?elite odstraniti datoteko "%1" iz ko?a?',
+	BasketTruncateConfirm : 'Ali res želite odstraniti vse datoteke iz koša?',
+	BasketRemoveConfirm	: 'Ali res želite odstraniti datoteko "%1" iz koša?',
 	BasketRemoveConfirmMultiple	: 'Do you really want to remove %1 files from the basket?', // MISSING
-	BasketEmpty			: 'V ko?u ni datotek. Lahko jih povle?ete in spustite.',
-	BasketCopyFilesHere	: 'Kopiraj datoteke iz ko?a',
-	BasketMoveFilesHere	: 'Premakni datoteke iz ko?a',
+	BasketEmpty			: 'V košu ni datotek. Lahko jih povlečete in spustite.',
+	BasketCopyFilesHere	: 'Kopiraj datoteke iz koša',
+	BasketMoveFilesHere	: 'Premakni datoteke iz koša',
 
 	// Global messages
 	OperationCompletedSuccess	: 'Operation completed successfully.', // MISSING
@@ -112,22 +112,22 @@ CKFinder.lang['sl'] =
 	CopyFailedList		: 'The following files could not be copied:<br />%s', // MISSING
 
 	// Toolbar Buttons (some used elsewhere)
-	Upload		: 'Nalo?i na stre?nik',
-	UploadTip	: 'Nalo?i novo datoteko na stre?nik',
-	Refresh		: 'Osve?i',
+	Upload		: 'Naloži na strežnik',
+	UploadTip	: 'Naloži novo datoteko na strežnik',
+	Refresh		: 'Osveži',
 	Settings	: 'Nastavitve',
-	Help		: 'Pomo?',
-	HelpTip		: 'Pomo?',
+	Help		: 'Pomoč',
+	HelpTip		: 'Pomoč',
 
 	// Context Menus
 	Select			: 'Izberi',
-	SelectThumbnail : 'Izberi malo sli?ico (predogled)',
+	SelectThumbnail : 'Izberi malo sličico (predogled)',
 	View			: 'Predogled',
-	Download		: 'Prenesi na svoj ra?unalnik',
+	Download		: 'Prenesi na svoj računalnik',
 
 	NewSubFolder	: 'Nova podmapa',
 	Rename			: 'Preimenuj',
-	Delete			: 'Zbri?i',
+	Delete			: 'Zbriši',
 	DeleteFiles		: 'Delete Files', // MISSING
 
 	CopyDragDrop	: 'Kopiraj',
@@ -136,58 +136,58 @@ CKFinder.lang['sl'] =
 	// Dialogs
 	RenameDlgTitle		: 'Preimenuj',
 	NewNameDlgTitle		: 'Novo ime',
-	FileExistsDlgTitle	: 'Datoteka ?e obstaja',
+	FileExistsDlgTitle	: 'Datoteka že obstaja',
 	SysErrorDlgTitle : 'Sistemska napaka',
 
-	FileOverwrite	: 'Prepi?i',
+	FileOverwrite	: 'Prepiši',
 	FileAutorename	: 'Avtomatsko preimenuj',
 	ManuallyRename	: 'Manually rename', // MISSING
 
 	// Generic
 	OkBtn		: 'Potrdi',
-	CancelBtn	: 'Prekli?i',
+	CancelBtn	: 'Prekliči',
 	CloseBtn	: 'Zapri',
 
 	// Upload Panel
-	UploadTitle			: 'Nalo?i novo datoteko na stre?nik',
-	UploadSelectLbl		: 'Izberi datoteko za prenos na stre?nik',
-	UploadProgressLbl	: '(Prenos na stre?nik poteka, prosimo po?akajte...)',
-	UploadBtn			: 'Prenesi izbrano datoteko na stre?nik',
-	UploadBtnCancel		: 'Prekli?i',
+	UploadTitle			: 'Naloži novo datoteko na strežnik',
+	UploadSelectLbl		: 'Izberi datoteko za prenos na strežnik',
+	UploadProgressLbl	: '(Prenos na strežnik poteka, prosimo počakajte...)',
+	UploadBtn			: 'Prenesi izbrano datoteko na strežnik',
+	UploadBtnCancel		: 'Prekliči',
 
-	UploadNoFileMsg		: 'Prosimo izberite datoteko iz svojega ra?unalnika za prenos na stre?nik.',
-	UploadNoFolder		: 'Izberite mapo v katero se bo nalo?ilo datoteko!',
+	UploadNoFileMsg		: 'Prosimo izberite datoteko iz svojega računalnika za prenos na strežnik.',
+	UploadNoFolder		: 'Izberite mapo v katero se bo naložilo datoteko!',
 	UploadNoPerms		: 'Nalaganje datotek ni dovoljeno.',
-	UploadUnknError		: 'Napaka pri po?iljanju datoteke.',
+	UploadUnknError		: 'Napaka pri pošiljanju datoteke.',
 	UploadExtIncorrect	: 'V tej mapi ta vrsta datoteke ni dovoljena.',
 
 	// Flash Uploads
 	UploadLabel			: 'Datoteke za prenos',
 	UploadTotalFiles	: 'Skupaj datotek:',
 	UploadTotalSize		: 'Skupaj velikost:',
-	UploadSend			: 'Nalo?i na stre?nik',
+	UploadSend			: 'Naloži na strežnik',
 	UploadAddFiles		: 'Dodaj datoteke',
-	UploadClearFiles	: 'Po?isti datoteke',
-	UploadCancel		: 'Prekli?i prenos',
+	UploadClearFiles	: 'Počisti datoteke',
+	UploadCancel		: 'Prekliči prenos',
 	UploadRemove		: 'Odstrani',
 	UploadRemoveTip		: 'Odstrani !f',
-	UploadUploaded		: 'Prene?eno !n%',
+	UploadUploaded		: 'Prenešeno !n%',
 	UploadProcessing	: 'Delam...',
 
 	// Settings Panel
 	SetTitle		: 'Nastavitve',
 	SetView			: 'Pogled:',
-	SetViewThumb	: 'majhne sli?ice',
+	SetViewThumb	: 'majhne sličice',
 	SetViewList		: 'seznam',
 	SetDisplay		: 'Prikaz:',
 	SetDisplayName	: 'ime datoteke',
 	SetDisplayDate	: 'datum',
 	SetDisplaySize	: 'velikost datoteke',
-	SetSort			: 'Razvr??anje:',
+	SetSort			: 'Razvrščanje:',
 	SetSortName		: 'po imenu datoteke',
 	SetSortDate		: 'po datumu',
 	SetSortSize		: 'po velikosti',
-	SetSortExtension		: 'po kon?nici',
+	SetSortExtension		: 'po končnici',
 
 	// Status Bar
 	FilesCountEmpty : '<Prazna mapa>',
@@ -201,41 +201,41 @@ CKFinder.lang['sl'] =
 	SizePerSecond	: '%1/s',
 
 	// Connector Error Messages.
-	ErrorUnknown	: 'Pri?lo je do napake. (Napaka %1)',
+	ErrorUnknown	: 'Prišlo je do napake. (Napaka %1)',
 	Errors :
 	{
-	 10 : 'Napa?en ukaz.',
+	 10 : 'Napačen ukaz.',
 	 11 : 'V poizvedbi ni bil jasen tip (resource type).',
 	 12 : 'Tip datoteke ni primeren.',
-	102 : 'Napa?no ime mape ali datoteke.',
-	103 : 'Va?ega ukaza se ne da izvesti zaradi te?av z avtorizacijo.',
-	104 : 'Va?ega ukaza se ne da izvesti zaradi te?av z nastavitvami pravic v datote?nem sistemu.',
-	105 : 'Napa?na kon?nica datoteke.',
-	109 : 'Napa?na zahteva.',
+	102 : 'Napačno ime mape ali datoteke.',
+	103 : 'Vašega ukaza se ne da izvesti zaradi težav z avtorizacijo.',
+	104 : 'Vašega ukaza se ne da izvesti zaradi težav z nastavitvami pravic v datotečnem sistemu.',
+	105 : 'Napačna končnica datoteke.',
+	109 : 'Napačna zahteva.',
 	110 : 'Neznana napaka.',
 	111 : 'It was not possible to complete the request due to resulting file size.', // MISSING
-	115 : 'Datoteka ali mapa s tem imenom ?e obstaja.',
-	116 : 'Mapa ni najdena. Prosimo osve?ite okno in poskusite znova.',
-	117 : 'Datoteka ni najdena. Prosimo osve?ite seznam datotek in poskusite znova.',
-	118 : 'Za?etna in kon?na pot je ista.',
-	201 : 'Datoteka z istim imenom ?e obstaja. Nalo?ena datoteka je bila preimenovana v "%1".',
+	115 : 'Datoteka ali mapa s tem imenom že obstaja.',
+	116 : 'Mapa ni najdena. Prosimo osvežite okno in poskusite znova.',
+	117 : 'Datoteka ni najdena. Prosimo osvežite seznam datotek in poskusite znova.',
+	118 : 'Začetna in končna pot je ista.',
+	201 : 'Datoteka z istim imenom že obstaja. Naložena datoteka je bila preimenovana v "%1".',
 	202 : 'Neprimerna datoteka.',
-	203 : 'Datoteka je prevelika in zasede preve? prostora.',
-	204 : 'Nalo?ena datoteka je okvarjena.',
-	205 : 'Na stre?niku ni na voljo za?asna mapa za prenos datotek.',
+	203 : 'Datoteka je prevelika in zasede preveč prostora.',
+	204 : 'Naložena datoteka je okvarjena.',
+	205 : 'Na strežniku ni na voljo začasna mapa za prenos datotek.',
 	206 : 'Nalaganje je bilo prekinjeno zaradi varnostnih razlogov. Datoteka vsebuje podatke, ki spominjajo na HTML kodo.',
-	207 : 'Nalo?ena datoteka je bila preimenovana v "%1".',
+	207 : 'Naložena datoteka je bila preimenovana v "%1".',
 	300 : 'Premikanje datotek(e) ni uspelo.',
 	301 : 'Kopiranje datotek(e) ni uspelo.',
-	500 : 'Brskalnik je onemogo?en zaradi varnostnih razlogov. Prosimo kontaktirajte upravljalca spletnih strani.',
-	501 : 'Ni podpore za majhne sli?ice (predogled).'
+	500 : 'Brskalnik je onemogočen zaradi varnostnih razlogov. Prosimo kontaktirajte upravljalca spletnih strani.',
+	501 : 'Ni podpore za majhne sličice (predogled).'
 	},
 
 	// Other Error Messages.
 	ErrorMsg :
 	{
 		FileEmpty		: 'Ime datoteke ne more biti prazno.',
-		FileExists		: 'Datoteka %s ?e obstaja.',
+		FileExists		: 'Datoteka %s že obstaja.',
 		FolderEmpty		: 'Mapa ne more biti prazna.',
 		FolderExists	: 'Folder %s already exists.', // MISSING
 		FolderNameExists	: 'Folder already exists.', // MISSING
@@ -243,30 +243,30 @@ CKFinder.lang['sl'] =
 		FileInvChar		: 'Ime datoteke ne sme vsebovati naslednjih znakov: \n\\ / : * ? " < > |',
 		FolderInvChar	: 'Ime mape ne sme vsebovati naslednjih znakov: \n\\ / : * ? " < > |',
 
-		PopupBlockView	: 'Datoteke ni mo?no odpreti v novem oknu. Prosimo nastavite svoj brskalnik tako, da bo dopu??al odpiranje oken (popups) oz. izklopite filtre za blokado odpiranja oken.',
-		XmlError		: 'Nalaganje XML odgovora iz stre?nika ni uspelo.',
-		XmlEmpty		: 'Nalaganje XML odgovora iz stre?nika ni uspelo. Stre?nik je vrnil prazno sporo?ilo.',
-		XmlRawResponse	: 'Surov odgovor iz stre?nika je: %s'
+		PopupBlockView	: 'Datoteke ni možno odpreti v novem oknu. Prosimo nastavite svoj brskalnik tako, da bo dopuščal odpiranje oken (popups) oz. izklopite filtre za blokado odpiranja oken.',
+		XmlError		: 'Nalaganje XML odgovora iz strežnika ni uspelo.',
+		XmlEmpty		: 'Nalaganje XML odgovora iz strežnika ni uspelo. Strežnik je vrnil prazno sporočilo.',
+		XmlRawResponse	: 'Surov odgovor iz strežnika je: %s'
 	},
 
 	// Imageresize plugin
 	Imageresize :
 	{
 		dialogTitle		: 'Spremeni velikost slike %s',
-		sizeTooBig		: '?irina ali vi?ina slike ne moreta biti ve?ji kot je originalna velikost (%size).',
-		resizeSuccess	: 'Velikost slike je bila uspe?no spremenjena.',
-		thumbnailNew	: 'Kreiraj novo majhno sli?ico',
+		sizeTooBig		: 'Širina ali višina slike ne moreta biti večji kot je originalna velikost (%size).',
+		resizeSuccess	: 'Velikost slike je bila uspešno spremenjena.',
+		thumbnailNew	: 'Kreiraj novo majhno sličico',
 		thumbnailSmall	: 'majhna (%s)',
 		thumbnailMedium	: 'srednja (%s)',
 		thumbnailLarge	: 'velika (%s)',
-		newSize			: 'Dolo?ite novo velikost',
-		width			: '?irina',
-		height			: 'Vi?ina',
-		invalidHeight	: 'Nepravilna vi?ina.',
-		invalidWidth	: 'Nepravilna ?irina.',
+		newSize			: 'Določite novo velikost',
+		width			: 'Širina',
+		height			: 'Višina',
+		invalidHeight	: 'Nepravilna višina.',
+		invalidWidth	: 'Nepravilna širina.',
 		invalidName		: 'Nepravilno ime datoteke.',
 		newImage		: 'Kreiraj novo sliko',
-		noExtensionChange : 'Kon?nica datoteke se ne more spremeniti.',
+		noExtensionChange : 'Končnica datoteke se ne more spremeniti.',
 		imageSmall		: 'Izvorna slika je premajhna.',
 		contextMenuName	: 'Spremeni velikost',
 		lockRatio		: 'Zakleni razmerje',
@@ -277,10 +277,10 @@ CKFinder.lang['sl'] =
 	Fileeditor :
 	{
 		save			: 'Shrani',
-		fileOpenError	: 'Datoteke ni mogo?e odpreti.',
+		fileOpenError	: 'Datoteke ni mogoče odpreti.',
 		fileSaveSuccess	: 'Datoteka je bila shranjena.',
 		contextMenuName	: 'Uredi',
-		loadingFile		: 'Nalaganje datoteke, prosimo po?akajte ...'
+		loadingFile		: 'Nalaganje datoteke, prosimo počakajte ...'
 	},
 
 	Maximize :
@@ -303,5 +303,10 @@ CKFinder.lang['sl'] =
 		removeAndExtract	: 'Remove existing and extract', // MISSING
 		extractAndOverwrite	: 'Extract overwriting existing files', // MISSING
 		extractSuccess		: 'File extracted successfully.' // MISSING
+	},
+
+	Search :
+	{
+		searchPlaceholder : 'Iskanje'
 	}
 };

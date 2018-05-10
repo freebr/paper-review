@@ -1,8 +1,8 @@
 ﻿<script runat="server" language="VBScript">
 ' CKFinder
 ' ========
-' http://ckfinder.com
-' Copyright (C) 2007-2012, CKSource - Frederico Knabben. All rights reserved.
+' http://cksource.com/ckfinder
+' Copyright (C) 2007-2015, CKSource - Frederico Knabben. All rights reserved.
 '
 ' The software, this file and its contents are subject to the CKFinder
 ' License. Please read the license.txt file before using, installing, copying,
@@ -127,7 +127,7 @@ class CKFinder_Connector_Utils_Image
 	'
 	Public Function isImage( filePath )
 		Dim extension
-		extension = LCase( oCKFinder_Factory.UtilsFileSystem.GetExtension( filePath ) )
+		extension = LCase( oCKFinder_Factory.UtilsFileSystem.GetExtension( filePath, true ) )
 		If (extension="jpg" Or extension="jpeg" Or extension="bmp" Or extension="png" Or extension="gif") then
 			isImage = True
 		Else
@@ -401,12 +401,15 @@ Class CKFinder_Utils_ImageHandler_Persits
 		oCKFinder_Factory.Connector.ErrorHandler.throwError number, text, debugText
 	End Function
 
-	Public Function versionNumber(obj)
+	'' returns a long with the version number for easy check of features
+	private Function versionNumber(obj)
 		Dim data
 		' Returns the current version of the component in the format "1.6.0.0"
 		data = obj.version
 		' Convert it to a Long
-		versionNumber = CLng(Replace(data, ".", ""))
+		data = Replace(data, ".", "")
+		data = Replace(data, "(64-bit)", "")
+		versionNumber = CLng(trim(data))
 	End Function
 
 	Public Function Enabled()
@@ -438,7 +441,10 @@ Class CKFinder_Utils_ImageHandler_Persits
 		On Error goto 0
 	End Function
 
-	Private Function openImage(sourceFile)
+	Private isGif
+	Private isPng
+
+	Private Function openImage(sourceFile, checkExtension)
 		Dim Jpeg
 		' Create instance of AspJpeg
 		On Error Resume next
@@ -450,8 +456,20 @@ Class CKFinder_Utils_ImageHandler_Persits
 			Exit function
 		End if
 
+		If checkExtension Then
+			Dim extension, theVersion
+			theVersion = versionNumber(Jpeg)
+			extension = LCase(Right(sourceFile, 4))
+			If (extension = ".gif") And (theVersion >= 2000) Then isGif = true
+			If (extension = ".png") And (theVersion >= 2100) Then isPng = true
+		End If
+
 		' Open source image
-		Jpeg.Open sourceFile
+		If (checkExtension And isGif) Then
+			Jpeg.Gif.Open sourceFile
+		else
+			Jpeg.Open sourceFile
+		End If
 
 		If (Err.number<>0) Then
 			On Error goto 0
@@ -464,70 +482,112 @@ Class CKFinder_Utils_ImageHandler_Persits
 		Set openImage = Jpeg
 	End function
 
-	Public function getImageSize(sourceFile)
-		Dim Jpeg, oSize
-		' Create instance of AspJpeg
-		Set Jpeg = openImage(sourceFile)
+	' Common final steps before saving
+	Private Sub saveFile(Jpeg, targetFile)
+		' Avoid problems with CMYK
+		If (Not(isGif) And Not(isPng)) Then
+			Jpeg.ToRGB
+		End if
 
+		If (isPng) Then
+			' Output as PNG
+			Jpeg.PNGOutput = True
+		End If
+
+		' Save to disk
+		If (isGif) Then
+			' Save the gif
+			Jpeg.gif.save targetFile
+		else
+			Jpeg.Save targetFile
+		End If
+	End Sub
+
+	Public function getImageSize(sourceFile)
+		Dim Jpeg
+		' reset private variables
+		isGif = false
+		isPng = false
+
+		' Create instance of AspJpeg
+		Set Jpeg = openImage(sourceFile, true)
+
+		Set getImageSize = getSize(Jpeg)
+
+		Set Jpeg = nothing
+	End Function
+
+	Private Function getSize(jpeg)
+		Dim oSize
 		Set oSize = new CKFinder_Size
 
 		If (Jpeg Is Nothing) Then
-			Set getImageSize = oSize
+			Set getSize = oSize
 			Exit function
 		End if
 
-		oSize.Width =  Jpeg.Width
-		oSize.Height =  Jpeg.Height
+		If (isGif) Then
+			oSize.Width =  Jpeg.Gif.Width
+			oSize.Height =  Jpeg.Gif.Height
+		else
+			oSize.Width =  Jpeg.Width
+			oSize.Height =  Jpeg.Height
+		End If
 
-		Set Jpeg = nothing
-		Set getImageSize = oSize
+		Set getSize = oSize
 	End Function
 
 	Public function createThumb(sourceFile, targetFile, maxWidth, maxHeight, quality, preserveAspectRatio)
-		Dim Jpeg
+		Dim Jpeg, oSize
+		' reset private variables
+		isGif = false
+		isPng = false
 		' Create instance of AspJpeg
-		Set Jpeg = openImage(sourceFile)
+		Set Jpeg = openImage(sourceFile, true)
 
 		If (Jpeg Is Nothing) Then
 			createThumb = false
 			Exit function
 		End if
 
+		Set oSize = getSize(Jpeg)
+
 		dim iFinalWidth, iFinalHeight
 		' If 0 is passed in any of the max sizes it means that that size must be ignored,
 		' so the original image size is used.
 		iFinalWidth = maxWidth
-		If (iFinalWidth = 0) Then iFinalWidth = Jpeg.Width
+		If (iFinalWidth = 0) Then iFinalWidth = oSize.Width
 		iFinalHeight = maxHeight
-		If (iFinalHeight = 0) Then iFinalHeight = Jpeg.Height
+		If (iFinalHeight = 0) Then iFinalHeight = oSize.Height
 
-		if ( Jpeg.Width <= iFinalWidth and Jpeg.Height <= iFinalHeight ) then
+		if ( oSize.Width <= iFinalWidth and oSize.Height <= iFinalHeight ) then
 			Set Jpeg = Nothing
 			createThumb = oCKFinder_Factory.UtilsFileSystem.CopyFile( sourceFile, targetFile )
 			Exit function
 		End If
 
-		dim oSize
+		dim oNewSize
 		if ( preserveAspectRatio ) then
 			' Gets the best size for aspect ratio resampling
-			Set oSize = oCKFinder_Factory.UtilsImage.GetAspectRatioSize( iFinalWidth, iFinalHeight, Jpeg.Width, Jpeg.Height )
+			Set oNewSize = oCKFinder_Factory.UtilsImage.GetAspectRatioSize( iFinalWidth, iFinalHeight, oSize.Width, oSize.Height )
 		else
-			Set oSize = new CKFinder_Size
-			oSize.Width = iFinalWidth
-			oSize.Height = iFinalHeight
+			Set oNewSize = new CKFinder_Size
+			oNewSize.Width = iFinalWidth
+			oNewSize.Height = iFinalHeight
 		End if
 
 		' Resize
-		Jpeg.Width = oSize.Width
-		Jpeg.Height = oSize.Height
+		If (isGif) Then
+			Jpeg.Gif.Resize oNewSize.Width, oNewSize.Height
+		else
+			Jpeg.Width = oNewSize.Width
+			Jpeg.Height = oNewSize.Height
 
-		' Avoid problems with CMYK
-		Jpeg.ToRGB
-
-		Jpeg.Quality = quality
+			Jpeg.Quality = quality
+		End If
 
 		' create thumbnail and save it to disk
-		Jpeg.Save targetFile
+		saveFile Jpeg, targetFile
 
 		Set Jpeg = Nothing
 
@@ -537,8 +597,11 @@ Class CKFinder_Utils_ImageHandler_Persits
 
 	Public function ValidateImage(sourceFile)
 		Dim Jpeg
+		' reset private variables
+		isGif = false
+		isPng = false
 		' Create instance of AspJpeg
-		Set Jpeg = openImage(sourceFile)
+		Set Jpeg = openImage(sourceFile, true)
 
 		If (Jpeg Is Nothing) Then
 			ValidateImage = False
@@ -549,46 +612,55 @@ Class CKFinder_Utils_ImageHandler_Persits
 		Set Jpeg = nothing
 	End Function
 
+	'
 	Public function createWatermark(sourceFile, watermarkFile, marginLeft, marginBottom, quality, transparency)
 		Dim Jpeg, Logo
+		' reset private variables
+		isGif = false
+		isPng = false
+
 		' Create instance of AspJpeg
-		Set Jpeg = openImage(sourceFile)
+		' AspJpeg limitation: Even if it's a gif, we need to load it in the main Jpeg object as the .Gif object doesn't have the .Canvas to draw the mask
+		' animated gifs will be converted to a single frame to draw the watermark
+		Set Jpeg = openImage(sourceFile, false)
 
 		If (Jpeg Is Nothing) Then
 			createWatermark = False
 			Exit function
 		End if
 
-		Set Logo = openImage(watermarkFile)
+		Set Logo = openImage(watermarkFile, false)
 
 		If (Logo Is Nothing) Then
 			Set Jpeg = nothing
 			createWatermark = False
 			Exit function
-		End if
+		End If
 
-		Dim marginTop, opacity
+		Dim marginTop, opacity, theVersion, extension
 		marginTop = Jpeg.Height - (marginBottom + Logo.Height)
 
-		' Avoid problems with CMYK
-		Jpeg.ToRGB
+		theVersion = versionNumber(Jpeg)
+		extension = LCase(Right(sourceFile, 4))
+		If (extension = ".gif") And (theVersion >= 2000) Then isGif = true
 
-		If versionNumber(Jpeg)<2100 Then
-
+		If theVersion<2100 Then
 			opacity = 1 - transparency/100
 			Jpeg.Canvas.DrawImage marginLeft, MarginTop, Logo, opacity
 		else
 			Jpeg.Canvas.DrawPng marginLeft, MarginTop, watermarkFile
-
-			' Output as PNG
-			'Jpeg.PNGOutput = True
 		End if
 		Set Logo = Nothing
 
-		Jpeg.Quality = quality
+		If (isGif) Then
+			' Copy the image from the main object to the .Gif part so it's saved as gif
+			Jpeg.Gif.AddImage Jpeg, 0, 0
+		else
+			Jpeg.Quality = quality
+		End if
 
 		' create thumbnail and save it to disk
-		Jpeg.Save sourceFile
+		saveFile Jpeg, sourceFile
 
 		Set Jpeg = Nothing
 
@@ -622,7 +694,7 @@ Class CKFinder_Utils_ImageHandler_Briz
 	End function
 
 
-	Public function createThumb(sourceFile, targetFile, maxWidth, maxHeight, quality, preserveAspectRatio)
+	Private Function openImage(sourceFile)
 		Dim tn
 		' Create instance of AspThumb
 		On Error Resume next
@@ -638,11 +710,25 @@ Class CKFinder_Utils_ImageHandler_Briz
 		tn.Load sourceFile
 
 		If (Err.number<>0) Then
+			tn.close
 			Set tn = nothing
-			createThumb = false
+			Set openImage = nothing
 			Exit function
 		End if
 		On Error goto 0
+
+		Set openImage = tn
+	End Function
+
+	Public function createThumb(sourceFile, targetFile, maxWidth, maxHeight, quality, preserveAspectRatio)
+		Dim tn
+		' Create instance of AspThumb
+		Set tn = openImage(sourceFile)
+
+		If (tn Is Nothing) Then
+			ValidateImage = False
+			Exit function
+		End if
 
 		dim iFinalWidth, iFinalHeight
 		' If 0 is passed in any of the max sizes it means that that size must be ignored,
@@ -652,7 +738,8 @@ Class CKFinder_Utils_ImageHandler_Briz
 		iFinalHeight = maxHeight
 		If (iFinalHeight = 0) Then iFinalHeight = tn.Height
 
-		if ( tn.Width <= iFinalWidth and tn.Height <= iFinalHeight ) then
+		if ( tn.Width <= iFinalWidth and tn.Height <= iFinalHeight ) Then
+			tn.close
 			Set tn = Nothing
 			createThumb = oCKFinder_Factory.UtilsFileSystem.CopyFile( sourceFile, targetFile )
 			Exit function
@@ -684,33 +771,42 @@ Class CKFinder_Utils_ImageHandler_Briz
 	Public function ValidateImage(sourceFile)
 		Dim tn
 		' Create instance of AspThumb
-		On Error Resume next
-		Set tn = Server.CreateObject("briz.AspThumb")
+		Set tn = openImage(sourceFile)
 
-		If (Err.number<>0) Then
-			Set tn = nothing
-			throwError CKFINDER_CONNECTOR_ERROR_CUSTOM_ERROR, "Unable to create briz.AspThumb component.", Err.description
-			Exit function
-		End if
-
-		' Open source image
-		tn.Load sourceFile
-
-		If (Err.number<>0) Then
-			Set tn = nothing
+		If (tn Is Nothing) Then
 			ValidateImage = False
 			Exit function
 		End if
+
 		tn.close
-		On Error goto 0
 
 		ValidateImage = true
 	End Function
 
-	Public function createWatermark(sourceFile, watermarkFile, marginLeft, marginBottom, quality, transparency)
-		' FIXME
-	End function
 
+	Public function getImageSize(sourceFile)
+		Dim tn, oSize
+		' Create instance of AspThumb
+		Set tn = openImage(sourceFile)
+
+		Set oSize = new CKFinder_Size
+
+		If (tn Is Nothing) Then
+			Set getImageSize = oSize
+			Exit function
+		End if
+
+		oSize.Width = tn.Width
+		oSize.Height = tn.Height
+
+		tn.close
+		Set tn = nothing
+		Set getImageSize = oSize
+	End Function
+
+	Public function createWatermark(sourceFile, watermarkFile, marginLeft, marginBottom, quality, transparency)
+		' Not supported by the component
+	End function
 End Class
 
 
@@ -756,8 +852,7 @@ Class CKFinder_Utils_ImageHandler_AspImage
 		On Error goto 0
 	End function
 
-	' It seems that it can fail to get the dimensions of gif files
-	Public function createThumb(sourceFile, targetFile, maxWidth, maxHeight, quality, preserveAspectRatio)
+	Private Function openImage(sourceFile)
 		Dim Image, expireDate
 		' Create instance of AspImage
 		On Error Resume next
@@ -783,42 +878,60 @@ Class CKFinder_Utils_ImageHandler_AspImage
 		' Open source image
 		If Not(Image.LoadImage(sourceFile)) Then
 			Set Image = Nothing
+			Set openImage = Nothing
+			Exit function
+		End If
+
+		Set openImage = Image
+	End Function
+
+	' It seems that it can fail to get the dimensions of gif files
+	Public function createThumb(sourceFile, targetFile, maxWidth, maxHeight, quality, preserveAspectRatio)
+		Dim Image
+		Set Image = openImage(sourceFile)
+
+		If (Image Is Nothing) Then
 			createThumb = False
 			Exit function
 		End If
 
-		' with gifs it returns 0x0
-'		Response.Write "Image Height = " & Image.MaxY & " - Image Width = " & Image.MaxX
+		Dim oOriginalSize
+		Set oOriginalSize = getSize(Image, sourceFile)
 
 		dim iFinalWidth, iFinalHeight
 		' If 0 is passed in any of the max sizes it means that that size must be ignored,
 		' so the original image size is used.
 		iFinalWidth = maxWidth
-		If (iFinalWidth = 0) Then iFinalWidth = Image.MaxX
+		If (iFinalWidth = 0) Then iFinalWidth = oOriginalSize.Width
 		iFinalHeight = maxHeight
-		If (iFinalHeight = 0) Then iFinalHeight = Image.MaxY
+		If (iFinalHeight = 0) Then iFinalHeight = oOriginalSize.Height
 
-		if ( Image.MaxX <= iFinalWidth and Image.MaxY <= iFinalHeight ) then
+		if ( oOriginalSize.Width <= iFinalWidth and oOriginalSize.Height <= iFinalHeight ) then
 			Set Image = Nothing
 			createThumb = oCKFinder_Factory.UtilsFileSystem.CopyFile( sourceFile, targetFile )
 			Exit function
 		End If
 
-		dim oSize
+		dim oNewSize
 		if ( preserveAspectRatio ) then
 			' Gets the best size for aspect ratio resampling
-			Set oSize = oCKFinder_Factory.UtilsImage.GetAspectRatioSize( iFinalWidth, iFinalHeight, Image.MaxX, Image.MaxY )
+			Set oNewSize = oCKFinder_Factory.UtilsImage.GetAspectRatioSize( iFinalWidth, iFinalHeight, oOriginalSize.Width, oOriginalSize.Height )
 		else
-			Set oSize = new CKFinder_Size
-			oSize.Width = iFinalWidth
-			oSize.Height = iFinalHeight
+			Set oNewSize = new CKFinder_Size
+			oNewSize.Width = iFinalWidth
+			oNewSize.Height = iFinalHeight
 		End if
 
 		' Resize
-		Image.ResizeR oSize.Width, oSize.Height
+		Image.ResizeR oNewSize.Width, oNewSize.Height
 
+		createThumb = saveFile(Image, targetFile, quality)
+		Set Image = Nothing
+	End Function
+
+	Private function saveFile( Image, targetFile, quality )
 		Dim extension
-		extension = LCase(oCKFinder_Factory.UtilsFileSystem.GetExtension( targetFile ) )
+		extension = LCase(oCKFinder_Factory.UtilsFileSystem.GetExtension( targetFile, true ) )
 		Select Case extension
 			Case "jpg", "jpeg"
 				Image.ImageFormat = 1
@@ -834,43 +947,31 @@ Class CKFinder_Utils_ImageHandler_AspImage
 		' create thumbnail and save it to disk
 		Image.FileName = targetFile
 		if Image.SaveImage() then
-			createThumb = True
+			saveFile = True
 			' It can change automatically the extension to jpg
 			If (extension = "jpeg") Then
 				Dim savedName
 				savedName = Left( targetFile, Len(targetFile)-4) & "jpg"
-				createThumb = oCKFinder_Factory.UtilsFileSystem.RenameFile( savedName, targetFile )
+				saveFile = oCKFinder_Factory.UtilsFileSystem.RenameFile( savedName, targetFile )
 			End if
 		else
 		' Something happened and we couldn't save the image so just use an HTML header
 		' We need to debug the script and find out what went wrong.
-			createThumb = False
+			saveFile = False
 			Dim message
 			message = Image.Error
 			Set Image = nothing
-			throwError CKFINDER_CONNECTOR_ERROR_CUSTOM_ERROR, "Unable to save thumbnail. ", message
+			throwError CKFINDER_CONNECTOR_ERROR_CUSTOM_ERROR, "Unable to save resized image. ", message
 			Exit function
 		end if
-
-		Set Image = Nothing
 	End Function
 
 	Public function ValidateImage(sourceFile)
 		Dim Image
 		' Create instance of AspImage
-		On Error Resume next
-		Set Image = Server.CreateObject("AspImage.Image")
+		Set Image = openImage(sourceFile)
 
-		If (Err.number<>0) Then
-			Set Image = nothing
-			throwError CKFINDER_CONNECTOR_ERROR_CUSTOM_ERROR, "Unable to create AspImage.Image component.", Err.description
-			Exit function
-		End if
-		On Error goto 0
-
-		' Open source image
-		If Not(Image.LoadImage(sourceFile)) Then
-			Set Image = Nothing
+		If (Image Is Nothing) Then
 			ValidateImage = False
 			Exit function
 		End If
@@ -879,11 +980,61 @@ Class CKFinder_Utils_ImageHandler_AspImage
 		ValidateImage = true
 	End Function
 
+	Public function getImageSize(sourceFile)
+		Set getImageSize = getSize(Nothing, sourceFile)
+	End Function
+
+	' It won't read the size of gifs
+	Public function getSize(Image, sourceFile)
+		Dim oSize
+		Set oSize = new CKFinder_Size
+
+		If Image is Nothing then
+			' Create instance of AspImage
+			Set Image = openImage(sourceFile)
+			If (Image Is Nothing) Then
+				Set getSize = oSize
+				Exit function
+			End if
+			oSize.Width = Image.MaxX
+			oSize.Height = Image.MaxY
+
+			Set Image = nothing
+		Else
+			oSize.Width = Image.MaxX
+			oSize.Height = Image.MaxY
+		End If
+
+		Set getSize = oSize
+	End Function
+
 	Public function createWatermark(sourceFile, watermarkFile, marginLeft, marginBottom, quality, transparency)
-		' FIXME
+		' Although in theory it's supported, it seems buggy and fails to work
+'		Dim Image, logo
+'		Set Image = openImage(sourceFile)
+'
+'		If (Image Is Nothing) Then
+'			createThumb = False
+'			Exit function
+'		End If
+'
+'		Dim oOriginalSize, oLogoSize
+'		Set oOriginalSize = getSize(Image, sourceFile)
+'		Set oLogoSize = getImageSize(watermarkFile)
+'
+'		Dim marginTop
+'		marginTop = oOriginalSize.Height - (marginBottom + oLogoSize.Height )
+'
+'		' doesn't allow positioning or respect the watermark size
+'		'Image.DoMerge watermarkFile, 20
+'
+'		' I've not being able to see it work
+'		Image.AddImage watermarkFile, marginTop, marginLeft
+'
+'		createWatermark = saveFile(Image, sourceFile, quality)
+'		Set Image = Nothing
 	End function
 End class
-
 
 
 ' ShotGraph Implementation
@@ -915,7 +1066,7 @@ Class CKFinder_Utils_ImageHandler_ShotGraph
 		Version = ""
 	End function
 
-	Public function createThumb(sourceFile, targetFile, maxWidth, maxHeight, quality, preserveAspectRatio)
+	Private Function openImage(sourceFile, ByRef imageType, ByRef xSize, ByRef ySize)
 		Dim sg
 		' Create instance of ShotGraph
 		On Error Resume next
@@ -933,18 +1084,49 @@ Class CKFinder_Utils_ImageHandler_ShotGraph
 			Set sg = nothing
 			throwError CKFINDER_CONNECTOR_ERROR_CUSTOM_ERROR, "The shotgraph.image component has expired.", Err.description
 			Exit function
-		End if
+		End If
 
-		Dim palete, imagetype, xsize, ysize
 		' Open source image
 		imagetype = sg.GetFileDimensions( sourceFile, xsize, ysize)
 
 		If (Err.number<>0) Or imagetype=0 Or imagetype=4 Or imagetype>=6 Then
 			Set sg = nothing
-			createThumb = false
+			Set openImage = nothing
 			Exit function
 		End if
 		On Error goto 0
+
+		Set openImage = sg
+	End Function
+
+	Public function getImageSize(sourceFile)
+		Dim sg, oSize
+		Dim palete, imagetype, xsize, ysize
+		Set sg = openImage(sourceFile, imagetype, xsize, ysize)
+
+		Set oSize = new CKFinder_Size
+
+		If (sg Is Nothing) Then
+			Set getImageSize = oSize
+			Exit function
+		End If
+
+		oSize.Width = xsize
+		oSize.Height =  ysize
+
+		Set sg = nothing
+		Set getImageSize = oSize
+	End Function
+
+	Public function createThumb(sourceFile, targetFile, maxWidth, maxHeight, quality, preserveAspectRatio)
+		Dim sg
+		Dim palete, imagetype, xsize, ysize
+		Set sg = openImage(sourceFile, imagetype, xsize, ysize)
+
+		If (sg Is Nothing) Then
+			createThumb = false
+			Exit function
+		End If
 
 		dim iFinalWidth, iFinalHeight
 		' If 0 is passed in any of the max sizes it means that that size must be ignored,
@@ -955,7 +1137,7 @@ Class CKFinder_Utils_ImageHandler_ShotGraph
 		If (iFinalHeight = 0) Then iFinalHeight = ysize
 
 		if ( xsize <= iFinalWidth and ysize <= iFinalHeight ) then
-			Set tn = Nothing
+			Set sg = nothing
 			createThumb = oCKFinder_Factory.UtilsFileSystem.CopyFile( sourceFile, targetFile )
 			Exit function
 		End If
@@ -998,33 +1180,61 @@ Class CKFinder_Utils_ImageHandler_ShotGraph
 
 	Public function ValidateImage(sourceFile)
 		Dim sg
-		' Create instance of ShotGraph
-		On Error Resume next
-		Set sg = Server.CreateObject("shotgraph.image")
+		Dim imagetype, xsize, ysize
 
-		If (Err.number<>0) Then
-			Set sg = nothing
-			throwError CKFINDER_CONNECTOR_ERROR_CUSTOM_ERROR, "Unable to create shotgraph.image component.", Err.description
-			Exit function
-		End if
+		Set sg = openImage(sourceFile, imagetype, xsize, ysize)
 
-		Dim palete, imagetype, xsize, ysize
-		' Open source image
-		imagetype = sg.GetFileDimensions( sourceFile, xsize, ysize)
-
-		If (Err.number<>0) Or imagetype=0 Or imagetype=4 Or imagetype>=6 Then
-			Set sg = nothing
+		If (sg Is Nothing) Then
 			ValidateImage = false
 			Exit function
-		End if
-		On Error goto 0
+		End If
 
 		Set sg = nothing
 		ValidateImage = true
 	End function
 
 	Public function createWatermark(sourceFile, watermarkFile, marginLeft, marginBottom, quality, transparency)
-		' FIXME
+		Dim sg, logo, palete
+		Dim imagetype, xsize, ysize
+		Set sg = openImage(sourceFile, imagetype, xsize, ysize)
+
+		If (sg Is Nothing) Then
+			createWatermark = false
+			Exit function
+		End If
+
+		Dim logoImagetype, logoXsize, logoYsize
+		Set logo = openImage(watermarkFile, logoImagetype, logoXsize, logoYsize)
+
+		If (logo Is Nothing) Then
+			Set sg = nothing
+			createWatermark = false
+			Exit function
+		End If
+
+		Dim marginTop
+		marginTop = ysize - (marginBottom + logoYsize)
+
+		sg.CreateImage xsize, ysize, 32
+		sg.ReadImage sourceFile, palete, 0, 0
+
+		sg.ReadImage watermarkFile, palete, marginLeft, marginTop
+
+		' create thumbnail and save it to disk
+		Select Case imagetype
+			Case 1
+				sg.GifImage -1, 0, sourceFile
+			Case 2
+				sg.JpegImage quality, 0, sourceFile
+			Case 3
+				sg.BmpImage 0, sourceFile
+			Case 5
+				sg.PngImage -1, 1, sourceFile
+		End select
+
+		Set sg = Nothing
+
+		createWatermark = True
 	End function
 End Class
 

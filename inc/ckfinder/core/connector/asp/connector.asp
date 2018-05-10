@@ -1,11 +1,10 @@
 ﻿<%@ codepage="65001" language="VBScript" %>
 <% Option Explicit %>
 <%
-
 ' CKFinder
 ' ========
-' http://ckfinder.com
-' Copyright (C) 2007-2012, CKSource - Frederico Knabben. All rights reserved.
+' http://cksource.com/ckfinder
+' Copyright (C) 2007-2015, CKSource - Frederico Knabben. All rights reserved.
 '
 ' The software, this file and its contents are subject to the CKFinder
 ' License. Please read the license.txt file before using, installing, copying,
@@ -22,6 +21,7 @@
 <!-- #INCLUDE file="core/ResourceTypeConfig.asp" -->
 <!-- #INCLUDE file="core/connector.asp" -->
 <!-- #INCLUDE file="core/hooks.asp" -->
+<!-- #INCLUDE file="core/Upload.asp" -->
 
 <!-- #INCLUDE file="errorHandler/Errors.asp" -->
 <!-- #INCLUDE file="errorHandler/base.asp" -->
@@ -48,6 +48,7 @@
 
 <!-- #INCLUDE file="utils/FileSystem.asp" -->
 <!-- #INCLUDE file="utils/Image.asp" -->
+<!-- #INCLUDE file="utils/json.asp" -->
 <!-- #INCLUDE file="utils/Netrube_upload.asp" -->
 <!-- #INCLUDE file="utils/RegExp.asp" -->
 <!-- #INCLUDE file="utils/sha1.asp" -->
@@ -59,5 +60,6 @@
 <script runat="server" language="VBScript">
 Dim sCommand
 sCommand = request.queryString("command")
+
 oCKFinder_Factory.Connector.executeCommand(sCommand)
 </script>

@@ -1,8 +1,8 @@
 ﻿<script runat="server" language="VBScript">
 ' CKFinder
 ' ========
-' http://ckfinder.com
-' Copyright (C) 2007-2012, CKSource - Frederico Knabben. All rights reserved.
+' http://cksource.com/ckfinder
+' Copyright (C) 2007-2015, CKSource - Frederico Knabben. All rights reserved.
 '
 ' The software, this file and its contents are subject to the CKFinder
 ' License. Please read the license.txt file before using, installing, copying,
@@ -15,7 +15,7 @@
 	' @copyright CKSource - Frederico Knabben
 	'
 
-Const CKFINDER_CONNECTOR_DEFAULT_USER_FILES_PATH = "/userfiles/"
+Const CKFINDER_CONNECTOR_DEFAULT_USER_FILES_PATH = "/ckfinder/userfiles/"
 Const CKFINDER_CHARS = "123456789ABCDEFGHJKLMNPQRSTUVWXYZ"
 Const CKFINDER_REGEX_INVALID_PATH = "(/\.)|(//)|([\\:\*\?\""\<\>\|]|[\u0000-\u001F]|\u007F)"
 	''
@@ -121,6 +121,13 @@ class CKFinder_Connector_Core_Config
 	Private disallowUnsafeCharacters
 
 	''
+	' Enable CSRF protection in the connector
+	'
+	' @var boolean
+	'
+	Private enableCsrfProtection
+
+	''
 	' Regexps to check if a file or folder must be hidden
 	'
 	Private HideFoldersRegex
@@ -154,6 +161,7 @@ class CKFinder_Connector_Core_Config
 		SecureImageUploads = True
 		CheckSizeAfterScaling = False
 		disallowUnsafeCharacters = True
+		enableCsrfProtection = True
 		loadValues
 	End Sub
 
@@ -191,6 +199,16 @@ class CKFinder_Connector_Core_Config
 	'
 	Public Property get getDisallowUnsafeCharacters()
 		getDisallowUnsafeCharacters = disallowUnsafeCharacters
+	end Property
+
+	''
+	' Get the "Enable CSRF protection" value
+	'
+	' @access public
+	' @return boolean
+	'
+	Public Property get getEnableCsrfProtection()
+		getEnableCsrfProtection = enableCsrfProtection
 	end Property
 
 	''
@@ -378,6 +396,9 @@ class CKFinder_Connector_Core_Config
 		end if
 		If (CKFinder_Config.Exists("DisallowUnsafeCharacters")) then
 			disallowUnsafeCharacters = CBool(CKFinder_Config.Item("DisallowUnsafeCharacters"))
+		end if
+		If (CKFinder_Config.Exists("EnableCsrfProtection")) then
+			enableCsrfProtection = CBool(CKFinder_Config.Item("EnableCsrfProtection"))
 		end if
 		If (CKFinder_Config.Exists("DefaultResourceTypes")) then
 			defaultResourceTypes = cStr(CKFinder_Config.Item("DefaultResourceTypes"))

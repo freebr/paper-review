@@ -1,8 +1,8 @@
 ﻿/*
  * CKFinder
  * ========
- * http://ckfinder.com
- * Copyright (C) 2007-2012, CKSource - Frederico Knabben. All rights reserved.
+ * http://cksource.com/ckfinder
+ * Copyright (C) 2007-2015, CKSource - Frederico Knabben. All rights reserved.
  *
  * The software, this file, and its contents are subject to the CKFinder
  * License. Please read the license.txt file before using, installing, copying,
@@ -29,15 +29,15 @@ CKFinder.lang['de'] =
 	{
 		// Put the voice-only part of the label in the span.
 		unavailable		: '%1<span class="cke_accessibility">, nicht verfügbar</span>',
-		confirmCancel	: 'Einige Optionen wurden ge?ndert. Wollen Sie den Dialog dennoch schlie?en?',
+		confirmCancel	: 'Einige Optionen wurden geändert. Wollen Sie den Dialog dennoch schließen?',
 		ok				: 'OK',
 		cancel			: 'Abbrechen',
-		confirmationTitle	: 'Best?tigung',
+		confirmationTitle	: 'Bestätigung',
 		messageTitle	: 'Information',
 		inputTitle		: 'Frage',
-		undo			: 'Rückg?ngig',
+		undo			: 'Rückgängig',
 		redo			: 'Wiederherstellen',
-		skip			: 'überspringen',
+		skip			: 'Überspringen',
 		skipAll			: 'Alle überspringen',
 		makeDecision	: 'Bitte Auswahl treffen.',
 		rememberDecision: 'Entscheidung merken'
@@ -72,16 +72,16 @@ CKFinder.lang['de'] =
 	FolderLoading	: 'Laden...',
 	FolderNew		: 'Bitte geben Sie den neuen Verzeichnisnamen an: ',
 	FolderRename	: 'Bitte geben Sie den neuen Verzeichnisnamen an: ',
-	FolderDelete	: 'Wollen Sie wirklich den Ordner "%1" l?schen?',
+	FolderDelete	: 'Wollen Sie wirklich den Ordner "%1" löschen?',
 	FolderRenaming	: ' (Umbenennen...)',
-	FolderDeleting	: ' (L?schen...)',
+	FolderDeleting	: ' (Löschen...)',
 	DestinationFolder	: 'Destination Folder', // MISSING
 
 	// Files
 	FileRename		: 'Bitte geben Sie den neuen Dateinamen an: ',
-	FileRenameExt	: 'Wollen Sie wirklich die Dateierweiterung ?ndern? Die Datei k?nnte unbrauchbar werden!',
+	FileRenameExt	: 'Wollen Sie wirklich die Dateierweiterung ändern? Die Datei könnte unbrauchbar werden!',
 	FileRenaming	: 'Umbennenen...',
-	FileDelete		: 'Wollen Sie wirklich die Datei "%1" l?schen?',
+	FileDelete		: 'Wollen Sie wirklich die Datei "%1" löschen?',
 	FilesDelete	: 'Are you sure you want to delete %1 files?', // MISSING
 	FilesLoading	: 'Laden...',
 	FilesEmpty		: 'Verzeichnis ist leer.',
@@ -90,9 +90,9 @@ CKFinder.lang['de'] =
 
 	// Basket
 	BasketFolder		: 'Korb',
-	BasketClear			: 'Korb l?schen',
+	BasketClear			: 'Korb löschen',
 	BasketRemove		: 'Aus dem Korb entfernen',
-	BasketOpenFolder	: 'übergeordneten Ordner ?ffnen',
+	BasketOpenFolder	: 'Übergeordneten Ordner öffnen',
 	BasketTruncateConfirm : 'Wollen Sie wirklich alle Dateien aus dem Korb entfernen?',
 	BasketRemoveConfirm	: 'Wollen Sie wirklich die Datei "%1" aus dem Korb entfernen?',
 	BasketRemoveConfirmMultiple	: 'Do you really want to remove %1 files from the basket?', // MISSING
@@ -120,14 +120,14 @@ CKFinder.lang['de'] =
 	HelpTip		: 'Hilfe',
 
 	// Context Menus
-	Select			: 'Ausw?hlen',
-	SelectThumbnail : 'Miniatur ausw?hlen',
+	Select			: 'Auswählen',
+	SelectThumbnail : 'Miniatur auswählen',
 	View			: 'Ansehen',
 	Download		: 'Herunterladen',
 
 	NewSubFolder	: 'Neues Unterverzeichnis',
 	Rename			: 'Umbenennen',
-	Delete			: 'L?schen',
+	Delete			: 'Löschen',
 	DeleteFiles		: 'Delete Files', // MISSING
 
 	CopyDragDrop	: 'Hierher kopieren',
@@ -139,24 +139,24 @@ CKFinder.lang['de'] =
 	FileExistsDlgTitle	: 'Datei existiert bereits',
 	SysErrorDlgTitle : 'Systemfehler',
 
-	FileOverwrite	: 'überschreiben',
+	FileOverwrite	: 'Überschreiben',
 	FileAutorename	: 'Automatisch umbenennen',
 	ManuallyRename	: 'Manually rename', // MISSING
 
 	// Generic
 	OkBtn		: 'OK',
 	CancelBtn	: 'Abbrechen',
-	CloseBtn	: 'Schlie?en',
+	CloseBtn	: 'Schließen',
 
 	// Upload Panel
 	UploadTitle			: 'Neue Datei hochladen',
-	UploadSelectLbl		: 'Bitte w?hlen Sie die Datei aus',
+	UploadSelectLbl		: 'Bitte wählen Sie die Datei aus',
 	UploadProgressLbl	: '(Die Daten werden übertragen, bitte warten...)',
-	UploadBtn			: 'Ausgew?hlte Datei hochladen',
+	UploadBtn			: 'Ausgewählte Datei hochladen',
 	UploadBtnCancel		: 'Abbrechen',
 
-	UploadNoFileMsg		: 'Bitte w?hlen Sie eine Datei auf Ihrem Computer aus.',
-	UploadNoFolder		: 'Bitte ein Verzeichnis vor dem Hochladen w?hlen.',
+	UploadNoFileMsg		: 'Bitte wählen Sie eine Datei auf Ihrem Computer aus.',
+	UploadNoFolder		: 'Bitte ein Verzeichnis vor dem Hochladen wählen.',
 	UploadNoPerms		: 'Datei hochladen nicht erlaubt.',
 	UploadUnknError		: 'Fehler bei Dateitragung.',
 	UploadExtIncorrect	: 'Dateinamekürzel nicht in diesem Verzeichnis erlaubt.',
@@ -164,10 +164,10 @@ CKFinder.lang['de'] =
 	// Flash Uploads
 	UploadLabel			: 'Dateien zum Hochladen',
 	UploadTotalFiles	: 'Gesamtanzahl Dateien:',
-	UploadTotalSize		: 'Gesamtgr??e:',
+	UploadTotalSize		: 'Gesamtgröße:',
 	UploadSend			: 'Hochladen',
 	UploadAddFiles		: 'Datei hinzufügen',
-	UploadClearFiles	: 'Dateiliste l?schen',
+	UploadClearFiles	: 'Dateiliste löschen',
 	UploadCancel		: 'Upload abbrechen',
 	UploadRemove		: 'Entfernen',
 	UploadRemoveTip		: 'Entfernen !f',
@@ -182,11 +182,11 @@ CKFinder.lang['de'] =
 	SetDisplay		: 'Anzeige:',
 	SetDisplayName	: 'Dateiname',
 	SetDisplayDate	: 'Datum',
-	SetDisplaySize	: 'Dateigr??e',
+	SetDisplaySize	: 'Dateigröße',
 	SetSort			: 'Sortierung:',
 	SetSortName		: 'nach Dateinamen',
 	SetSortDate		: 'nach Datum',
-	SetSortSize		: 'nach Gr??e',
+	SetSortSize		: 'nach Größe',
 	SetSortExtension		: 'nach Dateiendung',
 
 	// Status Bar
@@ -208,8 +208,8 @@ CKFinder.lang['de'] =
 	 11 : 'Der Ressourcentyp wurde nicht spezifiziert.',
 	 12 : 'Der Ressourcentyp ist nicht gültig.',
 	102 : 'Ungültiger Datei oder Verzeichnisname.',
-	103 : 'Ihre Anfrage konnte wegen Authorisierungseinschr?nkungen nicht durchgeführt werden.',
-	104 : 'Ihre Anfrage konnte wegen Dateisystemeinschr?nkungen nicht durchgeführt werden.',
+	103 : 'Ihre Anfrage konnte wegen Authorisierungseinschränkungen nicht durchgeführt werden.',
+	104 : 'Ihre Anfrage konnte wegen Dateisystemeinschränkungen nicht durchgeführt werden.',
 	105 : 'Invalid file extension.',
 	109 : 'Unbekannte Anfrage.',
 	110 : 'Unbekannter Fehler.',
@@ -220,10 +220,10 @@ CKFinder.lang['de'] =
 	118 : 'Quell- und Zielpfad sind gleich.',
 	201 : 'Es existiert bereits eine Datei unter gleichem Namen. Die hochgeladene Datei wurde unter "%1" gespeichert.',
 	202 : 'Ungültige Datei.',
-	203 : 'ungültige Datei. Die Dateigr??e ist zu gro?.',
+	203 : 'ungültige Datei. Die Dateigröße ist zu groß.',
 	204 : 'Die hochgeladene Datei ist korrupt.',
 	205 : 'Es existiert kein temp. Ordner für das Hochladen auf den Server.',
-	206 : 'Das Hochladen wurde aus Sicherheitsgründen abgebrochen. Die Datei enth?lt HTML-Daten.',
+	206 : 'Das Hochladen wurde aus Sicherheitsgründen abgebrochen. Die Datei enthält HTML-Daten.',
 	207 : 'Die hochgeladene Datei wurde unter "%1" gespeichert.',
 	300 : 'Verschieben der Dateien fehlgeschlagen.',
 	301 : 'Kopieren der Dateien fehlgeschlagen.',
@@ -243,41 +243,41 @@ CKFinder.lang['de'] =
 		FileInvChar		: 'Der Dateinamen darf nicht eines der folgenden Zeichen enthalten: \n\\ / : * ? " < > |',
 		FolderInvChar	: 'Der Verzeichnisname darf nicht eines der folgenden Zeichen enthalten: \n\\ / : * ? " < > |',
 
-		PopupBlockView	: 'Die Datei konnte nicht in einem neuen Fenster ge?ffnet werden. Bitte deaktivieren Sie in Ihrem Browser alle Popup-Blocker für diese Seite.',
-		XmlError		: 'Es war nicht m?glich die XML-Antwort von dem Server herunterzuladen.',
-		XmlEmpty		: 'Es war nicht m?glich die XML-Antwort von dem Server herunterzuladen. Der Server hat eine leere Nachricht zurückgeschickt.',
+		PopupBlockView	: 'Die Datei konnte nicht in einem neuen Fenster geöffnet werden. Bitte deaktivieren Sie in Ihrem Browser alle Popup-Blocker für diese Seite.',
+		XmlError		: 'Es war nicht möglich die XML-Antwort von dem Server herunterzuladen.',
+		XmlEmpty		: 'Es war nicht möglich die XML-Antwort von dem Server herunterzuladen. Der Server hat eine leere Nachricht zurückgeschickt.',
 		XmlRawResponse	: 'Raw-Antwort vom Server: %s'
 	},
 
 	// Imageresize plugin
 	Imageresize :
 	{
-		dialogTitle		: 'Gr??en?nderung %s',
-		sizeTooBig		: 'Bildgr??e kann nicht gr??er als das Originalbild werden (%size).',
-		resizeSuccess	: 'Bildgr??e erfolgreich ge?ndert.',
+		dialogTitle		: 'Größenänderung %s',
+		sizeTooBig		: 'Bildgröße kann nicht größer als das Originalbild werden (%size).',
+		resizeSuccess	: 'Bildgröße erfolgreich geändert.',
 		thumbnailNew	: 'Neues Vorschaubild erstellen',
 		thumbnailSmall	: 'Klein (%s)',
 		thumbnailMedium	: 'Mittel (%s)',
-		thumbnailLarge	: 'Gro? (%s)',
-		newSize			: 'Eine neue Gr??e setzen',
+		thumbnailLarge	: 'Groß (%s)',
+		newSize			: 'Eine neue Größe setzen',
 		width			: 'Breite',
-		height			: 'H?he',
-		invalidHeight	: 'Ungültige H?he.',
+		height			: 'Höhe',
+		invalidHeight	: 'Ungültige Höhe.',
 		invalidWidth	: 'Ungültige Breite.',
 		invalidName		: 'Ungültiger Name.',
 		newImage		: 'Neues Bild erstellen',
-		noExtensionChange : 'Dateierweiterung kann nicht ge?ndert werden.',
-		imageSmall		: 'Bildgr??e zu klein.',
-		contextMenuName	: 'Gr??en?nderung',
-		lockRatio		: 'Gr??enverh?ltnis beibehalten',
-		resetSize		: 'Gr??e zurücksetzen'
+		noExtensionChange : 'Dateierweiterung kann nicht geändert werden.',
+		imageSmall		: 'Bildgröße zu klein.',
+		contextMenuName	: 'Größenänderung',
+		lockRatio		: 'Größenverhältnis beibehalten',
+		resetSize		: 'Größe zurücksetzen'
 	},
 
 	// Fileeditor plugin
 	Fileeditor :
 	{
 		save			: 'Speichern',
-		fileOpenError	: 'Datei kann nicht ge?ffnet werden.',
+		fileOpenError	: 'Datei kann nicht geöffnet werden.',
 		fileSaveSuccess	: 'Datei erfolgreich gespeichert.',
 		contextMenuName	: 'Bearbeitung',
 		loadingFile		: 'Datei wird geladen, einen Moment noch...'
@@ -303,5 +303,10 @@ CKFinder.lang['de'] =
 		removeAndExtract	: 'Remove existing and extract', // MISSING
 		extractAndOverwrite	: 'Extract overwriting existing files', // MISSING
 		extractSuccess		: 'File extracted successfully.' // MISSING
+	},
+
+	Search :
+	{
+		searchPlaceholder : 'Suche'
 	}
 };

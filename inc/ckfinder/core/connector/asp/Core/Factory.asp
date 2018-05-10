@@ -1,8 +1,8 @@
 ﻿<script runat="server" language="VBScript">
 ' CKFinder
 ' ========
-' http://ckfinder.com
-' Copyright (C) 2007-2012, CKSource - Frederico Knabben. All rights reserved.
+' http://cksource.com/ckfinder
+' Copyright (C) 2007-2015, CKSource - Frederico Knabben. All rights reserved.
 '
 ' The software, this file and its contents are subject to the CKFinder
 ' License. Please read the license.txt file before using, installing, copying,
@@ -35,6 +35,8 @@ Class CKFinder_Factory
 	Private oRegExp
 	Private oTranslator
 	Private oHooks
+	Private oRequest
+	Private oErrorHandler
 
 	Private Sub Class_Terminate()
 		Set oConnector = Nothing
@@ -47,6 +49,8 @@ Class CKFinder_Factory
 		Set oRegExp = Nothing
 		Set oTranslator = Nothing
 		Set oHooks = Nothing
+		Set oRequest = Nothing
+		Set oErrorHandler = Nothing
 	End Sub
 
 	Public Property Get Connector
@@ -55,6 +59,20 @@ Class CKFinder_Factory
 		End If
 		Set Connector = oConnector
 	End property
+
+	Public Property Get Request
+		If IsEmpty(oRequest) Then
+			Set oRequest = new CKFinder_Connector_Upload
+		End If
+		Set Request = oRequest
+	End Property
+
+	Public Property Get ErrorHandler
+		If IsEmpty(oErrorHandler) Then
+			Set oErrorHandler = new CKFinder_Connector_ErrorHandler_Base
+		End If
+		Set ErrorHandler = oErrorHandler
+	End Property
 
 	Public Property Get FolderHandler
 		If IsEmpty(oFolderHandler) Then
@@ -118,7 +136,6 @@ Class CKFinder_Factory
 		End If
 		Set Hooks = oHooks
 	End Property
-
 End class
 
 

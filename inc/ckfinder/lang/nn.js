@@ -1,8 +1,8 @@
 ﻿/*
  * CKFinder
  * ========
- * http://ckfinder.com
- * Copyright (C) 2007-2012, CKSource - Frederico Knabben. All rights reserved.
+ * http://cksource.com/ckfinder
+ * Copyright (C) 2007-2015, CKSource - Frederico Knabben. All rights reserved.
  *
  * The software, this file, and its contents are subject to the CKFinder
  * License. Please read the license.txt file before using, installing, copying,
@@ -29,17 +29,17 @@ CKFinder.lang['nn'] =
 	{
 		// Put the voice-only part of the label in the span.
 		unavailable		: '%1<span class="cke_accessibility">, utilgjenglig</span>',
-		confirmCancel	: 'Noen av valgene har blitt endret. Er du sikker p? at du vil lukke dialogen?',
+		confirmCancel	: 'Noen av valgene har blitt endret. Er du sikker på at du vil lukke dialogen?',
 		ok				: 'OK',
 		cancel			: 'Avbryt',
 		confirmationTitle	: 'Bekreftelse',
 		messageTitle	: 'Informasjon',
-		inputTitle		: 'Sp?rsm?l',
+		inputTitle		: 'Spørsmål',
 		undo			: 'Angre',
-		redo			: 'Gj?r om',
+		redo			: 'Gjør om',
 		skip			: 'Hopp over',
 		skipAll			: 'Hopp over alle',
-		makeDecision	: 'Hvilken handling skal utf?res?',
+		makeDecision	: 'Hvilken handling skal utføres?',
 		rememberDecision: 'Husk mitt valg'
 	},
 
@@ -72,16 +72,16 @@ CKFinder.lang['nn'] =
 	FolderLoading	: 'Laster...',
 	FolderNew		: 'Skriv inn det nye mappenavnet: ',
 	FolderRename	: 'Skriv inn det nye mappenavnet: ',
-	FolderDelete	: 'Er du sikker p? at du vil slette mappen "%1"?',
+	FolderDelete	: 'Er du sikker på at du vil slette mappen "%1"?',
 	FolderRenaming	: ' (Endrer mappenavn...)',
 	FolderDeleting	: ' (Sletter...)',
 	DestinationFolder	: 'Destination Folder', // MISSING
 
 	// Files
 	FileRename		: 'Skriv inn det nye filnavnet: ',
-	FileRenameExt	: 'Er du sikker p? at du vil endre filtypen? Filen kan bli ubrukelig.',
+	FileRenameExt	: 'Er du sikker på at du vil endre filtypen? Filen kan bli ubrukelig.',
 	FileRenaming	: 'Endrer filnavn...',
-	FileDelete		: 'Er du sikker p? at du vil slette denne filen "%1"?',
+	FileDelete		: 'Er du sikker på at du vil slette denne filen "%1"?',
 	FilesDelete	: 'Are you sure you want to delete %1 files?', // MISSING
 	FilesLoading	: 'Laster...',
 	FilesEmpty		: 'Denne katalogen er tom.',
@@ -90,9 +90,9 @@ CKFinder.lang['nn'] =
 
 	// Basket
 	BasketFolder		: 'Kurv',
-	BasketClear			: 'T?m kurv',
+	BasketClear			: 'Tøm kurv',
 	BasketRemove		: 'Fjern fra kurv',
-	BasketOpenFolder	: '?pne foreldremappen',
+	BasketOpenFolder	: 'Åpne foreldremappen',
 	BasketTruncateConfirm : 'Vil du virkelig fjerne alle filer fra kurven?',
 	BasketRemoveConfirm	: 'Vil du virkelig fjerne filen "%1" fra kurven?',
 	BasketRemoveConfirmMultiple	: 'Do you really want to remove %1 files from the basket?', // MISSING
@@ -117,7 +117,7 @@ CKFinder.lang['nn'] =
 	Refresh		: 'Oppdater',
 	Settings	: 'Innstillinger',
 	Help		: 'Hjelp',
-	HelpTip		: 'Hjelp finnes kun p? engelsk',
+	HelpTip		: 'Hjelp finnes kun på engelsk',
 
 	// Context Menus
 	Select			: 'Velg',
@@ -155,8 +155,8 @@ CKFinder.lang['nn'] =
 	UploadBtn			: 'Last opp valgt fil',
 	UploadBtnCancel		: 'Avbryt',
 
-	UploadNoFileMsg		: 'Du m? velge en fil fra din datamaskin',
-	UploadNoFolder		: 'Vennligst velg en mappe f?r du laster opp.',
+	UploadNoFileMsg		: 'Du må velge en fil fra din datamaskin',
+	UploadNoFolder		: 'Vennligst velg en mappe før du laster opp.',
 	UploadNoPerms		: 'Filopplastning er ikke tillatt.',
 	UploadUnknError		: 'Feil ved sending av fil.',
 	UploadExtIncorrect	: 'Filtypen er ikke tillatt i denne mappen.',
@@ -164,10 +164,10 @@ CKFinder.lang['nn'] =
 	// Flash Uploads
 	UploadLabel			: 'Filer for opplastning',
 	UploadTotalFiles	: 'Totalt antall filer:',
-	UploadTotalSize		: 'Total st?rrelse:',
+	UploadTotalSize		: 'Total størrelse:',
 	UploadSend			: 'Last opp',
 	UploadAddFiles		: 'Legg til filer',
-	UploadClearFiles	: 'T?m filer',
+	UploadClearFiles	: 'Tøm filer',
 	UploadCancel		: 'Avbryt opplastning',
 	UploadRemove		: 'Fjern',
 	UploadRemoveTip		: 'Fjern !f',
@@ -182,11 +182,11 @@ CKFinder.lang['nn'] =
 	SetDisplay		: 'Vis:',
 	SetDisplayName	: 'Filnavn',
 	SetDisplayDate	: 'Dato',
-	SetDisplaySize	: 'Filst?rrelse',
+	SetDisplaySize	: 'Filstørrelse',
 	SetSort			: 'Sorter etter:',
 	SetSortName		: 'Filnavn',
 	SetSortDate		: 'Dato',
-	SetSortSize		: 'St?rrelse',
+	SetSortSize		: 'Størrelse',
 	SetSortExtension		: 'Filetternavn',
 
 	// Status Bar
@@ -201,23 +201,23 @@ CKFinder.lang['nn'] =
 	SizePerSecond	: '%1/s',
 
 	// Connector Error Messages.
-	ErrorUnknown	: 'Det var ikke mulig ? utf?re foresp?rselen. (Feil %1)',
+	ErrorUnknown	: 'Det var ikke mulig å utføre forespørselen. (Feil %1)',
 	Errors :
 	{
 	 10 : 'Ugyldig kommando.',
-	 11 : 'Ressurstypen ble ikke spesifisert i forep?rselen.',
+	 11 : 'Ressurstypen ble ikke spesifisert i forepørselen.',
 	 12 : 'Ugyldig ressurstype.',
 	102 : 'Ugyldig fil- eller mappenavn.',
-	103 : 'Kunne ikke utf?re foresp?rselen pga manglende autorisasjon.',
-	104 : 'Kunne ikke utf?re foresp?rselen pga manglende tilgang til filsystemet.',
+	103 : 'Kunne ikke utføre forespørselen pga manglende autorisasjon.',
+	104 : 'Kunne ikke utføre forespørselen pga manglende tilgang til filsystemet.',
 	105 : 'Ugyldig filtype.',
-	109 : 'Ugyldig foresp?rsel.',
+	109 : 'Ugyldig forespørsel.',
 	110 : 'Ukjent feil.',
 	111 : 'It was not possible to complete the request due to resulting file size.', // MISSING
 	115 : 'Det finnes allerede en fil eller mappe med dette navnet.',
-	116 : 'Kunne ikke finne mappen. Oppdater vinduet og pr?v igjen.',
-	117 : 'Kunne ikke finne filen. Oppdater vinduet og pr?v igjen.',
-	118 : 'Kilde- og m?l-bane er like.',
+	116 : 'Kunne ikke finne mappen. Oppdater vinduet og prøv igjen.',
+	117 : 'Kunne ikke finne filen. Oppdater vinduet og prøv igjen.',
+	118 : 'Kilde- og mål-bane er like.',
 	201 : 'Det fantes allerede en fil med dette navnet. Den opplastede filens navn har blitt endret til "%1".',
 	202 : 'Ugyldig fil.',
 	203 : 'Ugyldig fil. Filen er for stor.',
@@ -225,8 +225,8 @@ CKFinder.lang['nn'] =
 	205 : 'Det finnes ingen midlertidig mappe for filopplastinger.',
 	206 : 'Opplastingen ble avbrutt av sikkerhetshensyn. Filen inneholder HTML-aktig data.',
 	207 : 'Den opplastede filens navn har blitt endret til "%1".',
-	300 : 'Klarte ikke ? flytte fil(er).',
-	301 : 'Klarte ikke ? kopiere fil(er).',
+	300 : 'Klarte ikke å flytte fil(er).',
+	301 : 'Klarte ikke å kopiere fil(er).',
 	500 : 'Filvelgeren ikke tilgjengelig av sikkerhetshensyn. Kontakt systemansvarlig og be han sjekke CKFinder\'s konfigurasjonsfil.',
 	501 : 'Funksjon for minityrbilder er skrudd av.'
 	},
@@ -234,50 +234,50 @@ CKFinder.lang['nn'] =
 	// Other Error Messages.
 	ErrorMsg :
 	{
-		FileEmpty		: 'Filnavnet kan ikke v?re tomt.',
+		FileEmpty		: 'Filnavnet kan ikke være tomt.',
 		FileExists		: 'Filen %s finnes alt.',
-		FolderEmpty		: 'Mappenavnet kan ikke v?re tomt.',
+		FolderEmpty		: 'Mappenavnet kan ikke være tomt.',
 		FolderExists	: 'Folder %s already exists.', // MISSING
 		FolderNameExists	: 'Folder already exists.', // MISSING
 
-		FileInvChar		: 'Filnavnet kan ikke inneholde f?lgende tegn: \n\\ / : * ? " < > |',
-		FolderInvChar	: 'Mappenavnet kan ikke inneholde f?lgende tegn: \n\\ / : * ? " < > |',
+		FileInvChar		: 'Filnavnet kan ikke inneholde følgende tegn: \n\\ / : * ? " < > |',
+		FolderInvChar	: 'Mappenavnet kan ikke inneholde følgende tegn: \n\\ / : * ? " < > |',
 
-		PopupBlockView	: 'Du m? skru av popup-blockeren for ? se bildet i nytt vindu.',
-		XmlError		: 'Det var ikke mulig ? laste XML-dataene i svaret fra serveren.',
-		XmlEmpty		: 'Det var ikke mulig ? laste XML-dataene fra serverne, svaret var tomt.',
-		XmlRawResponse	: 'R?tt datasvar fra serveren: %s'
+		PopupBlockView	: 'Du må skru av popup-blockeren for å se bildet i nytt vindu.',
+		XmlError		: 'Det var ikke mulig å laste XML-dataene i svaret fra serveren.',
+		XmlEmpty		: 'Det var ikke mulig å laste XML-dataene fra serverne, svaret var tomt.',
+		XmlRawResponse	: 'Rått datasvar fra serveren: %s'
 	},
 
 	// Imageresize plugin
 	Imageresize :
 	{
-		dialogTitle		: 'Endre st?rrelse %s',
-		sizeTooBig		: 'Kan ikke sette h?yde og bredde til st?rre enn orginalst?rrelse (%size).',
-		resizeSuccess	: 'Endring av bildest?rrelse var vellykket.',
+		dialogTitle		: 'Endre størrelse %s',
+		sizeTooBig		: 'Kan ikke sette høyde og bredde til større enn orginalstørrelse (%size).',
+		resizeSuccess	: 'Endring av bildestørrelse var vellykket.',
 		thumbnailNew	: 'Lag ett nytt miniatyrbilde',
 		thumbnailSmall	: 'Liten (%s)',
 		thumbnailMedium	: 'Medium (%s)',
 		thumbnailLarge	: 'Stor (%s)',
-		newSize			: 'Sett en ny st?rrelse',
+		newSize			: 'Sett en ny størrelse',
 		width			: 'Bredde',
-		height			: 'H?yde',
-		invalidHeight	: 'Ugyldig h?yde.',
+		height			: 'Høyde',
+		invalidHeight	: 'Ugyldig høyde.',
 		invalidWidth	: 'Ugyldig bredde.',
 		invalidName		: 'Ugyldig filnavn.',
 		newImage		: 'Lag ett nytt bilde',
 		noExtensionChange : 'Filendelsen kan ikke endres.',
 		imageSmall		: 'Kildebildet er for lite.',
-		contextMenuName	: 'Endre st?rrelse',
-		lockRatio		: 'L?s forhold',
-		resetSize		: 'Tilbakestill st?rrelse'
+		contextMenuName	: 'Endre størrelse',
+		lockRatio		: 'Lås forhold',
+		resetSize		: 'Tilbakestill størrelse'
 	},
 
 	// Fileeditor plugin
 	Fileeditor :
 	{
 		save			: 'Lagre',
-		fileOpenError	: 'Klarte ikke ? ?pne filen.',
+		fileOpenError	: 'Klarte ikke å åpne filen.',
 		fileSaveSuccess	: 'Fillagring var vellykket.',
 		contextMenuName	: 'Rediger',
 		loadingFile		: 'Laster fil, vennligst vent...'
@@ -303,5 +303,10 @@ CKFinder.lang['nn'] =
 		removeAndExtract	: 'Remove existing and extract', // MISSING
 		extractAndOverwrite	: 'Extract overwriting existing files', // MISSING
 		extractSuccess		: 'File extracted successfully.' // MISSING
+	},
+
+	Search :
+	{
+		searchPlaceholder : 'Søk'
 	}
 };

@@ -1,8 +1,8 @@
 ﻿<script runat="server" language="VBScript">
 ' CKFinder
 ' ========
-' http://ckfinder.com
-' Copyright (C) 2007-2012, CKSource - Frederico Knabben. All rights reserved.
+' http://cksource.com/ckfinder
+' Copyright (C) 2007-2015, CKSource - Frederico Knabben. All rights reserved.
 '
 ' The software, this file and its contents are subject to the CKFinder
 ' License. Please read the license.txt file before using, installing, copying,
@@ -161,8 +161,8 @@ class CKFinder_Connector_CommandHandler_ImageResize
 		Dim config, nameWithoutExt, extension, sizes, size, i, thumbName, oRegex, matches, match
         Set config = getConfig()
 
-        nameWithoutExt = oUFS.getFileNameWithoutExtension(fileName)
-        extension = oUFS.getExtension(fileName)
+        nameWithoutExt = oUFS.getFileNameWithoutExtension(fileName, true)
+        extension = oUFS.getExtension(fileName, true)
 		sizes = Array("small", "medium", "large")
 		For i=0 To 2
 			size = sizes(i)

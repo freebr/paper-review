@@ -1,8 +1,8 @@
 ﻿/*
  * CKFinder
  * ========
- * http://ckfinder.com
- * Copyright (C) 2007-2012, CKSource - Frederico Knabben. All rights reserved.
+ * http://cksource.com/ckfinder
+ * Copyright (C) 2007-2015, CKSource - Frederico Knabben. All rights reserved.
  *
  * The software, this file, and its contents are subject to the CKFinder
  * License. Please read the license.txt file before using, installing, copying,
@@ -29,7 +29,7 @@ CKFinder.lang['es-mx'] =
 	{
 		// Put the voice-only part of the label in the span.
 		unavailable		: '%1<span class="cke_accessibility">, no disponible</span>',
-		confirmCancel	: 'Algunas opciones se han cambiado\r\n?Está seguro de querer cerrar el diálogo?',
+		confirmCancel	: 'Algunas opciones se han cambiado\r\n¿Está seguro de querer cerrar el diálogo?',
 		ok				: 'Aceptar',
 		cancel			: 'Cancelar',
 		confirmationTitle	: 'Confirmación',
@@ -39,7 +39,7 @@ CKFinder.lang['es-mx'] =
 		redo			: 'Rehacer',
 		skip			: 'Omitir',
 		skipAll			: 'Omitir todos',
-		makeDecision	: '?Qué acción debe realizarse?',
+		makeDecision	: '¿Qué acción debe realizarse?',
 		rememberDecision: 'Recordar mi decisión'
 	},
 
@@ -72,16 +72,16 @@ CKFinder.lang['es-mx'] =
 	FolderLoading	: 'Cargando...',
 	FolderNew		: 'Por favor, escriba el nombre para la nueva carpeta: ',
 	FolderRename	: 'Por favor, escriba el nuevo nombre para la carpeta: ',
-	FolderDelete	: '?Está seguro de que quiere borrar la carpeta "%1"?',
+	FolderDelete	: '¿Está seguro de que quiere borrar la carpeta "%1"?',
 	FolderRenaming	: ' (Renombrando...)',
 	FolderDeleting	: ' (Borrando...)',
 	DestinationFolder	: 'Destination Folder', // MISSING
 
 	// Files
 	FileRename		: 'Por favor, escriba el nuevo nombre del archivo: ',
-	FileRenameExt	: '?Está seguro de querer cambiar la extensión del archivo? El archivo puede dejar de ser usable.',
+	FileRenameExt	: '¿Está seguro de querer cambiar la extensión del archivo? El archivo puede dejar de ser usable.',
 	FileRenaming	: 'Renombrando...',
-	FileDelete		: '?Está seguro de que quiere borrar el archivo "%1".?',
+	FileDelete		: '¿Está seguro de que quiere borrar el archivo "%1".?',
 	FilesDelete	: 'Are you sure you want to delete %1 files?', // MISSING
 	FilesLoading	: 'Cargando...',
 	FilesEmpty		: 'Carpeta vacía',
@@ -93,8 +93,8 @@ CKFinder.lang['es-mx'] =
 	BasketClear			: 'Vaciar cesta',
 	BasketRemove		: 'Quitar de la cesta',
 	BasketOpenFolder	: 'Abrir carpeta padre',
-	BasketTruncateConfirm : '?Está seguro de querer quitar todos los archivos de la cesta?',
-	BasketRemoveConfirm	: '?Está seguro de querer quitar el archivo "%1" de la cesta?',
+	BasketTruncateConfirm : '¿Está seguro de querer quitar todos los archivos de la cesta?',
+	BasketRemoveConfirm	: '¿Está seguro de querer quitar el archivo "%1" de la cesta?',
 	BasketRemoveConfirmMultiple	: 'Do you really want to remove %1 files from the basket?', // MISSING
 	BasketEmpty			: 'No hay archivos en la cesta, arrastra y suelta algunos.',
 	BasketCopyFilesHere	: 'Copiar archivos de la cesta',
@@ -112,8 +112,8 @@ CKFinder.lang['es-mx'] =
 	CopyFailedList		: 'The following files could not be copied:<br />%s', // MISSING
 
 	// Toolbar Buttons (some used elsewhere)
-	Upload		: 'A?adir',
-	UploadTip	: 'A?adir nuevo archivo',
+	Upload		: 'Añadir',
+	UploadTip	: 'Añadir nuevo archivo',
 	Refresh		: 'Actualizar',
 	Settings	: 'Configuración',
 	Help		: 'Ayuda',
@@ -149,7 +149,7 @@ CKFinder.lang['es-mx'] =
 	CloseBtn	: 'Cerrar',
 
 	// Upload Panel
-	UploadTitle			: 'A?adir nuevo archivo',
+	UploadTitle			: 'Añadir nuevo archivo',
 	UploadSelectLbl		: 'Elija el archivo a subir',
 	UploadProgressLbl	: '(Subida en progreso, por favor espere...)',
 	UploadBtn			: 'Subir el archivo elegido',
@@ -164,9 +164,9 @@ CKFinder.lang['es-mx'] =
 	// Flash Uploads
 	UploadLabel			: 'Archivos a subir',
 	UploadTotalFiles	: 'Total de archivos:',
-	UploadTotalSize		: 'Tama?o total:',
-	UploadSend			: 'A?adir',
-	UploadAddFiles		: 'A?adir archivos',
+	UploadTotalSize		: 'Tamaño total:',
+	UploadSend			: 'Añadir',
+	UploadAddFiles		: 'Añadir archivos',
 	UploadClearFiles	: 'Borrar archivos',
 	UploadCancel		: 'Cancelar subida',
 	UploadRemove		: 'Quitar',
@@ -182,11 +182,11 @@ CKFinder.lang['es-mx'] =
 	SetDisplay		: 'Mostrar:',
 	SetDisplayName	: 'Nombre de archivo',
 	SetDisplayDate	: 'Fecha',
-	SetDisplaySize	: 'Tama?o del archivo',
+	SetDisplaySize	: 'Tamaño del archivo',
 	SetSort			: 'Ordenar:',
 	SetSortName		: 'por Nombre',
 	SetSortDate		: 'por Fecha',
-	SetSortSize		: 'por Tama?o',
+	SetSortSize		: 'por Tamaño',
 	SetSortExtension		: 'por Extensión',
 
 	// Status Bar
@@ -220,7 +220,7 @@ CKFinder.lang['es-mx'] =
 	118 : 'Las rutas origen y destino son iguales.',
 	201 : 'Ya existía un archivo con ese nombre. El archivo subido ha sido renombrado como "%1".',
 	202 : 'Archivo inválido.',
-	203 : 'Archivo inválido. El tama?o es demasiado grande.',
+	203 : 'Archivo inválido. El tamaño es demasiado grande.',
 	204 : 'El archivo subido está corrupto.',
 	205 : 'La carpeta temporal no está disponible en el servidor para las subidas.',
 	206 : 'La subida se ha cancelado por razones de seguridad. El archivo contenía código HTML.',
@@ -256,10 +256,10 @@ CKFinder.lang['es-mx'] =
 		sizeTooBig		: 'No se puede poner la altura o anchura de la imagen mayor que las dimensiones originales (%size).',
 		resizeSuccess	: 'Imagen redimensionada correctamente.',
 		thumbnailNew	: 'Crear nueva minuatura',
-		thumbnailSmall	: 'Peque?a (%s)',
+		thumbnailSmall	: 'Pequeña (%s)',
 		thumbnailMedium	: 'Mediana (%s)',
 		thumbnailLarge	: 'Grande (%s)',
-		newSize			: 'Establecer nuevo tama?o',
+		newSize			: 'Establecer nuevo tamaño',
 		width			: 'Ancho',
 		height			: 'Alto',
 		invalidHeight	: 'Altura inválida.',
@@ -267,10 +267,10 @@ CKFinder.lang['es-mx'] =
 		invalidName		: 'Nombre no válido.',
 		newImage		: 'Crear nueva imagen',
 		noExtensionChange : 'La extensión no se puede cambiar.',
-		imageSmall		: 'La imagen original es demasiado peque?a.',
+		imageSmall		: 'La imagen original es demasiado pequeña.',
 		contextMenuName	: 'Redimensionar',
 		lockRatio		: 'Proporcional',
-		resetSize		: 'Tama?o Original'
+		resetSize		: 'Tamaño Original'
 	},
 
 	// Fileeditor plugin
@@ -303,5 +303,10 @@ CKFinder.lang['es-mx'] =
 		removeAndExtract	: 'Remove existing and extract', // MISSING
 		extractAndOverwrite	: 'Extract overwriting existing files', // MISSING
 		extractSuccess		: 'File extracted successfully.' // MISSING
+	},
+
+	Search :
+	{
+		searchPlaceholder : 'Buscar'
 	}
 };

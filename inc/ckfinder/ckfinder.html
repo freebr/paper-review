@@ -1,4 +1,4 @@
-﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
 	<title>CKFinder</title>
@@ -49,9 +49,6 @@
 			catch(e) {}
 		}
 
-		if ( tmp = get( 'basePath' ) )
-			CKFINDER.basePath = tmp;
-
 		if ( tmp = get( 'startupPath' ) || get( 'start' ) )
 			config.startupPath = decodeURIComponent( tmp );
 
@@ -71,9 +68,6 @@
 
 		if ( tmp = get( 'type' ) )
 			config.resourceType = tmp;
-
-		if ( tmp = get( 'skin' ) )
-			config.skin = tmp;
 
 		if ( tmp = get( 'langCode' ) )
 			config.language = tmp;
