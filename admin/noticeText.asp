@@ -38,7 +38,7 @@ If json="1" Then
 	Response.End()
 Else
 	dictNotices.Add "review_eval_reference", "送审评语的基本内容参考"
-	dictNotices.Add "review_result_desc", "评阅结果说明"
+	dictNotices.Add "review_result_desc", "论文检测结果及论文评审结果说明"
 End If
 curstep=Request.QueryString("step")
 If Len(curstep)=0 Or Not IsNumeric(curstep) Then curstep="1"
@@ -67,18 +67,14 @@ Case "1"
 	End Select
 %></td></tr>
 <tr bgcolor="ghostwhite">
-<td>
-	学生类型：<select id="stuType" name="stuType">
-		<option value="0">【请选择】</option><%
-		For i=1 To UBound(arrStuTypeName) %>
-		<option value="<%=arrStuTypeId(i)%>"><%=arrStuTypeName(i)%></option><%
-		Next %>
-	</select>
-</td>
-</tr>
+<td>学生类型：<select id="stuType" name="stuType">
+	<option value="0">【请选择】</option><%
+	For i=1 To UBound(arrStuTypeName) %>
+	<option value="<%=arrStuTypeId(i)%>"><%=arrStuTypeName(i)%></option><%
+	Next %>
+</select></td></tr>
 <tr bgcolor="ghostwhite">
-<td><table class="notice-list" width="100%" cellpadding="0" cellspacing="0" bgcolor="ghostwhite">
-<%
+<td><table class="notice-list" width="100%" cellpadding="0" cellspacing="0" bgcolor="ghostwhite"><%
 	For i=0 To dictNotices.Count-1
 %><tr bgcolor="ghostwhite"><td align="right"><%=dictNotices.Items()(i)%>：</td><td align="center">
 	<textarea class="notice-text" name="<%=dictNotices.Keys()(i)%>"></textarea>
@@ -109,7 +105,7 @@ Case "1"
 	});
 </script></html><%
 Case "2"
-	Dim ok
+	Dim ok:ok="1"
 	Dim paramStudentType:Set paramStudentType=CmdParam("StudentType",adInteger,adParamInput,4,stuType)
 	Connect conn
 	For i=0 To dictNotices.Count-1
@@ -119,7 +115,6 @@ Case "2"
 		setNoticeText stuType,key,content
 	Next
 	
-	ok="1"
 	CloseConn conn
 %><body><form id="ret" method="post" action="?step=1"><input type="hidden" name="ok" value="<%=ok%>" />
 <input type="hidden" name="stuType" value="<%=stuType%>">
