@@ -15,7 +15,6 @@ bTableReady=True
 opr=0
 sem_info=getCurrentSemester()
 stu_type=Session("StuType")
-researchway_list=loadResearchwayList(stu_type)
 
 Connect conn
 sql="SELECT *,dbo.getThesisStatusText(2,REVIEW_STATUS,2) AS STAT_TEXT FROM VIEW_TEST_THESIS_REVIEW_INFO WHERE STU_ID="&Session("StuId")&" ORDER BY PERIOD_ID DESC" 'AND PERIOD_ID="&sem_info(3)&" AND Valid=1"
@@ -61,7 +60,7 @@ Else
 	subject_en=rs("THESIS_SUBJECT_EN").Value
 	keywords_ch=rs("KEYWORDS").Value
 	keywords_en=rs("KEYWORDS_EN").Value
-	researchway_name=rs("RESEARCHWAY_NAME").Value
+	sub_research_field=rs("RESEARCHWAY_NAME").Value
 	review_type=rs("REVIEW_TYPE").Value
 	reproduct_ratio=toNumber(rs("REPRODUCTION_RATIO").Value)
 	thesis_form=rs("THESIS_FORM").Value
@@ -99,7 +98,7 @@ Case vbNullstring ' 填写信息页面
 <script src="../scripts/uploadThesis.js" type="text/javascript"></script>
 </head>
 <body bgcolor="ghostwhite">
-<table class="tblform" width="1000"><tr><td class="summary"><p align="center"><%
+<table class="tblform" width="1000" align="center"><tr><td class="summary"><p><%
 	If Not bOpen Then
 %><span class="tip">上传<%=arrStuOprName(opr)%>的时间为<%=toDateTime(startdate,1)%>至<%=toDateTime(enddate,1)%>，本专业上传通道已关闭或当前不在开放时间内，不能上传论文！</span><%
 	ElseIf Not bUpload Then
@@ -120,37 +119,24 @@ Case vbNullstring ' 填写信息页面
 <br/>请选择上传的文件，然后点击&quot;提交&quot;按钮：<%
 		End Select
 	End If %></p></td></tr>
-<tr><td align="center"><form id="fmThesis" action="?step=1" method="post" enctype="multipart/form-data">
+<tr><td><form id="fmThesis" action="?step=1" method="post" enctype="multipart/form-data">
 <input type="hidden" name="uploadid" value="_student_thesisReview_uploadThesis_asp" />
-<input type="hidden" name="StuId" value="<%=Session("StuId")%>" />
-<table class="tblform">
-<tr><td><span class="tip">以下信息均为必填项</span></td></tr>
-<tr><td align="center">
-<p>论文题目：《<input type="text" name="subject_ch" size="46" maxlength="200" value="<%=subject_ch%>" />》</p>
-<p>（英文）：&nbsp;<input type="text" name="subject_en" size="46" maxlength="200" value="<%=subject_en%>" />&nbsp;</p>
+<input type="hidden" name="stuid" value="<%=Session("StuId")%>" />
+<table class="tblform" width="800">
+<tr><td align="center"><span class="tip">以下信息均为必填项</span></td></tr>
+<tr><td>
+<p>论文题目：《<input type="text" name="subject_ch" size="70" maxlength="200" value="<%=subject_ch%>" />》</p>
+<p>（英文）：&nbsp;<input type="text" name="subject_en" size="73" maxlength="200" value="<%=subject_en%>" />&nbsp;</p>
 <p>作者姓名：<input type="text" name="author" size="50" value="<%=Session("Stuname")%>" readonly /></p>
 <p>指导教师：<input type="text" name="tutor" size="50" value="<%=rs2("TEACHERNAME")&" "&tutor_duty_name%>" readonly /></p><%
 	If stu_type=5 Then %>
 <p>领域名称：<input type="text" name="speciality" size="50" value="<%=rs2("SPECIALITY_NAME")%>" readonly /></p><%
 	End If %>
-<p>研究方向：<%
-	If stu_type=5 Or stu_type=6 Or stu_type=7 Then %>
-<select name="researchway_name" style="width:350px"><option value="0">请选择……</option><%
-		For i=0 To UBound(researchway_list)
-			option_name=researchway_list(i)
-			If Left(option_name,2)="--" Then
-				option_name=Mid(option_name,3)
-%><option value="0" disabled><%=option_name%></option><%
-			Else
-%><option value="<%=option_name%>"<% If researchway_name=option_name Then %> selected<% End If %>><%=option_name%></option><%
-			End If
-		Next
-%></select><br/><span class="tip">请务必认真选择，系统根据研究方向匹配专家</span><%
-	Else
-%><input type="text" name="researchway_name" size="50" value="<%=researchway_name%>" /><%
-	End If
-%></p><%
-	If opr=STUCLI_OPR_DETECT_REVIEW OR opr=STUCLI_OPR_REVIEW Then	' 只在上传送审论文时显示 %>
+<p>研究方向：
+<select name="sub_research_field_select" style="width:350px"></select><span class="tip">请务必认真选择，系统根据研究方向匹配专家</span>
+<div class="custom-sub-research-field"><input type="text" name="custom_sub_research_field" size="50" placeholder="请输入…" value="<%=sub_research_field%>" /></div>
+<input type="hidden" name="sub_research_field" value="<%=sub_research_field%>" /></p><%
+	If opr=STUCLI_OPR_DETECT_REVIEW Or opr=STUCLI_OPR_REVIEW Then	' 只在上传送审论文时显示 %>
 <p>论文关键词（3-5个，用；分隔）：<input type="text" name="keywords_ch" size="46" maxlength="200" value="<%=keywords_ch%>" /></p>
 <p>论文关键词（英文，3-5个，用；分隔）：<input type="text" name="keywords_en" size="39" maxlength="200" value="<%=keywords_en%>" /></p><%
 	End If
@@ -172,47 +158,44 @@ Case vbNullstring ' 填写信息页面
 	ElseIf Not rs3.EOF Then
 %><select id="thesisform" name="thesisform" style="display:none"><option value="<%=rs3("ID")%>"><%=rs3("THESIS_FORM")%></option></select><%
 	End If
-	If opr=STUCLI_OPR_REVIEW Then %>
-<p>经图书馆检测，学位论文文字复制比：<input type="text" name="reproduct_ratio" size="24" value="<%=reproduct_ratio%>%" readonly /></p><%
-	End If
 	
 	Dim callbackValidate:callbackValidate="checkIfWordRar"
 	If opr=STUCLI_OPR_DETECT_REVIEW Then
 		callbackValidate="checkIfDetectReview"
 %><p>送检论文文件：<input type="file" name="detectFile" size="50" title="送检论文文件" /><%
 		If bUpload Then
-%><br/><span class="tip">Word&nbsp;格式，文件命名为：作者姓名_学号_论文题目.doc，如“张三_201120207169_管理信息系统规划与建设研究.doc”</span><%
+%><span class="tip">Word&nbsp;格式</span><%
 		End If
 %></p><p>送审论文文件：<input type="file" name="reviewFile" size="50" title="送审论文文件" /><%
 		If bUpload Then
-%><br/><span class="tip">PDF&nbsp;格式，文件命名为“盲评论文”</span><%
+%><span class="tip">PDF&nbsp;格式</span><%
 		End If
 %></p><%
 	Else
 %><p>论文文件：<input type="file" name="upFile" size="50" title="论文文件" /><%
-		If bUpload Then %><br/><span class="tip"><%
+		If bUpload Then %><span class="tip"><%
 			Select Case opr
 			Case STUCLI_OPR_REVIEW
 				callbackValidate="checkIfPdfRar" %>
-PDF&nbsp;格式，文件命名为“盲评论文”<%
+PDF&nbsp;格式<%
 			Case STUCLI_OPR_MODIFY
 				callbackValidate="checkIfWordRar" %>
-Word&nbsp;格式，文件命名为：作者姓名_学号_论文题目.doc，如“张三_201120207169_管理信息系统规划与建设研究.doc”<%
+Word&nbsp;格式<%
 			Case STUCLI_OPR_FINAL
 				callbackValidate="checkIfPdfRar" %>
-PDF&nbsp;格式，文件命名为：作者姓名_学号_论文题目.pdf<%
+PDF&nbsp;格式<%
 			End Select
 %></span><%
 		End If
 %></p><%
 	End If
-%><span class="tip">提示：超过20M请先压缩成rar文件再上传，否则上传不成功</span><%
+%><p align="center"><span class="tip">提示：超过20M请先压缩成rar文件再上传，否则上传不成功</span></p><%
 	If opr=STUCLI_OPR_DETECT_REVIEW Or opr=STUCLI_OPR_REVIEW Then %>
 <p class="decl">作者承诺：<br/>
 1．该学位论文为公开学位论文，其中不涉及国家秘密项目和其它不宜公开的内容，否则将由本人承担因学位论文涉密造成的损失和相关的法律责任；<br/>
 2．该学位论文是本人在导师的指导下独立进行研究所取得的研究成果，不存在学术不端行为。</p><%
 	End If %>
-<p><input type="submit" name="btnsubmit" value="提 交"<%If Not bUpload Then %> disabled<% End If %> /></p></td></tr>
+<p align="center"><input type="submit" name="btnsubmit" value="提 交"<%If Not bUpload Then %> disabled<% End If %> /></p></td></tr>
 <tr><td>
 <div id="divdown" style="display: none">
 <p><a href="template/fzbsmb.doc" target="_blank"><img src="../images/down.png" />下载硕士学位论文文字复制比情况说明表</a></p>
@@ -241,6 +224,16 @@ PDF&nbsp;格式，文件命名为：作者姓名_学号_论文题目.pdf<%
 <p align="center"><input type="button" id="btnclaimok" value="我知道了" /></p></div>
 <script type="text/javascript">
 	$().ready(function() {
+		$('select[name="sub_research_field_select"]').change(function() {
+			$('input[name="sub_research_field"]').val(!this.value.length?'':$(this).find('option:selected').text());
+			$custom_field=$('input[name="custom_sub_research_field"]');
+			if(this.value=='-1') {
+				$custom_field.parents('div').eq(0).show();
+				$custom_field.focus();
+			} else {
+				$custom_field.parents('div').eq(0).hide();
+			}
+		});
 		$(':file').change(function() {
 			if(this.value.length)<%=callbackValidate%>($(this),$(':file').index(this));
 		});
@@ -253,12 +246,14 @@ PDF&nbsp;格式，文件命名为：作者姓名_学号_论文题目.pdf<%
 		});
 		$('#linkclaim').click(function(){
 			$('#divclaim').show();
-		});<%
+		});
+		initAllSubResearchFieldSelectBox($('select[name="sub_research_field_select"]'),<%=stu_type%>,'<%=sub_research_field%>');
+		<%
 		If Not bUpload Then %>
 		$('input[name="subject_ch"],input[name="subject_en"]').attr('readOnly',true);
 		$('input[name="keywords_ch"],input[name="keywords_en"]').attr('readOnly',true);
 		$('a.linkAdd,a.linkRemove').attr('disabled',true);
-		$('input[name="researchway_name"]'.attr('readOnly',true);
+		$('input[name="sub_research_field"]').attr('readOnly',true);
 		$(':file').attr('readOnly',true);
 		$(':submit').attr('disabled',true);<%
 		Else %>
@@ -294,7 +289,8 @@ Case 1	' 上传进程
 	Dim fso,Upload,file,file2
 	Dim new_subject_ch,new_subject_en
 	Dim new_keywords_ch,new_keywords_en
-	Dim new_researchway_name,new_review_type
+	Dim new_sub_research_field_id,new_sub_research_field,custom_sub_research_field
+	Dim new_review_type
 	Dim sqlDetect
 	
 	Set Upload=New ExtendedRequest
@@ -302,7 +298,9 @@ Case 1	' 上传进程
 	new_subject_en=Trim(Upload.Form("subject_en"))
 	new_keywords_ch=Trim(Upload.Form("keywords_ch"))
 	new_keywords_en=Trim(Upload.Form("keywords_en"))
-	new_researchway_name=Trim(Upload.Form("researchway_name"))
+	new_sub_research_field_id=Upload.Form("sub_research_field_select")
+	new_sub_research_field=Upload.Form("sub_research_field")
+	custom_sub_research_field=Trim(Upload.Form("custom_sub_research_field"))
 	new_review_type=Upload.Form("thesisform")
 	If Len(new_subject_ch)=0 Then
 		bError=True
@@ -316,7 +314,10 @@ Case 1	' 上传进程
 	ElseIf (opr=STUCLI_OPR_DETECT_REVIEW Or opr=STUCLI_OPR_REVIEW) And Len(new_keywords_en)=0 Then
 		bError=True
 		errdesc="请填写论文关键词（英文）！"
-	ElseIf Len(new_researchway_name)=0 Or new_researchway_name="0" Then
+	ElseIf Len(new_sub_research_field_id)=0 Then
+		bError=True
+		errdesc="请选择研究方向！"
+	ElseIf new_sub_research_field_id="-1" And Len(custom_sub_research_field)=0 Then
 		bError=True
 		errdesc="请填写研究方向！"
 	ElseIf new_review_type=0 Then
@@ -379,7 +380,8 @@ Case 1	' 上传进程
 		GetRecordSet conn,rs3,sql,result
 		rs3("THESIS_SUBJECT")=new_subject_ch
 		rs3("THESIS_SUBJECT_EN")=new_subject_en
-		rs3("RESEARCHWAY_NAME")=new_researchway_name
+		If new_sub_research_field_id="-1" Then new_sub_research_field=custom_sub_research_field
+		rs3("RESEARCHWAY_NAME")=new_sub_research_field
 		Select Case opr
 		Case STUCLI_OPR_DETECT_REVIEW ' 送检论文和送审论文
 			destFile2=fileid&"1."&fileExt2
@@ -426,7 +428,7 @@ Case 1	' 上传进程
 		' End If
 		Dim logtxt
 		logtxt="学生["&Session("StuName")&"]上传["&uploadTypename&"]。"
-		WriteLog logtxt
+		writeLog logtxt
 	End If
 	Set fso=Nothing
 	Set file=Nothing

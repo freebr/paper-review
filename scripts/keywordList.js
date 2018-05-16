@@ -1,7 +1,7 @@
 ﻿function onKeywordBlur() {
 	if(!this.value.length) {
 		if(this.name=='keyword_ch')
-			this.value='请输入……';
+			this.value='请输入…';
 		else
 			this.value='Please input...';
 		$(this).css({'color':'#999999','font-weight':'bold'});
@@ -26,8 +26,7 @@ function addKeyword() {
 	var keywordpair=$('tr.keywordpair').eq(-1);
 	tr.className='keywordpair';
 	tr.innerHTML=keywordpair.html();
-	$(tr).find('a.linkRemove').click(onKeywordRemove);
-	$(tr).find('input.keyword').blur(onKeywordBlur).focus(onKeywordFocus).change(onKeywordChange).blur();
+	$(tr).find('input.keyword').blur();
 	keywordpair.after(tr);
 	return;
 }
@@ -57,8 +56,8 @@ function setKeywordCount(new_count) {
 }
 function setKeywords(keywords_ch,keywords_en) {
 	setKeywordCount(keywords_ch.length);
-	var i=0;$('input[name="keyword_ch"]').each(function(){$(this).focus().val(keywords_ch[i++]).change();});
-	i=0;$('input[name="keyword_en"]').each(function(){$(this).focus().val(keywords_en[i++]).change();});
+	var i=0;$('input[name="keyword_ch"]').each(function(){onKeywordFocus.call(this);$(this).val(keywords_ch[i++]).change().blur();});
+	i=0;$('input[name="keyword_en"]').each(function(){onKeywordFocus.call(this);$(this).val(keywords_en[i++]).change().blur();});
 	return;
 }
 function checkKeywords() {
@@ -72,11 +71,11 @@ function checkKeywords() {
 	return true;
 }
 $().ready(function() {
-	$('input.keyword').blur(onKeywordBlur).focus(onKeywordFocus).change(onKeywordChange).blur();
+	$('input.keyword').live({'blur':onKeywordBlur,'focus':onKeywordFocus,'change':onKeywordChange}).blur();
 	$('a.linkAdd').click(function() {
 		addKeyword();
 		return false;
 	});
-	$('a.linkRemove').click(onKeywordRemove);
+	$('a.linkRemove').live('click',onKeywordRemove);
 	setKeywordCount(3);
 });

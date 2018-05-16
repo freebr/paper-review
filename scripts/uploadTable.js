@@ -31,20 +31,28 @@ function readFormDraft() {
 	return;
 }
 
-function initResearchFieldSelectBox(ctl,stu_type) {
-	ctl[0].options.length=0;
-	$.getJSON('rchfield.asp?type='+stu_type,function(data){
-		ctl.data('source',data);
+function initResearchFieldSelectBox($ctl,stu_type) {
+	$ctl[0].options.length=0;
+	$.getJSON('ajax_getResearchField.asp?type='+stu_type,function(data){
+		$ctl[0].options.add(new Option('请选择工程领域',''));
+		$ctl.data('source',data);
 		$.each(data.fields,function(i,elem){
-			ctl[0].options.add(new Option(elem.field,i));
+			$ctl[0].options.add(new Option(elem.field,i));
 		});
-		ctl.change();
+		if(stu_type!=5) $ctl.val('0').parents('td').eq(0).hide();
+		$ctl.change();
 	});
+	return;
 }
 
-function initSubResearchFieldSelectBox(ctl,ctl_field,field_id) {
-	ctl[0].options.length=0;
-	$.each(ctl_field.data('source').fields[field_id].sub,function(i,elem){
-		ctl[0].options.add(new Option(elem,i));
+function initSubResearchFieldSelectBox($ctl,$ctl_field,field_id) {
+	$ctl[0].options.length=0;
+	if(!field_id.length) return;
+	field_id=parseInt(field_id);
+	$ctl[0].options.add(new Option('请选择研究方向',''));
+	$.each($ctl_field.data('source').fields[field_id].sub,function(i,elem){
+		$ctl[0].options.add(new Option(elem,i));
 	});
+	$ctl[0].options.add(new Option('其他','-1'));
+	return;
 }

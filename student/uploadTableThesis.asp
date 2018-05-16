@@ -54,7 +54,7 @@ Case vbNullstring ' 填写信息页面
 </head>
 <body bgcolor="ghostwhite">
 <center><font size=4><b>上传表格附加论文</b></font>
-<table class="tblform" width="1000"><tr><td class="summary"><p><%
+<table class="tblform" width="1000" align="center"><tr><td class="summary"><p><%
 	If Not bOpen Then
 %><span class="tip">上传<%=arrTblThesis(opr)%>的时间为<%=toDateTime(startdate,1)%>至<%=toDateTime(enddate,1)%>，本专业上传通道已关闭或当前不在开放时间内，不能上传论文！</span><%
 	ElseIf Not bUpload Then
@@ -65,10 +65,10 @@ Case vbNullstring ' 填写信息页面
 	End If %></p></td></tr>
 <tr><td align="center"><form id="fmThesis" action="?step=1" method="post" enctype="multipart/form-data">
 <table class="tblform">
-<tr><td align="center"><p>论文题目：《<input type="text" name="subject_ch" size="50" value="<%=subject_ch%>" />》</p>
-<p>（英文）：&nbsp;<input type="text" name="subject_en" size="50" maxlength="200" value="<%=subject_en%>" />&nbsp;</p>
+<tr><td><p>论文题目：《<input type="text" name="subject_ch" size="50" value="<%=subject_ch%>" />》</p>
+<p>（英文）：&nbsp;<input type="text" name="subject_en" size="53" maxlength="200" value="<%=subject_en%>" />&nbsp;</p>
 <p>文件名：<input type="file" name="thesisFile" size="50" title="<%=arrTblThesis(opr)%>" /><br/><span class="tip">Word&nbsp;或&nbsp;RAR&nbsp;格式，超过20M请先压缩成rar文件再上传，否则上传不成功</span></p>
-<p><input type="submit" name="btnsubmit" value="提 交"<%If Not bUpload Then %> disabled<% End If %> />&nbsp;
+<p align="center"><input type="submit" name="btnsubmit" value="提 交"<%If Not bUpload Then %> disabled<% End If %> />&nbsp;
 <input type="button" name="btnUploadTable" value="返回填写表格页面" onclick="location.href='uploadTableNew.asp'" />&nbsp;
 <input type="button" name="btnreturn" value="返回首页" onclick="location.href='home.asp'" /></p></td></tr></table>
 </form></td></tr></table></center>
@@ -171,7 +171,7 @@ Case 1	' 上传进程
 	'sendEmailToTutor arrTblThesis(opr)
 	Dim logtxt
 	logtxt="学生["&Session("Stuname")&"]上传["&arrTblThesis(opr)&"]。"
-	WriteLog logtxt
+	writeLog logtxt
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />

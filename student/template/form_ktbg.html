@@ -5,14 +5,9 @@
 	<tr><td><p>学&emsp;&emsp;号：<input type="text" name="stu_no" size="80" value="<%=Session("StuNo")%>" readonly /></p></td></tr>
 	<tr><td><p>学&emsp;&emsp;院：<input type="text" name="faculty" size="80" value="工商管理学院" readonly /></p></td></tr>
 	<tr><td><p>专业类别：<input type="text" name="stu_type" size="80" value="<%=getTeachTypeNameById(stu_type)%>" readonly /></p></td></tr>
-	<%
-	If stu_type=5 Then %>
-<tr><td><p>工程领域：<select id="research_field_select">
-</select><input type="hidden" name="research_field" /></p></td></tr><%
-	Else %>
-<tr><td><select id="research_field_select" style="display:none">
-</select><input type="hidden" name="research_field" /></td></tr><%
-	End If %>
+	<tr><td><p>工程领域：<select name="research_field_select"></select><input type="hidden" name="research_field" /></p></td></tr>
+	<tr><td><p>研究方向：<select name="sub_research_field_select"></select><input type="hidden" name="sub_research_field" />
+	<input type="text" name="custom_sub_research_field" size="20" placeholder="请输入…" /></p></td></tr>
 	<tr><td class="section"><p>一、摘要</p></td>
 	<tr><td><table width="100%">
 	<tr><td rowspan="2"><p>论文题目</p></td>
@@ -22,7 +17,7 @@
 	<tr><td><table width="100%">
 	<tr><td><p>校内导师：<input type="text" name="school_tutor_name" size="10" value="<%=tutor_name%>" /></p></td>
 	<td><p>职称或职务：<input type="text" name="school_tutor_duty" size="10" value="<%=tutor_duty_name%>" /></p></td>
-	<td><p>研究方向：<select id="school_tutor_research_field_select">
+	<td><p>研究方向：<select name="school_tutor_research_field_select">
 </select><input type="hidden" name="school_tutor_research_field" /></p></td></tr>
 	<tr><td><p>校外导师：<input type="text" name="afterschool_tutor_name" size="10" /></p></td>
 	<td><p>职称或职务：<input type="text" name="afterschool_tutor_duty" size="10" /></p></td>
@@ -60,7 +55,7 @@
 	</table></td></tr>
 </table><%
 	If str_keywords_ch<>"''" And str_keywords_en<>"''" Then %>
-<script type="text/javascript">
+<script>
 	$().ready(function() {
 		setKeywords([<%=str_keywords_ch%>],[<%=str_keywords_en%>]);
 	});

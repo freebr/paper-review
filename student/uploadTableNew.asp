@@ -66,9 +66,9 @@ Else
 	speciality_name=rs("SPECIALITY_NAME")
 	subject=rs("THESIS_SUBJECT")
 	subject_en=rs("THESIS_SUBJECT_EN")
-	research_field=rs("RESEARCHWAY_NAME")
-	str_keywords_ch="'"&Join(Split(toPlainString(rs("KEYWORDS")),","),"','")&"'"
-	str_keywords_en="'"&Join(Split(toPlainString(rs("KEYWORDS_EN")),","),"','")&"'"
+	sub_research_field=rs("RESEARCHWAY_NAME")
+	str_keywords_ch="'"&Join(Split(toPlainString(rs("KEYWORDS")),"；"),"','")&"'"
+	str_keywords_en="'"&Join(Split(toPlainString(rs("KEYWORDS_EN")),"；"),"','")&"'"
 	review_type=rs("REVIEW_TYPE")
 	thesis_form=rs("THESIS_FORM")
 	tutor_modify_eval=rs("TUTOR_MODIFY_EVAL")
@@ -169,23 +169,31 @@ Case vbNullstring ' 填写信息页面
 <script type="text/javascript">
 <%
 If opr=STUCLI_OPR_TABLE1 Then %>
-	initResearchFieldSelectBox($('#research_field_select'),<%=stu_type%>);
-	$('#school_tutor_research_field_select').change(function(){
-		$('input[name="school_tutor_research_field"]').val(this.options[this.selectedIndex].innerText);
+	$('select[name="sub_research_field_select"]').change(function(){
+		$('input[name="sub_research_field"]').val(!this.value.length?'':$(this).find('option:selected').text());
+		var $custom_field=$('input[name="custom_sub_research_field"]');
+		if(this.value=='-1')
+			$custom_field.show().focus();
+		else
+			$custom_field.hide();
 	});
-	$('#research_field_select').change(function(){
-		initSubResearchFieldSelectBox($('#school_tutor_research_field_select'),$(this),this.selectedIndex);
-		$('#school_tutor_research_field_select').change();
-		$('input[name="research_field"]').val(this.options[this.selectedIndex].innerText);
-	});<%
+	$('select[name="school_tutor_research_field_select"]').change(function(){
+		$('input[name="school_tutor_research_field"]').val(!this.value.length?'':$(this).find('option:selected').text());
+	});
+	$('select[name="research_field_select"]').change(function(){
+		initSubResearchFieldSelectBox($('select[name="sub_research_field_select"]'),$(this),this.value);
+		initSubResearchFieldSelectBox($('select[name="school_tutor_research_field_select"]'),$(this),this.value);
+		$('select[name="sub_research_field_select"]').change();
+		$('select[name="school_tutor_research_field_select"]').change();
+		$('input[name="research_field"]').val(!this.value.length?'':$(this).find('option:selected').text());
+	});
+	initResearchFieldSelectBox($('select[name="research_field_select"]'),<%=stu_type%>);<%
 End If %>
 	$('form').submit(function() {<%
 If opr=STUCLI_OPR_TABLE1 Then %>
-			if(!checkKeywords()) return false;
-<%
-End If
-%>
-			return submitUploadForm(this);
+		if(!checkKeywords()) return false;<%
+End If %>
+		return submitUploadForm(this);
 	}).find(':submit').attr('disabled',<%=LCase(Not bUpload)%>);
 	$(':button#btnuploadtblthesis').click(
 		function() {
@@ -232,9 +240,14 @@ Case 1	' 上传进程
 	
 		subject=Request.Form("subject_ch")
 		subject_en=Request.Form("subject_en")
+		research_field_id=Request.Form("research_field_select")
 		research_field=Request.Form("research_field")
+		sub_research_field_id=Request.Form("sub_research_field_select")
+		sub_research_field=Request.Form("sub_research_field")
+		custom_sub_research_field=Trim(Request.Form("custom_sub_research_field"))
 		school_tutor_name=Request.Form("school_tutor_name")
 		school_tutor_duty=Request.Form("school_tutor_duty")
+		school_tutor_research_field_id=Request.Form("school_tutor_research_field_select")
 		school_tutor_research_field=Request.Form("school_tutor_research_field")
 		afterschool_tutor_name=Request.Form("afterschool_tutor_name")
 		afterschool_tutor_duty=Request.Form("afterschool_tutor_duty")
@@ -244,6 +257,24 @@ Case 1	' 上传进程
 		research_background=Request.Form("research_background")
 		research_solution=Request.Form("research_solution")
 		anticipated_result=Request.Form("anticipated_result")
+		
+		If Len(research_field_id)=0 Then
+			bError=True
+			errdesc="请选择工程领域！"
+		ElseIf Len(sub_research_field_id)=0 Then
+			bError=True
+			errdesc="请选择研究方向！"
+		ElseIf sub_research_field_id="-1" And Len(custom_sub_research_field)=0 Then
+			bError=True
+			errdesc="请填写研究方向！"
+		End If
+		If bError Then
+	%><body bgcolor="ghostwhite"><center><font color=red size="4"><%=errdesc%></font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
+			CloseRs rs
+	  	CloseRs rs2
+	  	CloseConn conn
+			Response.End()
+		End If
 		
 		tg.addInfo "StuName",Session("StuName")
 		tg.addInfo "StuNo",Session("StuNo")
@@ -453,9 +484,10 @@ Case 1	' 上传进程
 	rs3("PERIOD_ID")=sem_info(3)
 	rs3("THESIS_SUBJECT")=subject
 	rs3("THESIS_SUBJECT_EN")=subject_en
-	rs3("KEYWORDS")=Replace(Request.Form("keyword_ch"),", ",",")
-	rs3("KEYWORDS_EN")=Replace(Request.Form("keyword_en"),", ",",")
-	rs3("RESEARCHWAY_NAME")=research_field
+	rs3("KEYWORDS")=Replace(Request.Form("keyword_ch"),", ","；")
+	rs3("KEYWORDS_EN")=Replace(Request.Form("keyword_en"),", ","；")
+	If sub_research_field_id="-1" Then sub_research_field=custom_sub_research_field
+	rs3("RESEARCHWAY_NAME")=sub_research_field
 	rs3(arrTableFieldName(opr))=strDestTableFile
 	rs3("TASK_PROGRESS")=arrNewTaskProgress(opr)
 	rs3.Update()
@@ -463,7 +495,7 @@ Case 1	' 上传进程
 	
 	Dim logtxt
 	logtxt="学生["&Session("StuName")&"]提交["&arrStuOprName(opr)&"]。"
-	WriteLog logtxt
+	writeLog logtxt
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
