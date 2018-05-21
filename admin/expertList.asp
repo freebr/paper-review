@@ -129,7 +129,7 @@ Next
     <td align=center><%=HtmlEncode(rs("PRO_DUTY_NAME").Value)%></td>
     <td align=center><%=arrDiplomaName(last_diploma)%></td>
     <td align=center><%=HtmlEncode(rs("EXPERTISE").Value)%></td>
-    <td align=center><%=HtmlEncode(rs("WORKPLACE").Value)%></td>
+    <td align=center><%=HtmlEncode(rs("ADDRESS").Value)%></td>
     <td align=center><%=HtmlEncode(rs("MOBILE").Value)%></td>
     <td align=center><%=HtmlEncode(rs("EMAIL").Value)%></td>
     <td align=center><a id="pwd<%=i%>" href="#" onclick="return showPassword(this,'<%=rs("PASSWORD").Value%>')">显示密码</a>

@@ -73,7 +73,7 @@ Class ExcelGen
 			    	If iCol=iColOffset Then
 			    		spSheet.Cells(iRow, iCol).Value = iRow-iRowOffset
 			    	Else
-			      	spSheet.Cells(iRow, iCol).Value = CStr(rs(j))
+			      	spSheet.Cells(iRow, iCol).Value = "'"&CStr(rs(j))
 			      End If
 						spSheet.Cells(iRow, iCol).Font.Bold = False
 						spSheet.Cells(iRow, iCol).Font.Italic = False
@@ -102,7 +102,7 @@ arrFields=Array("序号","姓名","职称","学科专长","单位名称（含院
 
 Connect conn
 ' 导出评阅专家名单
-sql="SELECT ID,EXPERT_NAME,PRO_DUTY_NAME,EXPERTISE,WORKPLACE,ADDRESS,''''+MAILCODE,''''+TELEPHONE,''''+MOBILE,EMAIL,''''+IDCARD_NO,''''+BANK_ACCOUNT,BANK_NAME,TEACHER_ID FROM VIEW_TEST_THESIS_REVIEW_EXPERT_INFO WHERE VALID=1 "&PubTerm
+sql="SELECT ID,EXPERT_NAME,PRO_DUTY_NAME,EXPERTISE,WORKPLACE,ADDRESS,MAILCODE,TELEPHONE,MOBILE,EMAIL,IDCARD_NO,BANK_ACCOUNT,BANK_NAME,TEACHER_ID FROM VIEW_TEST_THESIS_REVIEW_EXPERT_INFO WHERE VALID=1 "&PubTerm
 Set rs=conn.Execute(sql)
 
 Dim fso
