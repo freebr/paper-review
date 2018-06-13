@@ -354,7 +354,7 @@ Case 1	' 上传进程
 	Case STUCLI_OPR_REVIEW,STUCLI_OPR_FINAL
 		Set file=Upload.File("upFile")
 		fileExt=LCase(file.FileExt)
-		If fileExt<>"pdf" Then
+		If fileExt<>"pdf" And fileExt<>"rar" Then
 			bError=True
 			errdesc="所选择的不是 PDF 文件或 RAR 压缩文件！"
 		End If
