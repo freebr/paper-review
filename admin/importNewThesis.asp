@@ -167,16 +167,16 @@ Case 3	' 数据读取，导入到数据库
 						recid=rsc("RECRUIT_ID")
 						teachtypeid=rsc("TEACHTYPE_ID")
 						
-						sql_upd_rv=sql_upd_rv&"SELECT @id=ID FROM TEST_THESIS_REVIEW_INFO WHERE STU_ID="&stuid&"; IF @id IS NULL INSERT INTO TEST_THESIS_REVIEW_INFO (STU_ID,THESIS_SUBJECT,REVIEW_TYPE,TASK_PROGRESS,REVIEW_STATUS,SUBMIT_REVIEW_TIME,REVIEW_FILE_STATUS,REVIEW_RESULT,REVIEW_LEVEL,PERIOD_ID,VALID) VALUES("&_
+						sql_upd_rv=sql_upd_rv&"SET @id=NULL;SELECT @id=ID FROM TEST_THESIS_REVIEW_INFO WHERE STU_ID="&stuid&"; IF @id IS NULL INSERT INTO TEST_THESIS_REVIEW_INFO (STU_ID,THESIS_SUBJECT,REVIEW_TYPE,TASK_PROGRESS,REVIEW_STATUS,SUBMIT_REVIEW_TIME,REVIEW_FILE_STATUS,REVIEW_RESULT,REVIEW_LEVEL,PERIOD_ID,VALID) VALUES("&_
 						stuid&","&fieldValue(3)&",dbo.getReviewTypeId("&teachtypeid&","&fieldValue(2)&"),"&task_progress&","&review_status&","&submit_review_time&",0,'5,5,6','0,0',"&period_id&",1);"&_
 						"ELSE UPDATE TEST_THESIS_REVIEW_INFO SET THESIS_SUBJECT="&fieldValue(3)&",REVIEW_TYPE=dbo.getReviewTypeId("&teachtypeid&","&fieldValue(2)&"),TASK_PROGRESS="&task_progress&",REVIEW_STATUS="&review_status&",SUBMIT_REVIEW_TIME=CASE WHEN SUBMIT_REVIEW_TIME IS NULL THEN "&submit_review_time&" ELSE SUBMIT_REVIEW_TIME END,PERIOD_ID="&period_id&",VALID=1 WHERE ID=@id;"
 						
 						sql_upd_pv=sql_upd_pv&"UPDATE STUDENT_INFO SET TUTOR_ID="&tutorid&",TUTOR_RECRUIT_ID="&recid&",TUTOR_RECRUIT_STATUS=3,"&_
 											 "WRITEPRIVILEGETAGSTRING=dbo.addPrivilege(WRITEPRIVILEGETAGSTRING,'SA8',''),READPRIVILEGETAGSTRING=dbo.addPrivilege(READPRIVILEGETAGSTRING,'SA8','') WHERE STU_ID="&stuid&";"
 						
-						sql_upd_apply=sql_upd_apply&"IF NOT EXISTS(SELECT STU_ID FROM TUTOR_STUDENT_APPLY_INFO WHERE STU_ID="&stuid&" AND RECRUIT_ID="&recid&") BEGIN;"&_
-													"DELETE FROM TUTOR_STUDENT_APPLY_INFO WHERE STU_ID="&stuid&" AND TURN_NUM=1;"&_
-													"INSERT INTO TUTOR_STUDENT_APPLY_INFO (STU_ID,TUTOR_ID,RECRUIT_ID,PERIOD_ID,TURN_NUM,APPLY_TIME,TUTOR_REPLY_TIME,APPLY_STATUS) VALUES("&stuid&","&tutorid&","&recid&","&period_id&",1,'"&Now&"','"&Now&"',3); END;"
+						sql_upd_apply=sql_upd_apply&"IF NOT EXISTS(SELECT STU_ID FROM TutorRecruitSys..ApplyInfo WHERE STU_ID="&stuid&" AND RECRUIT_ID="&recid&") BEGIN;"&_
+													"DELETE FROM TutorRecruitSys..ApplyInfo WHERE STU_ID="&stuid&" AND TURN_NUM=1;"&_
+													"INSERT INTO TutorRecruitSys..ApplyInfo (STU_ID,TUTOR_ID,RECRUIT_ID,PERIOD_ID,TURN_NUM,APPLY_TIME,TUTOR_REPLY_TIME,APPLY_STATUS) VALUES("&stuid&","&tutorid&","&recid&","&period_id&",1,'"&Now&"','"&Now&"',3); END;"
 						
 						numThesis=numThesis+1
 					Else
@@ -198,7 +198,7 @@ Case 3	' 数据读取，导入到数据库
 		' 添加学生访问评阅系统的权限
 		If Len(sql_upd_pv) Then connOrigin.Execute sql_upd_pv
 		' 添加学生选导师系统填报志愿信息
-		If Len(sql_upd_apply) Then connOrigin.Execute sql_upd_apply
+		If Len(sql_upd_apply) Then conn.Execute sql_upd_apply
 		CloseConn connOrigin
 		CloseConn conn
 		addData=numThesis
