@@ -189,9 +189,12 @@ If opr=STUCLI_OPR_TABLE1 Then %>
 	});
 	initResearchFieldSelectBox($('select[name="research_field_select"]'),<%=stu_type%>);<%
 End If %>
-	$('form').submit(function() {<%
+	$('form').submit(function(event) {<%
 If opr=STUCLI_OPR_TABLE1 Then %>
-		if(!checkKeywords()) return false;<%
+		if(!checkKeywords()) {
+			event.preventDefault();
+			return false;
+		}<%
 End If %>
 		return submitUploadForm(this);
 	}).find(':submit').attr('disabled',<%=LCase(Not bUpload)%>);

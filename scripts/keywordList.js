@@ -61,14 +61,16 @@ function setKeywords(keywords_ch,keywords_en) {
 	return;
 }
 function checkKeywords() {
-	$('input.keyword').each(function(){
-		if(this.value.indexOf(',')>=0) {
+	var bValid=true;
+	$.each($.makeArray($('input.keyword')),function(index,item){
+		if(item.value.indexOf(',')>=0) {
 			alert('关键词不能包含半角逗号（,）！');
-			this.focus();
+			item.focus();
+			bValid=false;
 			return false;
 		}
 	});
-	return true;
+	return bValid;
 }
 $().ready(function() {
 	$('input.keyword').live({'blur':onKeywordBlur,'focus':onKeywordFocus,'change':onKeywordChange}).blur();

@@ -161,8 +161,8 @@ Case 3	' 数据读取，导入到数据库
 				Set rsb=conn.Execute(sql)
 				If Not rsb.EOF Then
 					tutorid=rsb("TEACHER_ID")
-					sql="SELECT RECRUIT_ID,TEACHTYPE_ID FROM VIEW_TUTOR_RECRUIT_INFO WHERE TEACHER_ID="&tutorid&" AND PERIOD_ID="&period_id&" AND TEACHTYPE_ID="&fieldValue(1)
-					Set rsc=connOrigin.Execute(sql)
+					sql="SELECT RECRUIT_ID,TEACHTYPE_ID FROM TutorRecruitSys..ViewRecruitInfo WHERE TEACHER_ID="&tutorid&" AND PERIOD_ID="&period_id&" AND TEACHTYPE_ID="&fieldValue(1)
+					Set rsc=conn.Execute(sql)
 					If Not rsc.EOF Then
 						recid=rsc("RECRUIT_ID")
 						teachtypeid=rsc("TEACHTYPE_ID")
