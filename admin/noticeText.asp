@@ -110,7 +110,7 @@ Case "2"
 	Connect conn
 	For i=0 To dictNotices.Count-1
 		Dim key:key=dictNotices.Keys()(i)
-		Dim content:content=Request.Form(key)
+		Dim content:content=toJsString(Request.Form(key))
 		If IsEmpty(content) Then content=""
 		setNoticeText stuType,key,content
 	Next

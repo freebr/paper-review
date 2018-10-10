@@ -293,6 +293,7 @@ Function toJsString(ByVal s)
 	s=Replace(s,"""","\""")
 	s=Replace(s,"'","\'")
 	s=Replace(s,vbNewLine,"\n")
+	s=Replace(s,vbTab,"\t")
 	toJsString=s
 End Function
 Function toPlainText(ByVal s)
