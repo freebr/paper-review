@@ -98,11 +98,11 @@ Class ExcelGen
 End Class
 
 Dim arrFields,rs
-arrFields=Array("序号","姓名","职称","学科专长","单位名称（含院系）","通信地址","邮编","联系电话（办公室）","联系电话（移动）","电子邮箱","身份证号码","银行账户","开户行")
+arrFields=Array("序号","姓名","登录名","密码","职称","学科专长","单位名称（含院系）","通信地址","邮编","联系电话（办公室）","联系电话（移动）","电子邮箱","身份证号码","银行账户","开户行")
 
 Connect conn
 ' 导出评阅专家名单
-sql="SELECT ID,EXPERT_NAME,PRO_DUTY_NAME,EXPERTISE,WORKPLACE,ADDRESS,MAILCODE,TELEPHONE,MOBILE,EMAIL,IDCARD_NO,BANK_ACCOUNT,BANK_NAME,TEACHER_ID FROM VIEW_TEST_THESIS_REVIEW_EXPERT_INFO WHERE VALID=1 "&PubTerm
+sql="SELECT ID,EXPERT_NAME,TEACHERNO,PASSWORD,PRO_DUTY_NAME,EXPERTISE,WORKPLACE,ADDRESS,MAILCODE,TELEPHONE,MOBILE,EMAIL,IDCARD_NO,BANK_ACCOUNT,BANK_NAME,TEACHER_ID FROM VIEW_TEST_THESIS_REVIEW_EXPERT_INFO WHERE VALID=1 "&PubTerm
 Set rs=conn.Execute(sql)
 
 Dim fso
