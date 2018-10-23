@@ -175,7 +175,7 @@ Case vbNullString	' 论文详情页面
 <tr><td>论文形式：&emsp;&emsp;&emsp;<input type="text" class="txt" name="thesisform" size="95%" value="<%=rs("THESIS_FORM")%>" readonly /></td></tr><%
 	End If
 	If review_status>=rsDetectUnpassed Then %>
-<tr><td>学位论文文字复制比：<input type="text" class="txt" name="reproduct_ratio" size="10px" value="<%=reproduct_ratio%>%" readonly /></td></tr><%
+<tr><td>学位论文文字复制比：<input type="text" class="txt" name="reproduct_ratio" size="10px" value="<%=toNumber(reproduct_ratio)%>%" readonly /></td></tr><%
 	End If
 	If task_progress>=tpTbl1Uploaded Then
 		If Len(table_file(1)) Then %>
@@ -224,7 +224,7 @@ Case vbNullString	' 论文详情页面
 				detect_time=rsDetect("DETECT_TIME").Value
 				If IsNull(detect_time) Then detect_time="无"
 				detect_result=rsDetect("RESULT").Value
-				If IsNull(detect_result) Then detect_result="无" Else detect_result=detect_result&"%"
+				If IsNull(detect_result) Then detect_result="无" Else detect_result=toNumber(detect_result)&"%"
 				detect_report=rsDetect("DETECT_REPORT").Value
 %><li><%=index%>.检测时间：<%=detect_time%>，查重结果：<%=detect_result%>
 <br/><a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=8&hash=<%=hash%>" target="_blank">送检论文</a><%
@@ -529,7 +529,7 @@ Case 2	' 填写评语页面
 <td><p><span style="font-size:15pt">□</span>&nbsp;同意送审<br/><span style="font-size:15pt">□</span>&nbsp;不同意送审</p>
 <p align="right">主管院领导签名：&emsp;&emsp;&emsp;&emsp;&nbsp;日期：<span style="visibility:hidden"><%=toDateTime(Now(),1)%></span></p></td></tr>
 <tr><td align="center">备注</td>
-<td><p>经图书馆检测，学位论文文字复制比&nbsp;<span style="text-decoration:underline"><%=reproduct_ratio%>%</span><input type="hidden" name="reproduct_ratio" size="10" value="<%=reproduct_ratio%>" /></p></td></tr></table></td></tr><%
+<td><p>经图书馆检测，学位论文文字复制比&nbsp;<span style="text-decoration:underline"><%=toNumber(reproduct_ratio)%>%</span><input type="hidden" name="reproduct_ratio" size="10" value="<%=reproduct_ratio%>" /></p></td></tr></table></td></tr><%
 		End If
 	Case 8 ' 填写修改意见页面 %>
 <tr><td colspan=3>答辩论文：<a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=10" target="_blank">点击下载</a></td></tr>

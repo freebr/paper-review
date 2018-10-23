@@ -144,6 +144,7 @@ Case 5	'  同意/不同意送检送审操作
 	Else
 		rs("DETECT_APP_EVAL")=eval_text
 		rs("REVIEW_APP_EVAL")=Null
+		rs("SUBMIT_REVIEW_TIME")=Now
 		rs("REVIEW_STATUS")=rsNotAgreeDetect
 	End If
 	rs.Update()

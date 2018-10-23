@@ -290,8 +290,8 @@ Function toPlainString(ByVal s)
 End Function
 Function toJsString(ByVal s)
 	If IsNull(s) Then Exit Function
+	s=Replace(s,"\","\\")
 	s=Replace(s,"""","\""")
-	s=Replace(s,"'","\'")
 	s=Replace(s,vbNewLine,"\n")
 	s=Replace(s,vbTab,"\t")
 	toJsString=s
