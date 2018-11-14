@@ -90,7 +90,7 @@ End If
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link href="../css/admin.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/jquery-1.6.3.min.js" type="text/javascript"></script>
+<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
 <script src="../scripts/query.js" type="text/javascript"></script>
 <script src="../scripts/thesis.js" type="text/javascript"></script>
 <title>专业论文列表</title>

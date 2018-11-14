@@ -191,7 +191,7 @@ Case 2	' 评阅须知
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link href="../css/tutor.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/jquery-1.6.3.min.js" type="text/javascript"></script>
+<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
 <script src="../scripts/utils.js" type="text/javascript"></script>
 <meta name="theme-color" content="#2D79B2" />
 <title>浏览评阅须知</title>
@@ -282,7 +282,7 @@ Case 3	' 评阅页面
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link href="../css/tutor.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/jquery-1.6.3.min.js" type="text/javascript"></script>
+<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
 <script src="../scripts/utils.js" type="text/javascript"></script>
 <script src="../scripts/thesis.js" type="text/javascript"></script>
 <script src="../scripts/review.js" type="text/javascript"></script>

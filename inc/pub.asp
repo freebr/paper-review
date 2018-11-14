@@ -341,7 +341,7 @@ Function toDateTime(d,fmt)
 	End If
 End Function
 Function toDataSizeString(value)
-	Dim unit:unit=Array("字节","kB","MB","GB")
+	Dim unit:unit=Array("B","KiB","MiB","GiB")
 	Dim d,i:i=0
 	d=value
 	Do While d>=1024

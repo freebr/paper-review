@@ -93,7 +93,7 @@ Case vbNullstring ' 填写信息页面
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link href="../css/student.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/jquery-1.6.3.min.js" type="text/javascript"></script>
+<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
 <script src="../scripts/upload.js" type="text/javascript"></script>
 <script src="../scripts/uploadThesis.js" type="text/javascript"></script>
 </head>
@@ -440,7 +440,7 @@ Case 1	' 上传进程
 <meta name="theme-color" content="#2D79B2" />
 <title>上传专业硕士论文</title>
 <link href="../css/student.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/jquery-1.6.3.min.js" type="text/javascript"></script>
+<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
 </head>
 <body bgcolor="ghostwhite">
 <center><br/><b>上传专业硕士论文</b><br/><br/><%

@@ -20,7 +20,7 @@ Case vbNullString	' 选择页面
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>批量下载表格/论文</title>
 <link href="../css/admin.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/jquery-1.6.3.min.js" type="text/javascript"></script>
+<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
 </head>
 <body bgcolor="ghostwhite">
 <center><font size=4><b>批量下载表格/论文</b><br />

@@ -36,7 +36,7 @@ Case vbNullString	' 选择页面
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link href="../css/admin.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/jquery-1.6.3.min.js" type="text/javascript"></script>
+<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
 <script src="../scripts/query.js" type="text/javascript"></script>
 </head>
 <body bgcolor="ghostwhite">
@@ -179,7 +179,7 @@ Case 2	' 后台处理
 			CloseRs rs
 		Next
 		CloseConn conn
-		'WriteLog logtxt
+		'writeLog logtxt
 	End If
 	
 	msg="操作完成，是否立即向专家发送评阅通知短信及邮件？"

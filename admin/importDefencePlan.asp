@@ -9,7 +9,7 @@ Case vbNullstring ' 文件选择页面
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link href="../css/admin.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/jquery-1.6.3.min.js" type="text/javascript"></script>
+<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
 </head>
 <body bgcolor="ghostwhite">
 <center><font size=4><b>导入答辩安排信息自EXCEL文件</b><br />
@@ -67,7 +67,7 @@ Case 2	' 上传进程
 <meta name="theme-color" content="#2D79B2" />
 <title>导入答辩安排信息自EXCEL文件</title>
 <link href="../css/admin.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/jquery-1.6.3.min.js" type="text/javascript"></script>
+<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
 </head>
 <body bgcolor="ghostwhite">
 <center><br /><b>导入答辩安排信息自EXCEL文件</b><br /><br /><%
@@ -167,7 +167,7 @@ Case 3	' 数据读取，导入到数据库
 				rsa.MoveNext()
 			Loop
 			If numInsert+numUpdate>0 Then
-				WriteLog logtxt
+				writeLog logtxt
 			End If
 		End If
 		CloseConn conn

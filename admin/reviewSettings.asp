@@ -126,7 +126,7 @@ Case 1	' 后台进程
 <meta name="theme-color" content="#2D79B2" />
 <title>评阅书类型设置</title>
 <link href="../css/admin.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/jquery-1.6.3.min.js" type="text/javascript"></script>
+<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
 </head>
 <body bgcolor="ghostwhite">
 <center><br /><b>评阅书类型设置</b><br /><br />

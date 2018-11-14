@@ -6,12 +6,12 @@
 curStep=Request.QueryString("step")
 Select Case curStep
 Case vbNullstring ' 文件选择页面
-	reportNameFmt="\$stu_name_\$stu_no_.+\.(pdf|mht)"
+	reportNameFmt="\$stu_name_\$stu_no_.+\.(pdf|mht|htm(l?))"
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link href="../css/admin.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/jquery-1.6.3.min.js" type="text/javascript"></script>
+<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
 <script src="../scripts/upload.js" type="text/javascript"></script>
 </head>
 <body bgcolor="ghostwhite">
@@ -85,7 +85,7 @@ Case 2	' 上传进程
 <meta name="theme-color" content="#2D79B2" />
 <title>导入论文查重信息自EXCEL文件</title>
 <link href="../css/admin.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/jquery-1.6.3.min.js" type="text/javascript"></script>
+<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
 </head>
 <body bgcolor="ghostwhite">
 <center><br /><b>导入论文查重信息自EXCEL文件</b><br /><br /><%
