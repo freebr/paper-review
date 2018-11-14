@@ -17,6 +17,7 @@ new_keywords_ch=Upload.Form("new_keywords_ch")
 new_keywords_en=Upload.Form("new_keywords_en")
 new_review_type=Upload.Form("new_review_type")
 new_period_id=Upload.Form("new_period_id")
+new_submit_review_time=Upload.Form("new_submit_review_time")
 new_reviewfilestat=Upload.Form("new_reviewfilestat")
 new_task_progress=Upload.Form("new_task_progress")
 new_review_status=Upload.Form("new_review_status")
@@ -51,6 +52,9 @@ ElseIf submittype="unpass" And opr<=3 Or submittype<>vbNullString And (opr=4 Or 
 		bError=True
 		errdesc="意见字数超出限制（2000字）！"
 	End If
+ElseIf Not IsDate(new_submit_review_time) Then
+	bError=True
+	errdesc="送审意见提交时间格式无效，正确格式为：年/月/日 时:分:秒！"
 ElseIf new_reproduct_ratio<>vbNullString And Not IsNumeric(new_reproduct_ratio) Then
 	bError=True
 	errdesc="复制比输入无效，请输入 0-100 间的数字！"
@@ -129,7 +133,7 @@ Case 4	'  审核答辩材料
 		rs("TASK_PROGRESS")=tpTbl4Unpassed
 	End If
 	rs("TASK_EVAL")=eval_text
-Case 5	'  同意/不同意送检操作
+Case 5	'  同意/不同意送检送审操作
 	filetypename="送检论文"
 	author=Upload.Form("author")
 	stuno=Upload.Form("stuno")
@@ -258,16 +262,6 @@ Case 8	'  提交论文修改意见操作
 End Select
 If submittype=vbNullString Then
 	' 更新表单信息
-	If Len(new_reviewfilestat) Then
-		rs("REVIEW_FILE_STATUS")=new_reviewfilestat
-	End If
-	If Len(new_task_progress) Then
-		rs("TASK_PROGRESS")=new_task_progress
-	End If
-	If Len(new_review_status) Then
-		rs("REVIEW_STATUS")=new_review_status
-	End If
-	
 	detect_thesis=rs("THESIS_FILE").Value
 	If detect_report.FileName<>vbNullString Then
 		Set fso=Server.CreateObject("Scripting.FileSystemObject")
@@ -335,6 +329,20 @@ If submittype=vbNullString Then
 		rs("REVIEW_TYPE")=Null
 	Else
 		rs("REVIEW_TYPE")=new_review_type
+	End If
+	If Len(new_submit_review_time)=0 Then
+		rs("SUBMIT_REVIEW_TIME")=Null
+	Else
+		rs("SUBMIT_REVIEW_TIME")=new_submit_review_time
+	End If
+	If Len(new_reviewfilestat) Then
+		rs("REVIEW_FILE_STATUS")=new_reviewfilestat
+	End If
+	If Len(new_task_progress) Then
+		rs("TASK_PROGRESS")=new_task_progress
+	End If
+	If Len(new_review_status) Then
+		rs("REVIEW_STATUS")=new_review_status
 	End If
 End If
 rs.Update()

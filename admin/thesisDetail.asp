@@ -142,6 +142,7 @@ Case vbNullString	' 论文详情页面
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link href="../css/admin.css" rel="stylesheet" type="text/css" />
+<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
 <script src="../scripts/utils.js" type="text/javascript"></script>
 <script src="../scripts/thesis.js" type="text/javascript"></script>
 <meta name="theme-color" content="#2D79B2" />
@@ -165,7 +166,7 @@ Case vbNullString	' 论文详情页面
 <tr><td>领域名称：&emsp;&emsp;&emsp;<input type="text" class="txt" name="speciality" size="95%" value="<%=rs("SPECIALITY_NAME")%>" readonly /></td></tr><%
 	End If %>
 <tr><td>研究方向：&emsp;&emsp;&emsp;<input type="text" class="txt" name="new_researchway_name" size="95%" value="<%=rs("RESEARCHWAY_NAME")%>" /></td></tr>
-<tr><td>论文关键词：&emsp;&emsp;<input type="text" class="txt" name="new_keywords_ch" size=85%" value="<%=rs("KEYWORDS")%>" /></td></tr>
+<tr><td>论文关键词：&emsp;&emsp;<input type="text" class="txt" name="new_keywords_ch" size="85%" value="<%=rs("KEYWORDS")%>" /></td></tr>
 <tr><td>（英文）：&emsp;&emsp;&emsp;<input type="text" class="txt" name="new_keywords_en" size="85%" value="<%=rs("KEYWORDS_EN")%>" /></td></tr>
 <tr><td>院系名称：&emsp;&emsp;&emsp;<input type="text" class="txt" name="faculty" size="30%" value="工商管理学院" readonly />&nbsp;
 班级：<input type="text" class="txt" name="class" size="51%" value="<%=rs("CLASS_NAME")%>" readonly /></td></tr><%
@@ -246,8 +247,12 @@ Case vbNullString	' 论文详情页面
 	If review_status>=rsDetectThesisUploaded And Len(thesis_file_review) Then %>
 <tr><td>送审论文：&emsp;&emsp;&emsp;<a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=9" target="_blank">点击下载</a>&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,0,7)">撤销</a></td></tr><%
 	End If
-	If review_status>=rsAgreeReview And Not IsNull(review_app) Then %>
-<tr><td>送审申请表：&emsp;&emsp;<a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=13" target="_blank" >点击下载</a>&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,2,2)">撤销</a></td></tr><%
+	If review_status>=rsAgreeReview Then %>
+<tr><td>送审申请表：&emsp;&emsp;<%
+		If Not IsNull(review_app) Then %>
+<a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=13" target="_blank" >点击下载</a>&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,2,2)">撤销</a>&emsp;<%
+		End If
+%><input type="button" id="genReviewApp" value="更新送审申请表" /></td></tr><%
 	End If
 	If review_status>=rsMatchExpert Then %>
 <tr><td>论文评阅书：&emsp;&emsp;是否显示：<select name="new_reviewfilestat"><%
@@ -287,7 +292,7 @@ Case vbNullString	' 论文详情页面
 <tr><td>导师送检意见：&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,2,1)">撤销</a><br/><%=toPlainString(rs("DETECT_APP_EVAL"))%></td></tr><%
 	End If
 	If Not IsNull(rs("REVIEW_APP_EVAL")) Then %>
-<tr><td>导师送审意见（<%=rs("SUBMIT_REVIEW_TIME")%>）：&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,2,2)">撤销</a><br/><%=toPlainString(rs("REVIEW_APP_EVAL"))%></td></tr><%
+<tr><td>导师送审意见：&emsp;提交时间：<input type="text" name="new_submit_review_time" value="<%=rs("SUBMIT_REVIEW_TIME")%>" />&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,2,2)">撤销</a><br/><%=toPlainString(rs("REVIEW_APP_EVAL"))%></td></tr><%
 	End If
 	If Not IsNull(rs("TUTOR_MODIFY_EVAL")) Then %>
 <tr><td><%=tutor_modify_eval_title%>：&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,2,3)">撤销</a><br/><%=toPlainString(rs("TUTOR_MODIFY_EVAL"))%></td></tr><%
@@ -323,21 +328,21 @@ GetMenuListPubTerm "CODE_THESIS_REVIEW_STATUS","STATUS_ID2","STATUS_NAME",review
 <td colspan="3"><p align="center"><%
 	Select Case opr
 	Case 1,2,3,4 %>
-<input type="button" id="unpass" name="btnsubmit" value="审核不通过<%=arrTable(opr)%>" />&emsp;
-<input type="button" id="pass" name="btnsubmit" value="审核通过<%=arrTable(opr)%>" />&emsp;<%
+<input type="button" id="unpass" name="btnAudit" value="审核不通过<%=arrTable(opr)%>" />&emsp;
+<input type="button" id="pass" name="btnAudit" value="审核通过<%=arrTable(opr)%>" />&emsp;<%
 	Case 5 %>
-<input type="button" id="unpass" name="btnsubmit" value="不同意该生论文查重、送审" />&emsp;
-<input type="button" id="pass" name="btnsubmit" value="同意该生论文查重、查重结果低于10%系统自动匹配送审" />&emsp;<%
+<input type="button" id="unpass" name="btnAudit" value="不同意该生论文查重、送审" />&emsp;
+<input type="button" id="pass" name="btnAudit" value="同意该生论文查重、查重结果低于10%系统自动匹配送审" />&emsp;<%
 	Case 6 %>
-<input type="button" id="unpass" name="btnsubmit" value="不同意送审" />&emsp;
-<input type="button" id="pass" name="btnsubmit" value="同意送审" />&emsp;<%
+<input type="button" id="unpass" name="btnAudit" value="不同意送审" />&emsp;
+<input type="button" id="pass" name="btnAudit" value="同意送审" />&emsp;<%
 	Case 7 %>
-<input type="button" id="btnsubmit" name="btnsubmit" value="确认评阅结果" />&emsp;<%
+<input type="button" id="audit" name="btnAudit" value="确认评阅结果" />&emsp;<%
 	Case 8 %>
-<input type="button" id="unpass" name="btnsubmit" value="不同意论文修改" />&emsp;
-<input type="button" id="pass" name="btnsubmit" value="确认修改，同意答辩" />&emsp;<%
+<input type="button" id="unpass" name="btnAudit" value="不同意论文修改" />&emsp;
+<input type="button" id="pass" name="btnAudit" value="确认修改，同意答辩" />&emsp;<%
 	Case 9 %>
-<input type="button" id="btnsubmit" name="btnsubmit" value="评阅该论文" />&emsp;<%
+<input type="button" id="audit" name="btnAudit" value="评阅该论文" />&emsp;<%
 	End Select
 	If review_status=rsMatchExpert Then
 %><input type="button" value="通知专家评阅" onclick="submitForm(this.form,'notifyExpert.asp?tid=<%=rs("ID")%>')" />&emsp;<%
@@ -380,24 +385,20 @@ GetMenuListPubTerm "CODE_THESIS_REVIEW_STATUS","STATUS_ID2","STATUS_NAME",review
 <input type="hidden" name="pageSize" value="<%=pageSize%>" />
 <input type="hidden" name="pageNo" value="<%=pageNo%>" /></form>
 </body><script type="text/javascript">
-	var btnsubmit=document.getElementsByName("btnsubmit");
-	var arrActionUrl=["<%=actionUrl1%>","<%=actionUrl2%>"];
-	if(btnsubmit) {
-		for(var i=0;i<btnsubmit.length;i++) {
-			btnsubmit.item(i).action=arrActionUrl[i];
-			btnsubmit.item(i).onclick=function() {
-				this.value="正在提交，请稍候……";
-				this.disabled=true;
-				this.form.submittype.value=this.id;
-				this.form.action=this.action;
-				if(!/updateThesis\.asp*/.test(this.action)){
-					this.form.encoding='';
-				}
-				this.form.submit();
+	$.each($(":button[name='btnAudit']"),function(index, btn) {
+		$(btn).attr({action:["<%=actionUrl1%>","<%=actionUrl2%>"][index],disabled:false}).click(function() {
+			$(this).val("正在提交，请稍候……").attr("disabled",true);
+			this.form.submittype.value=this.id;
+			this.form.action=$(this).attr("action");
+			if(!/updateThesis\.asp*/.test(this.form.action)){
+				this.form.encoding='';
 			}
-			btnsubmit.item(i).disabled=false;
-		}
-	}
+			this.form.submit();
+		});
+	});
+	$(":button#genReviewApp").click(function() {
+		$(this.form).attr({action:"genReviewApp.asp?tid=<%=thesisID%>",encoding:''}).submit();
+	});
 <%
 	If review_status=rsAgreeDetect Or review_status=rsDetectUnpassed Or review_status=rsRedetectUnpassed Or review_status=rsRedetectPassed Or review_status=rsNotAgreeReview Or review_status=rsAgreeReview Then
 		Dim new_review_status_passed
@@ -410,21 +411,13 @@ GetMenuListPubTerm "CODE_THESIS_REVIEW_STATUS","STATUS_ID2","STATUS_NAME",review
 			new_review_status_unpassed=rsDetectUnpassed
 		End If
 %>
-	var reproduct_ratio=document.getElementsByName("reproduct_ratio")[0];
-	var new_review_status=document.getElementsByName("new_review_status")[0];
-	reproduct_ratio.onchange=function() {
+	$(":input[name='reproduct_ratio']").change(function() {
 		if(isNaN(this.value)) return;
-		if(!this.value.trim().length) {
-			new_review_status.value=<%=rsAgreeDetect%>;
-			return;
-		}
-		var value=parseFloat(this.value);
-		if(value<=10) {
-			new_review_status.value=<%=new_review_status_passed%>;
-		} else {
-			new_review_status.value=<%=new_review_status_unpassed%>;
-		}
-	}<%
+		$("select[name='new_review_status']").val(
+			!this.value.trim().length?<%=rsAgreeDetect%>:
+			parseFloat(this.value)<=10?<%=new_review_status_passed%>:<%=new_review_status_unpassed%>
+		);
+	});<%
 	End If
 %></script></html><%
 	CloseRs rsRevType
@@ -461,7 +454,7 @@ Case 2	' 填写评语页面
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link href="../css/admin.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/jquery-1.6.3.min.js" type="text/javascript"></script>
+<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
 <script src="../scripts/utils.js" type="text/javascript"></script>
 <script src="../scripts/thesis.js" type="text/javascript"></script>
 <meta name="theme-color" content="#2D79B2" />
@@ -540,7 +533,7 @@ Case 2	' 填写评语页面
 		End If
 	End Select %>
 <tr class="trbuttons">
-<td colspan="3"><p align="center"><input type="button" id="btnsubmit" name="btnsubmit" value="提 交" />&emsp;
+<td colspan="3"><p align="center"><input type="button" name="btnSubmit" value="提 交" />&emsp;
 <input type="button" value="返 回" onclick="history.go(-1)" />&emsp;
 <input type="button" value="关 闭" onclick="closeWindow()" />
 </p></td></tr></table>
@@ -566,19 +559,13 @@ Case 2	' 填写评语页面
 <input type="hidden" name="pageSize" value="<%=pageSize%>" />
 <input type="hidden" name="pageNo" value="<%=pageNo%>" /></form>
 </body><script type="text/javascript">
-	var c=document.getElementsByName('eval_text').item(0);
-	c.oninput=function(){checkLength(this,2000)};
-	c.onpropertychange=c.oninput;
-	if(document.all.btnsubmit) {
-		document.all.btnsubmit.onclick=function() {
-			if(confirm("提交后将不能再更改信息，确定要提交吗？")) {
-				this.value="正在提交，请稍候……";
-				this.disabled=true;
-				this.form.submit();
-			}
+	$(":input[name='eval_text']").on("input propertychange",function(){checkLength(this,2000);});
+	$(":button[name='btnSubmit']").attr("disabled",false).click(function() {
+		if(confirm("确定要提交吗？")) {
+			$(this).val("正在提交，请稍候……").attr("disabled",true);
+			this.form.submit();
 		}
-		document.all.btnsubmit.disabled=false;
-	}
+	});
 </script></html><%
 End Select
 CloseRs rsDetect
