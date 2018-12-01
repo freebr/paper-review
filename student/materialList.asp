@@ -6,7 +6,7 @@ stu_type=Session("StuType")
 
 Dim arrTemplateNames:arrTemplateNames=Array("开题报告表","中期检查表","预答辩意见书","审批材料表","硕士学位论文送审申请表","硕士学位论文文字复制比情况说明表","硕士学位论文分会复审意见表")
 Dim arrTemplateFiles:arrTemplateFiles=Array("ktbg.doc","zqjcb.doc","ydbyjs.doc","spcl.doc","sssqb.doc","fzbsmb.doc","fsyjb.doc")
-prefix0="2017/"
+prefix0="new/"
 Select Case stu_type
 Case 5:prefix=prefix0&"me_"
 Case 6:prefix=prefix0&"mba_"

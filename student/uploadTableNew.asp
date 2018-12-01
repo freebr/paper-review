@@ -89,19 +89,21 @@ Case STUCLI_OPR_TABLE2:template_name="zqjcb"
 Case STUCLI_OPR_TABLE3:template_name="ydbyjs"
 Case STUCLI_OPR_TABLE4:template_name="spcl"
 End Select
-If opr=STUCLI_OPR_TABLE4 Then
+If opr<>STUCLI_OPR_TABLE3 Then
 	Select Case stu_type
 	Case 5
-		template_name=template_name&"_me"
+		prefix="me_"
 	Case 6
-		template_name=template_name&"_mba"
+		prefix="mba_"
 	Case 7
-		template_name=template_name&"_emba"
+		prefix="emba_"
 	Case 9
-		template_name=template_name&"_mpacc"
+		prefix="mpacc_"
 	End Select
+Else
+	prefix=""
 End If
-template_file="template/doc/"&template_name&".doc"
+template_file="template/doc/new/"&prefix&template_name&".doc"
 
 curStep=Request.QueryString("step")
 Select Case curStep
