@@ -29,7 +29,7 @@ If bShowAll Then PageSize=-1
 
 Connect conn
 If teachertype=1 Then	' 校内导师
-	sql="SELECT * FROM ViewTutorListByTeacher A LEFT JOIN ViewTeacherInfo B ON A.TEACHER_ID=B.TEACHERID WHERE 1=1 "&PubTerm&" ORDER BY TEACHER_NAME"
+	sql="SELECT * FROM ViewTutorListByTeacher A WHERE 1=1 "&PubTerm&" ORDER BY TEACHER_NAME"
 	title="校内导师名单"
 Else	' 校外专家
 	sql="SELECT * FROM ViewExpertInfo WHERE INSCHOOL=0 AND VALID=1 "&PubTerm&" ORDER BY EXPERT_NAME"
