@@ -68,7 +68,7 @@ End Function
 Function getProDutyNameOf(tid)
 	Dim conn,rs,sql,num
 	Connect conn
-	sql="SELECT PRO_DUTYNAME FROM VIEW_TEACHER_INFO WHERE TEACHERID="&tid
+	sql="SELECT PRO_DUTYNAME FROM ViewTeacherInfo WHERE TEACHERID="&tid
 	GetRecordSetNoLock conn,rs,sql,num
 	If Not rs.EOF Then
 		getProDutyNameOf=rs(0)
@@ -110,7 +110,7 @@ Function sendEmailToTutor(filename)
 	arrSemInfo=getCurrentSemester()
 	arrMailId=getThesisReviewSystemMailIdByType(Now)
 	Connect conn
-	sql="SELECT * FROM VIEW_TEST_THESIS_REVIEW_INFO WHERE STU_ID="&Session("StuId")&" AND PERIOD_ID="&arrSemInfo(3)
+	sql="SELECT * FROM ViewThesisInfo WHERE STU_ID="&Session("StuId")&" AND PERIOD_ID="&arrSemInfo(3)
 	GetRecordSetNoLock conn,rs,sql,num
 	If rs.EOF Then
 		CloseRs rs
@@ -136,7 +136,7 @@ Function sendEmailToTutor(filename)
 	Else
 		logtxt=logtxt&"失败。"
 	End If
-	WriteLog logtxt
+	writeLog logtxt
 	CloseRs rs
 	CloseConn conn
 	sendEmailToTutor=1

@@ -31,7 +31,7 @@ If rs.EOF Then
 End If
 
 Dim bLatest
-sql="SELECT THESIS_FILE,RESULT,DETECT_TIME,DETECT_REPORT FROM VIEW_DETECT_RESULT_INFO WHERE THESIS_ID="&thesisID&" AND HASH="&toSqlString(hash)
+sql="SELECT THESIS_FILE,RESULT,DETECT_TIME,DETECT_REPORT FROM ViewDetectResult WHERE THESIS_ID="&thesisID&" AND HASH="&toSqlString(hash)
 GetRecordSet conn,rsDetect,sql,result
 
 bLatest=rs("THESIS_FILE").Value=rsDetect("THESIS_FILE").Value

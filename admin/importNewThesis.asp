@@ -9,7 +9,7 @@ Case vbNullstring ' 文件选择页面
 	Connect conn
 	Set comm=Server.CreateObject("ADODB.Command")
 	comm.ActiveConnection=conn
-	comm.CommandText="getSemesterList"
+	comm.CommandText="spGetSemesterList"
 	comm.CommandType=adCmdStoredProc
 	Set semester=comm.CreateParameter("semester",adInteger,adParamInput,5,0)
 	comm.Parameters.Append semester
@@ -135,9 +135,9 @@ Case 3	' 数据读取，导入到数据库
 			' 学号
 			s=toSqlString(Trim(rs(1)))
 			If select_mode=0 Then ' 按学号检索
-				sql="SELECT STU_ID,WRITEPRIVILEGETAGSTRING,READPRIVILEGETAGSTRING,dbo.getTeachTypeId(TEACHTYPE_ID,CLASS_NAME) AS TEACHTYPE_ID FROM VIEW_STUDENT_INFO WHERE VALID=0 AND STU_NO="&s
+				sql="SELECT STU_ID,WRITEPRIVILEGETAGSTRING,READPRIVILEGETAGSTRING,dbo.getTeachTypeId(TEACHTYPE_ID,CLASS_NAME) AS TEACHTYPE_ID FROM ViewStudentInfo WHERE VALID=0 AND STU_NO="&s
 			Else	' 按姓名检索（不可靠）
-				sql="SELECT STU_ID,WRITEPRIVILEGETAGSTRING,READPRIVILEGETAGSTRING,dbo.getTeachTypeId(TEACHTYPE_ID,CLASS_NAME) AS TEACHTYPE_ID FROM VIEW_STUDENT_INFO WHERE STU_ID=(SELECT TOP 1 STU_ID FROM VIEW_STUDENT_INFO WHERE VALID=0 AND STU_NAME="&toSqlString(rs(0))&" AND TEACHTYPE_ID="&getTeachTypeIdByName(rs(3))&" ORDER BY STU_ID DESC)"
+				sql="SELECT STU_ID,WRITEPRIVILEGETAGSTRING,READPRIVILEGETAGSTRING,dbo.getTeachTypeId(TEACHTYPE_ID,CLASS_NAME) AS TEACHTYPE_ID FROM ViewStudentInfo WHERE STU_ID=(SELECT TOP 1 STU_ID FROM ViewStudentInfo WHERE VALID=0 AND STU_NAME="&toSqlString(rs(0))&" AND TEACHTYPE_ID="&getTeachTypeIdByName(rs(3))&" ORDER BY STU_ID DESC)"
 			End If
 			Set rsa=conn.Execute(sql)
 			If rsa.EOF Then
@@ -157,7 +157,7 @@ Case 3	' 数据读取，导入到数据库
 				End If
 				' 论文题目
 				fieldValue(3)=toSqlString(rs(5))
-				sql="SELECT TEACHER_ID FROM VIEW_TUTOR_LIST WHERE TEACHER_NAME="&fieldValue(0)
+				sql="SELECT TEACHER_ID FROM ViewTutorList WHERE TEACHER_NAME="&fieldValue(0)
 				Set rsb=conn.Execute(sql)
 				If Not rsb.EOF Then
 					tutorid=rsb("TEACHER_ID")
@@ -186,7 +186,7 @@ Case 3	' 数据读取，导入到数据库
 					CloseRs rsc
 				Else
 					bError=True
-					errMsg=errMsg&"学生"""&rs(0)&"""所选导师"""&rs(2)&"""不存在或未被录入导师信息数据库。"&vbNewLine
+					errMsg=errMsg&"学生"""&rs(0)&"""所选导师"""&rs(2)&"""未被录入导师信息数据库。"&vbNewLine
 				End If
 				CloseRs rsb
 			End If

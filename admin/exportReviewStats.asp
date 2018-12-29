@@ -221,14 +221,14 @@ selectFields="dbo.getThesisStatusText(1,TASK_PROGRESS,1)+'，'+dbo.getThesisStat
 						 "dbo.getReviewResultText(LEFT(REVIEW_RESULT,1)) AS REVIEW_RESULT1,dbo.getReviewResultText(SUBSTRING(REVIEW_RESULT,3,1)) AS REVIEW_RESULT2,dbo.getFinalResultText(RIGHT(REVIEW_RESULT,1)) AS FINAL_RESULT,DEFENCE_EVAL,dbo.getDefenceResultText(DEFENCE_RESULT),INSTRUCT_MODIFY_EVAL"
 If nTurn=0 Then
 	' 导出送审结果统计表
-	Set rs(0)=conn.Execute("EXEC getTestThesisReviewStatsList "&period_id&",0")
+	Set rs(0)=conn.Execute("EXEC spGetReviewStatistics "&period_id&",0")
 	' 导出送审论文列表
-	sql="SELECT "&selectFields&" FROM VIEW_TEST_THESIS_REVIEW_INFO WHERE VALID=1 "&PubTerm
+	sql="SELECT "&selectFields&" FROM ViewThesisInfo WHERE VALID=1 "&PubTerm
 	Set rs(1)=conn.Execute(sql)
 Else	' 按批次导出
 	exportFilter=PubTerm&" AND NOT EXISTS(SELECT STU_ID FROM EXPORT_INFO WHERE PERIOD_ID="&period_id&" AND STU_ID=A.STU_ID)"
-	Set rs(0)=conn.Execute("EXEC getTestThesisReviewStatsList "&period_id&",1")
-	sql="SELECT "&selectFields&" FROM VIEW_TEST_THESIS_REVIEW_INFO A WHERE VALID=1 "&exportFilter
+	Set rs(0)=conn.Execute("EXEC spGetReviewStatistics "&period_id&",1")
+	sql="SELECT "&selectFields&" FROM ViewThesisInfo A WHERE VALID=1 "&exportFilter
 	Set rs(1)=conn.Execute(sql)
 	sql="INSERT INTO EXPORT_INFO (STU_ID,PERIOD_ID,TURN_ID) SELECT STU_ID,"&period_id&","&nTurn&" FROM TEST_THESIS_REVIEW_INFO A WHERE VALID=1 "&exportFilter
 	conn.Execute sql

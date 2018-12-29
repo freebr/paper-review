@@ -20,9 +20,9 @@ If Len(thesisID)=0 And Len(stuname)=0 Then
 Else
 	Connect conn
 	If Len(thesisID) Then
-		sql="SELECT * FROM VIEW_TEST_THESIS_REVIEW_INFO WHERE ID="&thesisID
+		sql="SELECT * FROM ViewThesisInfo WHERE ID="&thesisID
 	Else
-		sql="SELECT * FROM VIEW_TEST_THESIS_REVIEW_INFO WHERE STU_NAME="&toSqlString(stuname)
+		sql="SELECT * FROM ViewThesisInfo WHERE STU_NAME="&toSqlString(stuname)
 	End If
 	GetRecordSet conn,rs,sql,result
 	If result=0 Then
@@ -101,12 +101,12 @@ Case vbNullString	' 论文详情页面
 	If Not IsNull(rs("THESIS_FORM")) And Len(rs("THESIS_FORM")) Then %>
 <tr><td>论文形式：&emsp;&emsp;&emsp;<input type="text" class="txt" name="thesisform" size="95%" value="<%=rs("THESIS_FORM")%>" readonly /></td></tr><%
 	End If %>
-<tr><td>送审论文：&emsp;&emsp;&emsp;<a class="resc" href="fetchFile.asp?tid=<%=thesisID%>&type=1" target="_blank"><img src="../../images/review_down.png" />点击下载</a></td></tr><%
+<tr><td>送审论文：&emsp;&emsp;&emsp;<a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=1" target="_blank"><img src="../../images/review_down.png" />点击下载</a></td></tr><%
 	If Len(review_time(reviewer)) Then
 %><tr><td height="10"></td></tr><%
 		If Len(review_file(reviewer)) Then
 %><tr><td>专家已于&nbsp;<%=FormatDateTime(review_time(reviewer),1)%>&nbsp;<%=FormatDateTime(review_time(reviewer),4)%>&nbsp;评阅该论文</td></tr>
-<tr><td>论文评阅书：&emsp;&emsp;<a class="resc" href="fetchFile.asp?tid=<%=thesisID%>&type=<%=2+reviewer%>" target="_blank"><img src="../../images/review_down.png" />点击下载</a></td></tr><%
+<tr><td>论文评阅书：&emsp;&emsp;<a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=<%=2+reviewer%>" target="_blank"><img src="../../images/review_down.png" />点击下载</a></td></tr><%
 		End If %>
 <tr><td>专家对本论文涉及内容的熟悉程度：<%=masterLevelRadios("masterlevel",reviewer_master_level(reviewer))%></td></tr>
 <tr><td>对学位论文的总体评价：<%=reviewLevelRadios("reviewlevel",reviewfile_type,review_level(reviewer))%></td></tr>
@@ -169,7 +169,7 @@ Case 2	' 评阅页面
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link href="../../css/admin.css" rel="stylesheet" type="text/css" />
 <script src="../../scripts/utils.js" type="text/javascript"></script>
-<script src="../../scripts/jquery-1.6.3.min.js" type="text/javascript"></script>
+<script src="../../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
 <script src="../../scripts/thesis.js" type="text/javascript"></script>
 <script src="../../scripts/review.js" type="text/javascript"></script>
 <script src="../../scripts/drafting.js" type="text/javascript"></script>
@@ -184,7 +184,7 @@ Case 2	' 评阅页面
 <td>研究方向：<input type="text" class="txt" name="researchway" size="25" value="<%=rs("RESEARCHWAY_NAME")%>" readonly /></td>
 <td>学院名称：<input type="text" class="txt" name="faculty" value="工商管理学院" readonly /></td></tr>
 <tr><td colspan=3>学位论文题目：<input type="text" class="txt" name="subject" size="70" value="<%=rs("THESIS_SUBJECT")%>" readonly />
-&emsp;送审论文：<a class="resc" href="fetchFile.asp?tid=<%=thesisID%>&type=1" target="_blank"><img src="../../images/review_down.png" />点击下载</a></td></tr>
+&emsp;送审论文：<a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=1" target="_blank"><img src="../../images/review_down.png" />点击下载</a></td></tr>
 <tr><td colspan=3>对本论文涉及内容的熟悉程度：<%=masterLevelRadios("masterlevel",reviewer_master_level(reviewer))%></td></tr>
 <tr><td colspan=3>评阅专家对论文的学术评语<span class="eval_notice">（包括选题意义；文献资料的掌握；数据、材料的收集、论证、结论是否合理；基本论点、结论和建议有无理论意义和实践价值；论文的不足之处和建议等，200-2000字）</span>：<span id="eval_text_tip"></span></td></tr>
 <tr><td colspan=3><textarea name="eval_text" rows="10" style="width:100%">
@@ -239,13 +239,15 @@ Case 2	' 评阅页面
 <input type="hidden" name="pageNo" value="<%=pageNo%>" /></form>
 </body><script type="text/javascript">
 	$(document).ready(function(){
-		$('[name="eval_text"]').keyup(function(){checkLength(this,2000)});
+		$('[name="eval_text"]').keyup(function(){checkLength(this,2000)});<%
+				If reviewfile_type=2 Then %>
 		if ($('#totalscore').size()>0) {
 			this.powers={'power1':<%=power1code%>,'power2':<%=power2code%>};
 			this.remarkStd=<%=strJsArrRemarkStd%>;
 			addScoreEventListener();
 			showTotalScore();
-		}
+		}<%
+				End If %>
 		if($('#btnsubmit').size()>0) {
 			$('#btnsubmit').click(function() {<%
 				If reviewfile_type=2 Then %>

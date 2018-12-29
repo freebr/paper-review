@@ -29,10 +29,10 @@ If bShowAll Then PageSize=-1
 
 Connect conn
 If teachertype=1 Then	' 校内导师
-	sql="SELECT * FROM VIEW_TUTOR_LIST_GROUPBY_TEACHER A LEFT JOIN VIEW_TEACHER_INFO B ON A.TEACHER_ID=B.TEACHERID WHERE 1=1 "&PubTerm&" ORDER BY TEACHER_NAME"
+	sql="SELECT * FROM ViewTutorListByTeacher A LEFT JOIN ViewTeacherInfo B ON A.TEACHER_ID=B.TEACHERID WHERE 1=1 "&PubTerm&" ORDER BY TEACHER_NAME"
 	title="校内导师名单"
 Else	' 校外专家
-	sql="SELECT * FROM VIEW_TEST_THESIS_REVIEW_EXPERT_INFO WHERE INSCHOOL=0 AND VALID=1 "&PubTerm&" ORDER BY EXPERT_NAME"
+	sql="SELECT * FROM ViewExpertInfo WHERE INSCHOOL=0 AND VALID=1 "&PubTerm&" ORDER BY EXPERT_NAME"
 	title="校外专家名单"
 End If
 GetRecordSetNoLock conn,rs,sql,result
@@ -137,7 +137,7 @@ If teachertype=1 Then
   <td align=center><%=HtmlEncode(rs("TEACHER_NAME"))%></td>
   <td align=center><%=HtmlEncode(rs("PRO_DUTYNAME"))%></td>
   <td align=center><%=HtmlEncode(rs("DEPT_NAME"))%></td>
-  <td align=center><%=HtmlEncode(rs("OFFICE_ADDRESS"))%></td>
+  <td align=center><%=HtmlEncode(rs("Office_Address"))%></td>
   <td align=center><%=HtmlEncode(rs("MOBILE"))%></td>
   <td align=center><%=HtmlEncode(rs("EMAIL"))%></td>
   <td align=center><a href="#" onclick="selectItem('<%=toJsString(rs("TEACHER_NAME"))%>',<%=rs("TEACHER_ID")%>)">选择</a></td>

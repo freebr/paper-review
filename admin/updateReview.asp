@@ -6,7 +6,7 @@ Response.Buffer=True
 <!--#include file="tutor/common.asp"-->
 <!--#include file="tutor/appgen.inc"-->
 <%
-	sql="SELECT * FROM VIEW_TEST_THESIS_REVIEW_INFO WHERE REVIEW_APP IS NULL AND REVIEW_STATUS>="&rsAgreeReview
+	sql="SELECT * FROM ViewThesisInfo WHERE REVIEW_APP IS NULL AND REVIEW_STATUS>="&rsAgreeReview
 	GetRecordSet conn,rs,sql,result
 	n=0
 	Do While Not rs.EOF

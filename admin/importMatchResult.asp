@@ -10,7 +10,7 @@ Case vbNullstring ' 文件选择页面
 	Connect conn
 	Set comm=Server.CreateObject("ADODB.Command")
 	comm.ActiveConnection=conn
-	comm.CommandText="getSemesterList"
+	comm.CommandText="spGetSemesterList"
 	comm.CommandType=adCmdStoredProc
 	Set semester=comm.CreateParameter("semester",adInteger,adParamInput,5,0)
 	comm.Parameters.Append semester
@@ -102,7 +102,7 @@ Case 3	' 数据读取，导入到数据库
 	filepath=Server.MapPath("upload/xls/"&filename)
 	send_email=True
 	sql="CREATE TABLE #ret(CountInsert int,CountUpdate int,CountError int,FirstMatchThesisIDs nvarchar(MAX),IsError bit,ErrMsg nvarchar(MAX));"&_
-			"INSERT INTO #ret EXEC importTestThesisMatchExpertResult '"&filepath&"'; SELECT * FROM #ret"
+			"INSERT INTO #ret EXEC spImportMatchExpertResult '"&filepath&"'; SELECT * FROM #ret"
 	Connect conn
 	Set rs=conn.Execute(sql).NextRecordSet
 	countInsert=rs("CountInsert")
@@ -117,7 +117,7 @@ Case 3	' 数据读取，导入到数据库
 		Dim logtxt:logtxt="行政人员["&Session("name")&"]匹配专家。"
 		Dim mail_id:mail_id=getThesisReviewSystemMailIdByType(Now)
 		' 批量发送通知邮件
-		sql="SELECT STU_NAME,STU_NO,CLASS_NAME,SPECIALITY_NAME,EMAIL,THESIS_SUBJECT,TUTOR_NAME,TUTOR_EMAIL FROM VIEW_TEST_THESIS_REVIEW_INFO WHERE ID IN ("&thesisIDs&")"
+		sql="SELECT STU_NAME,STU_NO,CLASS_NAME,SPECIALITY_NAME,EMAIL,THESIS_SUBJECT,TUTOR_NAME,TUTOR_EMAIL FROM ViewThesisInfo WHERE ID IN ("&thesisIDs&")"
 		GetRecordSetNoLock conn,rs,sql,result
 		Do While Not rs.EOF
 			stuname=rs("STU_NAME")

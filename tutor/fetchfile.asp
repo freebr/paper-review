@@ -23,7 +23,7 @@ If bError Then
 End If
 
 Connect conn
-sql="SELECT *,LEFT(REVIEW_FILE,CHARINDEX(',',REVIEW_FILE)-1) AS REVIEW_FILE1,RIGHT(REVIEW_FILE,LEN(REVIEW_FILE)-CHARINDEX(',',REVIEW_FILE)) AS REVIEW_FILE2 FROM VIEW_TEST_THESIS_REVIEW_INFO WHERE ID="&thesisID&" AND Valid=1"
+sql="SELECT *,LEFT(REVIEW_FILE,CHARINDEX(',',REVIEW_FILE)-1) AS REVIEW_FILE1,RIGHT(REVIEW_FILE,LEN(REVIEW_FILE)-CHARINDEX(',',REVIEW_FILE)) AS REVIEW_FILE2 FROM ViewThesisInfo WHERE ID="&thesisID&" AND Valid=1"
 GetRecordSetNoLock conn,rs,sql,result
 If result<>1 Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4">数据库没有该论文记录！</font><br /><input type="button" value="关 闭" onclick="window.close()" /></center></body><%
@@ -35,7 +35,7 @@ Dim fso,file,stream
 Set fso=Server.CreateObject("Scripting.FileSystemObject")
 
 If (filetype=8 Or filetype=12) And Len(hash) Then
-	sql="SELECT * FROM VIEW_DETECT_RESULT_INFO WHERE THESIS_ID="&thesisID&" AND HASH="&toSqlString(hash)
+	sql="SELECT * FROM ViewDetectResult WHERE THESIS_ID="&thesisID&" AND HASH="&toSqlString(hash)
 	GetRecordSet conn,rsDetect,sql,result
 	If filetype=8 Then
 		sourcefile=rsDetect("THESIS_FILE").Value

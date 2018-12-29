@@ -14,7 +14,7 @@ finishReview=Request.Form("finishReview")
 willUpdateList=LCase(finishReview="1")
 
 Connect conn
-sql="SELECT * FROM VIEW_TEST_THESIS_REVIEW_INFO WHERE ID="&thesisID&" AND "&Session("Tid")&" IN (REVIEWER1,REVIEWER2)"
+sql="SELECT * FROM ViewThesisInfo WHERE ID="&thesisID&" AND "&Session("Tid")&" IN (REVIEWER1,REVIEWER2)"
 GetRecordSet conn,rs,sql,result
 If Len(thesisID)=0 Or Not IsNumeric(thesisID) Then
 	bError=True

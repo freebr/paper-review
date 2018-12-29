@@ -47,7 +47,7 @@ End Function
 Function getProDutyNameOf(tid)
 	Dim conn,rs,sql,num
 	Connect conn
-	sql="SELECT PRO_DUTYNAME FROM VIEW_TEACHER_INFO WHERE TEACHERID="&tid
+	sql="SELECT PRO_DUTYNAME FROM ViewTeacherInfo WHERE TEACHERID="&tid
 	GetRecordSetNoLock conn,rs,sql,num
 	If Not rs.EOF Then
 		getProDutyNameOf=rs(0)
@@ -81,15 +81,15 @@ Function getFinalResult(n)
 	getFinalResult=ret
 End Function
 
-Function getNoticeText(stuType,noticeName)
+Function spGetNoticeText(stuType,noticeName)
 	Dim conn,rs,sql,num
 	Connect conn
-	sql="EXEC getNoticeText ?,?"
+	sql="EXEC spGetNoticeText ?,?"
 	Set rs=ExecQuery(conn,sql,Array(CmdParam("StudentType",adInteger,adParamInput,4,stuType),CmdParam("NoticeName",adVarWChar,adParamInput,50,noticeName)),num)
 	If rs.EOF Then
-		getNoticeText="【无】"
+		spGetNoticeText="【无】"
 	Else
-		getNoticeText=rs(0).Value
+		spGetNoticeText=rs(0).Value
 	End If
 	CloseRs rs
 	CloseConn conn
@@ -111,7 +111,7 @@ Function sendEmailToStudent(thesisID,filetypename,ispass,ByVal evaltext)
 	Dim stuname,stuno,stuclass,stuspec,stumail,subject,tutorname,tutormail,resulttxt,fieldval,bSuccess,logtxt
 	arrMailId=getThesisReviewSystemMailIdByType(Now)
 	Connect conn
-	sql="SELECT * FROM VIEW_TEST_THESIS_REVIEW_INFO WHERE ID="&thesisID
+	sql="SELECT * FROM ViewThesisInfo WHERE ID="&thesisID
 	GetRecordSetNoLock conn,rs,sql,num
 	If rs.EOF Then
 		CloseRs rs
@@ -149,7 +149,7 @@ Function sendEmailToStudent(thesisID,filetypename,ispass,ByVal evaltext)
 	Else
 		logtxt=logtxt&"失败。"
 	End If
-	WriteLog logtxt
+	writeLog logtxt
 	CloseRs rs
 	CloseConn conn
 	sendEmailToStudent=1

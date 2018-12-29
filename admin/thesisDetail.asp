@@ -21,7 +21,7 @@ End If
 Dim arrReviewFileStat,table_file(4)
 arrReviewFileStat=getReviewFileStatTxtArray()
 Connect conn
-sql="SELECT *,dbo.getThesisStatusText(1,TASK_PROGRESS,1) AS STAT_TEXT1,dbo.getThesisStatusText(2,REVIEW_STATUS,1) AS STAT_TEXT2 FROM VIEW_TEST_THESIS_REVIEW_INFO WHERE ID="&thesisID
+sql="SELECT *,dbo.getThesisStatusText(1,TASK_PROGRESS,1) AS STAT_TEXT1,dbo.getThesisStatusText(2,REVIEW_STATUS,1) AS STAT_TEXT2 FROM ViewThesisInfo WHERE ID="&thesisID
 GetRecordSet conn,rs,sql,result
 If result=0 Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4">数据库没有该论文记录！</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
@@ -33,7 +33,7 @@ End If
 Dim review_status,numReviewed,review_result(2),reviewer_master_level(1),review_file(1),review_time(1),review_level(1)
 Dim rsDetect
 
-sql="SELECT * FROM VIEW_DETECT_RESULT_INFO WHERE THESIS_ID="&thesisID
+sql="SELECT * FROM ViewDetectResult WHERE THESIS_ID="&thesisID
 GetRecordSet conn,rsDetect,sql,result
 
 stu_type=rs("TEACHTYPE_ID")
@@ -372,7 +372,7 @@ GetMenuListPubTerm "CODE_THESIS_REVIEW_STATUS","STATUS_ID2","STATUS_NAME",review
 <input type="hidden" name="pageNo2" value="<%=pageNo%>" /></form>
 <table class="tblform" width="800" cellspacing=1 cellpadding=3>
 <tr style="background-color: #cccccc"><td><p>论文检测结果及论文评审结果说明：</p>
-<%=getNoticeText(rs("TEACHTYPE_ID"),"review_result_desc")%>
+<%=spGetNoticeText(rs("TEACHTYPE_ID"),"review_result_desc")%>
 </td></tr></table></center>
 <form id="ret" name="ret" action="thesisList.asp" method="post">
 <input type="hidden" name="In_PERIOD_ID" value="<%=period_id%>">
@@ -514,7 +514,7 @@ Case 2	' 填写评语页面
 	Case 6 ' 填写导师送审评语页面 %>
 <tr><td colspan="3">送审论文：<a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=9" target="_blank">点击下载</a></td></tr>
 <tr><td colspan="3">导师对学位论文的评语<span class="eval_notice">（请阅读论文后填写，200-2000字）</span>：<span id="eval_text_tip"></span><br/>
-送审评语的基本内容参考：<br/><%=getNoticeText(rs("TEACHTYPE_ID"),"review_eval_reference")%></td></tr>
+送审评语的基本内容参考：<br/><%=spGetNoticeText(rs("TEACHTYPE_ID"),"review_eval_reference")%></td></tr>
 <tr><td colspan="3"><textarea name="eval_text" rows="10" style="width:100%"><%=eval_text%></textarea><br/></td></tr><%
 		If Not isunpass Then %>
 <tr><td colspan="3" style="padding:0"><table class="tblform" width="100%" cellspacing="1" cellpadding="3">

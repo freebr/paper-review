@@ -107,7 +107,7 @@ Dim ArrayList(2,5),k
 FormName="query_nocheck"
 k=0
 ArrayList(k,0)="学位类别"
-ArrayList(k,1)="VIEW_CODE_TEACHTYPE"
+ArrayList(k,1)="ViewStudentTypeInfo"
 ArrayList(k,2)="TEACHTYPE_ID"
 ArrayList(k,3)="TEACHTYPE_NAME"
 ArrayList(k,4)=teachtype_id
@@ -116,7 +116,7 @@ ArrayList(k,5)="AND TEACHTYPE_ID IN (5,6,7,9)"
 k=1
 
 ArrayList(k,0)="年级"
-ArrayList(k,1)="VIEW_SPECIALITY_CLASS"
+ArrayList(k,1)="ViewSpecialityInfo"
 ArrayList(k,2)="ENTER_YEAR"
 ArrayList(k,3)="CAST(ENTER_YEAR AS nvarchar(10))+'级'"
 ArrayList(k,4)=enter_year
@@ -124,7 +124,7 @@ ArrayList(k,5)="AND VALID=0 AND ENTER_YEAR>=2008"
 
 k=2
 ArrayList(k,0)="班级"
-ArrayList(k,1)="VIEW_SPECIALITY_CLASS"
+ArrayList(k,1)="ViewSpecialityInfo"
 ArrayList(k,2)="CLASS_ID"
 ArrayList(k,3)="CLASS_NAME"
 ArrayList(k,4)=class_id
@@ -181,7 +181,7 @@ End If %>
 <tr><td colspan=2><input type="button" value="导入新增论文信息" onclick="submitForm($('#fmThesisList'),'importNewThesis.asp')" />
 <input type="button" value="导入论文查重信息" onclick="submitForm($('#fmThesisList'),'importDetectResult.asp')" />
 <input type="button" value="导入答辩安排信息" onclick="submitForm($('#fmThesisList'),'importDefencePlan.asp')" />
-<input type="button" value="导入答辩委员会修改意见" onclick="submitForm($('#fmThesisList'),'importDefenceEval.asp')" />
+<input type="button" value="导入答辩委员会修改意见" onclick="submitForm($('#fmThesisList'),'spImportDefenceEval.asp')" />
 <input type="button" value="导入学院学位评定分委员会修改意见" onclick="submitForm($('#fmThesisList'),'importDegreeEval.asp')" /></td></tr>
 <tr><td colspan=2>评阅结果&nbsp;<select name="selreviewfilestat"><%
 			For i=0 To UBound(arrReviewFileStat)

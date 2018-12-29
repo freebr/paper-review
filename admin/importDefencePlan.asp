@@ -100,7 +100,7 @@ Case 3	' 数据读取，导入到数据库
 		Do While Not rs.EOF
 			If IsNull(rs(0)) Then Exit Do
 			' 按学号检索
-			sql="SELECT ID,STU_ID FROM VIEW_TEST_THESIS_REVIEW_INFO WHERE VALID=1 AND STU_NO="&toSqlString(rs(2))&" AND TEACHTYPE_ID="&getTeachTypeIdByName(rs(0))&" ORDER BY STU_ID DESC"
+			sql="SELECT ID,STU_ID FROM ViewThesisInfo WHERE VALID=1 AND STU_NO="&toSqlString(rs(2))&" AND TEACHTYPE_ID="&getTeachTypeIdByName(rs(0))&" ORDER BY STU_ID DESC"
 			GetRecordSetNoLock conn,rsa,sql,result
 			If rsa.EOF Then
 				bError=True
@@ -137,7 +137,7 @@ Case 3	' 数据读取，导入到数据库
 			Dim logtxt:logtxt="行政人员["&Session("name")&"]执行答辩安排信息导入操作。"
 			Dim mail_id:mail_id=getThesisReviewSystemMailIdByType(Now)
 			' 批量发送通知邮件
-			sql="SELECT STU_NAME,STU_NO,CLASS_NAME,SPECIALITY_NAME,EMAIL,THESIS_SUBJECT,TUTOR_NAME,TUTOR_EMAIL FROM VIEW_TEST_THESIS_REVIEW_INFO WHERE VALID=0 AND STU_ID IN ("&stuid_string&")"
+			sql="SELECT STU_NAME,STU_NO,CLASS_NAME,SPECIALITY_NAME,EMAIL,THESIS_SUBJECT,TUTOR_NAME,TUTOR_EMAIL FROM ViewThesisInfo WHERE VALID=0 AND STU_ID IN ("&stuid_string&")"
 			GetRecordSetNoLock conn,rsa,sql,result
 			Do While Not rsa.EOF
 				stuname=rsa("STU_NAME")

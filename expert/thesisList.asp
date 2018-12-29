@@ -84,7 +84,7 @@ Dim ArrayList(1,5),k,objectTerm
 FormName="query_nocheck"
 k=0
 ArrayList(k,0)="学位类别"
-ArrayList(k,1)="VIEW_CODE_TEACHTYPE"
+ArrayList(k,1)="ViewStudentTypeInfo"
 ArrayList(k,2)="TEACHTYPE_ID"
 ArrayList(k,3)="TEACHTYPE_NAME"
 ArrayList(k,4)=teachtype_id
@@ -92,7 +92,7 @@ ArrayList(k,5)="AND TEACHTYPE_ID IN (5,6,7,9)"
 
 k=1
 ArrayList(k,0)="专业名称"
-ArrayList(k,1)="VIEW_TEST_THESIS_REVIEW_INFO"
+ArrayList(k,1)="ViewThesisInfo"
 ArrayList(k,2)="SPECIALITY_ID"
 ArrayList(k,3)="SPECIALITY_NAME"
 ArrayList(k,4)=spec_id

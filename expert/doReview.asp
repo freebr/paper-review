@@ -32,7 +32,7 @@ reviewlevel=Request.Form("reviewlevel")
 eval_text=Request.Form("eval_text")
 Session("Debug")=1
 Connect conn
-sql="SELECT * FROM VIEW_TEST_THESIS_REVIEW_INFO WHERE ID="&thesisID&" AND "&Session("Tid")&" IN (REVIEWER1,REVIEWER2)"
+sql="SELECT * FROM ViewThesisInfo WHERE ID="&thesisID&" AND "&Session("Tid")&" IN (REVIEWER1,REVIEWER2)"
 GetRecordSetNoLock conn,rs,sql,result
 If nSystemStatus<>2 Then
 	bError=True
@@ -262,7 +262,7 @@ CloseConn conn
 updateActiveTime Session("Tid")
 
 logtxt="专家["&expert_name&"]提交评阅意见，论文：《"&subject&"》，作者："&author&"，评阅书："&fullfilename&"。"
-WriteLog logtxt
+writeLog logtxt
 %><form id="ret" action="thesisDetail.asp?tid=<%=thesisID%>" method="post">
 <input type="hidden" name="In_TEACHTYPE_ID2" value="<%=teachtype_id%>" />
 <input type="hidden" name="In_SPECIALITY_ID2" value="<%=spec_id%>" />

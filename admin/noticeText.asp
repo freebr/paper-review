@@ -14,7 +14,7 @@ Dim conn,rs,sql,num
 json=Request.Form("json")
 If json="1" Then
 	Dim ret
-	sql="EXEC getNoticeText ?"
+	sql="EXEC spGetNoticeText ?"
 	Set rs=ExecQuery(conn,sql,CmdParam("StudentType",adInteger,adParamInput,4,stuType),num)
 	Do While Not rs.EOF
 		dictNotices.Add rs(0).Value, rs(1).Value
@@ -112,7 +112,7 @@ Case "2"
 		Dim key:key=dictNotices.Keys()(i)
 		Dim content:content=Request.Form(key)
 		If IsEmpty(content) Then content=""
-		setNoticeText stuType,key,content
+		spSetNoticeText stuType,key,content
 	Next
 	
 	CloseConn conn

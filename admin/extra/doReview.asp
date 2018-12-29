@@ -30,7 +30,7 @@ reviewresult=Request.Form("reviewresult")
 reviewlevel=Request.Form("reviewlevel")
 eval_text=Request.Form("eval_text")
 Connect conn
-sql="SELECT * FROM VIEW_TEST_THESIS_REVIEW_INFO WHERE ID="&thesisID
+sql="SELECT * FROM ViewThesisInfo WHERE ID="&thesisID
 GetRecordSetNoLock conn,rs,sql,result
 If Len(expert_master_level)=0 Then
 	bError=True

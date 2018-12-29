@@ -148,7 +148,7 @@ Case 3	' 数据读取，导入到数据库
 						rsTea("TEACHERNAME").Value=fieldValue(0)
 						rsTea("USER_PASSWORD").Value="12345678" ' generatePassword()
 						rsTea("IFTEACHER").Value=3
-						rsTea("OFFICE_ADDRESS").Value=fieldValue(3)
+						rsTea("Office_Address").Value=fieldValue(3)
 						rsTea("MOBILE").Value=fieldValue(4)
 						rsTea("EMAIL").Value=fieldValue(5)
 						rsTea("PRO_DUTYID").Value=18	' 职称为其他
@@ -161,7 +161,7 @@ Case 3	' 数据读取，导入到数据库
 						rsTea.Find("TEACHERID="&rsExp("TEACHER_ID").Value)
 						If Not rsTea.EOF Then
 							rsTea("USER_PASSWORD").Value="12345678" ' generatePassword()
-							rsTea("OFFICE_ADDRESS").Value=fieldValue(3)
+							rsTea("Office_Address").Value=fieldValue(3)
 							rsTea("MOBILE").Value=fieldValue(4)
 							rsTea("EMAIL").Value=fieldValue(5)
 							rsTea("VALID").Value=0

@@ -14,7 +14,7 @@ If bError Then
 End If
 
 Connect conn
-sql="SELECT * FROM VIEW_TEST_THESIS_REVIEW_EXPERT_INFO WHERE TEACHER_ID="&TeacherId
+sql="SELECT * FROM ViewExpertInfo WHERE TEACHER_ID="&TeacherId
 GetRecordSetNoLock conn,rs,sql,result
 If rs.EOF Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4">数据库没有记录！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%

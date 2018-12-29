@@ -31,7 +31,7 @@ If rs.EOF Then
 End If
 
 Dim detect_count
-sql="SELECT DETECT_COUNT FROM VIEW_TEST_THESIS_REVIEW_INFO WHERE ID="&thesisID
+sql="SELECT DETECT_COUNT FROM ViewThesisInfo WHERE ID="&thesisID
 GetRecordSet conn,rsDetect,sql,result
 detect_count=rsDetect(0).Value
 CloseRs rsDetect
@@ -156,7 +156,7 @@ Case 1	' 撤销专家评阅操作
 	rs("REVIEWER_EVAL"&(opr+1)).Value=eval_text
 	rs("REVIEW_FILE").Value=join(review_file,",")
 	rs("REVIEWER_EVAL_TIME").Value=join(review_time,",")
-	rs("TUTOR_REVIEW_EVAL").Value=Null
+	'rs("TUTOR_REVIEW_EVAL").Value=Null
 	rs("REVIEW_STATUS").Value=rsMatchExpert
 	
 Case 2	' 撤销导师审核操作

@@ -26,7 +26,7 @@ bShowAll=Request.QueryString="showAll"
 If bShowAll Then PageSize=-1
 '------------------------------------------------------
 Connect conn
-sql="SELECT * FROM VIEW_TEST_THESIS_REVIEW_NOTIFY_INFO WHERE 1=1 "&PubTerm&" ORDER BY USER_TYPE,USER_NAME"
+sql="SELECT * FROM ViewNotifyInfo WHERE 1=1 "&PubTerm&" ORDER BY USER_TYPE,USER_NAME"
 GetRecordSetNoLock conn,rs,sql,result
 If IsEmpty(pageSize) Or Not IsNumeric(pageSize) Then
   pageSize=60

@@ -18,7 +18,7 @@ Case vbNullString	' 选择页面
 		thesisID=Request.Form("sel")
 	End If
 	Connect conn
-	sql="SELECT * FROM VIEW_TEST_THESIS_REVIEW_INFO WHERE ID IN ("&thesisID&")"
+	sql="SELECT * FROM ViewThesisInfo WHERE ID IN ("&thesisID&")"
 	GetRecordSet conn,rs,sql,result
 	If rs("TEACHTYPE_ID")=5 Then
 		reviewfile_type=2
@@ -126,12 +126,12 @@ Case 2	' 后台处理
 		GetRecordSetNoLock conn,rs2,sql,result
 		CloseRs rs2
 		If result=0 Then	' 临时添加专家，用于校内导师作为评阅专家录入
-			sql="SELECT * FROM VIEW_TEACHER_INFO WHERE TEACHERID="&teacherID
+			sql="SELECT * FROM ViewTeacherInfo WHERE TEACHERID="&teacherID
 			GetRecordSetNoLock conn,rs2,sql,result
 			teacherName=rs2("TEACHERNAME")
 			proDutyName=getProDutyNameOf(teacherID)
 			workplace="华南理工大学工商管理学院"&rs2("DEPT_NAME")
-			address=rs2("OFFICE_ADDRESS")
+			address=rs2("Office_Address")
 			telephone=rs2("OFFICE_PHONE")
 			mobile=rs2("MOBILE")
 			email=rs2("EMAIL")
@@ -151,7 +151,7 @@ Case 2	' 后台处理
 		logtxt="行政人员["&Session("name")&"]匹配专家，"
 		arr=Split(thesisID,",")
 		For i=0 To UBound(arr)
-			sql="SELECT STU_NAME,STU_NO,CLASS_NAME,SPECIALITY_NAME,EMAIL,THESIS_SUBJECT,TUTOR_NAME,TUTOR_EMAIL FROM VIEW_TEST_THESIS_REVIEW_INFO WHERE ID="&arr(i)
+			sql="SELECT STU_NAME,STU_NO,CLASS_NAME,SPECIALITY_NAME,EMAIL,THESIS_SUBJECT,TUTOR_NAME,TUTOR_EMAIL FROM ViewThesisInfo WHERE ID="&arr(i)
 			GetRecordSetNoLock conn,rs,sql,result
 			stuname=rs("STU_NAME")
 			stuno=rs("STU_NO")

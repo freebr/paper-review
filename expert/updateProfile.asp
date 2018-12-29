@@ -96,7 +96,7 @@ If rs("IFTEACHER").Value=3 Then
 	' 校外导师则更新教师信息表
 	rs("TEACHERNAME").Value=teachername
 	rs("SEX").Value=sex
-	rs("OFFICE_ADDRESS").Value=workplace
+	rs("Office_Address").Value=workplace
 	rs("TELPHONE").Value=telephone
 	rs("MOBILE").Value=mobile
 	rs("EMAIL").Value=email

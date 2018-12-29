@@ -98,7 +98,7 @@ Case 3	' 数据读取，导入到数据库
 	select_mode=Request.Form("selectmode")
 	send_email=Request.Form("sendemail")="on"
 	sql="CREATE TABLE #ret(CountInsert int,CountUpdate int,CountError int,FirstImportThesisIDs nvarchar(MAX),IsError bit,ErrMsg nvarchar(MAX));"&_
-			"INSERT INTO #ret EXEC importTestThesisDefenceEval '"&filepath&"',"&select_mode&"; SELECT * FROM #ret"
+			"INSERT INTO #ret EXEC spImportDefenceEval '"&filepath&"',"&select_mode&"; SELECT * FROM #ret"
 	Connect conn
 	Set rs=conn.Execute(sql).NextRecordSet
 	countInsert=rs("CountInsert")
@@ -113,7 +113,7 @@ Case 3	' 数据读取，导入到数据库
 		Dim logtxt:logtxt="行政人员["&Session("name")&"]导入答辩委员会修改意见。"
 		Dim mail_id:mail_id=getThesisReviewSystemMailIdByType(Now)
 		' 批量发送通知邮件
-		sql="SELECT STU_NAME,STU_NO,CLASS_NAME,SPECIALITY_NAME,EMAIL,THESIS_SUBJECT,TUTOR_NAME,TUTOR_EMAIL FROM VIEW_TEST_THESIS_REVIEW_INFO WHERE ID IN ("&thesisIDs&")"
+		sql="SELECT STU_NAME,STU_NO,CLASS_NAME,SPECIALITY_NAME,EMAIL,THESIS_SUBJECT,TUTOR_NAME,TUTOR_EMAIL FROM ViewThesisInfo WHERE ID IN ("&thesisIDs&")"
 		GetRecordSetNoLock conn,rs,sql,result
 		Do While Not rs.EOF
 			stuname=rs("STU_NAME")

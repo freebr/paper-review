@@ -15,7 +15,7 @@ Else
 End If
 If Len(finalFilter) Then PubTerm="AND ("&finalFilter&")"
 Connect conn
-sql="SELECT * FROM VIEW_TEST_THESIS_REVIEW_EXPERT_INFO WHERE Valid=1 "&PubTerm&" ORDER BY EXPERT_NAME"
+sql="SELECT * FROM ViewExpertInfo WHERE Valid=1 "&PubTerm&" ORDER BY EXPERT_NAME"
 GetRecordSetNoLock conn,rs,sql,result
 If IsEmpty(pageSize) Or Not IsNumeric(pageSize) Then
   pageSize=-1

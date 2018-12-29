@@ -60,7 +60,7 @@ End Function
 Function getProDutyNameOf(tid)
 	Dim conn,rs,sql,num
 	Connect conn
-	sql="SELECT PRO_DUTYNAME FROM VIEW_TEACHER_INFO WHERE TEACHERID="&tid
+	sql="SELECT PRO_DUTYNAME FROM ViewTeacherInfo WHERE TEACHERID="&tid
 	GetRecordSetNoLock conn,rs,sql,num
 	If Not rs.EOF Then
 		getProDutyNameOf=rs(0)

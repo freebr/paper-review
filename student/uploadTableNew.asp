@@ -15,9 +15,9 @@ stu_type=Session("StuType")
 researchway_list=loadResearchwayList(stu_type)
 
 Connect conn
-sql="SELECT *,dbo.getThesisStatusText(1,TASK_PROGRESS,2) AS STAT_TEXT FROM VIEW_TEST_THESIS_REVIEW_INFO WHERE STU_ID="&Session("Stuid")&" ORDER BY PERIOD_ID DESC"
+sql="SELECT *,dbo.getThesisStatusText(1,TASK_PROGRESS,2) AS STAT_TEXT FROM ViewThesisInfo WHERE STU_ID="&Session("Stuid")&" ORDER BY PERIOD_ID DESC"
 GetRecordSetNoLock conn,rs,sql,result
-sql="SELECT * FROM VIEW_STUDENT_INFO WHERE STU_ID="&Session("Stuid")
+sql="SELECT * FROM ViewStudentInfo WHERE STU_ID="&Session("Stuid")
 GetRecordSetNoLock conn,rs2,sql,result
 enter_year=rs2("ENTER_YEAR")
 tutor_name=rs2("TEACHERNAME")

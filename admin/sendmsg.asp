@@ -27,7 +27,7 @@
 			Response.End()
 		End If
 		Connect conn
-		sql="SELECT TEACHERNAME,MOBILE,EMAIL FROM VIEW_TEACHER_INFO WHERE TEACHERID IN ("&tid&")"
+		sql="SELECT TEACHERNAME,MOBILE,EMAIL FROM ViewTeacherInfo WHERE TEACHERID IN ("&tid&")"
 		GetRecordSetNoLock conn,rs,sql,result
 		If result=1 Then
 			title="给["&rs("TEACHERNAME")&"]老师"

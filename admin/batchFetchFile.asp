@@ -91,7 +91,7 @@ Case 2	' 下载页面
 	End If
 	rarFilename=rarFilename&".rar"
 	Connect conn
-	sql="SELECT *,LEFT(REVIEW_FILE,CHARINDEX(',',REVIEW_FILE)-1) AS REVIEW_FILE1,RIGHT(REVIEW_FILE,LEN(REVIEW_FILE)-CHARINDEX(',',REVIEW_FILE)) AS REVIEW_FILE2 FROM VIEW_TEST_THESIS_REVIEW_INFO WHERE ID IN ("&ids&") AND Valid=1"
+	sql="SELECT *,LEFT(REVIEW_FILE,CHARINDEX(',',REVIEW_FILE)-1) AS REVIEW_FILE1,RIGHT(REVIEW_FILE,LEN(REVIEW_FILE)-CHARINDEX(',',REVIEW_FILE)) AS REVIEW_FILE2 FROM ViewThesisInfo WHERE ID IN ("&ids&") AND Valid=1"
 	GetRecordSet conn,rs,sql,result
 	If rs.EOF Then
 	%><body bgcolor="ghostwhite"><center><font color=red size="4">所选记录不存在！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%

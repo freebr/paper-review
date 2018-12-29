@@ -33,7 +33,7 @@ For i=0 To UBound(arr)
 	arr2=Split(arr(i),".")
 	user_type=arr2(0)
 	user_id=arr2(1)
-	sql="SELECT * FROM VIEW_TEST_THESIS_REVIEW_NOTIFY_INFO WHERE USER_ID="&user_id
+	sql="SELECT * FROM ViewNotifyInfo WHERE USER_ID="&user_id
 	GetRecordSetNoLock conn,rs,sql,result
 	If Not rs.EOF Then
 		Select Case user_type
@@ -71,8 +71,8 @@ For i=0 To UBound(arr)
 			expertname=rs("USER_NAME")
 			expertmail=rs("USER_EMAIL")
 			expertmob=rs("USER_MOBILE")
-			sql="SELECT A.TEACHERNO,COUNT(ID) AS REVIEW_COUNT,MIN(THESIS_SUBJECT) AS THESIS_SUBJECT FROM VIEW_TEST_THESIS_REVIEW_INFO "&_
-					"LEFT JOIN VIEW_TEACHER_INFO A ON A.TEACHERID="&expertid&" WHERE "&expertid&" IN (REVIEWER1,REVIEWER2) GROUP BY TEACHERNO"
+			sql="SELECT A.TEACHERNO,COUNT(ID) AS REVIEW_COUNT,MIN(THESIS_SUBJECT) AS THESIS_SUBJECT FROM ViewThesisInfo "&_
+					"LEFT JOIN ViewTeacherInfo A ON A.TEACHERID="&expertid&" WHERE "&expertid&" IN (REVIEWER1,REVIEWER2) GROUP BY TEACHERNO"
 			GetRecordSetNoLock conn,rs2,sql,result
 			review_count=rs2("REVIEW_COUNT")
 			If review_count=1 Then
@@ -123,7 +123,7 @@ Next
 
 If Len(sql_updnotify) Then conn.Execute sql_updnotify
 CloseConn conn
-WriteLog logtxt
+writeLog logtxt
 notifyText="操作完成，共通知 "
 If numTutorNotify>0 Then
 	notifyText=notifyText&numTutorNotify&" 名导师，"

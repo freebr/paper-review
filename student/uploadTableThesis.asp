@@ -11,9 +11,9 @@ opr=0
 sem_info=getCurrentSemester()
 stu_type=Session("StuType")
 Connect conn
-sql="SELECT *,dbo.getThesisStatusText(1,TASK_PROGRESS,2) AS STAT_TEXT FROM VIEW_TEST_THESIS_REVIEW_INFO WHERE STU_ID="&Session("Stuid")&" ORDER BY PERIOD_ID DESC" 'AND PERIOD_ID="&sem_info(3)&" AND Valid=1"
+sql="SELECT *,dbo.getThesisStatusText(1,TASK_PROGRESS,2) AS STAT_TEXT FROM ViewThesisInfo WHERE STU_ID="&Session("Stuid")&" ORDER BY PERIOD_ID DESC" 'AND PERIOD_ID="&sem_info(3)&" AND Valid=1"
 GetRecordSetNoLock conn,rs,sql,result
-sql="SELECT * FROM VIEW_STUDENT_INFO WHERE STU_ID="&Session("Stuid")
+sql="SELECT * FROM ViewStudentInfo WHERE STU_ID="&Session("Stuid")
 GetRecordSetNoLock conn,rs2,sql,result
 tutor_duty_name=getProDutyNameOf(rs2("TUTOR_ID"))
 If rs.EOF Then

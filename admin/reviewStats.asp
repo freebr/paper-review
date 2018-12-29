@@ -9,7 +9,7 @@ If Len(period_id)=0 Then period_id=sem_info(3)
 Connect conn
 Set comm=Server.CreateObject("ADODB.Command")
 comm.ActiveConnection=conn
-comm.CommandText="getTestThesisReviewStatsList"
+comm.CommandText="spGetReviewStatistics"
 comm.CommandType=adCmdStoredProc
 Set pmPeriodId=comm.CreateParameter("PERIOD_ID",adInteger,adParamInput,5,period_id)
 comm.Parameters.Append pmPeriodId
