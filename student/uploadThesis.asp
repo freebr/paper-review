@@ -72,7 +72,7 @@ If opr<>0 Then
 	If Not bOpen Then bUpload=False
 	uploadTypename=arrStuOprName(opr)
 	If opr=STUCLI_OPR_DETECT_REVIEW Then
-		n=Sgn(rs("DETECT_COUNT").Value)
+		If rs.EOF Then n=0 Else n=Sgn(rs("DETECT_COUNT").Value)
 		subtype=Array("一次","二次")(n)
 		uploadTypename=subtype&uploadTypename
 	End If

@@ -183,8 +183,8 @@ If opr=STUCLI_OPR_TABLE1 Then %>
 		$('input[name="school_tutor_research_field"]').val(!this.value.length?'':$(this).find('option:selected').text());
 	});
 	$('select[name="research_field_select"]').change(function(){
-		initSubResearchFieldSelectBox($('select[name="sub_research_field_select"]'),$(this),this.value);
-		initSubResearchFieldSelectBox($('select[name="school_tutor_research_field_select"]'),$(this),this.value);
+		initSubResearchFieldSelectBox($('select[name="sub_research_field_select"]'),$(this),this.value, '<%=sub_research_field%>');
+		initSubResearchFieldSelectBox($('select[name="school_tutor_research_field_select"]'),$(this),this.value, '<%=sub_research_field%>');
 		$('select[name="sub_research_field_select"]').change();
 		$('select[name="school_tutor_research_field_select"]').change();
 		$('input[name="research_field"]').val(!this.value.length?'':$(this).find('option:selected').text());

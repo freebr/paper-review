@@ -73,11 +73,11 @@ function checkKeywords() {
 	return bValid;
 }
 $().ready(function() {
-	$('input.keyword').live({'blur':onKeywordBlur,'focus':onKeywordFocus,'change':onKeywordChange}).blur();
+	$('input.keyword').on({'blur':onKeywordBlur,'focus':onKeywordFocus,'change':onKeywordChange}).blur();
 	$('a.linkAdd').click(function() {
 		addKeyword();
 		return false;
 	});
-	$('a.linkRemove').live('click',onKeywordRemove);
+	$('a.linkRemove').on('click',onKeywordRemove);
 	setKeywordCount(3);
 });

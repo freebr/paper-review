@@ -45,14 +45,16 @@ function initResearchFieldSelectBox($ctl,stu_type) {
 	return;
 }
 
-function initSubResearchFieldSelectBox($ctl,$ctl_field,field_id) {
+function initSubResearchFieldSelectBox($ctl,$ctl_field,field_id,field_text) {
 	$ctl[0].options.length=0;
 	if(!field_id.length) return;
 	field_id=parseInt(field_id);
 	$ctl[0].options.add(new Option('请选择研究方向',''));
-	$.each($ctl_field.data('source').fields[field_id].sub,function(i,elem){
+	var arr=$ctl_field.data('source').fields[field_id].sub;
+	$.each(arr,function(i,elem){
 		$ctl[0].options.add(new Option(elem,i));
 	});
 	$ctl[0].options.add(new Option('其他','-1'));
+	if (field_text) $ctl.val(arr.indexOf(field_text));
 	return;
 }
