@@ -4,11 +4,11 @@ Function newEmailTemplate(template_name,mailsubject,mailcontent,fieldlist)
 	' 新建邮件模板并返回模板编号
 	Dim sql,rs,conn,result,updateTime
 	updateTime="'"&Now&"'"
-	sql="INSERT INTO EMAIL_TEMPLATE (TemplateName,MailSubject,MailContent,FieldList,UpdateTime,Valid) "&_
+	sql="INSERT INTO EmailTemplates (TemplateName,MailSubject,MailContent,FieldList,UpdateTime,Valid) "&_
 			"VALUES ("&toSqlString(template_name)&","&toSqlString(mailsubject)&","&toSqlString(mailcontent)&","&toSqlString(fieldlist)&","&updateTime&",1)"
 	Connect conn
 	conn.Execute sql
-	sql="SELECT ID FROM EMAIL_TEMPLATE WHERE UpdateTime="&updateTime&" ORDER BY ID DESC"
+	sql="SELECT ID FROM EmailTemplates WHERE UpdateTime="&updateTime&" ORDER BY ID DESC"
 	GetRecordSetNoLock conn,rs,sql,result
 	If result>0 Then
 		newEmailTemplate=rs(0)
@@ -21,14 +21,14 @@ Function updateEmailTemplate(id,template_name,mailsubject,mailcontent,fieldlist)
 	If Not IsNumeric(id) Then Exit Function
 	Dim sql,rs,conn,result,updateTime
 	
-	sql="SELECT ID FROM EMAIL_TEMPLATE WHERE ID="&id
+	sql="SELECT ID FROM EmailTemplates WHERE ID="&id
 	Connect conn
 	GetRecordSetNoLock conn,rs,sql,result
 	If result=0 Then
 		id=newEmailTemplate(template_name,mailsubject,mailcontent,fieldlist)
 	Else
 		updateTime="'"&Now&"'"
-		sql="UPDATE EMAIL_TEMPLATE SET TemplateName="&toSqlString(template_name)&","&_
+		sql="UPDATE EmailTemplates SET TemplateName="&toSqlString(template_name)&","&_
 																	"MailSubject="&toSqlString(mailsubject)&","&_
 																	"MailContent="&toSqlString(mailcontent)&","&_
 																	"FieldList="&toSqlString(fieldlist)&","&_
@@ -43,7 +43,7 @@ Function deleteEmailTemplate(id)
 	' 删除指定编号的邮件模板
 	If Not IsNumeric(id) Then Exit Function
 	Dim sql,conn
-	sql="DELETE FROM EMAIL_TEMPLATE WHERE ID="&id
+	sql="DELETE FROM EmailTemplates WHERE ID="&id
 	Connect conn
 	conn.Execute sql
 	CloseConn conn
@@ -53,7 +53,7 @@ Function getEmailTemplateContent(id)
 	' 返回指定编号的邮件模板内容
 	If IsNull(id) Or Len(id)=0 Or Not IsNumeric(id) Then Exit Function
 	Dim sql,rs,conn
-	sql="SELECT MailContent FROM EMAIL_TEMPLATE WHERE ID="&id
+	sql="SELECT MailContent FROM EmailTemplates WHERE ID="&id
 	Connect conn
 	GetRecordSetNoLock conn,rs,sql,result
 	If result>0 Then
@@ -71,7 +71,7 @@ Function sendAnnouncementEmail(mail_id,mailrcpt,arr_fieldval)
 	
 	'On Error Resume Next
 	' 查询邮件模板标题、内容、变量等信息
-	sql="SELECT * FROM EMAIL_TEMPLATE WHERE ID="&mail_id
+	sql="SELECT * FROM EmailTemplates WHERE ID="&mail_id
 	Connect conn
 	GetRecordSetNoLock conn,rs,sql,result
 	If result=0 Then Exit Function
@@ -157,7 +157,7 @@ Function sendSMS(mail_id,rcpt,arr_fieldval)
 	Dim mailcontent,mailbody
 	Dim ret
 	' 查询邮件模板内容、变量等信息
-	sql="SELECT * FROM EMAIL_TEMPLATE WHERE ID="&mail_id
+	sql="SELECT * FROM EmailTemplates WHERE ID="&mail_id
 	Connect conn
 	GetRecordSetNoLock conn,rs,sql,result
 	If result=0 Then Exit Function
@@ -257,7 +257,7 @@ Function getThesisReviewSystemMailIdByType(d)
 	curyear=sem_info(0)
 	cur_semester=sem_info(1)
 	Connect conn
-	sql="SELECT * FROM TEST_THESIS_REVIEW_SYSTEM WHERE USE_YEAR="&curyear&" AND USE_SEMESTER="&cur_semester
+	sql="SELECT * FROM SystemSettings WHERE USE_YEAR="&curyear&" AND USE_SEMESTER="&cur_semester
 	Set rs=conn.Execute(sql)
 	If Not rs.EOF Then
 		For i=1 To UBound(mail_id)

@@ -1,10 +1,10 @@
 ﻿<!--#include file="../inc/db.asp"-->
 <!--#include file="../inc/ExtendedRequest.inc"-->
 <!--#include file="common.asp"-->
-<%If IsEmpty(Session("TId")) Then Response.Redirect("../error.asp?timeout")
+<%If IsEmpty(Session("Tid")) Then Response.Redirect("../error.asp?timeout")
 TeacherId=Session("Tid")
 If Len(TeacherId)=0 Or Not IsNumeric(TeacherId) Then
-%><html><head><link href="../css/tutor.css" rel="stylesheet" type="text/css" /></head>
+%><html><head><% useStylesheet("tutor") %></head>
 <body class="exp"><center><div class="content"><font color=red size="4">参数错误。</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></div></body></html><%
 	Response.End()
 End If
@@ -84,7 +84,7 @@ ElseIf rs.EOF Then
 	errdesc="数据库没有记录！"
 End If
 If bError Then
-%><html><head><link href="../css/tutor.css" rel="stylesheet" type="text/css" /></head>
+%><html><head><% useStylesheet("tutor") %></head>
 <body class="exp"><center><div class="content"><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></div></body></html><%
 	CloseRs rs
   CloseConn connOrigin
@@ -110,7 +110,7 @@ CloseRs rs
 CloseConn connOrigin
 
 ' 更新专家库
-sql="SELECT * FROM TEST_THESIS_REVIEW_EXPERT_INFO WHERE TEACHER_ID="&TeacherId
+sql="SELECT * FROM Experts WHERE TEACHER_ID="&TeacherId
 GetRecordSet conn,rs,sql,result
 rs("EXPERT_NAME").Value=teachername
 rs("PRO_DUTY_NAME").Value=pro_duty_name

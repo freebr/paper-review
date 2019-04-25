@@ -1,7 +1,7 @@
 ﻿<%Response.Charset="utf-8"%>
 <!--#include file="../inc/db.asp"-->
 <!--#include file="common.asp"-->
-<%If IsEmpty(Session("TId")) Then Response.Redirect("../error.asp?timeout")
+<%If IsEmpty(Session("Tid")) Then Response.Redirect("../error.asp?timeout")
 
 Dim PubTerm,PageNo,PageSize
 tid=Session("Tid")
@@ -38,7 +38,7 @@ End If
 arrStatText=Array("未评阅","已评阅")
 sem_info=getCurrentSemester()
 Connect conn
-sql="SELECT * FROM ViewExpertClientThesisInfo WHERE "&tid&" IN (REVIEWER1,REVIEWER2) "&PubTerm
+sql="SELECT * FROM ViewDissertations_expert WHERE "&tid&" IN (REVIEWER1,REVIEWER2) "&PubTerm
 GetRecordSetNoLock conn,rs,sql,result
 If IsEmpty(pageSize) Or Not IsNumeric(pageSize) Then
   pageSize=-1
@@ -65,10 +65,10 @@ End If
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link href="../css/tutor.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
-<script src="../scripts/query.js" type="text/javascript"></script>
-<script src="../scripts/thesis.js" type="text/javascript"></script>
+<meta name="theme-color" content="#2D79B2" />
+<title>查看论文列表</title>
+<% useStylesheet("tutor") %>
+<% useScript(Array("jquery", "common", "thesis")) %>
 </head>
 <body class="exp" onload="return On_Load()">
 <center><div class="content">

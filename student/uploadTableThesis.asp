@@ -47,10 +47,10 @@ Case vbNullstring ' 填写信息页面
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link href="../css/student.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
-<script src="../scripts/upload.js" type="text/javascript"></script>
-<script src="../scripts/uploadThesis.js" type="text/javascript"></script>
+<meta name="theme-color" content="#2D79B2" />
+<title>上传表格附加论文</title>
+<% useStylesheet("student") %>
+<% useScript(Array("jquery", "common", "upload", "uploadThesis")) %>
 </head>
 <body bgcolor="ghostwhite">
 <center><font size=4><b>上传表格附加论文</b></font>
@@ -146,7 +146,7 @@ Case 1	' 上传进程
 	arrTblThesisFieldName=Array("","TBL_THESIS_FILE1","TBL_THESIS_FILE2","TBL_THESIS_FILE3")
 	arrNewTaskProgress=Array(0,tpTbl1Uploaded,tpTbl2Uploaded,tpTbl3Uploaded)
 	' 关联到数据库
-	sql="SELECT * FROM TEST_THESIS_REVIEW_INFO WHERE STU_ID="&Session("Stuid")&" ORDER BY PERIOD_ID DESC"
+	sql="SELECT * FROM Dissertations WHERE STU_ID="&Session("Stuid")&" ORDER BY PERIOD_ID DESC"
 	GetRecordSet conn,rs3,sql,result
 	If rs3.EOF Then
 		' 添加记录
@@ -177,14 +177,14 @@ Case 1	' 上传进程
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="theme-color" content="#2D79B2" />
 <title>上传表格附加论文</title>
-<link href="../css/student.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
+<% useStylesheet("student") %>
+<% useScript("jquery") %>
 </head>
 <body bgcolor="ghostwhite"><%
 	If Not bError Then %>
 <form id="fmFinish" action="home.asp" method="post">
 <input type="hidden" name="filename" value="<%=strDestTableFile%>" />
-<p><%=byteFileSize%> 字节已上传，正在关联数据...</p></form>
+<p>文件上传成功，正在关联数据...</p></form>
 <script type="text/javascript">alert("上传成功！");$('#fmFinish').submit();</script><%
 	Else
 %><script type="text/javascript">alert("<%=errdesc%>");history.go(-1);</script><%

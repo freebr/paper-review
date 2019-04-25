@@ -114,7 +114,7 @@ CloseRs rs
 CloseConn connOrigin
 
 ' 更新专家库
-sql="SELECT * FROM TEST_THESIS_REVIEW_EXPERT_INFO WHERE TEACHER_ID="&TeacherId
+sql="SELECT * FROM Experts WHERE TEACHER_ID="&TeacherId
 GetRecordSet conn,rs,sql,result
 rs("EXPERT_NAME").Value=teachername
 rs("PRO_DUTY_NAME").Value=pro_duty_name

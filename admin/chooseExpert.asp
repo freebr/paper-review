@@ -35,9 +35,8 @@ Case vbNullString	' 选择页面
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link href="../css/admin.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
-<script src="../scripts/query.js" type="text/javascript"></script>
+<% useStylesheet("admin") %>
+<% useScript(Array("jquery", "common")) %>
 </head>
 <body bgcolor="ghostwhite">
 <center>
@@ -122,7 +121,7 @@ Case 2	' 后台处理
 	Connect conn
 	For i=1 To 2
 		teacherID=Request.Form("expertid")(i)
-		sql="SELECT ID FROM TEST_THESIS_REVIEW_EXPERT_INFO WHERE TEACHER_ID="&teacherID
+		sql="SELECT ID FROM Experts WHERE TEACHER_ID="&teacherID
 		GetRecordSetNoLock conn,rs2,sql,result
 		CloseRs rs2
 		If result=0 Then	' 临时添加专家，用于校内导师作为评阅专家录入
@@ -136,7 +135,7 @@ Case 2	' 后台处理
 			mobile=rs2("MOBILE")
 			email=rs2("EMAIL")
 			CloseRs rs2
-			sql="INSERT INTO TEST_THESIS_REVIEW_EXPERT_INFO VALUES("&toSqlString(teacherName)&","&teacherID&","&toSqlString(proDutyName)&",NULL,"&_
+			sql="INSERT INTO Experts VALUES("&toSqlString(teacherName)&","&teacherID&","&toSqlString(proDutyName)&",NULL,"&_
 			toSqlString(workplace)&","&toSqlString(address)&",NULL,"&toSqlString(telephone)&","&toSqlString(mobile)&","&toSqlString(email)&",NULL,NULL,NULL,1,1)"
 			conn.Execute sql
 		End If

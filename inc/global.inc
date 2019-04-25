@@ -124,6 +124,124 @@ Function hasPrivilege(pArr,privilege)
 	hasPrivilege=False
 End Function
 
+Function baseUrl()
+	baseUrl = "/ThesisReview/"
+End Function
+
+Function getCurrentSemester()
+	' 返回当前学期信息
+	Dim start_year,cur_semester,semester_name,period_id
+	Dim arr(3)
+	If Month(Now)>=9 Or Month(Now)=1 Then
+		If Month(Now)>=9 Then
+			start_year=Year(Now)
+		Else
+			start_year=Year(Now)-1
+		End If
+		cur_semester=1
+		semester_name="上"
+	Else
+		start_year=Year(Now)-1
+		cur_semester=2
+		semester_name="下"
+	End If
+	period_id=start_year&cur_semester
+	arr(0)=start_year
+	arr(1)=cur_semester
+	arr(2)=semester_name
+	arr(3)=period_id
+	getCurrentSemester=arr
+End Function
+
+// 注册系统选项
+Dim dictSystemOptions:Set dictSystemOptions = Server.CreateObject("Scripting.Dictionary")
+'dictSystemOptions.Add "send_accept_email",			Array("导师确认填报时，向学生发送通知邮件", 0)
+
+// 获取系统选项值（没有则使用默认值）
+Function getSystemOption(name,stu_type_id)
+	If Not dictSystemOptions.Exists(name) Then Exit Function
+	Dim conn,rs,sql,result
+	Connect conn
+	sql="EXEC spGetSystemOption ?,?,?"
+	Set rs=ExecQuery(conn,sql,Array(CmdParam("Name",adVarChar,adParamInput,50,name),_
+		CmdParam("StuTypeId",adInteger,adParamInput,4,stu_type_id),_
+		CmdParam("DefaultValue",adInteger,adParamInput,4,dictSystemOptions.Item(name)(1))),result)
+	getSystemOption=rs(0).Value
+	CloseRs rs
+	CloseConn conn
+End Function
+
+// 注册脚本别名
+Dim dictScripts:Set dictScripts = Server.CreateObject("Scripting.Dictionary")
+dictScripts.Add "admin",	"admin"
+dictScripts.Add "common",	Array("utils", "query")
+dictScripts.Add "drafting",	"drafting"
+dictScripts.Add "expert",	"expert"
+dictScripts.Add "expertList",	"expertList"
+dictScripts.Add "jeasyui",	Array("jeasyui/jquery.easyui.min", "jeasyui/easyloader")
+dictScripts.Add "jquery",	"jquery-1.12.4.min"
+dictScripts.Add "keywordList",	"keywordList"
+dictScripts.Add "notifyList",	"notifyList"
+dictScripts.Add "review",	"review"
+dictScripts.Add "reviewSettings",	"reviewSettings"
+dictScripts.Add "student",	"student"
+dictScripts.Add "systemSettings",	"systemSettings"
+dictScripts.Add "thesis",	"thesis"
+dictScripts.Add "tutor",	"tutor"
+dictScripts.Add "upload",	"upload"
+dictScripts.Add "uploadTable",	"uploadTable"
+dictScripts.Add "uploadThesis",	"uploadThesis"
+
+// 注册样式表别名
+Dim dictStylesheets:Set dictStylesheets = Server.CreateObject("Scripting.Dictionary")
+dictStylesheets.Add "admin",	"admin"
+dictStylesheets.Add "global",	"global"
+dictStylesheets.Add "jeasyui",	Array("jeasyui/themes/icon", "jeasyui/themes/bootstrap/easyui")
+dictStylesheets.Add "student",	"student"
+dictStylesheets.Add "tutor",	"tutor"
+
+Function useScript(arr)
+	If Not IsArray(arr) Then arr=Array(arr)
+	Dim i
+	For i=0 To UBound(arr)
+		Dim alias:alias=arr(i)
+		If Not dictScripts.Exists(alias) Then
+%><script type="text/javascript">console.warn("useScript(): 脚本别名'<%=alias%>'未注册。");</script><%
+		Else
+			Dim items:items=dictScripts.Item(alias)
+			If Not IsArray(items) Then
+%><script type="text/javascript" src="<%=baseUrl()%>scripts/<%=items%>.js"></script><%
+			Else
+				Dim j
+				For j=0 To UBound(items)
+%><script type="text/javascript" src="<%=baseUrl()%>scripts/<%=items(j)%>.js"></script><%
+				Next
+			End If
+		End If
+	Next
+End Function
+
+Function useStylesheet(arr)
+	If Not IsArray(arr) Then arr=Array(arr)
+	Dim i
+	For i=0 To UBound(arr)
+		Dim alias:alias=arr(i)
+		If Not dictStylesheets.Exists(alias) Then
+%><script type="text/javascript">console.warn("useStylesheet(): 样式表别名'<%=alias%>'未注册。");</script><%
+		Else
+			Dim items:items=dictStylesheets.Item(alias)
+			If Not IsArray(items) Then
+%><link href="<%=baseUrl()%>css/<%=items%>.css" rel="stylesheet" type="text/css" /><%
+			Else
+				Dim j
+				For j=0 To UBound(items)
+%><link href="<%=baseUrl()%>css/<%=items(j)%>.css" rel="stylesheet" type="text/css" /><%
+				Next
+			End If
+		End If
+	Next
+End Function
+
 Const STUCLI_OPR_TABLE1 = 1
 Const STUCLI_OPR_TABLE2 = 2
 Const STUCLI_OPR_TABLE3 = 3

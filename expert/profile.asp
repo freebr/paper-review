@@ -1,6 +1,6 @@
 ﻿<!--#include file="../inc/db.asp"-->
 <!--#include file="common.asp"-->
-<%If IsEmpty(Session("TId")) Then Response.Redirect("../error.asp?timeout")
+<%If IsEmpty(Session("Tid")) Then Response.Redirect("../error.asp?timeout")
 TeacherId=Session("Tid")
 If Len(TeacherId)=0 Or Not IsNumeric(TeacherId) Then
 	bError=True
@@ -25,11 +25,8 @@ End If
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link href="../css/tutor.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
-<script src="../scripts/query.js" type="text/javascript"></script>
-<script src="../scripts/utils.js" type="text/javascript"></script>
-<script src="../scripts/expert.js" type="text/javascript"></script>
+<% useStylesheet("tutor") %>
+<% useScript(Array("jquery", "common", "expert")) %>
 <title>个人信息编辑</title>
 </head>
 <body class="exp"><center><div class="content">

@@ -1,5 +1,6 @@
 ﻿<%Response.Charset="utf-8"%>
 <!--#include file="../inc/db.asp"-->
+<!--#include file="common.asp"-->
 <%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 
 ids=Request.Form("sel")
@@ -133,7 +134,7 @@ End If
 Set objExcel=Nothing
 CloseRs rs
 CloseConn conn
-%><html><head><link href="../css/admin.css" rel="stylesheet" type="text/css" /></head><body bgcolor="ghostwhite"><p align="center"><%
+%><html><head><% useStylesheet("admin") %></head><body bgcolor="ghostwhite"><p align="center"><%
 Select Case nResult
 Case 0
 %>未生成Excel文件，因为没有数据库记录!<%

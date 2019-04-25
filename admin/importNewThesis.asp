@@ -17,11 +17,13 @@ Case vbNullstring ' 文件选择页面
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link href="../css/admin.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
+<meta name="theme-color" content="#2D79B2" />
+<title>导入新增论文信息</title>
+<% useStylesheet("admin") %>
+<% useScript(Array("jquery", "upload")) %>
 </head>
 <body bgcolor="ghostwhite">
-<center><font size=4><b>导入新增论文信息自EXCEL文件</b><br />
+<center><font size=4><b>导入新增论文信息</b><br />
 <form id="fmUpload" action="?step=2" method="POST" enctype="multipart/form-data">
 <p>学期：<select name="periodid"><option value="0">请选择</option><%
 Do While Not rs2.EOF %>
@@ -30,10 +32,10 @@ Do While Not rs2.EOF %>
 Loop
 %></select></p>
 <p>表格审核状态：<select name="In_TASK_PROGRESS"><%
-GetMenuListPubTerm "CODE_THESIS_REVIEW_STATUS","STATUS_ID1","STATUS_NAME","","AND STATUS_ID1 IS NOT NULL"
+GetMenuListPubTerm "ReviewStatuses","STATUS_ID1","STATUS_NAME","","AND STATUS_ID1 IS NOT NULL"
 %></select></p>
 <p>论文审核状态：<select name="In_REVIEW_STATUS"><%
-GetMenuListPubTerm "CODE_THESIS_REVIEW_STATUS","STATUS_ID2","STATUS_NAME","","AND STATUS_ID2 IS NOT NULL"
+GetMenuListPubTerm "ReviewStatuses","STATUS_ID2","STATUS_NAME","","AND STATUS_ID2 IS NOT NULL"
 %></select></p>
 <p>检索方式：<select name="selectmode"><option value="0" selected>按学号检索</option><option value="1">按姓名检索</option></select></p>
 <p>请选择要导入的 Excel 文件：<br />文件名：<input type="file" name="excelFile" size="100" /><br />
@@ -41,15 +43,16 @@ GetMenuListPubTerm "CODE_THESIS_REVIEW_STATUS","STATUS_ID2","STATUS_NAME","","AN
 <input type="submit" name="btnsubmit" value="提 交" />&nbsp;
 <input type="button" name="btnret" value="返 回" onclick="history.go(-1)" /></p></form></center>
 <script type="text/javascript">
-	$('#fmUpload').onsubmit=function() {
-		var fileName = this.value;
-		var fileExt = fileName.substring(fileName.lastIndexOf('.')).toLowerCase();
-		if (fileExt != ".xls" && fileExt != ".xlsx") {
-			alert("所选文件不是 Excel 文件！");
-			this.form.reset();
-			return false;
-		}
-	}
+	$(document).ready(function(){
+		$('form').submit(function() {
+			var valid=checkIfExcel(this.excelFile);
+			if(valid) {
+				$(':submit').val("正在提交，请稍候...").attr('disabled',true);
+			}
+			return valid;
+		});
+		$(':submit').attr('disabled',false);
+	});
 </script></body></html><%
 	CloseRs rs2
 	CloseConn conn
@@ -91,12 +94,12 @@ Case 2	' 上传进程
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="theme-color" content="#2D79B2" />
-<title>导入新增论文信息自EXCEL文件</title>
-<link href="../css/admin.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
+<title>导入新增论文信息</title>
+<% useStylesheet("admin") %>
+<% useScript("jquery") %>
 </head>
 <body bgcolor="ghostwhite">
-<center><br /><b>导入新增论文信息自EXCEL文件</b><br /><br /><%
+<center><br /><b>导入新增论文信息</b><br /><br /><%
 	If Not bError Then %>
 <form id="fmUploadFinish" action="?step=3" method="POST">
 <input type="hidden" name="periodid" value="<%=period_id%>" />
@@ -104,7 +107,7 @@ Case 2	' 上传进程
 <input type="hidden" name="In_REVIEW_STATUS" value="<%=review_status%>" />
 <input type="hidden" name="selectmode" value="<%=select_mode%>" />
 <input type="hidden" name="filename" value="<%=strDestFile%>" />
-<p><%=byteFileSize%> 字节已上传，正在导入新增论文信息...</p></form>
+<p>文件上传成功，正在导入新增论文信息...</p></form>
 <script type="text/javascript">setTimeout("$('#fmUploadFinish').submit()",500);</script><%
 	Else
 %>
@@ -167,9 +170,9 @@ Case 3	' 数据读取，导入到数据库
 						recid=rsc("RECRUIT_ID")
 						teachtypeid=rsc("TEACHTYPE_ID")
 						
-						sql_upd_rv=sql_upd_rv&"SET @id=NULL;SELECT @id=ID FROM TEST_THESIS_REVIEW_INFO WHERE STU_ID="&stuid&"; IF @id IS NULL INSERT INTO TEST_THESIS_REVIEW_INFO (STU_ID,THESIS_SUBJECT,REVIEW_TYPE,TASK_PROGRESS,REVIEW_STATUS,SUBMIT_REVIEW_TIME,REVIEW_FILE_STATUS,REVIEW_RESULT,REVIEW_LEVEL,PERIOD_ID,VALID) VALUES("&_
+						sql_upd_rv=sql_upd_rv&"SET @id=NULL;SELECT @id=ID FROM Dissertations WHERE STU_ID="&stuid&"; IF @id IS NULL INSERT INTO Dissertations (STU_ID,THESIS_SUBJECT,REVIEW_TYPE,TASK_PROGRESS,REVIEW_STATUS,SUBMIT_REVIEW_TIME,REVIEW_FILE_STATUS,REVIEW_RESULT,REVIEW_LEVEL,PERIOD_ID,VALID) VALUES("&_
 						stuid&","&fieldValue(3)&",dbo.getReviewTypeId("&teachtypeid&","&fieldValue(2)&"),"&task_progress&","&review_status&","&submit_review_time&",0,'5,5,6','0,0',"&period_id&",1);"&_
-						"ELSE UPDATE TEST_THESIS_REVIEW_INFO SET THESIS_SUBJECT="&fieldValue(3)&",REVIEW_TYPE=dbo.getReviewTypeId("&teachtypeid&","&fieldValue(2)&"),TASK_PROGRESS="&task_progress&",REVIEW_STATUS="&review_status&",SUBMIT_REVIEW_TIME=CASE WHEN SUBMIT_REVIEW_TIME IS NULL THEN "&submit_review_time&" ELSE SUBMIT_REVIEW_TIME END,PERIOD_ID="&period_id&",VALID=1 WHERE ID=@id;"
+						"ELSE UPDATE Dissertations SET THESIS_SUBJECT="&fieldValue(3)&",REVIEW_TYPE=dbo.getReviewTypeId("&teachtypeid&","&fieldValue(2)&"),TASK_PROGRESS="&task_progress&",REVIEW_STATUS="&review_status&",SUBMIT_REVIEW_TIME=CASE WHEN SUBMIT_REVIEW_TIME IS NULL THEN "&submit_review_time&" ELSE SUBMIT_REVIEW_TIME END,PERIOD_ID="&period_id&",VALID=1 WHERE ID=@id;"
 						
 						sql_upd_pv=sql_upd_pv&"UPDATE STUDENT_INFO SET TUTOR_ID="&tutorid&",TUTOR_RECRUIT_ID="&recid&",TUTOR_RECRUIT_STATUS=3,"&_
 											 "WRITEPRIVILEGETAGSTRING=dbo.addPrivilege(WRITEPRIVILEGETAGSTRING,'SA8',''),READPRIVILEGETAGSTRING=dbo.addPrivilege(READPRIVILEGETAGSTRING,'SA8','') WHERE STU_ID="&stuid&";"

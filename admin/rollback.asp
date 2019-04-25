@@ -21,7 +21,7 @@ End If
 
 Dim conn,rs,sql,sqlDetect,result
 Connect conn
-sql="SELECT * FROM TEST_THESIS_REVIEW_INFO WHERE ID="&thesisID
+sql="SELECT * FROM Dissertations WHERE ID="&thesisID
 GetRecordSet conn,rs,sql,result
 If rs.EOF Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4">数据库没有该论文记录！</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
@@ -204,10 +204,10 @@ Case 3	' 撤销教务员操作
 	Case 1	' 撤销匹配专家操作
 		rs("REVIEW_STATUS").Value=rsAgreeReview
 	Case 2	' 撤销导入答辩安排操作
-		sql="DELETE FROM TEST_THESIS_DEFENCE_INFO WHERE THESIS_ID="&thesisID
+		sql="DELETE FROM DefenceInfo WHERE THESIS_ID="&thesisID
 		conn.Execute sql
 	Case 3	' 撤销导入答辩委员会修改意见操作
-		sql="UPDATE TEST_THESIS_DEFENCE_INFO SET DEFENCE_EVAL=NULL WHERE THESIS_ID="&thesisID
+		sql="UPDATE DefenceInfo SET DEFENCE_EVAL=NULL WHERE THESIS_ID="&thesisID
 		conn.Execute sql
 		rs("DEFENCE_MODIFY_EVAL").Value=Null	' 旧字段
 		rs("REVIEW_STATUS").Value=rsModifyPassed

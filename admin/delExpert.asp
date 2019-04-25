@@ -12,7 +12,7 @@ For i=1 To sel_count
 				  "READPRIVILEGETAGSTRING=dbo.removePrivilege(READPRIVILEGETAGSTRING,'I10') WHERE TEACHERID="&Request.Form("sel")(i)&";"
 Next
 If sel_count>0 Then
-	sql=sql&"DELETE FROM TEST_THESIS_REVIEW_EXPERT_INFO WHERE TEACHER_ID IN ("&ids&");"
+	sql=sql&"DELETE FROM Experts WHERE TEACHER_ID IN ("&ids&");"
 	sql_origin=sql_origin&"DELETE FROM TEACHER_INFO WHERE TEACHERID IN ("&ids&") AND IFTEACHER=3;"
 	conn.Execute sql
 	connOrigin.Execute sql_origin

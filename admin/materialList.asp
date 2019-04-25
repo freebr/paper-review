@@ -25,10 +25,9 @@ Dim arrSpecMatFiles:arrSpecMatFiles=Array("lwzxgf.doc",prefix&"lwzxsc20170714.pd
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link href="../css/student.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
-<script src="../scripts/utils.js" type="text/javascript"></script>
 <meta name="theme-color" content="#2D79B2" />
+<% useStylesheet("student") %>
+<% useScript(Array("jquery", "common")) %>
 <title>查看论文阶段相关资料</title>
 </head>
 <body bgcolor="ghostwhite">

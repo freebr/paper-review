@@ -53,11 +53,10 @@ Case vbNullString	' 论文详情页面
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link href="../css/admin.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/utils.js" type="text/javascript"></script>
-<script src="../scripts/thesis.js" type="text/javascript"></script>
 <meta name="theme-color" content="#2D79B2" />
 <title>上传表格/论文文件</title>
+<% useStylesheet("admin") %>
+<% useScript(Array("jquery", "common", "thesis")) %>
 </head>
 <body bgcolor="ghostwhite">
 <center><font size=4><b>上传表格/论文文件</font>
@@ -91,10 +90,10 @@ Case vbNullString	' 论文详情页面
 <tr><td>定稿论文：&emsp;&emsp;&emsp;&emsp;&emsp;<input type="file" name="uploadfile11" size="100" /></td></tr>
 <tr><td>答辩审批材料：&emsp;&emsp;&emsp;<input type="file" name="uploadfile7" size="100" /></td></tr>
 <tr><td>更改表格审核状态：&emsp;<select name="new_task_progress"><%
-GetMenuListPubTerm "CODE_THESIS_REVIEW_STATUS","STATUS_ID1","STATUS_NAME",task_progress,"AND STATUS_ID1 IS NOT NULL"
+GetMenuListPubTerm "ReviewStatuses","STATUS_ID1","STATUS_NAME",task_progress,"AND STATUS_ID1 IS NOT NULL"
 %></select></td></tr>
 <tr><td>更改论文审核状态：&emsp;<select name="new_review_status"><%
-GetMenuListPubTerm "CODE_THESIS_REVIEW_STATUS","STATUS_ID2","STATUS_NAME",review_status,"AND STATUS_ID2 IS NOT NULL"
+GetMenuListPubTerm "ReviewStatuses","STATUS_ID2","STATUS_NAME",review_status,"AND STATUS_ID2 IS NOT NULL"
 %></select></td></tr>
 <tr class="trbuttons">
 <td><p align="center"><input type="button" id="btnsubmit" name="btnsubmit" value="提 交" />&emsp;
@@ -148,7 +147,7 @@ Case 2	' 文件上传页面
 	Dim conn,rs,sql,sqlDetect,result
 	sqlDetect=""
 	Connect conn
-	sql="SELECT * FROM TEST_THESIS_REVIEW_INFO WHERE ID="&thesisID
+	sql="SELECT * FROM Dissertations WHERE ID="&thesisID
 	GetRecordSet conn,rs,sql,result
 	If rs.EOF Then
 	%><body bgcolor="ghostwhite"><center><font color=red size="4">数据库没有该论文记录！</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%

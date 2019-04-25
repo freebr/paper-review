@@ -120,7 +120,7 @@ scores=Request.Form("scores")
 reviewer_id=rs("REVIEWER"&(reviewer_type+1))
 CloseRs rs
 
-sql="SELECT * FROM TEST_THESIS_REVIEW_EXPERT_INFO WHERE TEACHER_ID="&reviewer_id
+sql="SELECT * FROM Experts WHERE TEACHER_ID="&reviewer_id
 GetRecordSetNoLock conn,rs,sql,result
 expert_name=rs("EXPERT_NAME")
 expert_pro_duty=rs("PRO_DUTY_NAME")
@@ -132,7 +132,7 @@ expert_telephone=rs("TELEPHONE")
 expert_mobile=rs("MOBILE")
 CloseRs rs
 
-sql="SELECT REVIEW_FILE FROM CODE_REVIEW_TYPE WHERE ID="&review_type
+sql="SELECT REVIEW_FILE FROM ReviewTypes WHERE ID="&review_type
 GetRecordSetNoLock conn,rs,sql,result
 If rs.EOF Then
 %><html><head><link href="../../css/admin.css" rel="stylesheet" type="text/css" /></head>
@@ -234,7 +234,7 @@ End Select
 review_result(2)=finalresult
 
 ' 更新记录
-sql="SELECT * FROM TEST_THESIS_REVIEW_INFO WHERE ID="&thesisID
+sql="SELECT * FROM Dissertations WHERE ID="&thesisID
 GetRecordSet conn,rs,sql,result
 rs("REVIEW_RESULT")=join(review_result,",")
 rs("REVIEW_LEVEL")=join(review_level,",")

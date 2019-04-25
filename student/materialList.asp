@@ -21,15 +21,13 @@ Next
 Dim arrSpecMatNames:arrSpecMatNames=Array("研究生学位论文撰写规范","MBA论文撰写手册","MPAcc论文撰写手册") ',"2017年MBA导师分组表及联系方式")
 Dim arrSpecMatUsers:arrSpecMatUsers=Array("*","6","9")
 Dim arrSpecMatFiles:arrSpecMatFiles=Array("lwzxgf.doc",prefix0&"mba_lwzxsc20170714.pdf",prefix0&"mpacc_lwzxsc20170713.pdf",prefix0&"mba_dsfzb.pdf")
-
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link href="../css/student.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
-<script src="../scripts/utils.js" type="text/javascript"></script>
 <meta name="theme-color" content="#2D79B2" />
 <title>查看论文阶段相关资料</title>
+<% useStylesheet("student") %>
+<% useScript(Array("jquery", "common")) %>
 </head>
 <body bgcolor="ghostwhite">
 <center><font size=4><b>查看论文阶段相关资料</b></font>

@@ -87,15 +87,15 @@ End If
 curStep=Request.QueryString("step")
 Select Case curStep
 Case vbNullstring ' 填写信息页面
-	sql="SELECT * FROM CODE_REVIEW_TYPE WHERE LEN(THESIS_FORM)>0 AND TEACHTYPE_ID="&stu_type
+	sql="SELECT * FROM ReviewTypes WHERE LEN(THESIS_FORM)>0 AND TEACHTYPE_ID="&stu_type
 	GetRecordSetNoLock conn,rs3,sql,result
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link href="../css/student.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
-<script src="../scripts/upload.js" type="text/javascript"></script>
-<script src="../scripts/uploadThesis.js" type="text/javascript"></script>
+<meta name="theme-color" content="#2D79B2" />
+<title>上传论文</title>
+<% useStylesheet("student") %>
+<% useScript(Array("jquery", "upload", "uploadThesis")) %>
 </head>
 <body bgcolor="ghostwhite">
 <table class="tblform" width="1000" align="center"><tr><td class="summary"><p><%
@@ -376,7 +376,7 @@ Case 1	' 上传进程
 		file.SaveAs destPath
 		
 		' 关联到数据库
-		sql="SELECT * FROM TEST_THESIS_REVIEW_INFO WHERE STU_ID="&Session("StuId")&" ORDER BY PERIOD_ID DESC"
+		sql="SELECT * FROM Dissertations WHERE STU_ID="&Session("StuId")&" ORDER BY PERIOD_ID DESC"
 		GetRecordSet conn,rs3,sql,result
 		rs3("THESIS_SUBJECT")=new_subject_ch
 		rs3("THESIS_SUBJECT_EN")=new_subject_en
@@ -439,8 +439,8 @@ Case 1	' 上传进程
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="theme-color" content="#2D79B2" />
 <title>上传专业硕士论文</title>
-<link href="../css/student.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
+<% useStylesheet("student") %>
+<% useScript("jquery") %>
 </head>
 <body bgcolor="ghostwhite">
 <center><br/><b>上传专业硕士论文</b><br/><br/><%

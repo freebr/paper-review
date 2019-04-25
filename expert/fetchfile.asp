@@ -1,7 +1,7 @@
 ﻿<%Response.Charset="utf-8"%>
 <!--#include file="../inc/db.asp"-->
 <!--#include file="common.asp"-->
-<%'If IsEmpty(Session("TId")) Then Response.Redirect("../error.asp?timeout")
+<%'If IsEmpty(Session("Tid")) Then Response.Redirect("../error.asp?timeout")
 Dim arrFileListName,arrFileListNamePostfix,arrFileListPath,arrFileListField
 arrFileListName=Array("","送审论文","论文评阅书 1","论文评阅书 2")
 arrFileListNamePostfix=Array("","","论文评阅书(1)","论文评阅书(2)")

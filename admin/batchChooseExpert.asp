@@ -22,8 +22,8 @@ GetRecordSetNoLock conn,rs,sql,result
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link href="../css/admin.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/query.js" type="text/javascript"></script>
+<% useStylesheet("admin") %>
+<% useScript(Array("jquery", "common")) %>
 </head>
 <body bgcolor="ghostwhite">
 <center>

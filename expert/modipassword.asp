@@ -1,8 +1,12 @@
-﻿<%If IsEmpty(Session("TId")) Then Response.Redirect("../error.asp?timeout")%>
+﻿<!--#include file="common.asp"-->
+<%If IsEmpty(Session("Tid")) Then Response.Redirect("../error.asp?timeout")%>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link href="../css/tutor.css" rel="stylesheet" type="text/css" />
+<meta name="theme-color" content="#2D79B2" />
+<title>登录密码修改</title>
+<% useStylesheet("tutor") %>
+<% useScript("jquery") %>
 <script>
 function chkInput(){
     if(document.all.newPwd.value==""){

@@ -3,6 +3,8 @@
 <!--#include file="appgen.inc"-->
 <!--#include file="../inc/db.asp"-->
 <!--#include file="common.asp"--><%
+If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
+
 curStep=Request.QueryString("step")
 Select Case curStep
 Case vbNullstring ' 文件选择页面
@@ -10,30 +12,31 @@ Case vbNullstring ' 文件选择页面
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link href="../css/admin.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
-<script src="../scripts/upload.js" type="text/javascript"></script>
+<meta name="theme-color" content="#2D79B2" />
+<title>导入论文查重信息</title>
+<% useStylesheet("admin") %>
+<% useScript(Array("jquery", "upload")) %>
 </head>
 <body bgcolor="ghostwhite">
-<center><font size=4><b>导入论文查重信息自EXCEL文件</b><br>
+<center><font size=4><b>导入论文查重信息</b><br>
 <form id="fmUpload" action="?step=2" method="POST" enctype="multipart/form-data">
-<p>请选择论文查重信息 Excel 文件：<input type="file" name="excelFile" size="100" title="论文查重信息表" /><br />
+<p>请选择要导入的 Excel 文件：<input type="file" name="excelFile" size="100" title="论文查重信息表" /><br />
 请选择检测报告 RAR 文件：<input type="file" name="rarFile" size="100" title="检测报告压缩文件" /><br />
 检测报告文件名格式（不建议更改）：<input type="text" name="reportNameFmt" size="100" value="<%=reportNameFmt%>" /><br />
 <a href="upload/thesisinf_template.xlsx" target="_blank">点击下载论文查重信息表格模板</a><br />
-<input type="submit" name="btnupload" value="上 传" />&nbsp;
+<input type="submit" name="btnsubmit" value="提 交" />&nbsp;
 <input type="button" name="btnret" value="返 回" onclick="history.go(-1)" /></p></form></center></body>
 <script type="text/javascript">
-$(document).ready(function(){
-	$('form').submit(function() {
-		var valid=checkIfExcel(this.excelFile)&&checkIfRar(this.rarFile);
-		if(valid) {
-			$(':submit').val("正在上传，请稍候...").attr('disabled',true);
-		}
-		return valid;
+	$(document).ready(function(){
+		$('form').submit(function() {
+			var valid=checkIfExcel(this.excelFile)&&checkIfRar(this.rarFile);
+			if(valid) {
+				$(':submit').val("正在提交，请稍候...").attr('disabled',true);
+			}
+			return valid;
+		});
+		$(':submit').attr('disabled',false);
 	});
-	$(':submit').attr('disabled',false);
-});
 </script></body></html><%
 Case 2	' 上传进程
 
@@ -83,19 +86,19 @@ Case 2	' 上传进程
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="theme-color" content="#2D79B2" />
-<title>导入论文查重信息自EXCEL文件</title>
-<link href="../css/admin.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
+<title>导入论文查重信息</title>
+<% useStylesheet("admin") %>
+<% useScript("jquery") %>
 </head>
 <body bgcolor="ghostwhite">
-<center><br /><b>导入论文查重信息自EXCEL文件</b><br /><br /><%
+<center><br /><b>导入论文查重信息</b><br /><br /><%
 	If Not bError Then %>
 <form id="fmUploadFinish" action="?step=3" method="POST">
 <input type="hidden" name="tableFilepath" value="<%=strDestTablePath%>" />
 <input type="hidden" name="rarFilename" value="<%=strDestRarFile%>" />
 <input type="hidden" name="reportDir" value="<%=reportDir%>" />
 <input type="hidden" name="reportNameFmt" value="<%=reportNameFmt%>" />
-<p><%=byteFileSize%> 字节已上传，正在导入论文查重信息和关联检测报告...</p></form>
+<p>文件上传成功，正在导入论文查重信息和关联检测报告...</p></form>
 <script type="text/javascript">setTimeout("$('#fmUploadFinish').submit()",500);</script><%
 	Else
 %>
@@ -217,11 +220,11 @@ Case 3	' 数据读取，导入到数据库
 							bError=True
 							errMsg=errMsg&"为学生"""&stu_name&"""的论文生成送审申请表时出错。"&vbNewLine
 						Else
-							sql2=sql2&"UPDATE TEST_THESIS_REVIEW_INFO SET REVIEW_APP="&toSqlString(filename)&" WHERE STU_ID="&stu_id&";"
+							sql2=sql2&"UPDATE Dissertations SET REVIEW_APP="&toSqlString(filename)&" WHERE STU_ID="&stu_id&";"
 						End If
 					End If
 					
-					sql2=sql2&"UPDATE TEST_THESIS_REVIEW_INFO SET REPRODUCTION_RATIO="&reproduct_ratio&",DETECT_REPORT="&toSqlString(reportFilePath)&",REVIEW_STATUS="&new_status&" WHERE STU_ID="&stu_id&";"
+					sql2=sql2&"UPDATE Dissertations SET REPRODUCTION_RATIO="&reproduct_ratio&",DETECT_REPORT="&toSqlString(reportFilePath)&",REVIEW_STATUS="&new_status&" WHERE STU_ID="&stu_id&";"
 					sql2=sql2&"EXEC spAddDetectResult "&thesis_id&","&toSqlString(thesis_file)&","&toSqlString(Now)&","&toSqlString(reportFilePath)&","&reproduct_ratio&";"
 					numThesis=numThesis+1
 				End If

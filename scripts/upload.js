@@ -31,6 +31,21 @@ function checkIfWord($ctlupload) {
 	}
 	return true;
 }
+function checkIfRar($ctlupload) {
+	if(!$ctlupload.size()) return true;
+	var ctl=$ctlupload[0];
+	var fileName=ctl.value;
+	if (!fileName.length) {
+		alert("请为"+ctl.title+"选择要上传的 RAR 压缩文件！");
+		return false;
+	}
+	var fileExt=getFileExt(fileName);
+	if (fileExt!=".rar") {
+		alert("所选"+ctl.title+"不是 RAR 压缩文件！");
+		return false;
+	}
+	return true;
+}
 function checkIfWordRar($ctlupload) {
 	if(!$ctlupload.size()) return true;
 	var ctl=$ctlupload[0];
@@ -78,7 +93,7 @@ function newUploadProgress(uploadid,stuid) {
 	div.style.visibility="visible";
 	div.style.left=(parseInt(document.body.offsetWidth)-parseInt(div.style.width))/2+'px';
 	div.style.top=(parseInt(document.body.offsetHeight)-parseInt(div.style.height))/2+'px';
-	div.innerHTML='<p>正在上传，请稍候……</p>';
+	div.innerHTML='<p>正在提交，请稍候……</p>';
 	document.body.appendChild(div);
 	sckUpload=createSocket();
 	sckUpload.onProgress=showUploadProgress;
@@ -88,7 +103,7 @@ function newUploadProgress(uploadid,stuid) {
 function showUploadProgress() {
 	var div=document.getElementById("divupload");
 	var perc=uploadProgress.bytesUploaded/uploadProgress.bytesTotal;
-	var text="正在上传，请稍候……已完成："+Math.round(perc*10000)/100+'%<br/>'
+	var text="正在提交，请稍候……已完成："+Math.round(perc*10000)/100+'%<br/>'
 					+"("+Math.round(uploadProgress.bytesUploaded/102.4)/10+"kB/"+Math.round(uploadProgress.bytesTotal/102.4)/10+"kB)"
 	div.innerHTML='<p>'+text+'</p>';
 	return;

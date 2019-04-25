@@ -131,27 +131,64 @@ Function getReviewFileStatTxtArray()
 	getReviewFileStatTxtArray=Array("不向导师和学生显示","仅向导师显示","仅向学生显示","导师和学生均显示")
 End Function
 
-Function spGetNoticeText(stuType,noticeName)
+Function getAdminType(userId)
+	Dim conn,rs,sql,num,dict
+	Connect conn
+	sql="EXEC spGetEduAdminType ?"
+	Set rs=ExecQuery(conn,sql,CmdParam("UserID",adInteger,adParamInput,4,userId),num)
+	Set dict=Server.CreateObject("Scripting.Dictionary")
+	Dim adminType,i
+	If rs.EOF Then
+		adminType=0
+	Else
+		adminType=rs("AdminType").Value
+	End If
+	dict.Add "", adminType
+	For i=1 To UBound(arrStuTypeName)
+		If (adminType And 2^i) <> 0 Then
+			dict.Add arrStuTypeName(i), True
+		End If
+	Next
+	Set getAdminType=dict
+	CloseRs rs
+	CloseConn conn
+End Function
+
+Function setAdminType(userId,arrTypeId)
+	Dim adminType,i
+	adminType=0
+	For i=0 To UBound(arrTypeId)
+		adminType=adminType+2^Int(arrTypeId(i))
+	Next
+	Dim conn,sql
+	Connect conn
+	sql="EXEC spSetEduAdminType ?,?"
+	ExecNonQuery conn,sql,Array(CmdParam("UserID",adInteger,adParamInput,4,userId), _
+		CmdParam("AdminType",adInteger,adParamInput,4,adminType))
+	CloseConn conn
+End Function
+
+Function getNoticeText(stuType,noticeName)
 	Dim conn,rs,sql,num
 	Connect conn
 	sql="EXEC spGetNoticeText ?,?"
 	Set rs=ExecQuery(conn,sql,Array(CmdParam("StudentType",adInteger,adParamInput,4,stuType),CmdParam("NoticeName",adVarWChar,adParamInput,50,noticeName)),num)
 	If rs.EOF Then
-		spGetNoticeText="【无】"
+		getNoticeText="【无】"
 	Else
-		spGetNoticeText=rs(0).Value
+		getNoticeText=rs(0).Value
 	End If
 	CloseRs rs
 	CloseConn conn
 End Function
 
-Function spSetNoticeText(stuType,noticeName,noticeContent)
+Function setNoticeText(stuType,noticeName,noticeContent)
 	Dim conn,sql
 	Connect conn
 	sql="EXEC spSetNoticeText ?,?,?"
 	ExecNonQuery conn,sql,Array(CmdParam("StudentType",adInteger,adParamInput,4,stuType), _
-															CmdParam("NoticeName",adVarWChar,adParamInput,50,noticeName), _
-															CmdParam("NoticeContent",adVarWChar,adParamInput,65535,noticeContent))
+		CmdParam("NoticeName",adVarWChar,adParamInput,50,noticeName), _
+		CmdParam("NoticeContent",adVarWChar,adParamInput,65535,noticeContent))
 	CloseConn conn
 End Function
 

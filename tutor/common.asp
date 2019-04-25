@@ -81,15 +81,15 @@ Function getFinalResult(n)
 	getFinalResult=ret
 End Function
 
-Function spGetNoticeText(stuType,noticeName)
+Function getNoticeText(stuType,noticeName)
 	Dim conn,rs,sql,num
 	Connect conn
 	sql="EXEC spGetNoticeText ?,?"
 	Set rs=ExecQuery(conn,sql,Array(CmdParam("StudentType",adInteger,adParamInput,4,stuType),CmdParam("NoticeName",adVarWChar,adParamInput,50,noticeName)),num)
 	If rs.EOF Then
-		spGetNoticeText="【无】"
+		getNoticeText="【无】"
 	Else
-		spGetNoticeText=rs(0).Value
+		getNoticeText=rs(0).Value
 	End If
 	CloseRs rs
 	CloseConn conn
@@ -99,7 +99,7 @@ Function updateActiveTime(teacherID)
 	' 更新数据库中用户使用评阅系统时间的记录
 	Dim conn,sql
 	Connect conn
-	sql="UPDATE TEST_THESIS_REVIEW_NOTIFY_INFO SET LAST_ACTIVE_TIME="&toSqlString(Now)&" WHERE USER_ID="&teacherID
+	sql="UPDATE NotifyList SET LAST_ACTIVE_TIME="&toSqlString(Now)&" WHERE USER_ID="&teacherID
 	conn.Execute sql
 	CloseConn conn
 	updateActiveTime=1
@@ -233,7 +233,7 @@ Function getSystemStatus()
 	Dim conn,rs,sql,result
 	Dim sem_info:sem_info=getCurrentSemester()
 	Connect conn
-	sql="SELECT TUTOR_STARTDATE,TUTOR_ENDDATE FROM TEST_THESIS_REVIEW_SYSTEM WHERE USE_YEAR="&sem_info(0)&" AND USE_SEMESTER="&sem_info(1)&" AND VALID=1"
+	sql="SELECT TUTOR_STARTDATE,TUTOR_ENDDATE FROM SystemSettings WHERE USE_YEAR="&sem_info(0)&" AND USE_SEMESTER="&sem_info(1)&" AND VALID=1"
 	GetRecordSetNoLock conn,rs,sql,result
 	If rs.EOF Then
 		getSystemStatus=0

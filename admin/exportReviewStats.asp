@@ -1,5 +1,6 @@
 ﻿<%Response.Charset="utf-8"%>
 <!--#include file="../inc/db.asp"-->
+<!--#include file="common.asp"-->
 <%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 filename=Request.QueryString("fn")
 If Len(filename)=0 Then
@@ -226,11 +227,11 @@ If nTurn=0 Then
 	sql="SELECT "&selectFields&" FROM ViewThesisInfo WHERE VALID=1 "&PubTerm
 	Set rs(1)=conn.Execute(sql)
 Else	' 按批次导出
-	exportFilter=PubTerm&" AND NOT EXISTS(SELECT STU_ID FROM EXPORT_INFO WHERE PERIOD_ID="&period_id&" AND STU_ID=A.STU_ID)"
+	exportFilter=PubTerm&" AND NOT EXISTS(SELECT STU_ID FROM ExportInfo WHERE PERIOD_ID="&period_id&" AND STU_ID=A.STU_ID)"
 	Set rs(0)=conn.Execute("EXEC spGetReviewStatistics "&period_id&",1")
 	sql="SELECT "&selectFields&" FROM ViewThesisInfo A WHERE VALID=1 "&exportFilter
 	Set rs(1)=conn.Execute(sql)
-	sql="INSERT INTO EXPORT_INFO (STU_ID,PERIOD_ID,TURN_ID) SELECT STU_ID,"&period_id&","&nTurn&" FROM TEST_THESIS_REVIEW_INFO A WHERE VALID=1 "&exportFilter
+	sql="INSERT INTO ExportInfo (STU_ID,PERIOD_ID,TURN_ID) SELECT STU_ID,"&period_id&","&nTurn&" FROM Dissertations A WHERE VALID=1 "&exportFilter
 	conn.Execute sql
 End If
 
@@ -277,7 +278,7 @@ CloseConn conn
 If Len(retlink) Then
 	Response.Redirect retlink
 End If
-%><html><head><link href="../css/admin.css" rel="stylesheet" type="text/css" /></head><body bgcolor="ghostwhite"><p align="center"><%
+%><html><head><% useStylesheet("admin") %></head><body bgcolor="ghostwhite"><p align="center"><%
 Select Case nResult
 Case 0
 %>未生成Excel文件，因为没有数据库记录!<%

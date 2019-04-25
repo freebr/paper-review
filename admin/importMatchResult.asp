@@ -18,26 +18,29 @@ Case vbNullstring ' 文件选择页面
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link href="../css/admin.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
+<meta name="theme-color" content="#2D79B2" />
+<title>导入专家匹配结果</title>
+<% useStylesheet("admin") %>
+<% useScript(Array("jquery", "upload")) %>
 </head>
 <body bgcolor="ghostwhite">
-<center><font size=4><b>导入专家匹配结果自EXCEL文件</b><br />
+<center><font size=4><b>导入专家匹配结果</b><br />
 <form id="fmUpload" action="?step=2" method="POST" enctype="multipart/form-data">
 <p>请选择要导入的 Excel 文件：<br />文件名：<input type="file" name="excelFile" size="100" /><br />
 <a href="upload/matchresult_template.xlsx" target="_blank">点击下载专家匹配结果表格模板</a><br />
 <input type="submit" name="btnsubmit" value="提 交" />&nbsp;
 <input type="button" name="btnret" value="返 回" onclick="history.go(-1)" /></p></form></center>
 <script type="text/javascript">
-	$('#fmUpload').onsubmit=function() {
-		var fileName = this.value;
-		var fileExt = fileName.substring(fileName.lastIndexOf('.')).toLowerCase();
-		if (fileExt != ".xls" && fileExt != ".xlsx") {
-			alert("所选文件不是 Excel 文件！");
-			this.form.reset();
-			return false;
-		}
-	}
+	$(document).ready(function(){
+		$('form').submit(function() {
+			var valid=checkIfExcel(this.excelFile);
+			if(valid) {
+				$(':submit').val("正在提交，请稍候...").attr('disabled',true);
+			}
+			return valid;
+		});
+		$(':submit').attr('disabled',false);
+	});
 </script></body></html><%
 	CloseRs rs
 	CloseConn conn
@@ -73,12 +76,12 @@ Case 2	' 上传进程
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="theme-color" content="#2D79B2" />
-<title>导入专家匹配结果自EXCEL文件</title>
-<link href="../css/admin.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
+<title>导入专家匹配结果</title>
+<% useStylesheet("admin") %>
+<% useScript("jquery") %>
 </head>
 <body bgcolor="ghostwhite">
-<center><br /><b>导入专家匹配结果自EXCEL文件</b><br /><br /><%
+<center><br /><b>导入专家匹配结果</b><br /><br /><%
 	If Not bError Then %>
 <form id="fmUploadFinish" action="?step=3" method="POST">
 <input type="hidden" name="periodid" value="<%=period_id%>" />
@@ -86,7 +89,7 @@ Case 2	' 上传进程
 <input type="hidden" name="In_REVIEW_STATUS" value="<%=review_status%>" />
 <input type="hidden" name="selectmode" value="<%=select_mode%>" />
 <input type="hidden" name="filename" value="<%=strDestFile%>" />
-<p><%=byteFileSize%> 字节已上传，正在导入专家匹配结果...</p></form>
+<p>文件上传成功，正在导入专家匹配结果...</p></form>
 <script type="text/javascript">setTimeout("$('#fmUploadFinish').submit()",500);</script><%
 	Else
 %>

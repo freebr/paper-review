@@ -1,7 +1,8 @@
 ﻿<%Response.Charset="utf-8"
 Response.Expires=-1%>
 <!-- #include File="../inc/db.asp" -->
-<%If IsEmpty(Session("TId")) Then Response.Redirect("../error.asp?timeout")
+<!--#include file="common.asp"-->
+<%If IsEmpty(Session("Tid")) Then Response.Redirect("../error.asp?timeout")
 
 newpwd=Request.Form("newPwd")
 repeatpwd=Request.Form("repeatPwd")
@@ -19,10 +20,10 @@ ElseIf rs.EOF Then
 	errdesc="教师不存在！"
 End If
 If bError Then
-%><html><head><link href="../css/tutor.css" rel="stylesheet" type="text/css" /></head>
+%><html><head><% useStylesheet("tutor") %></head>
 <body class="exp"><center><div class="content"><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></div></body></html><%
 	CloseRs rs
-  CloseConn conn
+	CloseConn conn
 	Response.End()
 End If
 sql="UPDATE TEACHER_INFO SET USER_PASSWORD="&toSqlString(newpwd)&" WHERE TEACHERID="&Session("Tid")&" AND VALID=0"

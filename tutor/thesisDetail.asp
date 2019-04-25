@@ -1,7 +1,7 @@
 ﻿<%Response.Charset="utf-8"%>
 <!--#include file="../inc/db.asp"-->
 <!--#include file="common.asp"--><%
-If IsEmpty(Session("TId")) Then Response.Redirect("../error.asp?timeout")
+If IsEmpty(Session("Tid")) Then Response.Redirect("../error.asp?timeout")
 If Not hasPrivilege(Session("Treadprivileges"),"I11") Then Response.Redirect("../error.asp?no-privilege")
 curstep=Request.QueryString("step")
 thesisID=Request.QueryString("tid")
@@ -143,11 +143,10 @@ Case vbNullString	' 论文详情页面
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link href="../css/tutor.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/utils.js" type="text/javascript"></script>
-<script src="../scripts/thesis.js" type="text/javascript"></script>
 <meta name="theme-color" content="#2D79B2" />
 <title>查看论文信息</title>
+<% useStylesheet("tutor") %>
+<% useScript(Array("jquery", "common", "thesis")) %>
 </head>
 <body bgcolor="ghostwhite">
 <center><font size=4><b>专业硕士论文详情<br/>论文当前状态：【<%=stat%>】</b></font><%
@@ -167,7 +166,7 @@ Case vbNullString	' 论文详情页面
 <tr><td>领域名称：&emsp;&emsp;&emsp;<input type="text" class="txt" name="speciality" size="95%" value="<%=rs("SPECIALITY_NAME")%>" readonly /></td></tr><%
 	End If %>
 <tr><td>研究方向：&emsp;&emsp;&emsp;<input type="text" class="txt" name="researchway_name" size="95%" value="<%=rs("RESEARCHWAY_NAME")%>" readonly /></td></tr>
-<tr><td>论文关键词：&emsp;&emsp;<input type="text" class="txt" name="keywords_ch" size=85%" value="<%=rs("KEYWORDS")%>" readonly /></td></tr>
+<tr><td>论文关键词：&emsp;&emsp;<input type="text" class="txt" name="keywords_ch" size="85%" value="<%=rs("KEYWORDS")%>" readonly /></td></tr>
 <tr><td>（英文）：&emsp;&emsp;&emsp;<input type="text" class="txt" name="keywords_en" size="85%" value="<%=rs("KEYWORDS_EN")%>" readonly /></td></tr>
 <tr><td>院系名称：&emsp;&emsp;&emsp;<input type="text" class="txt" name="faculty" size="30%" value="工商管理学院" readonly />&nbsp;
 班级：<input type="text" class="txt" name="class" size="51%" value="<%=rs("CLASS_NAME")%>" readonly /></td></tr><%
@@ -353,7 +352,7 @@ Case vbNullString	' 论文详情页面
 <input type="hidden" name="pageNo2" value="<%=pageNo%>" /></form>
 <table class="tblform" width="800" cellspacing=1 cellpadding=3>
 <tr style="background-color: #cccccc"><td><p>论文检测结果及论文评审结果说明：</p>
-<%=spGetNoticeText(rs("TEACHTYPE_ID"),"review_result_desc")%>
+<%=getNoticeText(rs("TEACHTYPE_ID"),"review_result_desc")%>
 </td></tr></table></center>
 <form id="ret" name="ret" action="thesisList.asp" method="post">
 <input type="hidden" name="In_TEACHTYPE_ID" value="<%=teachtype_id%>" />
@@ -434,14 +433,11 @@ Case 2	' 填写评语页面
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link href="../css/tutor.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
-<script src="../scripts/utils.js" type="text/javascript"></script>
-<script src="../scripts/thesis.js" type="text/javascript"></script>
-<script src="../scripts/drafting.js" type="text/javascript"></script>
 <meta name="theme-color" content="#2D79B2" />
 <title>填写审核意见</title>
-<style type="text/css" />
+<% useStylesheet("tutor") %>
+<% useScript(Array("jquery", "common", "thesis", "drafting")) %>
+<style type="text/css">
 	input[type="text"] { background:none;border-top:0;border-left:0;border-right:0;border-bottom:1px solid dimgray }
 </style>
 </head>
@@ -514,7 +510,7 @@ Case 2	' 填写评语页面
 	Case 6 ' 填写导师送审评语页面 %>
 <tr><td colspan=3>送审论文：<a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=9" target="_blank">点击下载</a></td></tr>
 <tr><td colspan=3>导师对学位论文的评语<span class="eval_notice">（请阅读论文后填写，200-2000字）</span>：<span id="eval_text_tip"></span><br/>
-送审评语的基本内容参考：<br/><%=spGetNoticeText(rs("TEACHTYPE_ID"),"review_eval_reference")%></td></tr>
+送审评语的基本内容参考：<br/><%=getNoticeText(rs("TEACHTYPE_ID"),"review_eval_reference")%></td></tr>
 <tr><td colspan=3><textarea name="eval_text" rows="10" style="width:100%"></textarea><br/></td></tr><%
 		If Not isunpass Then %>
 <tr><td colspan=3 style="padding:0"><table class="tblform" width="100%" cellspacing="1" cellpadding="3">

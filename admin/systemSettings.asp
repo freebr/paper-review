@@ -22,7 +22,7 @@ Select Case curstep
 Case "1"
 	ReDim stu_clientstatus(OPRTYPE_COUNT*STUTYPE_COUNT)
 	Connect conn
-	sql="SELECT * FROM TEST_THESIS_REVIEW_SYSTEM WHERE USE_YEAR="&sem_info(0)&" AND USE_SEMESTER="&sem_info(1)
+	sql="SELECT * FROM SystemSettings WHERE USE_YEAR="&sem_info(0)&" AND USE_SEMESTER="&sem_info(1)
 	GetRecordSetNoLock conn,rs,sql,result
 	If result=0 Then	' 本学期无系统设置
 		For i=1 To OPRTYPE_COUNT
@@ -54,7 +54,7 @@ Case "1"
 	End If
 	CloseRs rs
 	If Not bSet Then
-		sql="SELECT TOP 1 * FROM TEST_THESIS_REVIEW_SYSTEM ORDER BY ID DESC"
+		sql="SELECT TOP 1 * FROM SystemSettings ORDER BY ID DESC"
 		GetRecordSetNoLock conn,rs,sql,result
 		If result Then ' 显示最新学期的邮件内容
 			For i=1 To UBound(arrMailId)
@@ -67,11 +67,10 @@ Case "1"
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link href="../css/admin.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
-<script src="../scripts/query.js" type="text/javascript"></script>
-<script src="../scripts/utils.js" type="text/javascript"></script>
-<script src="../scripts/systemSettings.js" type="text/javascript"></script>
+<meta name="theme-color" content="#2D79B2" />
+<title>专业学位论文评阅系统设置</title>
+<% useStylesheet("admin") %>
+<% useScript(Array("jquery", "common", "systemSettings")) %>
 </head>
 <body bgcolor="ghostwhite">
 <center><font size=4><b><%=sem_info(0)%>-<%=sem_info(0)+1%>年度<%=sem_info(2)%>学期专业学位论文评阅系统设置</b><br><%
@@ -218,7 +217,7 @@ Case "2"
 								"$tutorname,$tutormail,$postscript")
 	
 	Connect conn
-	sql="SELECT * FROM TEST_THESIS_REVIEW_SYSTEM WHERE USE_YEAR="&sem_info(0)&" AND USE_SEMESTER="&sem_info(1)
+	sql="SELECT * FROM SystemSettings WHERE USE_YEAR="&sem_info(0)&" AND USE_SEMESTER="&sem_info(1)
 	GetRecordSet conn,rs,sql,result
 	On Error Resume Next
 	If result=0 Then
@@ -246,7 +245,7 @@ Case "2"
 	On Error GoTo 0
 	
 	If ok Then
-		sql="UPDATE TEST_THESIS_REVIEW_SYSTEM SET "
+		sql="UPDATE SystemSettings SET "
 		For i=1 To UBound(arrMailSubject)
 			template_name=sem_info(0)&"-"&(sem_info(0)+1)&"年度"&sem_info(2)&"学期"&arrMailSubject(i)
 			arrMailId(i)=updateEmailTemplate(arrMailId(i),template_name,arrMailSubject(i),mail_content(i),arrFieldList(i))

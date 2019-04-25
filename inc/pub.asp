@@ -233,31 +233,30 @@ Function writeLog(content)
 	Set fso=Nothing
 End Function
 
-Function getCurrentSemester()
-	' 返回当前学期信息
-	Dim start_year,cur_semester,semester_name,period_id
-	Dim arr(3)
-	If Month(Now)>=9 Or Month(Now)=1 Then
-		If Month(Now)>=9 Then
-			start_year=Year(Now)
-		Else
-			start_year=Year(Now)-1
-		End If
-		cur_semester=1
-		semester_name="上"
-	Else
-		start_year=Year(Now)-1
-		cur_semester=2
-		semester_name="下"
+Function Format(str, params)
+	If Not IsArray(params) Then
+		Format=str
+		Exit Function
 	End If
-	period_id=Int(start_year&cur_semester)
-	arr(0)=start_year
-	arr(1)=cur_semester
-	arr(2)=semester_name
-	arr(3)=period_id
-	getCurrentSemester=arr
+	Dim lastIndex:lastIndex=1
+	Dim ret
+	Dim re:Set re=New RegExp
+	re.Pattern="\{(\d+)\}"
+	re.Global=True
+	Set matches=re.Execute(str)
+	For Each match In matches
+		Dim num:num=Int(match.SubMatches(0))
+		Dim value:value=""
+		If num>=0 And num<=UBound(params) Then
+			value=params(num)
+		End If
+		ret=ret&Mid(str,lastIndex,match.FirstIndex-lastIndex+1)&value
+		lastIndex=match.FirstIndex+match.Length+1
+	Next
+	ret=ret&Mid(str,lastIndex)
+	Set re=Nothing
+	Format=ret
 End Function
-'========================
 Function toSqlString(ByVal s)
 	If IsNull(s) Then
 		toSqlString="NULL"

@@ -98,7 +98,7 @@ Function updateActiveTime(teacherID)
 	' 更新数据库中用户使用评阅系统时间的记录
 	Dim conn,sql
 	Connect conn
-	sql="UPDATE TEST_THESIS_REVIEW_NOTIFY_INFO SET LAST_ACTIVE_TIME="&toSqlString(Now)&" WHERE USER_ID="&teacherID
+	sql="UPDATE NotifyList SET LAST_ACTIVE_TIME="&toSqlString(Now)&" WHERE USER_ID="&teacherID
 	conn.Execute sql
 	CloseConn conn
 	updateActiveTime=1
@@ -243,7 +243,7 @@ End Function
 Function checkIfProfileFilledIn()
 	Dim conn,rs,sql,i,ret
 	Connect conn
-	sql="SELECT EXPERT_NAME,PRO_DUTY_NAME,EXPERTISE,WORKPLACE,ADDRESS,MAILCODE,TELEPHONE,MOBILE,EMAIL,BANK_ACCOUNT,BANK_NAME,IDCARD_NO FROM TEST_THESIS_REVIEW_EXPERT_INFO WHERE TEACHER_ID="&Session("Tid")
+	sql="SELECT EXPERT_NAME,PRO_DUTY_NAME,EXPERTISE,WORKPLACE,ADDRESS,MAILCODE,TELEPHONE,MOBILE,EMAIL,BANK_ACCOUNT,BANK_NAME,IDCARD_NO FROM Experts WHERE TEACHER_ID="&Session("Tid")
 	Set rs=conn.Execute(sql)
 	If rs.EOF Then
 		checkIfProfileFilledIn=True
@@ -276,7 +276,7 @@ Function getSystemStatus()
 		cur_semester=2
 	End If
 	Connect conn
-	sql="SELECT EXP_STARTDATE,EXP_ENDDATE FROM TEST_THESIS_REVIEW_SYSTEM WHERE USE_YEAR="&curyear&" AND USE_SEMESTER="&cur_semester&" AND VALID=1"
+	sql="SELECT EXP_STARTDATE,EXP_ENDDATE FROM SystemSettings WHERE USE_YEAR="&curyear&" AND USE_SEMESTER="&cur_semester&" AND VALID=1"
 	GetRecordSetNoLock conn,rs,sql,result
 	If rs.EOF Then
 		getSystemStatus=0

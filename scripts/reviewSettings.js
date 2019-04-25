@@ -59,17 +59,21 @@ function checkIfPdf(f) {
 	}
 	return true;
 }
-document.all.fmReview.onsubmit=function() {
-/*		var inputfile;
-	for(var i=0;i<maxItems;i++) {
-		inputfile=document.getElementsByName("reviewfile"+(i+1)).item(0);
-		if(!inputfile)continue;
-		if(!checkIfPdf(inputfile)) {
-			return false;
+$(document).ready(function() {
+	$('form').submit(function() {
+/*
+		var inputfile;
+		for(var i=0;i<maxItems;i++) {
+			inputfile=document.getElementsByName("reviewfile"+(i+1)).item(0);
+			if(!inputfile)continue;
+			if(!checkIfPdf(inputfile)) {
+				return false;
+			}
 		}
-	} */
-	this.num_items.value=numItems;
-	this.btnadd.disabled=true;
-	this.btnsubmit.disabled=true;
-}
+*/
+		this.num_items.value=numItems;
+		this.btnadd.disabled=true;
+		this.btnsubmit.disabled=true;
+	});
+});
 var numItems=0,maxItems=0;

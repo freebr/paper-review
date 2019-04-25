@@ -64,7 +64,7 @@ Dim arrReviewFileStat
 arrReviewFileStat=getReviewFileStatTxtArray()
 If bQuery Then
 	Connect conn
-	sql="SELECT * FROM ViewAdminClientThesisInfo WHERE 1=1 "&PubTerm
+	sql="SELECT * FROM ViewDissertations_admin WHERE 1=1 "&PubTerm
 	GetRecordSetNoLock conn,rs,sql,result
 	If IsEmpty(pageSize) Or Not IsNumeric(pageSize) Then
 	  pageSize=60
@@ -89,11 +89,10 @@ End If
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link href="../css/admin.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
-<script src="../scripts/query.js" type="text/javascript"></script>
-<script src="../scripts/thesis.js" type="text/javascript"></script>
+<meta name="theme-color" content="#2D79B2" />
 <title>专业论文列表</title>
+<% useStylesheet("admin") %>
+<% useScript(Array("jquery", "common", "thesis")) %>
 </head>
 <body bgcolor="ghostwhite" onload="return On_Load()">
 <center>
@@ -132,9 +131,9 @@ ArrayList(k,5)=""
 Get_ListJavaMenu ArrayList,k,FormName,""
 %></tr></table></td></tr>
 <tr><td colspan=2><table cellspacing="4" cellpadding="0"><tr><td>表格审核状态</td><td><select name="In_TASK_PROGRESS"><option value="-1">所有</option><%
-GetMenuListPubTerm "CODE_THESIS_REVIEW_STATUS","STATUS_ID1","STATUS_NAME",query_task_progress,"AND STATUS_ID1 IS NOT NULL"
+GetMenuListPubTerm "ReviewStatuses","STATUS_ID1","STATUS_NAME",query_task_progress,"AND STATUS_ID1 IS NOT NULL"
 %></select></td><td>论文审核状态</td><td><select name="In_REVIEW_STATUS"><option value="-1">所有</option><%
-GetMenuListPubTerm "CODE_THESIS_REVIEW_STATUS","STATUS_ID2","STATUS_NAME",query_review_status,"AND STATUS_ID2 IS NOT NULL"
+GetMenuListPubTerm "ReviewStatuses","STATUS_ID2","STATUS_NAME",query_review_status,"AND STATUS_ID2 IS NOT NULL"
 %></select></td></tr></table></td></tr><tr><td colspan=2>
 <!--查找-->
 <select name="field" onchange="ReloadOperator()">

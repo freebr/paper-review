@@ -136,17 +136,15 @@ Case vbNullString	' 论文详情页面
 		tutor_modify_eval_title="导师对答辩论文的意见"
 	End If
 	
-	sql="SELECT * FROM CODE_REVIEW_TYPE WHERE LEN(THESIS_FORM)>0 AND TEACHTYPE_ID="&stu_type
+	sql="SELECT * FROM ReviewTypes WHERE LEN(THESIS_FORM)>0 AND TEACHTYPE_ID="&stu_type
 	GetRecordSetNoLock conn,rsRevType,sql,result
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link href="../css/admin.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
-<script src="../scripts/utils.js" type="text/javascript"></script>
-<script src="../scripts/thesis.js" type="text/javascript"></script>
 <meta name="theme-color" content="#2D79B2" />
 <title>查看论文信息</title>
+<% useStylesheet("admin") %>
+<% useScript(Array("jquery", "common", "thesis")) %>
 </head>
 <body bgcolor="ghostwhite">
 <center><font size=4><b>专业硕士论文详情<br/>论文当前状态：【<%=stat%>】</b></font>
@@ -178,8 +176,10 @@ Case vbNullString	' 论文详情页面
 			Loop
 %></select>
 	</td></tr><%
-	End If %>
+	End If
+	If task_progress >= tpTbl3Uploaded And review_status >= rsDetectThesisUploaded Then %>
 <tr><td>学位论文文字复制比：<input type="text" class="txt" name="reproduct_ratio" size="10px" value="<%=toNumber(reproduct_ratio)%>" />%</td></tr><%
+	End If
 	If task_progress>=tpTbl1Uploaded Then
 		If Len(table_file(1)) Then %>
 <tr><td>开题报告表：&emsp;&emsp;<a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=1" target="_blank">点击下载</a>&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,0,0)">撤销</a></td></tr><%
@@ -319,10 +319,10 @@ Case vbNullString	' 论文详情页面
 <tr><td>答辩成绩：&emsp;&emsp;&emsp;&emsp;&emsp;<%=defenceResultList("defenceresult",defence_result)%></td></tr>
 <tr><td>是否同意授予学位：&emsp;<%=grantDegreeList("grantdegree",grant_degree)%></td></tr>
 <tr><td>更改表格审核状态：&emsp;<select name="new_task_progress"><%
-GetMenuListPubTerm "CODE_THESIS_REVIEW_STATUS","STATUS_ID1","STATUS_NAME",task_progress,"AND STATUS_ID1 IS NOT NULL"
+GetMenuListPubTerm "ReviewStatuses","STATUS_ID1","STATUS_NAME",task_progress,"AND STATUS_ID1 IS NOT NULL"
 %></select></td></tr>
 <tr><td>更改论文审核状态：&emsp;<select name="new_review_status"><%
-GetMenuListPubTerm "CODE_THESIS_REVIEW_STATUS","STATUS_ID2","STATUS_NAME",review_status,"AND STATUS_ID2 IS NOT NULL"
+GetMenuListPubTerm "ReviewStatuses","STATUS_ID2","STATUS_NAME",review_status,"AND STATUS_ID2 IS NOT NULL"
 %></select></td></tr>
 <tr class="trbuttons">
 <td colspan="3"><p align="center"><%
@@ -372,7 +372,7 @@ GetMenuListPubTerm "CODE_THESIS_REVIEW_STATUS","STATUS_ID2","STATUS_NAME",review
 <input type="hidden" name="pageNo2" value="<%=pageNo%>" /></form>
 <table class="tblform" width="800" cellspacing=1 cellpadding=3>
 <tr style="background-color: #cccccc"><td><p>论文检测结果及论文评审结果说明：</p>
-<%=spGetNoticeText(rs("TEACHTYPE_ID"),"review_result_desc")%>
+<%=getNoticeText(rs("TEACHTYPE_ID"),"review_result_desc")%>
 </td></tr></table></center>
 <form id="ret" name="ret" action="thesisList.asp" method="post">
 <input type="hidden" name="In_PERIOD_ID" value="<%=period_id%>">
@@ -453,13 +453,11 @@ Case 2	' 填写评语页面
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link href="../css/admin.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
-<script src="../scripts/utils.js" type="text/javascript"></script>
-<script src="../scripts/thesis.js" type="text/javascript"></script>
 <meta name="theme-color" content="#2D79B2" />
 <title>填写审核意见</title>
-<style type="text/css" />
+<% useStylesheet("admin") %>
+<% useScript(Array("jquery", "common", "thesis")) %>
+<style type="text/css">
 	input[type="text"] { background:none;border-top:0;border-left:0;border-right:0;border-bottom:1px solid dimgray }
 </style>
 </head>
@@ -514,7 +512,7 @@ Case 2	' 填写评语页面
 	Case 6 ' 填写导师送审评语页面 %>
 <tr><td colspan="3">送审论文：<a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=9" target="_blank">点击下载</a></td></tr>
 <tr><td colspan="3">导师对学位论文的评语<span class="eval_notice">（请阅读论文后填写，200-2000字）</span>：<span id="eval_text_tip"></span><br/>
-送审评语的基本内容参考：<br/><%=spGetNoticeText(rs("TEACHTYPE_ID"),"review_eval_reference")%></td></tr>
+送审评语的基本内容参考：<br/><%=getNoticeText(rs("TEACHTYPE_ID"),"review_eval_reference")%></td></tr>
 <tr><td colspan="3"><textarea name="eval_text" rows="10" style="width:100%"><%=eval_text%></textarea><br/></td></tr><%
 		If Not isunpass Then %>
 <tr><td colspan="3" style="padding:0"><table class="tblform" width="100%" cellspacing="1" cellpadding="3">

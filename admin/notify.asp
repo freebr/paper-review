@@ -115,7 +115,7 @@ For i=0 To UBound(arr)
 		End Select
 		
 		' 更新通知情况
-		sql_updnotify=sql_updnotify&"UPDATE TEST_THESIS_REVIEW_NOTIFY_INFO SET LAST_NOTIFY_TIME="&toSqlString(Now)&_
+		sql_updnotify=sql_updnotify&"UPDATE NotifyList SET LAST_NOTIFY_TIME="&toSqlString(Now)&_
 																",LAST_NOTIFY_MAIL_RESULT="&Abs(Int(bMailSuccess))&",LAST_NOTIFY_MOB_RESULT="&Abs(Int(bMobSuccess))&_
 																" WHERE USER_ID="&user_id&";"
 	End If

@@ -1,18 +1,22 @@
 ﻿<%Response.Charset="utf-8"%>
 <!--#include file="../inc/ExtendedRequest.inc"-->
 <!--#include file="../inc/db.asp"-->
+<!--#include file="common.asp"-->
 <%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 Dim conn,rs,sql,result
 Connect conn
 curStep=Request.QueryString("step")
 Select Case curStep
 Case vbNullstring ' 设置页面
-	sql="SELECT * FROM CODE_REVIEW_TYPE"
+	sql="SELECT * FROM ReviewTypes"
 	GetRecordSetNoLock conn,rs,sql,result
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link href="../css/admin.css" rel="stylesheet" type="text/css" />
+<meta name="theme-color" content="#2D79B2" />
+<title>评阅书类型设置</title>
+<% useStylesheet("admin") %>
+<% useScript(Array("jquery", "common", "reviewSettings")) %>
 </head>
 <body bgcolor="ghostwhite">
 <center><font size=4><b>评阅书类型设置</b></font>
@@ -24,7 +28,6 @@ Case vbNullstring ' 设置页面
 <input type="submit" name="btnsubmit" value="提交设置" /><input type="hidden" name="num_items" /><input type="hidden" name="num_olditems" value="<%=rs.RecordCount%>" />
 </p></td></tr></tbody></table>
 </form></center>
-<script src="../scripts/reviewSettings.js" type="text/javascript"></script>
 <script type="text/javascript"><%
 	Do While Not rs.EOF %>
 	addReviewTypeItem(<%=rs("ID")%>,'<%=toJsString(rs("TYPE_NAME"))%>',<%=toJsString(rs("TEACHTYPE_ID"))%>,'<%=toJsString(rs("THESIS_FORM"))%>','<%=toJsString(rs("REVIEW_FILE"))%>');<%
@@ -93,10 +96,10 @@ Case 1	' 后台进程
 	arr_thesisform=Split(Upload.Form("thesisform"),delim)
 	If Len(rids)=0 Then rids="0"
 	' 删除不显示在表单上的旧条目
-	sql="DELETE FROM CODE_REVIEW_TYPE WHERE ID NOT IN ("&rids&")"
+	sql="DELETE FROM ReviewTypes WHERE ID NOT IN ("&rids&")"
 	conn.Execute sql
 	
-	sql="SELECT * FROM CODE_REVIEW_TYPE"
+	sql="SELECT * FROM ReviewTypes"
 	GetRecordSet conn,rs,sql,result
 	For i=0 To numItems-1
 		type_name=arr_typename(i)
@@ -125,17 +128,14 @@ Case 1	' 后台进程
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="theme-color" content="#2D79B2" />
 <title>评阅书类型设置</title>
-<link href="../css/admin.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
+<% useStylesheet("admin") %>
+<% useScript("jquery") %>
 </head>
 <body bgcolor="ghostwhite">
-<center><br /><b>评阅书类型设置</b><br /><br />
-<form id="fmReview" action="reviewSettings.asp" method="POST">
-<p><%=byteFileSize%> 字节已上传。</p></form>
 <script type="text/javascript">
 	alert("操作完成。");
-	$('#fmReview').submit();
-</script></center></body></html><%
+	location.href="reviewSettings.asp";
+</script></body></html><%
 End Select
 CloseConn conn
 %>

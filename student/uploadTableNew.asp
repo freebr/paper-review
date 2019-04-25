@@ -111,14 +111,10 @@ Case vbNullstring ' 填写信息页面
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link href="../css/student.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
-<script src="../scripts/utils.js" type="text/javascript"></script>
-<script src="../scripts/upload.js" type="text/javascript"></script>
-<script src="../scripts/uploadTable.js" type="text/javascript"></script>
-<script src="../scripts/keywordList.js" type="text/javascript"></script>
 <meta name="theme-color" content="#2D79B2" />
 <title>在线填写表格</title>
+<% useStylesheet("student") %>
+<% useScript(Array("jquery", "common", "upload", "uploadTable", "keywordList")) %>
 </head>
 <body bgcolor="ghostwhite">
 <center><font size=4><b>在线填写表格</b></font
@@ -472,7 +468,7 @@ Case 1	' 上传进程
 	arrTableFieldName=Array("","TABLE_FILE1","TABLE_FILE2","TABLE_FILE3","TABLE_FILE4")
 	arrNewTaskProgress=Array(0,tpTbl1Uploaded,tpTbl2Uploaded,tpTbl3Uploaded,tpTbl4Uploaded)
 	' 关联到数据库
-	sql="SELECT * FROM TEST_THESIS_REVIEW_INFO WHERE STU_ID="&Session("StuId")&" ORDER BY PERIOD_ID DESC"
+	sql="SELECT * FROM Dissertations WHERE STU_ID="&Session("StuId")&" ORDER BY PERIOD_ID DESC"
 	GetRecordSet conn,rs3,sql,result
 	If rs3.EOF Then
 		' 添加记录
@@ -506,8 +502,8 @@ Case 1	' 上传进程
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="theme-color" content="#2D79B2" />
 <title>提交论文表格</title>
-<link href="../css/student.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
+<% useStylesheet("student") %>
+<% useScript("jquery") %>
 </head>
 <body bgcolor="ghostwhite"><%
 	If Not bError Then %>

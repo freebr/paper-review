@@ -4,7 +4,7 @@ Response.Expires=-1%>
 <!--#include file="evalappend.inc"-->
 <!--#include file="../inc/db.asp"-->
 <!--#include file="common.asp"--><%
-If IsEmpty(Session("TId")) Then Response.Redirect("../error.asp?timeout")
+If IsEmpty(Session("Tid")) Then Response.Redirect("../error.asp?timeout")
 curstep=Request.QueryString("step")
 thesisID=Request.QueryString("tid")
 opr=Request.Form("opr")
@@ -46,7 +46,7 @@ End If
 
 Dim conn,rs,sql,result
 Connect conn
-sql="SELECT * FROM TEST_THESIS_REVIEW_INFO WHERE ID="&thesisID
+sql="SELECT * FROM Dissertations WHERE ID="&thesisID
 GetRecordSet conn,rs,sql,result
 review_status=rs("REVIEW_STATUS")
 If rs.EOF Then

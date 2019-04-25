@@ -39,10 +39,8 @@ If rs.RecordCount>0 Then rs.AbsolutePage=pageNo
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link href="../css/admin.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
-<script src="../scripts/query.js" type="text/javascript"></script>
-<script src="../scripts/expertList.js" type="text/javascript"></script>
+<% useStylesheet("admin") %>
+<% useScript(Array("jquery", "common", "upload", "expertList")) %>
 </head>
 <body bgcolor="ghostwhite">
 <center>
@@ -51,7 +49,8 @@ If rs.RecordCount>0 Then rs.AbsolutePage=pageNo
 <table width="1000" cellpadding="2" cellspacing="1" bgcolor="dimgray">
 <tr bgcolor="ghostwhite"><td style="font-weight:bold">从Excel文件导入评阅专家信息&emsp;<a href="upload/exp_template.xlsx" target="_blank">点击下载专家信息表格模板</a></td></tr>
 <tr bgcolor="ghostwhite"><td>
-<p>请选择要导入的 Excel 文件：<br />文件名：<input type="file" name="excelFile" size="100" /></p>
+<p>请选择要导入的 Excel 文件：<br />文件名：<input type="file" name="excelFile" size="100" />
+<input type="submit" name="btnsubmit" value="提 交" />&nbsp;</p>
 </td></tr></table>
 </form>
 <table cellspacing=4 cellpadding=0>
@@ -140,28 +139,27 @@ Next
   		End If %>
 	</td></tr>
   <%
-  	rs.MoveNext
+  	rs.MoveNext()
   Next
 %></table></center></body>
 <script type="text/javascript">
-	$('#fmUpload :file').change(function() {
-		var fileName = this.value;
-		var fileExt = fileName.substring(fileName.lastIndexOf('.')).toLowerCase();
-		if (fileExt != ".xls" && fileExt != ".xlsx") {
-			alert("所选文件不是 Excel 文件！");
-			this.form.reset();
-			return false;
-		}
-		this.form.submit();
+	$(document).ready(function(){
+    $('#fmUpload :submit').click(function() {
+      var valid=checkIfExcel(this.excelFile);
+      if(valid) {
+        $(':submit').val("正在提交，请稍候...").attr('disabled',true);
+      }
+      return valid;
+    }).attr('disabled',false);
+    $('#btnresetpwd').click(function() {
+      $(this).val('正在处理，请稍候……').attr('disabled',true);
+      resetPassword($('#fmExpList'));
+    }).attr('disabled',false);
+    $('#btnexport').click(function() {
+      $(this).val('正在导出，请稍候……').attr('disabled',true);
+      exportInfo($('#fmExpList'));
+    }).attr('disabled',false);
 	});
-	$('#btnresetpwd').click(function() {
-		$(this).val('正在处理，请稍候……').attr('disabled',true);
-		resetPassword($('#fmExpList'));
-	}).attr('disabled',false);
-	$('#btnexport').click(function() {
-		$(this).val('正在导出，请稍候……').attr('disabled',true);
-		exportInfo($('#fmExpList'));
-	}).attr('disabled',false);
 </script></html><%
   CloseRs rs
   CloseConn conn

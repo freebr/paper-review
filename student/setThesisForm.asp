@@ -19,7 +19,7 @@ End If
 
 Dim conn,sql
 Connect conn
-sql="UPDATE TEST_THESIS_REVIEW_INFO SET REVIEW_TYPE="&new_thesis_form&" WHERE ID="&thesisID
+sql="UPDATE Dissertations SET REVIEW_TYPE="&new_thesis_form&" WHERE ID="&thesisID
 conn.Execute sql
 CloseConn conn
 %><script type="text/javascript">

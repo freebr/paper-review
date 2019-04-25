@@ -20,7 +20,7 @@ pageNo=Request.Form("pageNo2")
 FormGetToSafeRequest(reviewfilestat)
 FormGetToSafeRequest(ids)
 Connect conn
-sql="UPDATE TEST_THESIS_REVIEW_INFO SET REVIEW_FILE_STATUS="&reviewfilestat&" WHERE ID IN ("&ids&")"
+sql="UPDATE Dissertations SET REVIEW_FILE_STATUS="&reviewfilestat&" WHERE ID IN ("&ids&")"
 conn.Execute sql
 CloseConn conn
 %><form id="ret" action="thesisList.asp" method="post">

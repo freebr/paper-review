@@ -19,9 +19,10 @@ Set comm=Nothing
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link href="../css/admin.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
-<script src="../scripts/query.js" type="text/javascript"></script>
+<meta name="theme-color" content="#2D79B2" />
+<title>送审结果统计表</title>
+<% useStylesheet("admin") %>
+<% useScript(Array("jquery", "common")) %>
 </head>
 <body bgcolor="ghostwhite">
 <center>

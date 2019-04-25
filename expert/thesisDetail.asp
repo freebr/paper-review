@@ -1,7 +1,7 @@
 ﻿<%Response.Charset="utf-8"%>
 <!--#include file="../inc/db.asp"-->
 <!--#include file="common.asp"--><%
-If IsEmpty(Session("TId")) Then Response.Redirect("../error.asp?timeout")
+If IsEmpty(Session("Tid")) Then Response.Redirect("../error.asp?timeout")
 If Not hasPrivilege(Session("Twriteprivileges"),"I10") Then Response.Redirect("../error.asp?no-privilege")
 curstep=Request.QueryString("step")
 thesisID=Request.QueryString("tid")
@@ -27,7 +27,11 @@ ElseIf Not checkIfProfileFilledIn() Then
 	errdesc="在开始评阅前，您需要完善个人信息，<a href=""profile.asp"">请点击这里编辑。</a>"
 End If
 If bError Then
-%><html><head><link href="../css/tutor.css" rel="stylesheet" type="text/css" /><script src="../scripts/thesis.js" type="text/javascript"></script><title>查看论文信息</title></head>
+%><html>
+<head>
+<title>查看论文信息</title>
+<% useStylesheet("tutor") %><% useScript("thesis") %>
+</head>
 <body class="exp"><center><div class="content"><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="关 闭" onclick="closeWindow()" /></div></center></body></html><%
   CloseRs rs
   CloseConn conn
@@ -90,11 +94,10 @@ Case vbNullString	' 论文详情页面
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link href="../css/tutor.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/utils.js" type="text/javascript"></script>
-<script src="../scripts/thesis.js" type="text/javascript"></script>
 <meta name="theme-color" content="#2D79B2" />
 <title>查看论文信息</title>
+<% useStylesheet("tutor") %>
+<% useScript(Array("jquery", "common", "thesis")) %>
 </head>
 <body class="exp">
 <center><div class="content"><font size=4><b>专业硕士论文详情<br />论文当前状态：【<%=stat%>】</b></font><%
@@ -110,7 +113,7 @@ Case vbNullString	' 论文详情页面
 <tr><td>领域名称：&emsp;&emsp;&emsp;<input type="text" class="txt" name="speciality" size="95%" value="<%=rs("SPECIALITY_NAME")%>" readonly /></td></tr><%
 	End If %>
 <tr><td>研究方向：&emsp;&emsp;&emsp;<input type="text" class="txt" name="researchway_name" size="95%" value="<%=rs("RESEARCHWAY_NAME")%>" readonly /></td></tr>
-<tr><td>论文关键词：&emsp;&emsp;<input type="text" class="txt" name="keywords_ch" size=85%" value="<%=rs("KEYWORDS")%>" readonly /></td></tr>
+<tr><td>论文关键词：&emsp;&emsp;<input type="text" class="txt" name="keywords_ch" size="85%" value="<%=rs("KEYWORDS")%>" readonly /></td></tr>
 <tr><td>（英文）：&emsp;&emsp;&emsp;<input type="text" class="txt" name="keywords_en" size="85%" value="<%=rs("KEYWORDS_EN")%>" readonly /></td></tr>
 <tr><td>院系名称：&emsp;&emsp;&emsp;<input type="text" class="txt" name="faculty" size="95%" value="工商管理学院" readonly /></td></tr><%
 	If Not IsNull(rs("THESIS_FORM")) And Len(rs("THESIS_FORM")) Then %>
@@ -190,11 +193,10 @@ Case 2	' 评阅须知
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link href="../css/tutor.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
-<script src="../scripts/utils.js" type="text/javascript"></script>
 <meta name="theme-color" content="#2D79B2" />
 <title>浏览评阅须知</title>
+<% useStylesheet("tutor") %>
+<% useScript(Array("jquery", "common")) %>
 </head>
 <body class="exp">
 <center><div class="content"><font size=4><b>评阅须知：在开始评阅前，请您仔细阅读下面的《<%=noticeName%>》</b></font>
@@ -281,14 +283,10 @@ Case 3	' 评阅页面
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link href="../css/tutor.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
-<script src="../scripts/utils.js" type="text/javascript"></script>
-<script src="../scripts/thesis.js" type="text/javascript"></script>
-<script src="../scripts/review.js" type="text/javascript"></script>
-<script src="../scripts/drafting.js" type="text/javascript"></script>
 <meta name="theme-color" content="#2D79B2" />
 <title>评阅论文</title>
+<% useStylesheet("tutor") %>
+<% useScript(Array("jquery", "common", "thesis", "review", "drafting")) %>
 </head>
 <body class="exp">
 <center><div class="content"><font size=4><b>评阅论文</b></font>

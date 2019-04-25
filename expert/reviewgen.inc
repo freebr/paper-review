@@ -192,18 +192,18 @@ Class ReviewGen
 		End If
 		doc.Tables(2).Cell(1,3).Delete()
 		doc.Tables(2).Cell(1,2).Delete()
-    doc.Tables(2).Cell(1,1).Range.Text="论文题目"
-    doc.Tables(2).Cell(1,2).SetWidth 425.7,1
+		doc.Tables(2).Cell(1,1).Range.Text="论文题目"
+		doc.Tables(2).Cell(1,2).SetWidth 425.7,1
 		doc.ExportAsFixedFormat filepath2,wdExportFormatPDF,,1
 		' 生成不含专家信息的评阅书
 		doc.Undo 6
 		doc.Tables(2).Range.Delete()
 		doc.ExportAsFixedFormat filepath3,wdExportFormatPDF,,1
 		doc.Close(False)
-		wd.Quit()
 		Set range2=Nothing
 		Set range=Nothing
 		Set doc=Nothing
+		wd.Quit()
 		Set wd=Nothing
 		m_err_desc=Err.Description
 		If Err.Number=0 Then

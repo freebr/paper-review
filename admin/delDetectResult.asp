@@ -21,7 +21,7 @@ End If
 
 Dim conn,rs,sql,result
 Connect conn
-sql="SELECT THESIS_FILE,REPRODUCTION_RATIO,DETECT_REPORT FROM TEST_THESIS_REVIEW_INFO WHERE ID="&thesisID
+sql="SELECT THESIS_FILE,REPRODUCTION_RATIO,DETECT_REPORT FROM Dissertations WHERE ID="&thesisID
 GetRecordSet conn,rs,sql,result
 If rs.EOF Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4">数据库没有该论文记录！</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
@@ -46,7 +46,7 @@ End If
 CloseRs rsDetect
 
 If bLatest Then	' 更新论文评阅信息表中的检测数据
-	sql="SELECT THESIS_FILE,RESULT,DETECT_TIME,DETECT_REPORT FROM DETECT_RESULT_INFO WHERE THESIS_ID="&thesisID&" ORDER BY DETECT_TIME DESC"
+	sql="SELECT THESIS_FILE,RESULT,DETECT_TIME,DETECT_REPORT FROM DetectResults WHERE THESIS_ID="&thesisID&" ORDER BY DETECT_TIME DESC"
 	GetRecordSetNoLock conn,rsDetect,sql,result
 	If result>0 Then	' 取上次的送检结果
 		If opr=1 Then rs("THESIS_FILE").Value=rsDetect("THESIS_FILE").Value

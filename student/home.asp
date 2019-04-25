@@ -147,10 +147,11 @@ End Function
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link href="../css/student.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
-<script src="../scripts/query.js" type="text/javascript"></script>
-<style type="text/css" />
+<meta name="theme-color" content="#2D79B2" />
+<title>系统首页</title>
+<% useStylesheet("student") %>
+<% useScript(Array("jquery", "common", "thesis")) %>
+<style type="text/css">
 	td.modtitle { height:20;border:1px solid gainsboro }
 	td.modcontent { padding-left:20px;padding-top:10px;background:url(../images/student/modback.png) repeat }
 	p.stepname { margin-top:10px;margin-bottom:0 }
@@ -209,7 +210,7 @@ End Function
 <%
 	If stu_type=6 Then
 		If review_status<>rsNone And (review_type=0 Or review_type=1) Then
-			sql="SELECT * FROM CODE_REVIEW_TYPE WHERE LEN(THESIS_FORM)>0 AND TEACHTYPE_ID="&stu_type
+			sql="SELECT * FROM ReviewTypes WHERE LEN(THESIS_FORM)>0 AND TEACHTYPE_ID="&stu_type
 			GetRecordSetNoLock conn,rs2,sql,result
 %><form method="post" action="setThesisForm.asp">
 <input type="hidden" name="tid" value="<%=thesisID%>" />

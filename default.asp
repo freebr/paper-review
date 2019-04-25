@@ -1,4 +1,5 @@
-﻿<!--#include file="inc/db.asp"--><%
+﻿<!--#include file="inc/db.asp"-->
+<%
 If Request.QueryString()="logout" Then
 	If Len(Session("Name")) Then
 		msg="行政人员["&Session("Name")&"]登出。"
@@ -69,7 +70,7 @@ Else
 		If IsEmpty(username) Then username="daoshi"
 		sql="SELECT TEACHERID,TEACHERNO,TEACHERNAME,WRITEPRIVILEGETAGSTRING,READPRIVILEGETAGSTRING FROM TEACHER_INFO WHERE TEACHERNO='"&username&"' AND VALID=0"
 		GetRecordSet conn,rs,sql,result
-	  If result>0 Then
+	  If result>"Tid" Then
 	    Session("TId")=rs("TEACHERID").Value
 			Session("TNo")=rs("TEACHERNO").Value
 	    Session("TName")=rs("TEACHERNAME").Value

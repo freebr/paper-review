@@ -10,7 +10,7 @@ cur_semester=sem_info(1)
 Connect conn
 wherestr=" WHERE USE_YEAR="&curyear&" AND USE_SEMESTER="&cur_semester
 If open="0" Then
-	sql="SELECT * FROM TEST_THESIS_REVIEW_SYSTEM"&wherestr
+	sql="SELECT * FROM SystemSettings"&wherestr
 	GetRecordSetNoLock conn,rs,sql,result
 	CloseRs rs
 	If result=0 Then
@@ -18,7 +18,7 @@ If open="0" Then
 		Response.End()
 	End If
 	
-	sql="SELECT VALID FROM TEST_THESIS_REVIEW_SYSTEM"&wherestr
+	sql="SELECT VALID FROM SystemSettings"&wherestr
 	GetRecordSet conn,rs,sql,result
 	If rs("VALID") Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4">系统已经开放！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
@@ -31,16 +31,16 @@ If open="0" Then
 	End If
 ElseIf open="1" Then
 	' 关闭系统
-	sql="UPDATE TEST_THESIS_REVIEW_SYSTEM SET VALID=0"&wherestr
+	sql="UPDATE SystemSettings SET VALID=0"&wherestr
 	conn.Execute sql
 ElseIf open="101" Then
-	sql="SELECT VALID FROM TEST_THESIS_REVIEW_SYSTEM"&wherestr
+	sql="SELECT VALID FROM SystemSettings"&wherestr
 	GetRecordSet conn,rs,sql,result
 	If rs("VALID") Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4">系统正在运行，不能删除数据！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 		Response.End()
 	End If
-	sql="DELETE FROM TEST_THESIS_REVIEW_INFO"
+	sql="DELETE FROM Dissertations"
 	conn.Execute sql
 End If
 CloseConn conn

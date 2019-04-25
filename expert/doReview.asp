@@ -3,7 +3,7 @@ Response.Expires=-1%>
 <!--#include file="reviewgen.inc"-->
 <!--#include file="../inc/db.asp"-->
 <!--#include file="common.asp"--><%
-If IsEmpty(Session("TId")) Then Response.Redirect("../error.asp?timeout")
+If IsEmpty(Session("Tid")) Then Response.Redirect("../error.asp?timeout")
 thesisID=Request.QueryString("tid")
 teachtype_id=Request.Form("In_TEACHTYPE_ID2")
 spec_id=Request.Form("In_SPECIALITY_ID2")
@@ -21,7 +21,7 @@ ElseIf Not checkIfProfileFilledIn() Then
 	errdesc="您尚未完善个人信息，<a href=""profile.asp"">请点击这里编辑。</a>"
 End If
 If bError Then
-%><html><head><link href="../css/tutor.css" rel="stylesheet" type="text/css" /></head>
+%><html><head><% useStylesheet("tutor") %></head>
 <body class="exp"><center><div class="content"><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></div></center></body></html><%
 	Response.End()
 End If
@@ -84,7 +84,7 @@ Else
 	End If
 End If
 If bError Then
-%><html><head><link href="../css/tutor.css" rel="stylesheet" type="text/css" /></head>
+%><html><head><% useStylesheet("tutor") %></head>
 <body class="exp"><center><div class="content"><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></div></center></body></html><%
   CloseRs rs
   CloseConn conn
@@ -131,7 +131,7 @@ speciality=rs("SPECIALITY_NAME")
 researchway=rs("RESEARCHWAY_NAME")
 scores=Request.Form("scores")
 CloseRs rs
-sql="SELECT * FROM TEST_THESIS_REVIEW_EXPERT_INFO WHERE TEACHER_ID="&Session("Tid")
+sql="SELECT * FROM Experts WHERE TEACHER_ID="&Session("Tid")
 GetRecordSetNoLock conn,rs,sql,result
 expert_name=rs("EXPERT_NAME")
 expert_pro_duty=rs("PRO_DUTY_NAME")
@@ -143,10 +143,10 @@ expert_telephone=rs("TELEPHONE")
 expert_mobile=rs("MOBILE")
 CloseRs rs
 
-sql="SELECT REVIEW_FILE FROM CODE_REVIEW_TYPE WHERE ID="&review_type
+sql="SELECT REVIEW_FILE FROM ReviewTypes WHERE ID="&review_type
 GetRecordSetNoLock conn,rs,sql,result
 If rs.EOF Then
-%><html><head><link href="../css/tutor.css" rel="stylesheet" type="text/css" /></head>
+%><html><head><% useStylesheet("tutor") %></head>
 <body class="exp"><center><div class="content"><body bgcolor="ghostwhite"><center><font color=red size="4">操作不成功，找不到所需的评阅书模板文件，请联系系统管理员。</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></div></center></body></html><%
   CloseRs rs
   CloseConn conn
@@ -244,7 +244,7 @@ End Select
 review_result(2)=finalresult
 
 ' 更新记录
-sql="SELECT * FROM TEST_THESIS_REVIEW_INFO WHERE ID="&thesisID
+sql="SELECT * FROM Dissertations WHERE ID="&thesisID
 GetRecordSet conn,rs,sql,result
 rs("REVIEW_RESULT")=join(review_result,",")
 rs("REVIEW_LEVEL")=join(review_level,",")

@@ -1,7 +1,7 @@
 ﻿<%Response.Charset="utf-8"%>
 <!--#include file="../inc/db.asp"-->
 <!--#include file="common.asp"--><%
-If IsEmpty(Session("TId")) Then Response.Redirect("../error.asp?timeout")
+If IsEmpty(Session("Tid")) Then Response.Redirect("../error.asp?timeout")
 
 Dim bModified,PubTerm,PageNo,PageSize
 bModified=Request.QueryString("modified")="1"
@@ -54,7 +54,7 @@ End If
 '------------------------------------------------------
 sem_info=getCurrentSemester()
 Connect conn
-sql="SELECT * FROM ViewTutorClientThesisInfo WHERE TUTOR_ID="&Tid&PubTerm
+sql="SELECT * FROM ViewDissertations_tutor WHERE TUTOR_ID="&Tid&PubTerm
 GetRecordSetNoLock conn,rs,sql,result
 If IsEmpty(pageSize) Or Not IsNumeric(pageSize) Then
   pageSize=-1
@@ -79,10 +79,10 @@ If rs.RecordCount>0 Then rs.AbsolutePage=pageNo
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link href="../css/tutor.css" rel="stylesheet" type="text/css" />
-<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
-<script src="../scripts/query.js" type="text/javascript"></script>
-<script src="../scripts/thesis.js" type="text/javascript"></script>
+<meta name="theme-color" content="#2D79B2" />
+<title>查看论文列表</title>
+<% useStylesheet("tutor") %>
+<% useScript(Array("jquery", "common", "thesis")) %>
 </head>
 <body bgcolor="ghostwhite" onload="return On_Load()">
 <center>
@@ -119,9 +119,9 @@ ArrayList(k,5)=""
 Get_ListJavaMenu ArrayList,k,FormName,""
 %></tr></table></td></tr>
 <tr><td><table cellspacing="4" cellpadding="0"><tr><td>表格审核状态</td><td><select name="In_TASK_PROGRESS"><option value="-1">请选择</option><%
-GetMenuListPubTerm "CODE_THESIS_REVIEW_STATUS","STATUS_ID1","STATUS_NAME",query_task_progress,"AND STATUS_ID1 IS NOT NULL"
+GetMenuListPubTerm "ReviewStatuses","STATUS_ID1","STATUS_NAME",query_task_progress,"AND STATUS_ID1 IS NOT NULL"
 %></select></td><td>论文审核状态</td><td><select name="In_REVIEW_STATUS"><option value="-1">请选择</option><%
-GetMenuListPubTerm "CODE_THESIS_REVIEW_STATUS","STATUS_ID2","STATUS_NAME",query_review_status,"AND STATUS_ID2 IS NOT NULL"
+GetMenuListPubTerm "ReviewStatuses","STATUS_ID2","STATUS_NAME",query_review_status,"AND STATUS_ID2 IS NOT NULL"
 %></select></td></tr></table></td></tr><tr><td>
 <!--查找-->
 <select name="field" onchange="ReloadOperator()">

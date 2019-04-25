@@ -52,7 +52,7 @@ ElseIf submittype="unpass" And opr<=3 Or submittype<>vbNullString And (opr=4 Or 
 		bError=True
 		errdesc="意见字数超出限制（2000字）！"
 	End If
-ElseIf Not IsDate(new_submit_review_time) Then
+ElseIf Not (new_submit_review_time = vbNullString Or IsDate(new_submit_review_time)) Then
 	bError=True
 	errdesc="送审意见提交时间格式无效，正确格式为：年/月/日 时:分:秒！"
 ElseIf new_reproduct_ratio<>vbNullString And Not IsNumeric(new_reproduct_ratio) Then
@@ -83,7 +83,7 @@ End If
 
 Dim conn,rs,sql,sqlDetect,result
 Connect conn
-sql="SELECT * FROM TEST_THESIS_REVIEW_INFO WHERE ID="&thesisID
+sql="SELECT * FROM Dissertations WHERE ID="&thesisID
 GetRecordSet conn,rs,sql,result
 If rs.EOF Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4">数据库没有该论文记录！</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
@@ -280,21 +280,23 @@ If submittype=vbNullString Then
 		sqlDetect="EXEC spSetDetectResultReport "&thesisID&","&toSqlString(detect_thesis)&","&toSqlString(detect_report_path)&";"
 		Set fso=Nothing
 	End If
-	
-	reproduct_ratio=rs("REPRODUCTION_RATIO").Value
-	If Not IsNull(reproduct_ratio) And IsNull(new_reproduct_ratio) Then
-		sqlDetect=sqlDetect&"EXEC spDeleteDetectResult "&thesisID&","&toSqlString(detect_thesis)&";"
-	ElseIf Not IsNull(new_reproduct_ratio) Then
-		sqlDetect=sqlDetect&"EXEC spSetDetectResultRatio "&thesisID&","&toSqlString(detect_thesis)&","&toSqlNumber(new_reproduct_ratio)&";"
+
+	If Not IsNull(detect_thesis) Then
+		reproduct_ratio=rs("REPRODUCTION_RATIO").Value
+		If Not IsNull(reproduct_ratio) And new_reproduct_ratio = vbNullString Then
+			sqlDetect=sqlDetect&"EXEC spDeleteDetectResult "&thesisID&","&toSqlString(detect_thesis)&";"
+		ElseIf new_reproduct_ratio <> vbNullString Then
+			sqlDetect=sqlDetect&"EXEC spSetDetectResultRatio "&thesisID&","&toSqlString(detect_thesis)&","&toSqlNumber(new_reproduct_ratio)&";"
+		End If
 	End If
-	
+
 	If Len(new_period_id)=0 Then
 		rs("PERIOD_ID")=Null
 	Else
 		rs("PERIOD_ID")=new_period_id
 	End If
 	If Len(new_defence_result)<>0 Then
-		sql="UPDATE TEST_THESIS_DEFENCE_INFO SET DEFENCE_RESULT="&new_defence_result&" WHERE THESIS_ID="&thesisID
+		sql="UPDATE DefenceInfo SET DEFENCE_RESULT="&new_defence_result&" WHERE THESIS_ID="&thesisID
 		conn.Execute sql
 	End If
 	If Len(new_grant_degree)<>0 Then

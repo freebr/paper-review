@@ -19,3 +19,8 @@ textarea.notice-text {
 	width:100%;
 	height:100px;
 }
+
+option.user-id-category {
+	color: blue;
+	font-weight: bold;
+}

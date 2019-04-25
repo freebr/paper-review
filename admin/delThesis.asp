@@ -5,7 +5,7 @@ Dim ids
 ids=Request.Form("sel")
 FormGetToSafeRequest(ids)
 Connect conn
-sql="DELETE FROM TEST_THESIS_REVIEW_INFO WHERE ID IN ("&ids&")"
+sql="DELETE FROM Dissertations WHERE ID IN ("&ids&")"
 conn.Execute sql
 CloseConn conn
 %><script type="text/javascript">
