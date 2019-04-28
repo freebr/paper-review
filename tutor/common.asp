@@ -1,5 +1,4 @@
-﻿<!--#include file="../inc/global.inc"-->
-<%
+﻿<!--#include file="../inc/global.inc"--><%
 Function isMatched(pattern,s)
 	' 判断指定字符串是否满足指定模式
 	Dim regEx:Set regEx=New RegExp

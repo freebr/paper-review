@@ -41,7 +41,7 @@ Function ExecQuery(conn,sql,params,countAffected)
 		For Each param In params
 			cmd.Parameters.Append param
 		Next
-	Else
+	ElseIf Not IsNull(params) Then
 		cmd.Parameters.Append params
 	End If
 	Set rs=cmd.Execute()

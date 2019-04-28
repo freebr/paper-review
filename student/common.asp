@@ -1,5 +1,4 @@
-﻿<!--#include file="../inc/global.inc"-->
-<%
+﻿<!--#include file="../inc/global.inc"--><%
 Function toYearMonth(ByVal year,ByVal month)
 	' 返回形如 yyyy.mm 的日期格式
 	If Len(month)=1 Then month="0"&month

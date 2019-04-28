@@ -51,10 +51,10 @@ Class EvalAppend
     rg2.ParagraphFormat.IndentFirstLineCharWidth 13
 		doc.SaveAs filepath,16
 		doc.Close(False)
-		wd.Quit()
 		Set rg=Nothing
 		Set rg2=Nothing
 		Set doc=Nothing
+		wd.Quit()
 		Set wd=Nothing
 		m_err_desc=Err.Description
 		If Err.Number=0 Then

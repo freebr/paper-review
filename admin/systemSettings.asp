@@ -69,8 +69,8 @@ Case "1"
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="theme-color" content="#2D79B2" />
 <title>专业学位论文评阅系统设置</title>
-<% useStylesheet("admin") %>
-<% useScript(Array("jquery", "common", "systemSettings")) %>
+<% useStylesheet(Array("admin", "jeasyui")) %>
+<% useScript(Array("jquery", "jeasyui", "common", "systemSettings")) %>
 </head>
 <body bgcolor="ghostwhite">
 <center><font size=4><b><%=sem_info(0)%>-<%=sem_info(0)+1%>年度<%=sem_info(2)%>学期专业学位论文评阅系统设置</b><br><%
@@ -102,40 +102,34 @@ Case "1"
 	End If %><input type="button" value="del" onclick="location.href='setSystemStatus.asp?open=101'" style="display:none" /></td></tr>
 </td></tr>
 <tr bgcolor="ghostwhite">
-<td align="center"><p>当前是第&nbsp;<input type="text" name="turn_num" id="turn_num" value="<%=turn_num%>" size="5" style="text-align:center" />&nbsp;批
-&nbsp;<input type="button" id="btnnewturn" value="增加批次" /><br />
-<input type="button" id="btnexport" value="导出本批次评审结果" />
-&nbsp;<input type="button" name="viewexportfiles" value="查看以往批次评审结果" onclick="window.open('/ThesisReview/admin/export/spec')" /><br />
-&emsp;&emsp;&emsp;专家端开放时间：<input type="text" name="exp_startdate" id="exp_startdate" class="date" value="<%=exp_startdate%>" title="专家端开放时间起始日期" />
-<img style="cursor:pointer" src="../images/calendar.gif" onclick="showCalendar('exp_startdate','<%=exp_startdate%>')" title="打开日历">&nbsp;至&nbsp;
-<input type="text" name="exp_enddate" id="exp_enddate" class="date" value="<%=exp_enddate%>" title="专家端开放时间截止日期" />
-<img style="cursor:pointer" src="../images/calendar.gif" onclick="showCalendar('exp_enddate','<%=exp_enddate%>')" title="打开日历"><br />
-&emsp;&emsp;&emsp;导师端开放时间：<input type="text" name="tutor_startdate" id="tutor_startdate" class="date" value="<%=tutor_startdate%>" title="导师端开放时间起始日期" />
-<img style="cursor:pointer" src="../images/calendar.gif" onclick="showCalendar('tutor_startdate','<%=tutor_startdate%>')" title="打开日历">&nbsp;至&nbsp;
-<input type="text" name="tutor_enddate" id="tutor_enddate" class="date" value="<%=tutor_enddate%>" title="导师端开放时间截止日期" />
-<img style="cursor:pointer" src="../images/calendar.gif" onclick="showCalendar('tutor_enddate','<%=tutor_enddate%>')" title="打开日历"></p>
-<p><table width="800" cellpadding="0" cellspacing="0" border="0">
-<tr bgcolor="ghostwhite"><td align="center" colspan="3">学生端上传通道开放时间和开放对象：</td></tr>
-<%
-	For i=1 To OPRTYPE_COUNT
-%><tr bgcolor="ghostwhite">
-<td align="right"><%=arrStuOprName(i)%>：</td>
-<td align="center"><input type="text" name="stu_startdate<%=i%>" id="stu_startdate<%=i%>" class="date" value="<%=stu_startdate(i)%>" title="学生端<%=arrStuOprName(i)%>环节开放时间起始日期" />
-<img style="cursor:pointer" src="../images/calendar.gif" onclick="showCalendar('stu_startdate<%=i%>','<%=stu_startdate(i)%>')" title="打开日历">&nbsp;至&nbsp;
-<input type="text" name="stu_enddate<%=i%>" id="stu_enddate<%=i%>" class="date" value="<%=stu_enddate(i)%>" title="学生端<%=arrStuOprName(i)%>环节开放时间截止日期" />
-<img style="cursor:pointer" src="../images/calendar.gif" onclick="showCalendar('stu_enddate<%=i%>','<%=stu_enddate(i)%>')" title="打开日历"></td>
-<td align="center"><%
-		For j=1 To STUTYPE_COUNT
-			k=OPRTYPE_COUNT*j+i-OPRTYPE_COUNT
-			If stu_clientstatus(k)="1" Then
-				checkflag="checked=""true"" "
-			Else
-				checkflag=vbNullString
-			End If
-%>&emsp;<label for="stu_clientstatus<%=k%>"><input type="checkbox" name="stu_clientstatus<%=k%>" id="stu_clientstatus<%=k%>" <%=checkflag%>/><%=arrStuTypeName(j)%></label><%
-		Next
-%></td></tr><%
-	Next %></table></p></td></tr>
+<td>
+	评阅活动：<input id="activity_id" name="activity_id" value="请选择评阅活动…"
+	editable="false" style="width: 300px" />
+	<a id="btn_add_activity" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'">新建评阅活动…</a>
+</td>
+</tr>
+<tr bgcolor="ghostwhite">
+<td align="center">
+	<table id="activity_period" title="开放时间设置" style="width:90%;height:400px"
+		toolbar="#toolbar" idField="id"
+		rownumbers="true" fitColumns="true" singleSelect="true">
+		<thead>
+			<tr>
+				<th field="client_type" width="50" disabled>用户类型</th>
+				<th field="section" width="50" disabled>环节名称</th>
+				<th field="start_time" width="50" editor="{type: 'datetimebox', options: { formatter: Common.formatDateTime, showSeconds: false }}">开始时间</th>
+				<th field="end_time" width="50" editor="{type: 'datetimebox', options: { formatter: Common.formatDateTime, showSeconds: false }}">结束时间</th>
+				<th field="enabled" width="50" editor="checkbox">是否开放</th>
+			</tr>
+		</thead>
+	</table>
+	<div id="toolbar">
+		<a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="javascript:$('#dg').edatagrid('addRow')">New</a>
+		<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="javascript:$('#dg').edatagrid('destroyRow')">Destroy</a>
+		<a href="#" class="easyui-linkbutton" iconCls="icon-save" plain="true" onclick="javascript:$('#dg').edatagrid('saveRow')">Save</a>
+		<a href="#" class="easyui-linkbutton" iconCls="icon-undo" plain="true" onclick="javascript:$('#dg').edatagrid('cancelRow')">Cancel</a>
+	</div>
+</td></tr>
 <tr bgcolor="ghostwhite"><td colspan=4><p align="center"><input type="submit" value="更改设置"></p></td></tr>
 <tr bgcolor="ghostwhite"><td align="left"><font style="font-weight:bold">通知邮件/短信内容设置</font></td></tr>
 <tr bgcolor="ghostwhite"><td align="left"><select id="maillist" onchange="switchMailContent(this.selectedIndex)"><option>【请选择】</option><%
@@ -153,18 +147,70 @@ $subject - 论文题目,$tutorname - 导师姓名,$tutormail - 导师邮箱,$exp
 </td></tr>
 <tr bgcolor="ghostwhite"><td align="center"><input type="submit" value="更改设置"></td></tr>
 </table></form>
+<div id="dialog_add_activity">
+	名称：<input id="activity-name" class="easyui-textbox" style="width:200px">
+</div>
 </center></body>
 <script type="text/javascript">
-	$('#btnnewturn').click(function() {
-		$(this).val('正在执行，请稍候……').attr('disabled',true);
-		$(':input[name="turn_num"]').val('<%=turn_num+1%>');
-		this.form.submit();
-	}).attr('disabled',false);
-	$('#btnexport').click(function() {
-		$(this).val('正在导出，请稍候……').attr('disabled',true);
-		this.form.action='exportReviewStats.asp?fn=<%=sem_info(3)%>_<%=turn_num%>&turn=<%=turn_num%>';
-		this.form.submit();
-	}).attr('disabled',false);
+	var Common = {
+		curryLoadFilter: function() {
+			var args = arguments;
+			return function(data) {
+				if(data.status !== "ok") {
+					$.messager.alert("提示",data.msg,"error");
+					return [];
+				}
+				var ret = data.data;
+				for(h in args) {
+					ret = typeof args[h] === "function" ? args[h].call(ret) : ret;
+				}
+				return ret;
+			}
+		},
+		curryOnLoadFailed: function(opr) {
+			return function() {
+				$.messager.alert("提示", opr+"时出错，请稍后再试。","error");
+			}
+		},
+		formatDateTime: function(date) {
+			return date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDay()+" "
+				+date.getHours()+":"+date.getMinutes();
+		}
+	};
+	
+	$(function() {
+		$("#activity_id").combobox({
+			url: "../api/get-activities-brief",
+			valueField: "id",
+			textField: "name",
+			loadFilter: Common.curryLoadFilter(Array.prototype.reverse),
+			onLoadFailed: Common.curryOnLoadFailed("获取评阅活动列表"),
+			onSelect: Common.onComboSelect
+		});
+		$("#activity_period").datagrid();
+		$("#btn_add_activity").bind('click', function() {
+			$('#dialog_add_activity').dialog('open');
+		});
+		$('#dialog_add_activity').dialog({
+			title: '新建评阅活动',
+			width: 400,
+			height: 200,
+			closed: true,
+			cache: false,
+			modal: true
+		});
+
+		$('#btnnewturn').click(function() {
+			$(this).val('正在执行，请稍候……').attr('disabled',true);
+			$(':input[name="turn_num"]').val('<%=turn_num+1%>');
+			this.form.submit();
+		}).attr('disabled',false);
+		$('#btnexport').click(function() {
+			$(this).val('正在导出，请稍候……').attr('disabled',true);
+			this.form.action='exportReviewStats.asp?fn=<%=sem_info(3)%>_<%=turn_num%>&turn=<%=turn_num%>';
+			this.form.submit();
+		}).attr('disabled',false);
+	});
 </script></html><%
 Case "2"
 	Dim ok

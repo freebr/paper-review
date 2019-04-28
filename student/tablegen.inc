@@ -33,9 +33,9 @@ Class TableGen
 		Set doc=app.Documents.Add(template_file)
 		app.Run "fillInTable",m_info,filepath
 		doc.Close(False)
-		app.Quit()
 		Set range=Nothing
 		Set doc=Nothing
+		app.Quit()
 		Set app=Nothing
 		m_err_desc=Err.Description
 		If Err.Number=0 Then

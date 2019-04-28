@@ -242,6 +242,12 @@ Function useStylesheet(arr)
 	Next
 End Function
 
+Function CreateDictionary()
+	Dim ret: Set ret = Server.CreateObject("Scripting.Dictionary")
+	Set CreateDictionary = ret
+	Set ret = Nothing
+End Function
+
 Const STUCLI_OPR_TABLE1 = 1
 Const STUCLI_OPR_TABLE2 = 2
 Const STUCLI_OPR_TABLE3 = 3
@@ -268,3 +274,6 @@ Dim arrDiplomaName:arrDiplomaName=Array("","专科","本科","硕士研究生","
 Response.CacheControl="no-cache"
 Response.Charset="utf-8"
 %>
+<!--#include file="../inc/Conversion.inc" -->
+<!--#include file="../inc/JSONWriter.inc" -->
+<!--#include file="../inc/PinyinQuery.inc"-->

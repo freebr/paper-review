@@ -1,5 +1,4 @@
-﻿<!--#include file="../inc/global.inc"-->
-<%
+﻿<!--#include file="../inc/global.inc"--><%
 Function join(arr,delim)
 	If Not IsArray(arr) Then
 		join=arr

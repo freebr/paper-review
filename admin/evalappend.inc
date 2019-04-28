@@ -51,15 +51,10 @@ Class EvalAppend
     rg2.ParagraphFormat.IndentFirstLineCharWidth 13
 		doc.SaveAs filepath,16
 		doc.Close(False)
-		Application("ReviewSysWordAppUseCounter")=Application("ReviewSysWordAppUseCounter")+1
-		If Application("ReviewSysWordAppUseCounter")=10 Then
-			app.Quit()
-			Set Application("ReviewSysWordApp")=Nothing
-			Application("ReviewSysWordAppUseCounter")=0
-		End If
 		Set rg=Nothing
 		Set rg2=Nothing
 		Set doc=Nothing
+		wd.Quit()
 		Set wd=Nothing
 		m_err_desc=Err.Description
 		If Err.Number=0 Then

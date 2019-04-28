@@ -187,9 +187,9 @@ Class ReviewAppGen
 		doc.BuiltInDocumentProperties(3)="华南理工大学工商管理学院"
 		doc.SaveAs filepath,16
 		doc.Close(False)
-		wd.Quit()
 		Set range=Nothing
 		Set doc=Nothing
+		wd.Quit()
 		Set wd=Nothing
 		m_err_desc=Err.Description
 		If Err.Number=0 Then
