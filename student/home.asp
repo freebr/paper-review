@@ -1,5 +1,4 @@
-﻿<%Response.Charset="utf-8"%>
-<!--#include file="../inc/db.asp"-->
+﻿<!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"-->
 <%If IsEmpty(Session("StuId")) Then Response.Redirect("../error.asp?timeout")
 Dim bTableFilledIn:bTableFilledIn=Array(0,False,False,False,False)
@@ -7,7 +6,7 @@ Dim bTblThesisUploaded:bTblThesisUploaded=Array(0,False,False,False)
 Dim arrTableStat(4),arrFileListName,arrFileListPath,arrFileListField
 Dim review_result(2)
 Dim defence_member,defence_members,defence_memo
-Dim defence_result,grant_degree
+Dim defence_result,grant_degree_result
 
 arrFileListName=Array("","开题报告表","开题论文","中期检查表","中期论文","预答辩申请表","预答辩论文","答辩及授予学位审批材料","一次送检论文","二次送检论文","送审论文","答辩论文","定稿论文","一次送检论文检测报告","二次送检论文检测报告","论文评阅书 1","论文评阅书 2")
 arrFileListPath=Array("","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/admin/upload/report","/ThesisReview/admin/upload/report","/ThesisReview/expert/export","/ThesisReview/expert/export")
@@ -17,20 +16,20 @@ task_progress=0
 stu_type=Session("StuType")
 
 Connect conn
-sql="SELECT *,dbo.getThesisStatusText(1,TASK_PROGRESS,2) AS STAT1_DESC,dbo.getThesisStatusText(2,REVIEW_STATUS,2) AS STAT2_DESC,LEFT(REVIEW_FILE,CHARINDEX(',',REVIEW_FILE)-1) AS REVIEW_FILE1,RIGHT(REVIEW_FILE,LEN(REVIEW_FILE)-CHARINDEX(',',REVIEW_FILE)) AS REVIEW_FILE2 FROM ViewThesisInfo WHERE STU_ID="&Session("Stuid")&" ORDER BY PERIOD_ID DESC" 'AND PERIOD_ID="&sem_info(3)&" AND Valid=1"
-GetRecordSetNoLock conn,rs,sql,result
+sql="SELECT *,dbo.getThesisStatusText(1,TASK_PROGRESS,2) AS STAT1_DESC,dbo.getThesisStatusText(2,REVIEW_STATUS,2) AS STAT2_DESC,LEFT(REVIEW_FILE,CHARINDEX(',',REVIEW_FILE)-1) AS REVIEW_FILE1,RIGHT(REVIEW_FILE,LEN(REVIEW_FILE)-CHARINDEX(',',REVIEW_FILE)) AS REVIEW_FILE2 FROM ViewThesisInfo WHERE STU_ID="&Session("Stuid")&" ORDER BY ActivityId DESC"
+GetRecordSetNoLock conn,rs,sql,count
 If rs.EOF Then
 	task_prog_text="未上传开题报告"
 	review_stat_text="未上传送检论文"
 Else
 	thesisID=rs("ID")
 	task_progress=rs("TASK_PROGRESS")
-	reproduct_ratio=toNumber(rs("REPRODUCTION_RATIO"))
+	reproduct_ratio=toNumericString(rs("REPRODUCTION_RATIO"))
 	detect_count=rs("DETECT_COUNT")
 	bReviewFileVisible=(rs("REVIEW_FILE_STATUS") And 2)<>0
 	defence_member=rs("DEFENCE_MEMBER")
 	defence_result=rs("DEFENCE_RESULT")
-	grant_degree=rs("GRANT_DEGREE")
+	grant_degree_result=rs("GRANT_DEGREE_RESULT")
 	For i=1 To UBound(arrTableStat)
 		j=(i-1)*3+1
 		k=i*3
@@ -99,7 +98,7 @@ Function showStepInfo(stepDisplay,stepCounter,bHidden)
 			filetype=14
 %>您的论文已通过二次查重检测，请等待导师同意送审。<br/>检测结果摘要：经图书馆检测，学位论文文字复制比为&nbsp;<%=reproduct_ratio%>%。<%
 		End Select
-%><br/><a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=<%=filetype%>" target="_blank">点此下载检测报告</a></span><%
+%><br/><a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=<%=filetype%>" target="_blank">点此下载检测报告</a></span><%
 	Case rsNotAgreeReview
 %><span style="color:dimgray">导师不同意您的论文送审，请对照导师意见修改送审论文后重新上传。<br/>送审意见：<%=toPlainString(rs("REVIEW_APP_EVAL"))%></span><%
 	Case rsAgreeReview
@@ -117,11 +116,11 @@ Function showStepInfo(stepDisplay,stepCounter,bHidden)
 	Case rsReviewEval
 %><span style="color:dimgray">专家已完成论文评阅，请按照评阅书意见对论文进行修改，然后上传答辩论文。</span><br/><%
 		If bReviewFileVisible Then
-%>评阅意见&nbsp;1：【<%=getReviewResult(review_result(0))%>】&nbsp;评阅意见&nbsp;2：【<%=getReviewResult(review_result(1))%>】&nbsp;总体评价：【<%=getFinalResult(review_result(2))%>】<br/><%
+%>评阅意见&nbsp;1：【<%=getReviewResultText(review_result(0))%>】&nbsp;评阅意见&nbsp;2：【<%=getReviewResultText(review_result(1))%>】&nbsp;总体评价：【<%=getFinalResultText(review_result(2))%>】<br/><%
 			For i=0 To 1
 				If arrRevRet(i)<>5 Then	' 该专家已评阅
 					If i=1 Then Response.Write "&emsp;"
-%><a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=<%=15+i%>" target="_blank">点击下载第<%=i+1%>份评阅书</a></span><%
+%><a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=<%=15+i%>" target="_blank">点击下载第<%=i+1%>份评阅书</a></span><%
 				End If
 			Next
 		End If
@@ -149,8 +148,8 @@ End Function
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="theme-color" content="#2D79B2" />
 <title>系统首页</title>
-<% useStylesheet("student") %>
-<% useScript(Array("jquery", "common", "thesis")) %>
+<% useStylesheet "student" %>
+<% useScript "jquery", "common", "thesis" %>
 <style type="text/css">
 	td.modtitle { height:20;border:1px solid gainsboro }
 	td.modcontent { padding-left:20px;padding-top:10px;background:url(../images/student/modback.png) repeat }
@@ -211,7 +210,7 @@ End Function
 	If stu_type=6 Then
 		If review_status<>rsNone And (review_type=0 Or review_type=1) Then
 			sql="SELECT * FROM ReviewTypes WHERE LEN(THESIS_FORM)>0 AND TEACHTYPE_ID="&stu_type
-			GetRecordSetNoLock conn,rs2,sql,result
+			GetRecordSetNoLock conn,rs2,sql,count
 %><form method="post" action="setThesisForm.asp">
 <input type="hidden" name="tid" value="<%=thesisID%>" />
 <p><span class="tip">您还没有选择所撰写的论文形式，请在此选择并提交：</span>
@@ -259,11 +258,7 @@ End Function
 			
 			' 显示答辩成绩
 			If Not IsNull(defence_result) And defence_result<>0 Then %>
-	<hr/><p class="defenceresult"><span>您的答辩成绩为：<%=getDefenceResult(defence_result)%><%
-				If Not grant_degree Then %>，不同意授予学位！<%
-				ElseIf grant_degree Then %>，同意授予学位！<%
-				End If
-%></span></p><%
+	<hr/><p class="defenceresult"><span>您的答辩成绩为：<%=getDefenceResultText(defence_result)%>，答辩表决结果：<%=getGrantDegreeResultText(grant_degree_result)%></span></p><%
 			End If
 		End If
 %></td></tr>
@@ -310,7 +305,7 @@ End Function
 				If fso.FileExists(fullfilepath) Then
 					Set file=fso.GetFile(fullfilepath)
 					fileExt=fso.GetExtensionName(filename) %>
-<li><a class="fileitem" href="fetchfile.asp?tid=<%=thesisID%>&type=<%=i%>" target="_blank" title="大小：<%=toDataSizeString(file.Size)%>&#10;创建时间：<%=FormatDateTime(file.DateCreated,2)&" "&FormatDateTime(file.DateCreated,4)%>&#10;点击下载此文件"><img src="../images/student/<%=fileExt%>.png" title="<%=UCase(fileExt)%>格式" /><div><%=arrFileListName(i)%></div></a></li><%
+<li><a class="fileitem" href="fetchDocument.asp?tid=<%=thesisID%>&type=<%=i%>" target="_blank" title="大小：<%=toDataSizeString(file.Size)%>&#10;创建时间：<%=FormatDateTime(file.DateCreated,2)&" "&FormatDateTime(file.DateCreated,4)%>&#10;点击下载此文件"><img src="../images/student/<%=fileExt%>.png" title="<%=UCase(fileExt)%>格式" /><div><%=arrFileListName(i)%></div></a></li><%
 					Set file=Nothing
 				End If
 			End If

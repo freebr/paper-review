@@ -1,19 +1,20 @@
-﻿<%Response.Charset="utf-8"%>
-<!--#include file="../inc/ExtendedRequest.inc"-->
-<!--#include file="../inc/db.asp"-->
+﻿<!--#include file="../inc/ExtendedRequest.inc"-->
+<!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"--><%
 If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 
-curStep=Request.QueryString("step")
-Select Case curStep
+Dim conn,sql,ret,rs
+
+step=Request.QueryString("step")
+Select Case step
 Case vbNullstring ' 文件选择页面
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="theme-color" content="#2D79B2" />
 <title>导入答辩安排信息</title>
-<% useStylesheet("admin") %>
-<% useScript("jquery") %>
+<% useStylesheet "admin" %>
+<% useScript "jquery" %>
 </head>
 <body bgcolor="ghostwhite">
 <center><font size=4><b>导入答辩安排信息</b><br />
@@ -38,21 +39,18 @@ Case vbNullstring ' 文件选择页面
 Case 2	' 上传进程
 
 	Dim fso,Upload,File
-	
+
 	Set Upload=New ExtendedRequest
 	Set file=Upload.File("excelFile")
 	send_email=Upload.Form("sendemail")
 	Set fso=Server.CreateObject("Scripting.FileSystemObject")
-	
+
 	' 检查上传目录是否存在
 	strUploadPath = Server.MapPath("upload\xls")
 	If Not fso.FolderExists(strUploadPath) Then fso.CreateFolder(strUploadPath)
-	
+
 	fileExt=LCase(file.FileExt)
-	If period_id="0" Then
-		bError = True
-		errstring = "请选择学期！"
-	ElseIf fileExt <> "xls" And fileExt <> "xlsx" Then	' 不被允许的文件类型
+	If fileExt <> "xls" And fileExt <> "xlsx" Then	' 不被允许的文件类型
 		bError = True
 		errstring = "所选择的不是 Excel 文件！"
 	Else
@@ -71,8 +69,8 @@ Case 2	' 上传进程
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="theme-color" content="#2D79B2" />
 <title>导入答辩安排信息</title>
-<% useStylesheet("admin") %>
-<% useScript("jquery") %>
+<% useStylesheet "admin" %>
+<% useScript "jquery" %>
 </head>
 <body bgcolor="ghostwhite">
 <center><br /><b>导入答辩安排信息</b><br /><br /><%
@@ -88,25 +86,25 @@ Case 2	' 上传进程
 	End If
 %></center></body></html><%
 Case 3	' 数据读取，导入到数据库
-	
+
 	Function transchar(ByVal s)
 		' 将 | 号替换为实体符号
 		s=Replace(s,"|","&brvbar;")
 		transchar=s
 	End Function
-	
+
 	Function addData()
-		' 添加数据并发送通知邮件
-		Dim sql,sql2,conn,result,rsa,rsb
+		' 添加数据
+		Dim sql,sql2,count,rsa,rsb
 		Dim numInsert,numUpdate:numInsert=0:numUpdate=0
-		Dim thesisid,stuid,stuid_string:numThesis=0:stuid_string="0"
+		Dim thesisid,stuid,stu_ids:numThesis=0
 		Dim member_desc,last_val(7)
 		Connect conn
 		Do While Not rs.EOF
 			If IsNull(rs(0)) Then Exit Do
 			' 按学号检索
 			sql="SELECT ID,STU_ID FROM ViewThesisInfo WHERE VALID=1 AND STU_NO="&toSqlString(rs(2))&" AND TEACHTYPE_ID="&getTeachTypeIdByName(rs(0))&" ORDER BY STU_ID DESC"
-			GetRecordSetNoLock conn,rsa,sql,result
+			GetRecordSetNoLock conn,rsa,sql,count
 			If rsa.EOF Then
 				bError=True
 				errMsg=errMsg&"学生不存在:"""&rs(1)&"""。"&vbNewLine
@@ -114,16 +112,16 @@ Case 3	' 数据读取，导入到数据库
 				numThesis=numThesis+1
 				thesisid=rsa("ID")
 				stuid=rsa("STU_ID")
-				stuid_string=stuid_string&","&stuid
+				stu_ids=stu_ids&","&stuid
 				sql="SELECT * FROM DefenceInfo WHERE THESIS_ID="&thesisid
-				GetRecordSet conn,rsb,sql,result
+				GetRecordSet conn,rsb,sql,count
 				If rsb.EOF Then
 					rsb.AddNew()
 					numInsert=numInsert+1
 				Else
 					numUpdate=numUpdate+1
 				End If
-				
+
 				member_desc=transchar(rs(4))&"|"&transchar(rs(5))&"|"&transchar(rs(6))
 				rsb("THESIS_ID")=thesisid
 				rsb("DEFENCE_TIME")=rs(7)
@@ -136,59 +134,19 @@ Case 3	' 数据读取，导入到数据库
 			CloseRs rsa
 			rs.MoveNext()
 		Loop
-		
-		If send_email Then
-			Dim stuname,stuno,stuclass,stuspec,stumail,subject,tutorname,tutormail,filename,fieldval,bSuccess
-			Dim logtxt:logtxt="行政人员["&Session("name")&"]执行答辩安排信息导入操作。"
-			Dim mail_id:mail_id=getThesisReviewSystemMailIdByType(Now)
-			' 批量发送通知邮件
-			sql="SELECT STU_NAME,STU_NO,CLASS_NAME,SPECIALITY_NAME,EMAIL,THESIS_SUBJECT,TUTOR_NAME,TUTOR_EMAIL FROM ViewThesisInfo WHERE VALID=0 AND STU_ID IN ("&stuid_string&")"
-			GetRecordSetNoLock conn,rsa,sql,result
-			Do While Not rsa.EOF
-				stuname=rsa("STU_NAME")
-				stuno=rsa("STU_NO")
-				stuclass=rsa("CLASS_NAME")
-				stuspec=rsa("SPECIALITY_NAME")
-				stumail=rsa("EMAIL")
-				subject=rsa("THESIS_SUBJECT")
-				tutorname=rsa("TUTOR_NAME")
-				tutormail=rsa("TUTOR_EMAIL")
-				filename="答辩安排信息"
-				fieldval=Array(stuname,stuno,stuclass,stuspec,stumail,subject,tutorname,tutormail,filename)
-				bSuccess=sendAnnouncementEmail(mail_id(11),stumail,fieldval)
-				logtxt=logtxt&"发送邮件给学生["&stuname&":"&stumail&"]"
-				If bSuccess Then
-					logtxt=logtxt&"成功。"
-				Else
-					logtxt=logtxt&"失败。"
-				End If
-				bSuccess=sendAnnouncementEmail(mail_id(12),tutormail,fieldval)
-				logtxt=logtxt&"发送邮件给导师["&tutorname&":"&tutormail&"]"
-				If bSuccess Then
-					logtxt=logtxt&"成功。"
-				Else
-					logtxt=logtxt&"失败。"
-				End If
-				rsa.MoveNext()
-			Loop
-			If numInsert+numUpdate>0 Then
-				writeLog logtxt
-			End If
-		End If
-		CloseConn conn
-		addData=Array(numInsert,numUpdate)
+		addData=Array(numInsert,numUpdate,Mid(stu_ids,2))
 	End Function
-	
+
 	Dim bError,errMsg
 	Dim numInsert,numUpdate
-	
+
 	filename=Request.Form("filename")
 	send_email=Request.Form("sendemail")="on"
 	filepath=Server.MapPath("upload/xls/"&filename)
 	Set connExcel=Server.CreateObject("ADODB.Connection")
 	connstring="Provider=Microsoft.ACE.OLEDB.12.0;Data Source="&filepath&";Extended Properties=""Excel 12.0;HDR=Yes;IMEX=1"""
 	connExcel.Open connstring
-	
+
 	Set rs=connExcel.OpenSchema(adSchemaTables)
 	Do While Not rs.EOF
 		If rs("TABLE_TYPE")="TABLE" Then
@@ -203,7 +161,45 @@ Case 3	' 数据读取，导入到数据库
 	ret=addData()
 	numInsert=ret(0)
 	numUpdate=ret(1)
+	stu_ids=ret(2)
+
+	If send_email And Len(stu_ids)<>0 Then
+		' 发送导入答辩安排通知邮件
+		Dim arrStuIds:arrStuIds=Split(stu_ids,",")
+		Dim dict:Set dict=CreateDictionary()
+		Dim operation_name,activity_id,stu_type,is_sent
+		dict("filename")="答辩安排信息"
+		operation_name=Format("导入[{0}]",dict("filename"))
+		sql="SELECT ActivityId,TEACHTYPE_ID,STU_NAME,STU_NO,CLASS_NAME,SPECIALITY_NAME,EMAIL,THESIS_SUBJECT,TUTOR_NAME,TUTOR_EMAIL FROM ViewThesisInfo WHERE STU_ID=?"
+		For i=0 To UBound(arrStuIds)
+			Set ret=ExecQuery(conn,sql,CmdParam("ID",adInteger,4,arrStuIds(i)))
+			Set rs=ret("rs")
+			If Not rs.EOF Then
+				activity_id=rs("ActivityId")
+				stu_type=rs("TEACHTYPE_ID")
+				dict("stuname")=rs("STU_NAME")
+				dict("stuno")=rs("STU_NO")
+				dict("stuclass")=rs("CLASS_NAME")
+				dict("stuspec")=rs("SPECIALITY_NAME")
+				dict("stumail")=rs("EMAIL")
+				dict("subject")=rs("THESIS_SUBJECT")
+				dict("tutorname")=rs("TUTOR_NAME")
+				dict("tutormail")=rs("TUTOR_EMAIL")
+				CloseRs rs
+
+				is_sent=sendNotifyMail(activity_id,stu_type,"xxdrtzyj(xs)",dict("stumail"),dict)
+				writeNotificationEventLog usertypeAdmin,Session("name"),operation_name,usertypeStudent,_
+					dict("stuname"),dict("stumail"),notifytypeMail,is_sent
+
+				is_sent=sendNotifyMail(activity_id,stu_type,"xxdrtzyj(ds)",dict("tutormail"),dict)
+				writeNotificationEventLog usertypeAdmin,Session("name"),operation_name,usertypeTutor,_
+					dict("tutorname"),dict("tutormail"),notifytypeMail,is_sent
+			End If
+		Next
+	End If
+
 	CloseRs rs
+	CloseConn conn
 	CloseConn connExcel
 %><script type="text/javascript"><%
 	If bError Then %>

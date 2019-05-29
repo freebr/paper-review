@@ -1,131 +1,200 @@
-﻿<%
-
-	Dim arrIssueSource:arrIssueSource=Array("11.国家计委、科委项目","12.国家经贸委项目","13.国家自然科学基金项目","14.国务院其它部委项目","21.主管部门（部委级）项目","22.省级项目","31.学校级项目","41.国际合作项目","42.自选项目","43.其它项目（企业委托项目）")
-	Dim arrThesisType:arrThesisType=Array("1.基础研究","2.应用研究","3.开发研究","4.其它")
-	Dim arrThesisForm:arrThesisForm=Array("产品研发","工程设计","应用研究","工程/项目管理","调研报告")
-
-%><table width="100%">
-	<tr><td class="section"><p>Ⅰ 学位申请书</p></td>
-	<tr><td><p>（着重概述申请人完成培养计划规定的任务情况及学位论文的工作情况）</p></td></tr>
-	<tr><td><p align="center"><textarea name="degree_application" rows="25" cols="100"></textarea></p></td></tr>
-	<tr><td class="section"><p>Ⅱ 学位申请资格审查材料</p></td>
-	<tr><td class="section2"><p>Ⅱ-1 基本情况</p></td>
-	<tr><td><table width="100%">
-	<tr><td width="60"><p>姓名：</p></td>
-	<td width="110"><input type="text" name="stu_name" size="6" value="<%=Session("StuName")%>" readonly /></td>
-	<td width="50"><p>性别：</p></td>
-	<td><p><label for="sex_male"><input type="radio" name="sex" id="sex_male" size="5" value="男" />男</label>&nbsp;
-	<label for="sex_female"><input type="radio" name="sex" id="sex_female" size="5" value="女" />女</label></p></td>
-	<td width="90"><p>出生年月：</p></td>
-	<td width="150"><p><input type="text" name="birth_ym" size="3" maxlength="4" />年<input type="text" name="birth_ym" size="1" maxlength="2" />月</p></td>
-	<td width="90"><p>身份证号：</p></td>
-	<td><input type="text" name="idcard_no" size="18" maxlength="18" /></td></tr>
-	<tr><td><p>籍贯：</p></td>
-	<td><input type="text" name="native_place" size="6" /></td>
-	<td><p>民族：</p></td>
-	<td><input type="text" name="nation" size="10" /></td>
-	<td><p>入学年月：</p></td>
-	<td><p><input type="text" name="entrance_ym" size="3" maxlength="4" />年<input type="text" name="entrance_ym" size="1" maxlength="2" />月</p></td>
-	<td><p>政治面貌：</p></td>
-	<td><input type="text" name="political_status" size="18" /></td></tr>
-	<tr><td><p>学院：</p></td>
-	<td colspan="2"><input type="text" name="academy" size="15" value="工商管理学院" readonly /></td><%
-	If stu_type=5 Or stu_type=9 Then
-		If stu_type=5 Then %>
-		<td><p>工程领域名称：</p></td><%
-		ElseIf stu_type=9 Then  %>
-		<td><p>研究方向：</p></td><%
-		End If %>
-<td colspan="4"><input type="text" name="research_field" size="38" value="<%=research_field%>" /></td><%
-	End If
-%></tr><%
-	If stu_type=5 Then %>
-	<tr><td colspan="4"><p>校内导师姓名、职称：<input type="text" name="school_tutor_name_duty" size="18" value="<%=tutor_name%>&nbsp;<%=tutor_duty_name%>" /></p></td>
-	<td colspan="4"><p>校外导师姓名、职称：<input type="text" name="after_school_tutor_name_duty" size="18" /></p></td></tr><%
-	Else %>
-	<tr><td colspan="8"><p>导师姓名、职称：<input type="text" name="school_tutor_name_duty" size="18" value="<%=tutor_name%>&nbsp;<%=tutor_duty_name%>" /></p></td></tr><%
-	End If %>
-	<tr><td colspan="8"><p>工作单位及职务（在职）：
-	<input type="text" name="workplace_job" size="75%" /></p></td></tr>
-	<tr><td colspan="8"><p>在读方式：
-	<label for="study_type_1"><input type="radio" name="study_type" id="study_type_1" size="5" value="脱产" />脱产</label>&nbsp;
-	<label for="study_type_2"><input type="radio" name="study_type" id="study_type_2" size="5" value="在职" />在职</label></p></td></tr>
-	<tr><td colspan="4"><p>大学毕业院校：<input type="text" name="graduated_at" size="22" /></p></td>
-	<td colspan="2"><p>专业：<input type="text" name="speciality_name" size="18" /></p></td>
-	<td colspan="2"><p>毕业年月：<input type="text" name="graduation_ym" size="3" maxlength="4" />年<input type="text" name="graduation_ym" size="1" maxlength="2" />月</p></td></tr>
-	<tr><td colspan="8"><p>在读前获得最后学位：
-	<input type="text" name="last_degree" size="80%" /></p></td></tr>
-	<tr><td colspan="8"><table width="100%">
-	<tr><td colspan="3"><p>简历（大学起）</p></td></tr>
-	<tr><td><p align="center">起止时间</p></td>
-	<td><p align="center">学习或工作单位</p></td>
-	<td><p align="center">职称、职务</p></td></tr><%
+﻿<table width="1000">
+	<tr><td class="section">Ⅰ 学位申请书</td>
+	<tr><td>
+	<div class="form-row">
+主要内容包括：申请人完成培养计划的情况及学位论文的工作情况，含论文选题的意义和价值；研究目的；创造性成果等
+	</div>
+	<div class="form-row"><textarea class="required" name="degree_application" cols="100" style="height: 400px"></textarea></div>
+	</td></tr>
+	<tr><td class="section">Ⅱ 学位申请人基本情况</td></tr>
+	<tr><td>
+		<div class="form-row">
+			<div class="label" style="flex-basis: 90px">姓名：</div>
+			<div style="flex-basis: 200px"><input type="text" class="required" name="stu_name" size="20" value="<%=Session("StuName")%>" readonly /></div>
+			<div class="label" style="flex-basis: 90px">性别：</div>
+			<div style="flex-basis: 110px"><label for="sex_male"><input type="radio" name="sex" id="sex_male" size="5" value="男" />男</label>
+			<label for="sex_female"><input type="radio" name="sex" id="sex_female" size="5" value="女" />女</label></div>
+			<div class="label" style="flex-basis: 60px">民族：</div>
+			<div style="flex-basis: 140px">
+				<select id="ethnic" class="easyui-combobox" name="ethnic"
+					data-options="prompt: '【请选择】', value: ''" style="width:120px;"><%
+			For i=0 To UBound(arrEthnic)
+				val=arrEthnic(i) %>
+					<option value="<%=val%>"><%=val%></option><%
+			Next %>
+				</select>
+			</div>
+			<div class="label" style="flex-basis: 90px">出生日期：</div>
+			<div><input type="text" class="required" name="birthday" size="3" maxlength="4" />年<input type="text" class="required" name="birthday" size="1" maxlength="2" />月<input type="text" class="required" name="birthday" size="1" maxlength="2" />日</div>
+		</div>
+		<div class="form-row">
+			<div class="label" style="flex-basis: 90px">国籍：</div>
+			<div style="flex-basis: 200px"><input type="text" class="required" name="nation" size="20" /></div>
+			<div class="label" style="flex-basis: 90px">政治面貌：</div>
+			<div style="flex-basis: 310px">
+				<select id="political_status" class="easyui-combobox" name="political_status"
+					data-options="prompt: '【请选择】', value: ''" style="width:170px;"><%
+			For i=0 To UBound(arrPoliticalStatus)
+				val=arrPoliticalStatus(i) %>
+					<option value="<%=val%>"><%=val%></option><%
+			Next %>
+				</select>
+			</div>
+			<div class="label" style="flex-basis: 90px">入学年月：</div>
+			<div><input type="text" class="required" name="entrance_ym" size="3" maxlength="4" />年<input type="text" class="required" name="entrance_ym" size="1" maxlength="2" />月</div>
+		</div>
+		<div class="form-row">
+			<div class="label" style="flex-basis: 90px">身份证号：</div>
+			<div style="flex-basis: 200px"><input type="text" class="required" name="idcard_no" size="20" maxlength="18" /></div>
+			<div class="label" style="flex-basis: 90px">学号：</div>
+			<div><input type="text" class="required" name="stu_no" size="20" value="<%=stu_no%>" readonly /></div>
+		</div>
+		<div class="form-row">
+			<div class="label" style="flex-basis: 90px">专业名称：</div>
+			<div style="flex-basis: 200px"><input type="text" class="required" name="speciality_name" size="20" value="<%=speciality_name%>" /></div>
+			<div class="label" style="flex-basis: 90px">指导教师：</div>
+			<div style="flex-basis: 200px"><input type="text" class="required" name="tutor_name" size="20" value="<%=tutor_name%>" /></div><%
+			If stu_type=5 Then %>
+			<div class="label" style="flex-basis: 90px">工程领域：</div>
+			<div>
+				<select id="research_field" class="easyui-combobox" name="research_field"
+					data-options="prompt: '【请选择】', value: '', editable: false, required: true, panelHeight: '150px'" style="width:200px;"><%
+				For i=0 To UBound(arrResearchField)
+					val=arrResearchField(i) %>
+					<option value="<%=val%>"><%=val%></option><%
+				Next %>
+				</select>
+			</div><%
+			End If %>
+		</div>
+		<div class="form-row">
+			<div class="label" style="flex-basis: 90px">学习方式：</div>
+			<div>
+			<label for="study_type_1"><input type="radio" name="study_type" id="study_type_1" size="5" value="脱产" checked />脱产</label>
+			<label for="study_type_2"><input type="radio" name="study_type" id="study_type_2" size="5" value="半脱产" />半脱产</label>
+			</div>
+		</div>
+		<div class="sub-section">攻读本学位前学位信息</div>
+		<div class="form-row">
+			<div class="label" style="flex-basis: 120px">学位授予单位：</div>
+			<div style="flex-basis: 260px"><input type="text" class="required" name="graduated_at" size="30" /></div>
+			<div class="label" style="flex-basis: 120px">专业：</div>
+			<div><input type="text" class="required" name="before_speciality_name" size="20" /></div>
+		</div>
+		<div class="form-row">
+			<div class="label" style="flex-basis: 120px">学位级别：</div>
+			<div style="flex-basis: 260px">
+			<label for="last_degree_0"><input type="radio" name="last_degree" id="last_degree_0" size="5" value="无" />无</label>
+			<label for="last_degree_1"><input type="radio" name="last_degree" id="last_degree_1" size="5" value="学士" />学士</label>
+			<label for="last_degree_2"><input type="radio" name="last_degree" id="last_degree_2" size="5" value="硕士" />硕士</label>
+			<label for="last_degree_3"><input type="radio" name="last_degree" id="last_degree_3" size="5" value="博士" />博士</label>
+		</div>
+		<div class="label" style="flex-basis: 120px">获学位年月：</div>
+			<div><input type="text" class="required" name="graduation_ym" size="3" maxlength="4" />年<input type="text" class="required" name="graduation_ym" size="1" maxlength="2" />月</div>
+		</div>
+		<div class="sub-section">简历（大学至今）</div>
+		<div class="form-row" style="text-align: center">
+			<div style="flex-basis: 33%">起止时间</div>
+			<div style="flex-basis: 33%; text-align: center">学习或工作单位</div>
+			<div style="flex-basis: 33%; text-align: center">职称、职务</div>
+		</div><%
+		For i=1 To 6 %>
+		<div class="form-row" style="text-align: center">
+			<div style="flex-basis: 33%"><input type="text" class="duration" name="resume_duration" size="30" /></div>
+			<div style="flex-basis: 33%"><input type="text" <% If i=1 Then %>class="required"<% End If %> name="resume_place" size="40" /></div>
+			<div style="flex-basis: 33%"><input type="text" <% If i=1 Then %>class="required"<% End If %> name="resume_job" size="40" /></div>
+		</div><%
+		Next %>
+		<div class="form-row"><div class="label">奖惩情况：</div></div>
+		<div class="form-row"><textarea name="honor_penalty" cols="100" style="height: 200px"></textarea></div>
+	</td></tr>
+	<tr><td class="section">Ⅲ 培养计划完成情况</td></tr>
+	<tr><td>
+		<div class="sub-section">在学期间取得的学术成果（含论文、专著、专利等）</div>
+		<div class="form-row" style="text-align: center">
+			<div style="flex-basis: 5%">序号</div>
+			<div style="flex-basis: 30%">成果名称</div>
+			<div style="flex-basis: 15%">获得年月（卷期号）</div>
+			<div style="flex-basis: 25%">成果出处</div>
+			<div style="flex-basis: 10%">排名</div>
+			<div style="flex-basis: 15%">成果状态</div>
+		</div><%
 	For i=1 To 6 %>
-	<tr><td><p align="center"><input type="text" name="resume_duration" size="25" /></p></td>
-	<td><p align="center"><input type="text" name="resume_place" size="30" /></p></td>
-	<td><p align="center"><input type="text" name="resume_job" size="20" /></p></td></tr><%
+		<div class="form-row" style="text-align: center">
+			<div style="flex-basis: 5%"><%=i%></div>
+			<div style="flex-basis: 30%"><input type="text" name="achievement_name" size="30" /></div>
+			<div style="flex-basis: 15%"><input type="text" name="achievement_ym" size="20" /></div>
+			<div style="flex-basis: 25%"><input type="text" name="achievement_source" size="25" /></div>
+			<div style="flex-basis: 10%"><input type="text" name="achievement_authornum" size="4" /></div>
+			<div style="flex-basis: 15%"><input type="text" name="achievement_status" size="10" /></div>
+		</div><%
 	Next %>
-	</table></td></tr>
-	<tr><td colspan="8"><p>奖惩情况：</p></td></tr>
-	<tr><td colspan="8"><p align="center"><textarea name="honor_penalty" rows="10" cols="100"></textarea></p></td></tr></table></td></tr>
-	<tr><td class="section2"><p>Ⅱ-3 学位论文工作情况</p></td></tr>	
-	<tr><td><table width="100%">
-	<tr><td colspan="4"><p>论文题目：<input type="text" name="subject" size="80" value="<%=subject%>" /></p></td></tr>
-	<tr><td colspan="4"><p>论文字数：<input type="text" name="thesis_word_count" size="3" />万</p></td></tr>
-	<tr><td width="115"><p>论文选题来源：</p></td>
-	<td><p><select name="issue_source" style="width:300px"><%
-	For i=0 To UBound(arrIssueSource)
-		val=Mid(arrIssueSource(i),InStr(arrIssueSource(i),".")+1)
-	%><option value="<%=val%>"><%=arrIssueSource(i)%></option><%
-	Next %></select></p></td>
-	<td width="130"><p>项目名称及代码：</p></td>
-	<td><input type="text" name="speciality_name_code" size="35" /></td></tr>
-	<tr><td width="115"><p>论文类型：</p></td>
-	<td><p><select name="thesis_type" style="width:300px"><%
-	For i=0 To UBound(arrThesisType)
-		val=Mid(arrThesisType(i),InStr(arrThesisType(i),".")+1)
-	%><option value="<%=val%>"><%=arrThesisType(i)%></option><%
-	Next %></select></p></td>
-	<td width="150"><p>论文工作起止时间：</p></td>
-	<td><input type="text" name="thesis_duration" size="35" /></td></tr><%
-	If stu_type=5 Then %>
-	<tr><td width="115"><p>论文形式：</p></td>
-	<td colspan="3"><p><%
-	For i=0 To UBound(arrThesisForm)
-	%><label for="thesis_form_<%=i%>"><input type="radio" name="thesis_form" id="thesis_form_<%=i%>" value="<%=arrThesisForm(i)%>" /><%=arrThesisForm(i)%></label>&emsp;<%
-	Next %></p></td></tr><%
-	End If %>
-	<tr><td colspan="4"><p>学位论文工作简介（主要是论文选题的意义和价值；研究目的；创造性成果等）：</p></td></tr>
-	<tr><td colspan="4"><p align="center"><textarea name="thesis_introduction" rows="15" cols="100"></textarea></p></td></tr></table></td></tr>
-	<tr><td class="section2"><p>Ⅱ-4 在学期间取得的科研成果（含论文、专著、专利等）</p></td></tr>	
-	<tr><td><table width="100%">
-	<tr><td><table width="100%">
-	<tr><td><p align="center">序号</p></td>
-	<td><p align="center">论文（成果）名称</p></td>
-	<td><p align="center">年月（卷期号）</p></td>
-	<td width="340"><p align="center">成果鉴定、获专利、颁奖与采用部门或发表刊物及出版单位</p></td>
-	<td><p align="center">第几作者</p></td>
-	<td><p align="center">被索引收录情况</p></td></tr><%
-	For i=1 To 4 %>
-	<tr><td><p align="center"><%=i%></p></td>
-	<td><p align="center"><input type="text" name="achievement_name" size="20" /></p></td>
-	<td><p align="center"><input type="text" name="achievement_ym" size="10" /></p></td>
-	<td><p align="center"><input type="text" name="achievement_department" size="35" /></p></td>
-	<td><p align="center"><input type="text" name="achievement_authornum" size="4" /></p></td>
-	<td><p align="center"><input type="text" name="achievement_embody" size="10" /></p></td></tr><%
-	Next %>
-	</table></td></tr>
-	<tr><td><p>在学期间以本校名义发表论文共<input type="text" name="thesis_count" size="3" />篇，分类统计如下：</p></td></tr>
-	<tr><td><table width="70%"><tr>
-	<td><p>国内刊物<input type="text" name="thesis_count_domestic_journal" size="3" /></p></td>
-	<td><p>国内会议<input type="text" name="thesis_count_domestic_congress" size="3" /></p></td>
-	<td><p>国外刊物<input type="text" name="thesis_count_foreign_journal" size="3" /></p></td>
-	<td><p>国际会议<input type="text" name="thesis_count_overseas_congress" size="3" /></p></td>
-	<td><p>专利<input type="text" name="thesis_count_patent" size="3" /></p></td></tr>
-	</table></td></tr>
-	<tr><td><p>被索引收录数分类统计：<input type="text" name="embodied_count" size="3" /></p></td></tr>
-	</table></td></tr>
-	<tr><td class="section2"><p>Ⅱ-5 基层单位审查意见</p></td></tr>	
-	<tr><td><p>校内指导教师意见：（包括对申请人的学习情况、思想表现及论文的学术评语，科研工作能力和完成科研工作情况，以及是否同意申请学位论文答辩的意见）</p></td></tr>
-	<tr><td><p align="center"><textarea name="school_tutor_eval" rows="15" cols="100"><%=tutor_modify_eval%></textarea></p></td></tr>
+	</td></tr>
+	<tr><td>
+		<div class="sub-section">论文工作情况</div>
+		<div class="form-row">
+			<div class="label" style="flex-basis: 120px">论文题目：</div>
+			<div><input type="text" class="required" name="dissertation_subject" size="80" value="<%=subject%>" /></div>
+		</div>
+		<div class="form-row">
+			<div class="label" style="flex-basis: 120px">论文关键词：</div>
+			<div style="flex-basis: 420px"><input type="text" class="required" name="dissertation_keywords" size="55" /></div>
+			<div class="label" style="flex-basis: 110px">论文字数：</div>
+			<div style="flex-basis: 100px"><input type="text" class="required" name="dissertation_word_count" size="3" />万</div>
+		</div>
+		<div class="form-row">
+			<div class="label" style="flex-basis: 120px">论文选题来源：</div>
+			<div style="flex-basis: 400px">
+				<select id="issue_source" class="easyui-combobox" name="issue_source"
+					data-options="prompt: '【请选择】', value: '', editable: false, required: true" style="width:360px;"><%
+			For i=0 To UBound(arrIssueSource)
+				arr=Split(arrIssueSource(i),".") %>
+					<option value="<%=arr(0)%>"><%=arrIssueSource(i)%></option><%
+			Next %>
+				</select>
+			</div>
+			<div class="label" style="flex-basis: 130px">项目名称及代码：</div>
+			<div><input type="text" name="project_name_code" size="35" /></div>
+		</div>
+		<div class="form-row">
+			<div class="label" style="flex-basis: 120px">论文类型：</div>
+			<div style="flex-basis: 380px">
+				<select id="dissertation_type" class="easyui-combobox" name="dissertation_type"
+					data-options="prompt: '【请选择】', value: '', editable: false, required: true, panelHeight: '100px'" style="width:360px;"><%
+			For i=0 To UBound(arrDissertationType)
+				arr=Split(arrDissertationType(i),".") %>
+					<option value="<%=arr(0)%>"><%=arrDissertationType(i)%></option><%
+			Next %>
+				</select>
+			</div>
+			<div class="label" style="flex-basis: 150px">论文工作起止时间：</div>
+			<div><input type="text" class="duration" name="dissertation_duration" size="35" /></div>
+		</div>
+	</td></tr>
+	<tr><td class="section">Ⅳ 指导教师评语</td></tr>
+	<tr><td>
+		<div class="form-row">
+主要内容包括：对申请人的业务学习、思想表现及论文的学术评语，科研工作能力和完成科研工作情况，以及是否同意申请论文答辩的意见等
+		</div>
+		<div class="form-row"><div><textarea class="required" name="tutor_eval" cols="100" style="height: 200px"><%=tutor_modify_eval%></textarea></div></div>
+	</td></tr>
 </table>
+<script>
+	$(function() {
+		$('[name="sex"]').eq(<%=stu_sex%>).prop('checked', true);
+		$('.duration').maskedbox({
+			mask: '9999年99月——9999年99月'
+		});
+		$(":text[class!='required']").textbox();
+		$(':text.required').textbox({
+			required: true
+		});
+		$("textarea[class!='required']").textbox({
+			multiline: true
+		});
+		$('textarea.required').textbox({
+			required: true,
+			multiline: true
+		});
+	});
+</script>

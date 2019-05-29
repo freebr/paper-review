@@ -1,4 +1,4 @@
-﻿<!--#include file="../inc/db.asp"-->
+﻿<!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"-->
 <%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 TeacherId=Request.QueryString("id")
@@ -8,26 +8,25 @@ If Len(TeacherId)=0 Or Not IsNumeric(TeacherId) Then
 	errdesc="参数无效。"
 End If
 If bError Then
-%><body bgcolor="ghostwhite"><center><font color=red size="4"><%=errdesc%></font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 	CloseRs rs
 	CloseConn conn
-	Response.End()
+	showErrorPage errdesc, "提示"
 End If
 
 Connect conn
 sql="SELECT * FROM ViewExpertInfo WHERE TEACHER_ID="&TeacherId
-GetRecordSetNoLock conn,rs,sql,result
+GetRecordSetNoLock conn,rs,sql,count
 If rs.EOF Then
-%><body bgcolor="ghostwhite"><center><font color=red size="4">数据库没有记录！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 	CloseRs rs
-  CloseConn conn
-	Response.End()
+	CloseConn conn
+	showErrorPage "数据库没有记录！", "提示"
 End If
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<% useStylesheet("admin") %>
-<% useScript(Array("jquery", "common", "expert")) %>
+<title>查看评阅专家信息-<%=rs("EXPERT_NAME")%></title>
+<% useStylesheet "admin" %>
+<% useScript "jquery", "common", "expert" %>
 </head>
 <body><center>
 <form id="profile" action="updateExpProfile.asp" method="post" enctype="multipart/form-data">
@@ -88,7 +87,7 @@ End If
 </tr>
 <tr bgcolor="white"><td colspan="6" align="center">
 <input type="button" id="btnsubmit" value="提 交" onclick="submitForm(this.form)" />&nbsp;
-<input type="button" id="btnreturn" value="返 回" onclick="location.href='expertList.asp'" /></td></tr></table>
+<input type="button" id="btnreturn" value="关 闭" onclick="closeWindow()" /></td></tr></table>
 <span class="title">登录密码修改</span>
 <table class="tblform" width="1000" cellspacing="1" cellpadding="3">
 <tr height="30">

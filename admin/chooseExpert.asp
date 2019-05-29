@@ -1,8 +1,7 @@
-﻿<%Response.Charset="utf-8"%>
-<!--#include file="../inc/db.asp"-->
+﻿<!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"--><%
 If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
-curstep=Request.QueryString("step")
+step=Request.QueryString("step")
 teachtype_id=Request.Form("In_TEACHTYPE_ID2")
 class_id=Request.Form("In_CLASS_ID2")
 enter_year=Request.Form("In_ENTER_YEAR2")
@@ -11,15 +10,18 @@ query_review_status=Request.Form("In_REVIEW_STATUS2")
 finalFilter=Request.Form("finalFilter2")
 pageSize=Request.Form("pageSize2")
 pageNo=Request.Form("pageNo2")
-Select Case curstep
+
+Dim conn,sql,ret,rs
+
+Select Case step
 Case vbNullString	' 选择页面
-	thesisID=Request.QueryString("tid")
-	If Len(thesisID)=0 Then
-		thesisID=Request.Form("sel")
+	thesis_ids=Request.QueryString("tid")
+	If Len(thesis_ids)=0 Then
+		thesis_ids=Request.Form("sel")
 	End If
 	Connect conn
-	sql="SELECT * FROM ViewThesisInfo WHERE ID IN ("&thesisID&")"
-	GetRecordSet conn,rs,sql,result
+	sql="SELECT * FROM ViewThesisInfo WHERE ID IN ("&thesis_ids&")"
+	GetRecordSet conn,rs,sql,count
 	If rs("TEACHTYPE_ID")=5 Then
 		reviewfile_type=2
 	Else
@@ -35,14 +37,14 @@ Case vbNullString	' 选择页面
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<% useStylesheet("admin") %>
-<% useScript(Array("jquery", "common")) %>
+<% useStylesheet "admin" %>
+<% useScript "jquery", "common" %>
 </head>
 <body bgcolor="ghostwhite">
 <center>
 <font size=4><b>为送审论文匹配评阅专家</b></font>
 <form id="fmChooseExp" method="post" action="?step=2">
-<input type="hidden" name="thesisID" value="<%=thesisID%>" />
+<input type="hidden" name="thesisID" value="<%=thesis_ids%>" />
 <input type="hidden" name="In_TEACHTYPE_ID" value="<%=teachtype_id%>" />
 <input type="hidden" name="In_CLASS_ID" value="<%=class_id%>" />
 <input type="hidden" name="In_ENTER_YEAR" value="<%=enter_year%>" />
@@ -77,11 +79,11 @@ Case vbNullString	' 选择页面
 <p><font size=4><b>请选择要匹配的评阅专家（单击方框选择）</b></font></p>
 <table class="tblform" width="800" cellpadding="2" cellspacing="1" bgcolor="dimgray">
 <tr bgcolor="gainsboro" align="center" height="25">
-<td width="100" align=center>专家一：</td>
-<td width="200" align=center><input type="text" class="selectbox" name="expertname" size=20 value="<%=expert_name1%>" onclick="window.open('selectExpert.asp?ctrl1=expertname&ctrl2=expertid&item=0','','width=1000,height=500,location=no,scrollbars=yes')"/><input type="hidden" name="expertid" value="<%=expert_id1%>" /></td></tr>
+<td width="100" align="center">专家一：</td>
+<td width="200" align="center"><input type="text" class="selectbox" name="expertname" size=20 value="<%=expert_name1%>" onclick="window.open('selectExpert.asp?ctrl1=expertname&ctrl2=expertid&item=0','','width=1000,height=500,location=no,scrollbars=yes')"/><input type="hidden" name="expertid" value="<%=expert_id1%>" /></td></tr>
 <tr bgcolor="gainsboro" align="center" height="25">
-<td width="100" align=center>专家二：</td>
-<td width="200" align=center><input type="text" class="selectbox" name="expertname" size=20 value="<%=expert_name2%>" onclick="window.open('selectExpert.asp?ctrl1=expertname&ctrl2=expertid&item=1','','width=1000,height=500,location=no,scrollbars=yes')"/><input type="hidden" name="expertid" value="<%=expert_id2%>" /></td></tr>
+<td width="100" align="center">专家二：</td>
+<td width="200" align="center"><input type="text" class="selectbox" name="expertname" size=20 value="<%=expert_name2%>" onclick="window.open('selectExpert.asp?ctrl1=expertname&ctrl2=expertid&item=1','','width=1000,height=500,location=no,scrollbars=yes')"/><input type="hidden" name="expertid" value="<%=expert_id2%>" /></td></tr>
 </table><p><input type="submit" id="btnsubmit" value="确 定" />&emsp;
 <input type="button" id="btnreturn" value="返 回" onclick="history.go(-1)" /></p></form></center></body>
 <script type="text/javascript">
@@ -93,14 +95,14 @@ Case vbNullString	' 选择页面
   CloseRs rs
   CloseConn conn
 Case 2	' 后台处理
-	thesisID=Request.Form("thesisID")
-	If Len(thesisID)=0 Then
-		thesisID=Request.Form("ids")
+	thesis_ids=Request.Form("thesisID")
+	If Len(thesis_ids)=0 Then
+		thesis_ids=Request.Form("ids")
 	End If
 	expertid1=Request.Form("expertid")(1)
 	expertid2=Request.Form("expertid")(2)
 	bFirstMatch=Request.Form("firstMatch")<>"0"
-	If Len(thesisID)=0 Then
+	If Len(thesis_ids)=0 Then
 		bError=True
 		errdesc="您未选择论文！"
 	ElseIf Request.Form("expertid").Count<>2 Then
@@ -117,16 +119,16 @@ Case 2	' 后台处理
 %><body bgcolor="ghostwhite"><center><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 		Response.End()
 	End If
-	
+
 	Connect conn
 	For i=1 To 2
 		teacherID=Request.Form("expertid")(i)
 		sql="SELECT ID FROM Experts WHERE TEACHER_ID="&teacherID
-		GetRecordSetNoLock conn,rs2,sql,result
+		GetRecordSetNoLock conn,rs2,sql,count
 		CloseRs rs2
-		If result=0 Then	' 临时添加专家，用于校内导师作为评阅专家录入
+		If count=0 Then	' 临时添加专家，用于校内导师作为评阅专家录入
 			sql="SELECT * FROM ViewTeacherInfo WHERE TEACHERID="&teacherID
-			GetRecordSetNoLock conn,rs2,sql,result
+			GetRecordSetNoLock conn,rs2,sql,count
 			teacherName=rs2("TEACHERNAME")
 			proDutyName=getProDutyNameOf(teacherID)
 			workplace="华南理工大学工商管理学院"&rs2("DEPT_NAME")
@@ -140,58 +142,54 @@ Case 2	' 后台处理
 			conn.Execute sql
 		End If
 	Next
-	sql="EXEC dbo.spSetThesisReviewExpert "&thesisID&","&expertid1&","&expertid2
+	sql="EXEC dbo.spSetDissertationReviewer "&thesis_ids&","&expertid1&","&expertid2
 	conn.Execute sql
-	
+
 	If bFirstMatch Then
-		Dim mail_id
-		mail_id=getThesisReviewSystemMailIdByType(Now)
 		' 发送送审通知邮件
-		logtxt="行政人员["&Session("name")&"]匹配专家，"
-		arr=Split(thesisID,",")
-		For i=0 To UBound(arr)
-			sql="SELECT STU_NAME,STU_NO,CLASS_NAME,SPECIALITY_NAME,EMAIL,THESIS_SUBJECT,TUTOR_NAME,TUTOR_EMAIL FROM ViewThesisInfo WHERE ID="&arr(i)
-			GetRecordSetNoLock conn,rs,sql,result
-			stuname=rs("STU_NAME")
-			stuno=rs("STU_NO")
-			stuclass=rs("CLASS_NAME")
-			stuspec=rs("SPECIALITY_NAME")
-			stumail=rs("EMAIL")
-			subject=rs("THESIS_SUBJECT")
-			tutorname=rs("TUTOR_NAME")
-			tutormail=rs("TUTOR_EMAIL")
-			fieldval=Array(stuname,stuno,stuclass,stuspec,stumail,subject,tutorname,tutormail)
-			bSuccess=sendAnnouncementEmail(mail_id(1),stumail,fieldval)
-			logtxt=logtxt&"发送邮件给学生["&stuname&":"&stumail&"]"
-			If bSuccess Then
-				logtxt=logtxt&"成功。"
-			Else
-				logtxt=logtxt&"失败。"
+		Dim arrDissertations:arrDissertations=Split(thesis_ids,",")
+		Dim activity_id,stu_type,is_sent
+		Dim dict:Set dict=CreateDictionary()
+		sql="SELECT ActivityId,TEACHTYPE_ID,STU_NAME,STU_NO,CLASS_NAME,SPECIALITY_NAME,EMAIL,THESIS_SUBJECT,TUTOR_NAME,TUTOR_EMAIL FROM ViewThesisInfo WHERE ID=?"
+		For i=0 To UBound(arrDissertations)
+			Set ret=ExecQuery(conn,sql,CmdParam("ID",adInteger,4,arrDissertations(i)))
+			Set rs=ret("rs")
+			If Not rs.EOF Then
+				activity_id=rs("ActivityId")
+				stu_type=rs("TEACHTYPE_ID")
+				dict("stuname")=rs("STU_NAME")
+				dict("stuno")=rs("STU_NO")
+				dict("stuclass")=rs("CLASS_NAME")
+				dict("stuspec")=rs("SPECIALITY_NAME")
+				dict("stumail")=rs("EMAIL")
+				dict("subject")=rs("THESIS_SUBJECT")
+				dict("tutorname")=rs("TUTOR_NAME")
+				dict("tutormail")=rs("TUTOR_EMAIL")
+				CloseRs rs
+
+				is_sent=sendNotifyMail(activity_id,stu_type,"lwsstzyj(xs)",dict("stumail"),dict)
+				writeNotificationEventLog usertypeAdmin,Session("name"),"匹配专家",usertypeStudent,_
+					dict("stuname"),dict("stumail"),notifytypeMail,is_sent
+
+				is_sent=sendNotifyMail(activity_id,stu_type,"lwsstzyj(ds)",dict("tutormail"),dict)
+				writeNotificationEventLog usertypeAdmin,Session("name"),"匹配专家",usertypeTutor,_
+					dict("tutorname"),dict("tutormail"),notifytypeMail,is_sent
 			End If
-			'bSuccess=sendAnnouncementEmail(mail_id(2),tutormail,fieldval)
-			logtxt=logtxt&"发送邮件给导师["&tutorname&":"&tutormail&"]"
-			If bSuccess Then
-				logtxt=logtxt&"成功。"
-			Else
-				logtxt=logtxt&"失败。"
-			End If
-			CloseRs rs
 		Next
-		CloseConn conn
-		'writeLog logtxt
 	End If
-	
+	CloseConn conn
+
 	msg="操作完成，是否立即向专家发送评阅通知短信及邮件？"
-	If InStr(thesisID,",") Then
+	If InStr(thesis_ids,",") Then
 		returl="thesisList.asp"
 	Else
-		returl="thesisDetail.asp?tid="&thesisID
+		returl="thesisDetail.asp?tid="&thesis_ids
 	End If
 %><form id="ret" action="<%=returl%>" method="post">
 <input type="hidden" name="finalFilter" value="<%=toPlainString(finalFilter)%>" />
 <input type="hidden" name="pageSize" value="<%=pageSize%>" />
 <input type="hidden" name="pageNo" value="<%=pageNo%>" />
-<input type="hidden" name="thesisID" value="<%=thesisID%>" />
+<input type="hidden" name="thesisID" value="<%=thesis_ids%>" />
 <input type="hidden" name="In_TEACHTYPE_ID2" value="<%=teachtype_id%>" />
 <input type="hidden" name="In_CLASS_ID2" value="<%=class_id%>" />
 <input type="hidden" name="In_ENTER_YEAR2" value="<%=enter_year%>" />

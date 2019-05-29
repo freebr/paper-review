@@ -1,25 +1,27 @@
-﻿<%Response.Charset="utf-8"%>
-<!--#include file="../inc/db.asp"-->
+﻿<!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"--><%
 If IsEmpty(Session("Tid")) Then Response.Redirect("../error.asp?timeout")
 If Not hasPrivilege(Session("Twriteprivileges"),"I10") Then Response.Redirect("../error.asp?no-privilege")
-curstep=Request.QueryString("step")
+step=Request.QueryString("step")
 thesisID=Request.QueryString("tid")
 teachtype_id=Request.Form("In_TEACHTYPE_ID2")
 spec_id=Request.Form("In_SPECIALITY_ID2")
 finalFilter=Request.Form("finalFilter2")
 pageSize=Request.Form("pageSize2")
 pageNo=Request.Form("pageNo2")
-finishReview=Request.Form("finishReview")
-willUpdateList=LCase(finishReview="1")
+If Request.Form("finishReview")="1" Then
+	code_close_window="closeWindow(true);"
+Else
+	code_close_window="closeWindow();"
+End If
 
 Connect conn
-sql="SELECT * FROM ViewThesisInfo WHERE ID="&thesisID&" AND "&Session("Tid")&" IN (REVIEWER1,REVIEWER2)"
-GetRecordSet conn,rs,sql,result
+sql="SELECT * FROM ViewDissertations_expert WHERE ID="&thesisID&" AND "&Session("Tid")&" IN (REVIEWER1,REVIEWER2)"
+GetRecordSet conn,rs,sql,count
 If Len(thesisID)=0 Or Not IsNumeric(thesisID) Then
 	bError=True
 	errdesc="参数无效。"
-ElseIf result=0 Then
+ElseIf count=0 Then
 	bError=True
 	errdesc="数据库没有该论文记录，或您未受邀评阅该论文！"
 ElseIf Not checkIfProfileFilledIn() Then
@@ -27,16 +29,13 @@ ElseIf Not checkIfProfileFilledIn() Then
 	errdesc="在开始评阅前，您需要完善个人信息，<a href=""profile.asp"">请点击这里编辑。</a>"
 End If
 If bError Then
-%><html>
-<head>
-<title>查看论文信息</title>
-<% useStylesheet("tutor") %><% useScript("thesis") %>
-</head>
-<body class="exp"><center><div class="content"><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="关 闭" onclick="closeWindow()" /></div></center></body></html><%
-  CloseRs rs
-  CloseConn conn
-	Response.End()
+	CloseRs rs
+	CloseConn conn
+	showErrorPage errdesc, "提示"
 End If
+
+Dim section_access_info
+Set section_access_info=getSectionAccessibilityInfo(rs("ActivityId"),rs("TEACHTYPE_ID"),sectionReview)
 
 Dim author_stu_type,reviewer,review_status
 Dim review_result(2),reviewer_master_level(1),review_file(1),review_time(1),review_level(1)
@@ -89,23 +88,24 @@ If Len(review_time(reviewer))=0 Then
 Else
 	stat="您已评阅"
 End If
-Select Case curstep
+Select Case step
 Case vbNullString	' 论文详情页面
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="theme-color" content="#2D79B2" />
 <title>查看论文信息</title>
-<% useStylesheet("tutor") %>
-<% useScript(Array("jquery", "common", "thesis")) %>
+<% useStylesheet "tutor" %>
+<% useScript "jquery", "common", "thesis" %>
 </head>
 <body class="exp">
 <center><div class="content"><font size=4><b>专业硕士论文详情<br />论文当前状态：【<%=stat%>】</b></font><%
-	If Len(review_time(reviewer))=0 And nSystemStatus<>2 Then
-%><p><span class="tip">温馨提示：评阅系统的开放时间为<%=toDateTime(startdate,1)%>至<%=toDateTime(enddate,1)%>，当前不在开放时间内，不能评阅论文。</span></p><%
+	If Len(review_time(reviewer))=0 And Not section_access_info("accessible") Then
+%><p><span class="tip"><%=section_access_info("tip")%></span></p><%
 	End If %>
 <form id="fmDetail" action="<%=formAction%>" method="post">
 <table class="tblform" width="800" align="center" cellspacing="1" cellpadding="3">
+<tr><td>评阅活动：&emsp;&emsp;&emsp;<input type="text" class="txt" size="95%" value="<%=rs("ActivityName")%>" readonly /></td></tr>
 <tr><td>论文题目：&emsp;&emsp;&emsp;<input type="text" class="txt" name="subject" size="95%" value="<%=rs("THESIS_SUBJECT")%>" readonly /></td></tr>
 <tr><td>（英文）：&emsp;&emsp;&emsp;<input type="text" class="txt" name="subject_en" size="85%" value="<%=rs("THESIS_SUBJECT_EN")%>" readonly /></td></tr>
 <tr><td>学位类别：&emsp;&emsp;&emsp;<input type="text" class="txt" name="degreename" size="95%" value="<%=rs("TEACHTYPE_NAME")%>" readonly /></td></tr><%
@@ -119,20 +119,20 @@ Case vbNullString	' 论文详情页面
 	If Not IsNull(rs("THESIS_FORM")) And Len(rs("THESIS_FORM")) Then %>
 <tr><td>论文形式：&emsp;&emsp;&emsp;<input type="text" class="txt" name="thesisform" size="95%" value="<%=rs("THESIS_FORM")%>" readonly /></td></tr><%
 	End If %>
-<tr><td>送审论文：&emsp;&emsp;&emsp;<a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=1" target="_blank">点击下载</a></td></tr><%
+<tr><td>送审论文：&emsp;&emsp;&emsp;<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=1" target="_blank">点击下载</a></td></tr><%
 	If Len(review_time(reviewer)) Then
 %><tr><td height="10"></td></tr><%
 		If Len(review_file(reviewer)) Then
 %><tr><td>您已于&nbsp;<%=toDateTime(review_time(reviewer),1)%>&nbsp;<%=toDateTime(review_time(reviewer),4)%>&nbsp;评阅该论文</td></tr>
-<tr><td>论文评阅书：&emsp;&emsp;<a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=<%=2+reviewer%>" target="_blank">点击下载</a></td></tr><%
+<tr><td>论文评阅书：&emsp;&emsp;<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=<%=2+reviewer%>" target="_blank">点击下载</a></td></tr><%
 		End If %>
-<tr><td>您对本论文涉及内容的熟悉程度：<%=masterLevelRadios("masterlevel",reviewer_master_level(reviewer))%></td></tr>
-<tr><td>对学位论文的总体评价：<%=reviewLevelRadios("reviewlevel",reviewfile_type,review_level(reviewer))%></td></tr>
-<tr><td>您的评审结果：&emsp;<%=reviewResultList("reviewresult",review_result(reviewer),false)%>&emsp;<span class="tip">(A→同意答辩；B→需做适当修改；C→需做重大修改；D→不同意答辩；E→尚未返回)</span></td></tr><%
+<tr><td>您对本论文涉及内容的熟悉程度：<%=masterLevelRadios("master_level",reviewer_master_level(reviewer))%></td></tr>
+<tr><td>对学位论文的总体评价：<%=reviewLevelRadios("review_level",reviewfile_type,review_level(reviewer))%></td></tr>
+<tr><td>您的评审结果：&emsp;<%=reviewResultList("review_result",review_result(reviewer),false)%>&emsp;<span class="tip">(A→同意答辩；B→需做适当修改；C→需做重大修改；D→不同意答辩；E→尚未返回)</span></td></tr><%
 	End If %>
 <tr class="trbuttons">
 <td colspan="3"><p align="center"><%
-	If nSystemStatus=2 Then
+	If section_access_info("accessible") Then
 		btnsubmittext=""
 		If Len(review_time(reviewer))=0 Then
 			btnsubmittext="评阅该论文"
@@ -143,7 +143,7 @@ Case vbNullString	' 论文详情页面
 %><input type="button" id="btnsubmit" name="btnsubmit" value="<%=btnsubmittext%>" />&emsp;<%
 		End If
 	End If
-%><input type="button" value="关 闭" onclick="closeWindow(<%=willUpdateList%>)" />
+%><input type="button" value="关 闭" onclick="<%=code_close_window%>" />
 </p></td></tr></table>
 <input type="hidden" name="In_TEACHTYPE_ID2" value="<%=teachtype_id%>" />
 <input type="hidden" name="In_SPECIALITY_ID2" value="<%=spec_id%>" />
@@ -195,8 +195,8 @@ Case 2	' 评阅须知
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="theme-color" content="#2D79B2" />
 <title>浏览评阅须知</title>
-<% useStylesheet("tutor") %>
-<% useScript(Array("jquery", "common")) %>
+<% useStylesheet "tutor" %>
+<% useScript "jquery", "common" %>
 </head>
 <body class="exp">
 <center><div class="content"><font size=4><b>评阅须知：在开始评阅前，请您仔细阅读下面的《<%=noticeName%>》</b></font>
@@ -273,20 +273,20 @@ Case 2	' 评阅须知
 Case 3	' 评阅页面
 	tutor_duty_name=getProDutyNameOf(rs("TUTOR_ID"))
 	If reviewfile_type=2 Then
-		loadReviewScoringInfo rs("REVIEW_TYPE"),scoringtbl_code,power1code,power2code
+		loadReviewScoringInfo rs("REVIEW_TYPE"),code_scoring,code_power1,code_power2
 	End If
 	If author_stu_type=5 Then
-		correlationtypename="学位论文内容与申请学位领域的相关性："
+		correlation_level_name="学位论文内容与申请学位领域的相关性："
 	Else
-		correlationtypename="学位论文内容与申请学位专业的相关性："
+		correlation_level_name="学位论文内容与申请学位专业的相关性："
 	End If
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="theme-color" content="#2D79B2" />
 <title>评阅论文</title>
-<% useStylesheet("tutor") %>
-<% useScript(Array("jquery", "common", "thesis", "review", "drafting")) %>
+<% useStylesheet "tutor" %>
+<% useScript "jquery", "common", "thesis", "review", "drafting" %>
 </head>
 <body class="exp">
 <center><div class="content"><font size=4><b>评阅论文</b></font>
@@ -296,13 +296,13 @@ Case 3	' 评阅页面
 <td>研究方向：<input type="text" class="txt" name="researchway" size="25" value="<%=rs("RESEARCHWAY_NAME")%>" readonly /></td>
 <td>学院名称：<input type="text" class="txt" name="faculty" value="工商管理学院" readonly /></td></tr>
 <tr><td colspan="3">学位论文题目：<input type="text" class="txt" name="subject" size="70" value="<%=rs("THESIS_SUBJECT")%>" readonly />
-&emsp;送审论文：<a class="resc" href="fetchfile.asp?tid=<%=thesisID%>&type=1" target="_blank">点击下载</a></td></tr>
-<tr><td colspan="3">对本论文涉及内容的熟悉程度：<%=masterLevelRadios("masterlevel",reviewer_master_level(reviewer))%></td></tr>
+&emsp;送审论文：<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=1" target="_blank">点击下载</a></td></tr>
 <tr><td colspan="3">评阅专家对论文的学术评语<span class="eval_notice">（包括选题意义；文献资料的掌握；数据、材料的收集、论证、结论是否合理；基本论点、结论和建议有无理论意义和实践价值；论文的不足之处和建议等，200-2000字）</span>：<span id="eval_text_tip"></span></td></tr>
 <tr><td colspan="3"><textarea name="eval_text" rows="10" style="width:100%">
 <%=eval_text%></textarea><br/>
 <input type="button" id="btnsavedraft" value="保存草稿" />&emsp;
-<input type="button" id="btnloaddraft" value="读取草稿" /></td></tr><%
+<input type="button" id="btnloaddraft" value="读取草稿" /></td></tr>
+<tr><td colspan="3">对本论文涉及内容的熟悉程度：<%=masterLevelRadios("master_level",reviewer_master_level(reviewer))%></td></tr><%
 	Dim strJsArrRemarkStd
 	Select Case author_stu_type
 	Case 5
@@ -310,23 +310,23 @@ Case 3	' 评阅页面
 	%>
 <tr><td align="center" colspan="3" style="padding:0"><p style="font-size:10pt;font-weight:bold"><%=rs("TEACHTYPE_NAME")%>学位论文评价指标</p><table class="tblform" width="100%" cellspacing=1 cellpadding=3>
 <tr><td width="20" align="center">一级指标</td><td align="center">二级指标</td><td align="center">主要观测点</td><td align="center">参考权重</td><td align="center">得分（百分制）</td></tr>
-<%=scoringtbl_code%><tr><td align="center" colspan="3">加权总分</td><td align="center" colspan="2"><span id="totalscore"></span></td></tr></table></td></tr>
-<tr><td align="center" rowspan="2">对学位论文的总体评价</td><td align="center" colspan="2"><span id="reviewleveltext">&nbsp;</span></td></tr>
-<tr><td colspan="2"><p>优秀：总分≥85；良好：84≥总分≥70；合格：69≥总分≥60；不合格：总分≤59。<input type="hidden" name="reviewlevel" /></p></td></tr><%
+<%=code_scoring%><tr><td align="center" colspan="3">加权总分</td><td align="center" colspan="2"><span id="total_score"></span></td></tr></table></td></tr>
+<tr><td align="center" rowspan="2">对学位论文的总体评价</td><td align="center" colspan="2"><span id="review_level_text">&nbsp;</span></td></tr>
+<tr><td colspan="2"><p>优秀：总分≥85；良好：84≥总分≥70；合格：69≥总分≥60；不合格：总分≤59。<input type="hidden" name="review_level" /></p></td></tr><%
 	Case 6
 		strJsArrRemarkStd="[{'name':'优秀','min':90},{'name':'良好','min':75},{'name':'合格','min':60},{'name':'不合格','min':0}]"
 	%>
 <tr><td align="center" colspan="3" style="padding:0"><p style="font-size:10pt;font-weight:bold"><%=rs("TEACHTYPE_NAME")%>学位论文评价指标</p></td></tr>
 <tr><td colspan="3"><p>说明：请评审专家在各二级指标得分空格处按百分制打分，系统将自动生成各一级指标得分并最后汇总计算出总分。</p><table class="tblform" width="100%" cellspacing=1 cellpadding=3>
 <tr><td width="20" align="center">一级指标</td><td align="center">二级指标</td><td width="350" align="center">评分标准（优秀：≥90；良好：89-75；合格：74-60；不合格：≤59）</td><td align="center">一级指标得分</td></tr>
-<%=scoringtbl_code%><tr><td align="center">总分</td><td align="center" colspan="3"><span id="totalscore"></span></td></tr></table></td></tr>
-<tr><td align="center" rowspan=2>对学位论文的总体评价</td><td align="center" colspan="3"><span id="reviewleveltext">&nbsp;</span></td></tr>
-<tr><td colspan="3"><p>优秀：≥90；良好：89-75；合格：74-60；不合格：≤59。<input type="hidden" name="reviewlevel" /></p></td></tr><%
+<%=code_scoring%><tr><td align="center">总分</td><td align="center" colspan="3"><span id="total_score"></span></td></tr></table></td></tr>
+<tr><td align="center" rowspan="2">对学位论文的总体评价</td><td align="center" colspan="3"><span id="review_level_text">&nbsp;</span></td></tr>
+<tr><td colspan="3"><p>优秀：≥90；良好：89-75；合格：74-60；不合格：≤59。<input type="hidden" name="review_level" /></p></td></tr><%
 	Case Else %>
-<tr><td align="center">对学位论文的总体评价</td><td align="center" colspan="2"><%=reviewLevelRadios("reviewlevel",1,review_level(reviewer))%></td></tr><%
+<tr><td align="center">对学位论文的总体评价</td><td align="center" colspan="2"><%=reviewLevelRadios("review_level",1,review_level(reviewer))%></td></tr><%
 	End Select %>
-<tr><td align="center"><%=correlationtypename%></td><td align="center" colspan="2"><%=correlationTypeRadios("correlationtype",1)%></td></tr>
-<tr><td align="center">是否同意举行论文答辩</td><td align="center" colspan="2"><%=reviewResultRadios("reviewresult",review_result(reviewer))%></td></tr>
+<tr><td align="center"><%=correlation_level_name%></td><td align="center" colspan="2"><%=correlationLevelRadios("correlation_level",1)%></td></tr>
+<tr><td align="center">是否同意举行论文答辩</td><td align="center" colspan="2"><%=reviewResultRadios("review_result",review_result(reviewer))%></td></tr>
 <tr class="trbuttons">
 <td colspan="3"><p align="center"><input type="button" id="btnsubmit" name="btnsubmit" value="提 交" />&emsp;
 <input type="button" value="返 回" onclick="history.go(-1)" />&emsp;
@@ -353,8 +353,8 @@ Case 3	' 评阅页面
 	$(document).ready(function(){
 		$('[name="eval_text"]').keyup(function(){checkLength(this,2000)});<%
 				If reviewfile_type=2 Then %>
-		if ($('#totalscore').size()>0) {
-			this.powers={'power1':<%=power1code%>,'power2':<%=power2code%>};
+		if ($('#total_score').size()>0) {
+			this.powers={'power1':<%=code_power1%>,'power2':<%=code_power2%>};
 			this.remarkStd=<%=strJsArrRemarkStd%>;
 			addScoreEventListener();
 			showTotalScore();
@@ -363,13 +363,12 @@ Case 3	' 评阅页面
 		if($('#btnsubmit').size()>0) {
 			$('#btnsubmit').click(function() {<%
 				If reviewfile_type=2 Then %>
-				if($('[name="reviewlevel"]').val()==4)
+				if($('[name="review_level"]').val()==4)
 					if(!confirm("检测到您给出的分数过低，请确认是否对每项得分点按百分制打分。"))
 						return false;<%
 				End If %>
 				if(confirm("确定要提交吗？")) {
-					$(this).val("正在提交，请稍候……")
-								 .attr('disabled',true);
+					$(this).val("正在提交，请稍候……").attr('disabled',true);
 					this.form.submit();
 				}
 			}).attr('disabled',false);

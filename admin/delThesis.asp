@@ -1,5 +1,4 @@
-﻿<%Response.Charset="utf-8"%>
-<!--#include file="../inc/db.asp"-->
+﻿<!--#include file="../inc/global.inc"-->
 <%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 Dim ids
 ids=Request.Form("sel")

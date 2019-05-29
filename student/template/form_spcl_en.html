@@ -1,0 +1,181 @@
+﻿<table width="1000">
+	<tr><td class="section">Ⅰ Degree application letter</td>
+	<tr><td>
+	<div class="form-row">
+(A description of whether the applicant has completed the tasks stipulated in the Education Plan and thesis writing, including the significance and value of the thesis; research purpose; creative achievements, etc.)
+	</div>
+	<div class="form-row"><textarea class="required" name="degree_application" cols="100" style="height: 400px"></textarea></div>
+	</td></tr>
+	<tr><td class="section">Ⅱ Materials for Verification and Approval of Master Degree Application</td></tr>
+	<tr><td>
+		<div class="form-row">
+			<div class="label" style="flex-basis: 110px">Name:</div>
+			<div style="flex-basis: 200px"><input type="text" class="required" name="stu_name" size="35" value="<%=Session("StuName")%>" readonly /></div>
+			<div class="label" style="flex-basis: 90px">Gender:</div>
+			<div style="flex-basis: 150px"><label for="sex_male"><input type="radio" name="sex" id="sex_male" size="5" value="Male" />Male</label>
+			<label for="sex_female"><input type="radio" name="sex" id="sex_female" size="5" value="Female" />Female</label></div>
+			<div class="label" style="flex-basis: 150px">Date of birth:</div>
+			<div><input type="text" class="required" name="birthday" size="3" maxlength="4" prompt="year" />-<input type="text" class="required" name="birthday" size="3" maxlength="2" prompt="month" />-<input type="text" class="required" name="birthday" size="2" maxlength="2" prompt="date" /></div>
+		</div>
+		<div class="form-row">
+			<div class="label" style="flex-basis: 110px">Nationality:</div>
+			<div style="flex-basis: 200px"><input type="text" class="required" name="nation" size="35" /></div>
+			<div class="label" style="flex-basis: 390px">Date of entry:</div>
+			<div><input type="text" class="required" name="entrance_ym" size="3" maxlength="4" prompt="year" />-<input type="text" class="required" name="entrance_ym" size="3" maxlength="2" prompt="month" /></div>
+		</div>
+		<div class="form-row">
+			<div class="label" style="flex-basis: 110px">ID NO:</div>
+			<div style="flex-basis: 200px"><input type="text" class="required" name="idcard_no" size="35" /></div>
+			<div class="label" style="flex-basis: 180px">Student NO:</div>
+			<div><input type="text" class="required" name="stu_no" size="20" value="<%=stu_no%>" readonly /></div>
+		</div>
+		<div class="form-row">
+			<div class="label" style="flex-basis: 110px">Program:</div>
+			<div style="flex-basis: 280px"><input type="text" class="required" name="speciality_name" size="35" value="<%=speciality_name%>" /></div>
+			<div class="label" style="flex-basis: 180px">Name and professional title of the supervisor:</div>
+			<div style="flex-basis: 200px"><input type="text" class="required" name="tutor_name" size="20" value="<%=tutor_name_en%>" /></div>
+		</div><%
+			If stu_type=5 Then %>
+		<div class="form-row">
+			<div class="label" style="flex-basis: 110px">Research area:</div>
+			<div>
+				<select id="research_field" class="easyui-combobox" name="research_field"
+					data-options="prompt: '[Please select]', value: '', editable: false, required: true, panelHeight: '150px'" style="width:280px;"><%
+				For i=0 To UBound(arrResearchFieldEn)
+					val=arrResearchFieldEn(i) %>
+					<option value="<%=val%>"><%=val%></option><%
+				Next %>
+				</select>
+			</div>
+		</div><%
+			End If %>
+		<div class="form-row">
+			<div class="label" style="flex-basis: 110px">Type of study:</div>
+			<div>
+			<label for="study_type_1"><input type="radio" name="study_type" id="study_type_1" size="5" value="Full-time" checked />Full-time</label>
+			<label for="study_type_2"><input type="radio" name="study_type" id="study_type_2" size="5" value="Part-time" />Part-time</label>
+			</div>
+		</div>
+		<div class="sub-section">DETAILS OF LAST DEGREE</div>
+		<div class="form-row">
+			<div class="label" style="flex-basis: 180px">University of bachelor degree:</div>
+			<div style="flex-basis: 260px"><input type="text" class="required" name="graduated_at" size="30" /></div>
+			<div class="label" style="flex-basis: 120px">Program:</div>
+			<div><input type="text" class="required" name="before_speciality_name" size="20" /></div>
+		</div>
+		<div class="form-row">
+			<div class="label" style="flex-basis: 180px">Date of graduation:</div>
+			<div><input type="text" class="required" name="graduation_ym" size="3" maxlength="4" prompt="year" />-<input type="text" class="required" name="graduation_ym" size="3" maxlength="2" prompt="month" /></div>
+		</div>
+		<div class="sub-section">CV(FROM UNDERGRADUATE STUDY)</div>
+		<div class="form-row" style="text-align: center">
+			<div style="flex-basis: 33%">Duration</div>
+			<div style="flex-basis: 33%; text-align: center">Organization for Study or Work</div>
+			<div style="flex-basis: 33%; text-align: center">Position and Title</div>
+		</div><%
+		For i=1 To 6 %>
+		<div class="form-row" style="text-align: center">
+			<div style="flex-basis: 33%"><input type="text" class="duration" name="resume_duration" size="30" /></div>
+			<div style="flex-basis: 33%"><input type="text" <% If i=1 Then %>class="required"<% End If %> name="resume_place" size="40" /></div>
+			<div style="flex-basis: 33%"><input type="text" <% If i=1 Then %>class="required"<% End If %> name="resume_job" size="40" /></div>
+		</div><%
+		Next %>
+		<div class="form-row"><div class="label">Awards and Penalties:</div></div>
+		<div class="form-row"><textarea name="honor_penalty" cols="100" style="height: 200px"></textarea></div>
+	</td></tr>
+	<tr><td class="section">Ⅲ Completion of Education Plan</td></tr>
+	<tr><td>
+		<div class="sub-section">RESEARCH ACHIEVEMENT DURING POSTGRADUATE STUDY (INCLUDING PAPERS, MONOGRAPHS AND PATENTS)</div>
+		<div class="form-row" style="font-size: 12px; text-align: center; word-break: keep-all">
+			<div style="flex-basis: 6%">Item NO</div>
+			<div style="flex-basis: 25%">Title of paper (achievement)</div>
+			<div style="flex-basis: 20%">Year and month (volume NO)</div>
+			<div style="flex-basis: 23%">The organization which verifies the achievement, or which awards and applies the patent, or which publishes the journal or monograph</div>
+			<div style="flex-basis: 18%">The ranking of the author</div>
+			<div style="flex-basis: 8%">Index</div>
+		</div><%
+	For i=1 To 6 %>
+		<div class="form-row" style="text-align: center">
+			<div style="flex-basis: 6%"><%=i%></div>
+			<div style="flex-basis: 30%"><input type="text" name="achievement_name" size="30" /></div>
+			<div style="flex-basis: 10%"><input type="text" name="achievement_ym" size="20" /></div>
+			<div style="flex-basis: 30%"><input type="text" name="achievement_source" size="25" /></div>
+			<div style="flex-basis: 16%"><input type="text" name="achievement_authornum" size="4" /></div>
+			<div style="flex-basis: 8%"><input type="text" name="achievement_status" size="10" /></div>
+		</div><%
+	Next %>
+	</td></tr>
+	<tr><td>
+		<div class="sub-section">DISSERTATION</div>
+		<div class="form-row">
+			<div class="label" style="flex-basis: 150px">Dissertation title:</div>
+			<div><input type="text" class="required" name="dissertation_subject" size="115" value="<%=subject%>" /></div>
+		</div>
+		<div class="form-row">
+			<div class="label" style="flex-basis: 150px">Key words:</div>
+			<div style="flex-basis: 380px"><input type="text" class="required" name="dissertation_keywords" size="46" /></div>
+			<div class="label" style="flex-basis: 200px">Number of words:</div>
+			<div style="flex-basis: 100px"><input type="text" class="required" name="dissertation_word_count" size="6" /></div>
+		</div>
+		<div class="form-row">
+			<div class="label" style="flex-basis: 150px">Source of research topic:</div>
+			<div style="flex-basis: 380px">
+				<select id="issue_source" class="easyui-combobox" name="issue_source"
+					data-options="prompt: '[Please select]', value: '', editable: false, required: true" style="width:360px;"><%
+			For i=0 To UBound(arrIssueSourceEn)
+				arr=Split(arrIssueSourceEn(i),".") %>
+					<option value="<%=arr(0)%>"><%=arrIssueSourceEn(i)%></option><%
+			Next %>
+				</select>
+			</div>
+			<div class="label" style="flex-basis: 200px">Project name and code:</div>
+			<div><input type="text" name="project_name_code" size="30" /></div>
+		</div>
+		<div class="form-row">
+			<div class="label" style="flex-basis: 150px">Dissertation type:</div>
+			<div style="flex-basis: 380px">
+				<select id="dissertation_type" class="easyui-combobox" name="dissertation_type"
+					data-options="prompt: '[Please select]', value: '', editable: false, required: true, panelHeight: '100px'" style="width:360px;"><%
+			For i=0 To UBound(arrDissertationTypeEn)
+				arr=Split(arrDissertationTypeEn(i),".") %>
+					<option value="<%=arr(0)%>"><%=arrDissertationTypeEn(i)%></option><%
+			Next %>
+				</select>
+			</div>
+			<div class="label" style="flex-basis: 200px">Beginning and end dates for dissertation writing:</div>
+			<div><input type="text" class="duration" name="dissertation_duration" size="30" /></div>
+		</div>
+	</td></tr>
+	<tr><td class="section">Ⅳ Opinion of the supervisor</td></tr>
+	<tr><td>
+		<div class="form-row">
+(Indicating applicant's academic performance, morality, character, research competence, and completion of research work and the academic comments on dissertation, as well as whether approve application for Dissertation Defence)
+		</div>
+		<div class="form-row"><div><textarea class="required" name="tutor_eval" cols="100" style="height: 200px"><%=tutor_modify_eval%></textarea></div></div>
+	</td></tr>
+</table>
+<script>
+	$(function() {
+		$.extend($.fn.combobox.defaults, {
+			missingMessage: "This field is required"
+		});
+		$.extend($.fn.textbox.defaults, {
+			missingMessage: "This field is required"
+		});
+		$('[name="sex"]').eq(<%=stu_sex%>).prop('checked', true);
+		$('.duration').maskedbox({
+			mask: '9999-99——9999-99'
+		});
+		$(":text[class!='required']").textbox();
+		$(':text.required').textbox({
+			required: true
+		});
+		$("textarea[class!='required']").textbox({
+			multiline: true
+		});
+		$('textarea.required').textbox({
+			required: true,
+			multiline: true
+		});
+	});
+</script>

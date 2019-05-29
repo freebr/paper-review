@@ -1,36 +1,23 @@
-﻿<%Response.Charset="utf-8"%>
-<!--#include file="../inc/ExtendedRequest.inc"-->
-<!--#include file="../inc/db.asp"-->
+﻿<!--#include file="../inc/ExtendedRequest.inc"-->
+<!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"--><%
-curStep=Request.QueryString("step")
-Select Case curStep
+
+activity_id=toUnsignedInt(Request.Form("In_ActivityId2"))
+step=Request.QueryString("step")
+Select Case step
 Case vbNullstring ' 文件选择页面
-	Dim comm,conn
-	Connect conn
-	Set comm=Server.CreateObject("ADODB.Command")
-	comm.ActiveConnection=conn
-	comm.CommandText="spGetSemesterList"
-	comm.CommandType=adCmdStoredProc
-	Set semester=comm.CreateParameter("semester",adInteger,adParamInput,5,0)
-	comm.Parameters.Append semester
-	Set rs2=comm.Execute()
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="theme-color" content="#2D79B2" />
 <title>导入新增论文信息</title>
-<% useStylesheet("admin") %>
-<% useScript(Array("jquery", "upload")) %>
+<% useStylesheet "admin" %>
+<% useScript "jquery", "upload" %>
 </head>
 <body bgcolor="ghostwhite">
 <center><font size=4><b>导入新增论文信息</b><br />
 <form id="fmUpload" action="?step=2" method="POST" enctype="multipart/form-data">
-<p>学期：<select name="periodid"><option value="0">请选择</option><%
-Do While Not rs2.EOF %>
-<option value="<%=rs2("PERIOD_ID")%>"<% If period_id=rs2("PERIOD_ID") Then %> selected<% End If %>><%=rs2("PERIOD_NAME")%></option><%
-	rs2.MoveNext()
-Loop
-%></select></p>
+<p>评阅活动：<%=activityList("In_ActivityId", Session("AdminType")("ManageStuTypes"), activity_id, False)%></p>
 <p>表格审核状态：<select name="In_TASK_PROGRESS"><%
 GetMenuListPubTerm "ReviewStatuses","STATUS_ID1","STATUS_NAME","","AND STATUS_ID1 IS NOT NULL"
 %></select></p>
@@ -54,28 +41,26 @@ GetMenuListPubTerm "ReviewStatuses","STATUS_ID2","STATUS_NAME","","AND STATUS_ID
 		$(':submit').attr('disabled',false);
 	});
 </script></body></html><%
-	CloseRs rs2
-	CloseConn conn
 Case 2	' 上传进程
 
 	Dim fso,Upload,File
-	
+
 	Set Upload=New ExtendedRequest
 	Set file=Upload.File("excelFile")
-	period_id=Upload.Form("periodid")
+	activity_id=Upload.Form("In_ActivityId")
 	task_progress=Upload.Form("In_TASK_PROGRESS")
 	review_status=Upload.Form("In_REVIEW_STATUS")
 	select_mode=Upload.Form("selectmode")
 	Set fso=Server.CreateObject("Scripting.FileSystemObject")
-	
+
 	' 检查上传目录是否存在
 	strUploadPath = Server.MapPath("upload\xls")
 	If Not fso.FolderExists(strUploadPath) Then fso.CreateFolder(strUploadPath)
-	
+
 	fileExt=LCase(file.FileExt)
-	If period_id="0" Then
+	If activity_id="0" Then
 		bError = True
-		errstring = "请选择学期！"
+		errstring = "请选择评阅活动！"
 	ElseIf fileExt <> "xls" And fileExt <> "xlsx" Then	' 不被允许的文件类型
 		bError = True
 		errstring = "所选择的不是 Excel 文件！"
@@ -95,14 +80,14 @@ Case 2	' 上传进程
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="theme-color" content="#2D79B2" />
 <title>导入新增论文信息</title>
-<% useStylesheet("admin") %>
-<% useScript("jquery") %>
+<% useStylesheet "admin" %>
+<% useScript "jquery" %>
 </head>
 <body bgcolor="ghostwhite">
 <center><br /><b>导入新增论文信息</b><br /><br /><%
 	If Not bError Then %>
 <form id="fmUploadFinish" action="?step=3" method="POST">
-<input type="hidden" name="periodid" value="<%=period_id%>" />
+<input type="hidden" name="In_ActivityId" value="<%=activity_id%>" />
 <input type="hidden" name="In_TASK_PROGRESS" value="<%=task_progress%>" />
 <input type="hidden" name="In_REVIEW_STATUS" value="<%=review_status%>" />
 <input type="hidden" name="selectmode" value="<%=select_mode%>" />
@@ -119,7 +104,7 @@ Case 3	' 数据读取，导入到数据库
 	Function addData()
 		' 添加数据
 		Dim fieldValue(3)
-		Dim sql,sql_upd_rv,sql_upd_pv,sql_upd_apply,conn,connOrigin,result,rsa,rsb,rsc
+		Dim sql,sql_upd_rv,sql_upd_pv,sql_upd_apply,conn,connOrigin,count,rsa,rsb,rsc
 		Dim stuid,tutorid,recid,teachtypeid,submit_review_time
 		Dim numThesis
 		Dim s,i,strTmp,strTmp2
@@ -164,23 +149,23 @@ Case 3	' 数据读取，导入到数据库
 				Set rsb=conn.Execute(sql)
 				If Not rsb.EOF Then
 					tutorid=rsb("TEACHER_ID")
-					sql="SELECT RECRUIT_ID,TEACHTYPE_ID FROM TutorRecruitSys..ViewRecruitInfo WHERE TEACHER_ID="&tutorid&" AND PERIOD_ID="&period_id&" AND TEACHTYPE_ID="&fieldValue(1)
+					sql="SELECT RECRUIT_ID,TEACHTYPE_ID FROM TutorRecruitSys..ViewRecruitInfo WHERE TEACHER_ID="&tutorid&" AND PERIOD_ID="&activity("SemesterId")&" AND TEACHTYPE_ID="&fieldValue(1)
 					Set rsc=conn.Execute(sql)
 					If Not rsc.EOF Then
 						recid=rsc("RECRUIT_ID")
 						teachtypeid=rsc("TEACHTYPE_ID")
-						
-						sql_upd_rv=sql_upd_rv&"SET @id=NULL;SELECT @id=ID FROM Dissertations WHERE STU_ID="&stuid&"; IF @id IS NULL INSERT INTO Dissertations (STU_ID,THESIS_SUBJECT,REVIEW_TYPE,TASK_PROGRESS,REVIEW_STATUS,SUBMIT_REVIEW_TIME,REVIEW_FILE_STATUS,REVIEW_RESULT,REVIEW_LEVEL,PERIOD_ID,VALID) VALUES("&_
-						stuid&","&fieldValue(3)&",dbo.getReviewTypeId("&teachtypeid&","&fieldValue(2)&"),"&task_progress&","&review_status&","&submit_review_time&",0,'5,5,6','0,0',"&period_id&",1);"&_
-						"ELSE UPDATE Dissertations SET THESIS_SUBJECT="&fieldValue(3)&",REVIEW_TYPE=dbo.getReviewTypeId("&teachtypeid&","&fieldValue(2)&"),TASK_PROGRESS="&task_progress&",REVIEW_STATUS="&review_status&",SUBMIT_REVIEW_TIME=CASE WHEN SUBMIT_REVIEW_TIME IS NULL THEN "&submit_review_time&" ELSE SUBMIT_REVIEW_TIME END,PERIOD_ID="&period_id&",VALID=1 WHERE ID=@id;"
-						
+
+						sql_upd_rv=sql_upd_rv&"SET @id=NULL;SELECT @id=ID FROM Dissertations WHERE STU_ID="&stuid&"; IF @id IS NULL INSERT INTO Dissertations (STU_ID,THESIS_SUBJECT,REVIEW_TYPE,TASK_PROGRESS,REVIEW_STATUS,SUBMIT_REVIEW_TIME,REVIEW_FILE_STATUS,REVIEW_RESULT,REVIEW_LEVEL,ActivityId,VALID) VALUES("&_
+						stuid&","&fieldValue(3)&",dbo.getReviewTypeId("&teachtypeid&","&fieldValue(2)&"),"&task_progress&","&review_status&","&submit_review_time&",0,'5,5,6','0,0',"&activity_id&",1);"&_
+						"ELSE UPDATE Dissertations SET THESIS_SUBJECT="&fieldValue(3)&",REVIEW_TYPE=dbo.getReviewTypeId("&teachtypeid&","&fieldValue(2)&"),TASK_PROGRESS="&task_progress&",REVIEW_STATUS="&review_status&",SUBMIT_REVIEW_TIME=CASE WHEN SUBMIT_REVIEW_TIME IS NULL THEN "&submit_review_time&" ELSE SUBMIT_REVIEW_TIME END,ActivityId="&activity_id&",VALID=1 WHERE ID=@id;"
+
 						sql_upd_pv=sql_upd_pv&"UPDATE STUDENT_INFO SET TUTOR_ID="&tutorid&",TUTOR_RECRUIT_ID="&recid&",TUTOR_RECRUIT_STATUS=3,"&_
 											 "WRITEPRIVILEGETAGSTRING=dbo.addPrivilege(WRITEPRIVILEGETAGSTRING,'SA8',''),READPRIVILEGETAGSTRING=dbo.addPrivilege(READPRIVILEGETAGSTRING,'SA8','') WHERE STU_ID="&stuid&";"
-						
+
 						sql_upd_apply=sql_upd_apply&"IF NOT EXISTS(SELECT STU_ID FROM TutorRecruitSys..ApplyInfo WHERE STU_ID="&stuid&" AND RECRUIT_ID="&recid&") BEGIN;"&_
 													"DELETE FROM TutorRecruitSys..ApplyInfo WHERE STU_ID="&stuid&" AND TURN_NUM=1;"&_
-													"INSERT INTO TutorRecruitSys..ApplyInfo (STU_ID,TUTOR_ID,RECRUIT_ID,PERIOD_ID,TURN_NUM,APPLY_TIME,TUTOR_REPLY_TIME,APPLY_STATUS) VALUES("&stuid&","&tutorid&","&recid&","&period_id&",1,'"&Now&"','"&Now&"',3); END;"
-						
+													"INSERT INTO TutorRecruitSys..ApplyInfo (STU_ID,TUTOR_ID,RECRUIT_ID,ActivityId,TURN_NUM,APPLY_TIME,TUTOR_REPLY_TIME,APPLY_STATUS) VALUES("&stuid&","&tutorid&","&recid&","&activity_id&",1,'"&Now&"','"&Now&"',3); END;"
+
 						numThesis=numThesis+1
 					Else
 						bError=True
@@ -206,19 +191,25 @@ Case 3	' 数据读取，导入到数据库
 		CloseConn conn
 		addData=numThesis
 	End Function
-	
+
 	Dim bError,errMsg
-	
+
 	filename=Request.Form("filename")
-	period_id=Request.Form("periodid")
+	activity_id=Request.Form("In_ActivityId")
 	task_progress=Request.Form("In_TASK_PROGRESS")
 	review_status=Request.Form("In_REVIEW_STATUS")
 	select_mode=Request.Form("selectmode")
 	filepath=Server.MapPath("upload/xls/"&filename)
+
+	Set activity=getActivityInfo(activity_id)
+	If IsNull(activity) Then
+		showErrorPage "所选评阅活动无效！", "提示"
+	End If
+
 	Set connExcel=Server.CreateObject("ADODB.Connection")
 	connstring="Provider=Microsoft.ACE.OLEDB.12.0;Data Source="&filepath&";Extended Properties=""Excel 12.0;HDR=Yes;IMEX=1"""
 	connExcel.Open connstring
-	
+
 	Set rs=connExcel.OpenSchema(adSchemaTables)
 	Do While Not rs.EOF
 		If rs("TABLE_TYPE")="TABLE" Then

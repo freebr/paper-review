@@ -1,9 +1,9 @@
-﻿<!--#include file="../inc/db.asp"--><%
+﻿<!--#include file="../inc/global.inc"--><%
 Dim count:count=0
 
 'Response.Charset="utf-8"
 sql="SELECT * FROM ViewThesisInfo WHERE DEFENCE_RESULT <>0 OR DEFENCE_MODIFY_EVAL IS NOT NULL"
-GetRecordSet conn,rs,sql,result
+GetRecordSet conn,rs,sql,count
 
 Response.Write "正在转移答辩结果……"
 Do While Not rs.EOF
@@ -13,7 +13,7 @@ Do While Not rs.EOF
 	conn.Execute sql2
 	
 	sql2="SELECT * FROM DefenceInfo WHERE THESIS_ID="&rs("ID")
-	GetRecordSet conn,rs2,sql2,result
+	GetRecordSet conn,rs2,sql2,count
 	rs2("DEFENCE_EVAL")=rs("DEFENCE_MODIFY_EVAL")
 	rs2.Update()
 	CloseRs rs2

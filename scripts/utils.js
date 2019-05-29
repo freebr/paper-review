@@ -339,3 +339,94 @@ function ShowDiv(ctrl,action,dWidth,dHeight,dTop,dLeft){
 	document.body.appendChild(oDiv);
 }
 //结束 层函数
+
+function closeWindow(updateList) {
+	if(!window.tabmgr) {
+		window.close();
+	} else {
+		window.tabmgr.close(window);
+		if(updateList) {
+			window.tabmgr.tabs.forEach(function(tab) {
+				if(tab.url.indexOf("thesisList.asp")!==-1) {
+					tab.window.location.reload();
+				}
+			});
+		}
+	}
+}
+
+var Common = {
+	curryLoadFilter: function() {
+		var args = arguments;
+		return function(data) {
+			if (Array.isArray(data)) return data[0];
+			if (data.status !== "ok") {
+				$.messager.alert("提示", data.msg, "error");
+				return [];
+			}
+			var ret = data.data;
+			for (h in args) {
+				ret = typeof args[h] === "function" ? args[h].call(ret) : ret;
+			}
+			return ret;
+		}
+	},
+	curryOnLoadFailed: function(opr) {
+		return function() {
+			$.messager.alert("提示", opr+"时出错，请稍后再试。", "error");
+		}
+	}
+};
+if (this["easyloader"]) {
+	$.extend($.fn.combobox.defaults, {
+		missingMessage: "该项必填"
+	});
+	$.extend($.fn.textbox.defaults, {
+		missingMessage: "该项必填"
+	});
+	$.extend($.fn.calendar.defaults, {
+		weeks: ['日', '一','二','三','四','五','六'],
+		months: ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'],
+		firstDay: 1
+	});
+	$.extend($.fn.datebox.defaults, {
+		currentText: "选择今日",
+		okText: "确定",
+		closeText: "关闭",
+		formatter: function(date) {
+			return date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate();
+		},
+		parser: function(s) {
+			var pattern_date = /\b(\d{4})-(\d{1,2})-(\d{1,2})\b/;
+			var mch = pattern_date.exec(s);
+			var dt = new Date();
+			if (mch) {
+				dt.setFullYear(mch[1]);
+				dt.setMonth(mch[2]-1);
+				dt.setDate(mch[3]);
+			}
+
+			var pattern_time = /\b(\d{1,2}):(\d{1,2})(:(\d{1,2}))?\b/;
+			mch = pattern_time.exec(s);
+			if (mch) {
+				dt.setHours(mch[1]);
+				dt.setMinutes(mch[2]);
+				if (mch[4]) dt.setSeconds(mch[4]);
+			} else {
+				dt.setHours(0);
+				dt.setMinutes(0);
+				dt.setSeconds(0);
+			}
+			return dt;
+		}
+	});
+	$.extend($.fn.datetimebox.defaults, {
+		currentText: "选择今日",
+		okText: "确定",
+		closeText: "关闭"
+	});
+	$.extend($.messager.defaults, {
+		ok: "确定",
+		cancel: "取消"
+	});
+}

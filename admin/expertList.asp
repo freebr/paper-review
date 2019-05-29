@@ -1,4 +1,4 @@
-﻿<!--#include file="../inc/db.asp"-->
+﻿<!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"-->
 <%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 Dim finalFilter,pageNo,pageSize
@@ -16,7 +16,7 @@ End If
 If Len(finalFilter) Then PubTerm="AND ("&finalFilter&")"
 Connect conn
 sql="SELECT * FROM ViewExpertInfo WHERE Valid=1 "&PubTerm&" ORDER BY EXPERT_NAME"
-GetRecordSetNoLock conn,rs,sql,result
+GetRecordSetNoLock conn,rs,sql,count
 If IsEmpty(pageSize) Or Not IsNumeric(pageSize) Then
   pageSize=-1
 Else
@@ -39,8 +39,8 @@ If rs.RecordCount>0 Then rs.AbsolutePage=pageNo
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<% useStylesheet("admin") %>
-<% useScript(Array("jquery", "common", "upload", "expertList")) %>
+<% useStylesheet "admin" %>
+<% useScript "jquery", "common", "upload", "*expertList" %>
 </head>
 <body bgcolor="ghostwhite">
 <center>
@@ -118,24 +118,24 @@ Next
   Dim teacherno,last_diploma,bSelectable
   For i=1 to rs.PageSize
       If rs.EOF Then Exit For
-      teacherno=rs("TEACHERNO").Value
-      last_diploma=rs("LAST_DIPLOMA").Value
+      teacherno=rs("TEACHERNO")
+      last_diploma=rs("LAST_DIPLOMA")
       If IsNull(last_diploma) Then last_diploma=0
       bSelectable=teacherno<>"zhuanjia1" And teacherno<>"zhuanjia2"
   %>
   <tr bgcolor="ghostwhite">
-    <td align=center><a href="expertProfile.asp?id=<%=rs("TEACHER_ID").Value%>"><%=HtmlEncode(rs("EXPERT_NAME").Value)%>&nbsp;/&nbsp;<%=HtmlEncode(teacherno)%></a></td>
-    <td align=center><%=HtmlEncode(rs("PRO_DUTY_NAME").Value)%></td>
-    <td align=center><%=arrDiplomaName(last_diploma)%></td>
-    <td align=center><%=HtmlEncode(rs("EXPERTISE").Value)%></td>
-    <td align=center><%=HtmlEncode(rs("ADDRESS").Value)%></td>
-    <td align=center><%=HtmlEncode(rs("MOBILE").Value)%></td>
-    <td align=center><%=HtmlEncode(rs("EMAIL").Value)%></td>
-    <td align=center><a id="pwd<%=i%>" href="#" onclick="return showPassword(this,'<%=rs("PASSWORD").Value%>')">显示密码</a>
-    <a href="expertProfile.asp?id=<%=rs("TEACHER_ID").Value%>">查看资料</a><br/><a href="#" onclick="window.open('sendmsg.asp?type=1&tid=<%=rs("TEACHER_ID").Value%>','','width=1010,height=420,status=no');return false">发送短信</a>&nbsp;<a href="#" onclick="window.open('sendmsg.asp?type=2&tid=<%=rs("TEACHER_ID").Value%>','','width=1010,height=420,status=no');return false">发送邮件</a></td>
-    <td align=center><%
+    <td align="center"><a href="#" onclick="return showExpertProfile(<%=rs("TEACHER_ID")%>)"><%=HtmlEncode(rs("EXPERT_NAME"))%>&nbsp;/&nbsp;<%=HtmlEncode(teacherno)%></a></td>
+    <td align="center"><%=HtmlEncode(rs("PRO_DUTY_NAME"))%></td>
+    <td align="center"><%=arrDiplomaName(last_diploma)%></td>
+    <td align="center"><%=HtmlEncode(rs("EXPERTISE"))%></td>
+    <td align="center"><%=HtmlEncode(rs("ADDRESS"))%></td>
+    <td align="center"><%=HtmlEncode(rs("MOBILE"))%></td>
+    <td align="center"><%=HtmlEncode(rs("EMAIL"))%></td>
+    <td align="center"><a id="pwd<%=i%>" href="#" onclick="return showPassword(this,'<%=rs("PASSWORD")%>')">显示密码</a>
+    <a href="#" onclick="return showExpertProfile(<%=rs("TEACHER_ID")%>)">查看资料</a><br/><a href="#" onclick="window.open('sendmsg.asp?type=1&tid=<%=rs("TEACHER_ID")%>','','width=1010,height=420,status=no');return false">发送短信</a>&nbsp;<a href="#" onclick="window.open('sendmsg.asp?type=2&tid=<%=rs("TEACHER_ID")%>','','width=1010,height=420,status=no');return false">发送邮件</a></td>
+    <td align="center"><%
     	If bSelectable Then
-    %><input type="checkbox" name="sel" value="<%=rs("TEACHER_ID").Value%>"><input type="hidden" name="isinschool<%=rs("TEACHER_ID").Value%>" value="<%=Abs(rs("INSCHOOL").Value)%>"><%
+    %><input type="checkbox" name="sel" value="<%=rs("TEACHER_ID")%>"><input type="hidden" name="isinschool<%=rs("TEACHER_ID")%>" value="<%=Abs(rs("INSCHOOL"))%>"><%
   		End If %>
 	</td></tr>
   <%

@@ -1,5 +1,11 @@
 ﻿<%
 	Select Case Request.QueryString()
+	Case "no-config"
+		title="未找到系统配置"
+		notice_html="未找到系统配置，请确认系统已在服务器正确部署！"
+	Case "closed"
+		title="系统已关闭"
+		notice_html="系统已关闭。"
 	Case "timeout"
 		title="会话超时"
 		notice_html="您登录的会话已超时（20分钟），请从网站首页重新登录。"

@@ -1,11 +1,10 @@
-﻿<%Response.Charset="utf-8"
-Response.Expires=-1%>
+﻿<%Response.Expires=-1%>
 <!--#include file="appgen.inc"-->
-<!--#include file="../inc/db.asp"-->
+<!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"--><%
 If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 thesisID=Request.QueryString("tid")
-period_id=Request.Form("In_PERIOD_ID2")
+activity_id=Request.Form("In_ActivityId2")
 teachtype_id=Request.Form("In_TEACHTYPE_ID2")
 class_id=Request.Form("In_CLASS_ID2")
 enter_year=Request.Form("In_ENTER_YEAR2")
@@ -19,10 +18,10 @@ If Len(thesisID)=0 Or Not IsNumeric(thesisID) Then
 	Response.End()
 End If
 sql="SELECT * FROM ViewThesisInfo WHERE ID="&thesisID
-GetRecordSet conn,rs,sql,result
+GetRecordSet conn,rs,sql,count
 ' 生成送审申请表
 Dim rag
-Randomize
+Randomize()
 review_time=rs("SUBMIT_REVIEW_TIME")
 If IsNull(review_time) Then review_time=Now
 eval_text=rs("REVIEW_APP_EVAL")
@@ -45,7 +44,7 @@ rs.Update()
 CloseRs rs
 CloseConn conn
 %><form id="ret" action="thesisDetail.asp?tid=<%=thesisID%>" method="post">
-<input type="hidden" name="In_PERIOD_ID2" value="<%=period_id%>">
+<input type="hidden" name="In_ActivityId2" value="<%=activity_id%>">
 <input type="hidden" name="In_TEACHTYPE_ID2" value="<%=teachtype_id%>" />
 <input type="hidden" name="In_CLASS_ID2" value="<%=class_id%>" />
 <input type="hidden" name="In_ENTER_YEAR2" value="<%=enter_year%>" />

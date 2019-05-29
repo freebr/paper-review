@@ -1,17 +1,17 @@
-﻿<%Response.Charset="utf-8"%>
-<!--#include file="../inc/ExtendedRequest.inc"-->
-<!--#include file="../inc/db.asp"-->
+﻿<!--#include file="../inc/ExtendedRequest.inc"-->
+<!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"--><%
-curStep=Request.QueryString("step")
-Select Case curStep
+
+step=Request.QueryString("step")
+Select Case step
 Case vbNullstring ' 文件选择页面
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="theme-color" content="#2D79B2" />
 <title>导入专家信息</title>
-<% useStylesheet("admin") %>
-<% useScript(Array("jquery", "upload")) %>
+<% useStylesheet "admin" %>
+<% useScript "jquery", "upload" %>
 </head>
 <body bgcolor="ghostwhite">
 <center><font size=4><b>导入专家信息</b><br>
@@ -63,8 +63,8 @@ Case 2	' 上传进程
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="theme-color" content="#2D79B2" />
 <title>导入专家信息</title>
-<% useStylesheet("admin") %>
-<% useScript("jquery") %>
+<% useStylesheet "admin" %>
+<% useScript "jquery" %>
 </head>
 <body bgcolor="ghostwhite">
 <center><br /><b>导入</b><br /><br /><%
@@ -83,7 +83,7 @@ Case 3	' 数据读取，导入到数据库
 	Function addData()
 		' 添加数据
 		Dim fieldValue(6)
-		Dim sql,conn,connOrigin,result,rsExp,rsTea,rsTmp
+		Dim sql,conn,connOrigin,count,rsExp,rsTea,rsTmp
 		Dim numNewTeacher,numNewExTeacher,numUpdTeacher
 		Dim bIsUpdated,bIsInschool
 		Dim arrRet(1)
@@ -96,9 +96,9 @@ Case 3	' 数据读取，导入到数据库
 		Connect conn
 		ConnectOriginDb connOrigin
 		sql="SELECT * FROM Experts"
-		GetRecordSet conn,rsExp,sql,result
+		GetRecordSet conn,rsExp,sql,count
 		sql="SELECT * FROM TEACHER_INFO"
-		GetRecordSet connOrigin,rsTea,sql,result
+		GetRecordSet connOrigin,rsTea,sql,count
 		Do While Not rs.EOF
 			If IsNull(rs(0).Value) Then Exit Do
 			bIsUpdated=False
@@ -137,16 +137,16 @@ Case 3	' 数据读取，导入到数据库
 					If Not bIsInschool Then	' 添加校外专家到教师信息表
 						rsTea.AddNew()
 						' 生成登录用户名，并保证不与已有用户名相同
-						username=py.getNamePinyinOf(fieldValue(0))
+						username=LCase(Replace(py.getNamePinyinOf(fieldValue(0))," ",""))
 						s=username
 						i=0
 						Do
 							If i>0 Then	s=username&i
 							sql="SELECT TEACHERID FROM TEACHER_INFO WHERE TEACHERNO="&toSqlString(s)
-							GetRecordSetNoLock connOrigin,rsTmp,sql,result
+							GetRecordSetNoLock connOrigin,rsTmp,sql,count
 							CloseRs rsTmp
 							i=i+1
-						Loop While result>0
+						Loop While count>0
 						rsTea("TEACHERNO").Value=s
 						rsTea("TEACHERNAME").Value=fieldValue(0)
 						rsTea("USER_PASSWORD").Value="12345678" ' generatePassword()
@@ -188,7 +188,7 @@ Case 3	' 数据读取，导入到数据库
 		CloseRs rsTea
 		CloseRs rsExp
 		' 调用绑定教师ID的存储过程
-		conn.Execute "EXEC spUpdateThesisReviewExpertTid"
+		conn.Execute "EXEC spUpdateExpertId"
 		' 添加专家权限，使其可以进入评阅系统
 		conn.Execute "EXEC spConfigExpertPrivilege"
 		CloseConn connOrigin

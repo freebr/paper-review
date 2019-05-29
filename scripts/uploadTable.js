@@ -6,7 +6,11 @@
 }
 
 function submitUploadForm(fm) {
-	if(typeof(fm.size)==='function')fm=fm[0];
+	var $fm=$(fm);
+	if (typeof $fm.form==="function" && !$fm.form('validate')) {
+		$.messager.alert("提示", "您填写的信息不完整，请按照提示完善相关内容。", "error");
+		return false;
+	}
 	var bValid=true;
 	$('input.date').each(function() {
 		if (!verifyDateCh(this.value)) {
@@ -18,7 +22,7 @@ function submitUploadForm(fm) {
 	$('input.keyword').each(function() {
 		if(!this.dirty) this.value='';
 	});
-	if(bValid) $(fm.btnsubmit).val("正在提交，请稍候……").attr('disabled',true);
+	if(bValid) $fm.find('#btnsubmit').val("正在提交，请稍候……").attr('disabled',true);
 	return bValid;
 }
 

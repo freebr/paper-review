@@ -22,6 +22,10 @@ function onKeywordRemove() {
 	return false;
 }
 function addKeyword() {
+	if($('tr.keywordpair').size()>=5) {
+		alert('论文关键词不能超过五个！');
+		return false;
+	}
 	var tr=document.createElement('tr');
 	var keywordpair=$('tr.keywordpair').eq(-1);
 	tr.className='keywordpair';
@@ -61,23 +65,31 @@ function setKeywords(keywords_ch,keywords_en) {
 	return;
 }
 function checkKeywords() {
-	var bValid=true;
-	$.each($.makeArray($('input.keyword')),function(index,item){
-		if(item.value.indexOf(',')>=0) {
-			alert('关键词不能包含半角逗号（,）！');
-			item.focus();
-			bValid=false;
-			return false;
+	var keywords_ch=[], keywords_en=[];
+	$.each($.makeArray($('input.keyword')),
+		function (index,item){
+			if (item.value.indexOf(',')>=0) {
+				alert('关键词不能包含半角逗号（,）！');
+				item.focus();
+				return false;
+			}
+			if (item.name==='keyword_ch') {
+				keywords_ch.push(item.value);
+			} else {
+				keywords_en.push(item.value);
+			}
 		}
-	});
-	return bValid;
+	);
+	$('input[name="keyword_ch"]').val(keywords_ch.join(', '));
+	$('input[name="keyword_en"]').val(keywords_en.join(', '));
+	return true;
 }
-$().ready(function() {
+$(function() {
 	$('input.keyword').on({'blur':onKeywordBlur,'focus':onKeywordFocus,'change':onKeywordChange}).blur();
-	$('a.linkAdd').click(function() {
+	$(this).on('click','a.linkAdd',function() {
 		addKeyword();
 		return false;
 	});
-	$('a.linkRemove').on('click',onKeywordRemove);
+	$(this).on('click','a.linkRemove',onKeywordRemove);
 	setKeywordCount(3);
 });

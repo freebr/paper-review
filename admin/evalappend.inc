@@ -35,20 +35,20 @@ Class EvalAppend
 		Set wd=Server.CreateObject("Word.Application")
 		Set doc=wd.Documents.Add(tablefile)
 		Set rg=doc.Tables(3).Cell(12,1).Range
-    content=arrText(textid1)&vbNewLine&vbNewLine&m_eval_text&vbNewLine&vbNewLine
-    rg.Delete()
-    rg.ParagraphFormat.Reset()
-    rg.ParagraphFormat.LineUnitBefore=0.5
-    rg.ParagraphFormat.LineUnitAfter=0.5
-    rg.Paragraphs.Add()
-    Set rg=rg.Paragraphs(1).Range
-    rg.Font.Size=12
-    rg.Text=content
-    rg.InsertParagraphAfter()
-    Set rg2=rg.Paragraphs(rg.Paragraphs.Count).Range
-    rg2.Font.Size=12
-    rg2.Text=arrText(textid2)&m_tutorname&vbNewLine&vbNewLine&Year(m_date)&"  年  "&Month(m_date)&"  月  "&Day(m_date)&"  日"
-    rg2.ParagraphFormat.IndentFirstLineCharWidth 13
+		content=arrText(textid1)&vbNewLine&vbNewLine&m_eval_text&vbNewLine&vbNewLine
+		rg.Delete()
+		rg.ParagraphFormat.Reset()
+		rg.ParagraphFormat.LineUnitBefore=0.5
+		rg.ParagraphFormat.LineUnitAfter=0.5
+		rg.Paragraphs.Add()
+		Set rg=rg.Paragraphs(1).Range
+		rg.Font.Size=12
+		rg.Text=content
+		rg.InsertParagraphAfter()
+		Set rg2=rg.Paragraphs(rg.Paragraphs.Count).Range
+		rg2.Font.Size=12
+		rg2.Text=arrText(textid2)&m_tutorname&vbNewLine&vbNewLine&Year(m_date)&"  年  "&Month(m_date)&"  月  "&Day(m_date)&"  日"
+		rg2.ParagraphFormat.IndentFirstLineCharWidth 13
 		doc.SaveAs filepath,16
 		doc.Close(False)
 		Set rg=Nothing

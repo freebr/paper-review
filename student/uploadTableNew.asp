@@ -1,69 +1,83 @@
-﻿<%Response.Charset="utf-8"%>
-<!--#include file="../inc/db.asp"-->
-<!--#include file="common.asp"-->
+﻿<!--#include file="../inc/global.inc"-->
 <!--#include file="tablegen.inc"-->
+<!--#include file="common.asp"-->
 <%If IsEmpty(Session("StuId")) Then Response.Redirect("../error.asp?timeout")
-Dim opr,bOpen,bUpload,bGenerated,filetype
+Dim is_new_dissertation:is_new_dissertation=False
+Dim activity_id,section_id,time_flag,allow_upload,is_generated,filetype
 Dim researchway_list
-Dim conn,rs,sql,result
+Dim conn,rs,sql,count
 
-bOpen=True
-bUpload=True
-opr=0
-sem_info=getCurrentSemester()
+activity_id=0
+allow_upload=False
+section_id=0
 stu_type=Session("StuType")
 researchway_list=loadResearchwayList(stu_type)
 
 Connect conn
-sql="SELECT *,dbo.getThesisStatusText(1,TASK_PROGRESS,2) AS STAT_TEXT FROM ViewThesisInfo WHERE STU_ID="&Session("Stuid")&" ORDER BY PERIOD_ID DESC"
-GetRecordSetNoLock conn,rs,sql,result
-sql="SELECT * FROM ViewStudentInfo WHERE STU_ID="&Session("Stuid")
-GetRecordSetNoLock conn,rs2,sql,result
-enter_year=rs2("ENTER_YEAR")
-tutor_name=rs2("TEACHERNAME")
-tutor_duty_name=getProDutyNameOf(rs2("TUTOR_ID"))
+sql="SELECT *,dbo.getThesisStatusText(1,TASK_PROGRESS,2) AS STAT_TEXT FROM ViewThesisInfo WHERE STU_ID="&Session("Stuid")&" ORDER BY ActivityId DESC"
+GetRecordSetNoLock conn,rs,sql,count
+sql="SELECT STU_NO,SEX,IFFOREIGN,ENTER_YEAR,TEACHERNAME,TUTOR_ID FROM ViewStudentInfo WHERE STU_ID="&Session("Stuid")
+GetRecordSetNoLock conn,rsStu,sql,count
+stu_no=rsStu("STU_NO")
+stu_sex=Abs(Int(rsStu("SEX")="女"))
+foreign_student=rsStu("IFFOREIGN")="是"
+If foreign_student Then
+	stu_type_name=dictStuTypes(stu_type)(1)
+Else
+	stu_type_name=dictStuTypes(stu_type)(0)
+End If
+enter_year=rsStu("ENTER_YEAR")
+tutor_name=rsStu("TEACHERNAME")
+tutor_name_en=getPinyinOfName(rsStu("TEACHERNAME"))
+tutor_duty_name=getProDutyNameOf(rsStu("TUTOR_ID"))
 If rs.EOF Then
-	opr=STUCLI_OPR_TABLE1
+	section_id=sectionUploadKtbg
 	task_progress=tpNone
 	str_keywords_ch="''"
 	str_keywords_en="''"
 Else
 	thesisID=rs("ID")
+	activity_id=rs("ActivityId")
 	' 表格审核进度
 	task_progress=rs("TASK_PROGRESS")
 	Select Case task_progress
 	Case tpNone,tpTbl1Uploaded,tpTbl1Unpassed	' 开题报告
-		opr=STUCLI_OPR_TABLE1
-		bGenerated=task_progress=tpTbl1Uploaded Or task_progress=tpTbl1Unpassed
+		section_id=sectionUploadKtbg
+		is_generated=task_progress=tpTbl1Uploaded Or task_progress=tpTbl1Unpassed
 		filetype=1
 	Case tpTbl1Passed,tpTbl2Uploaded,tpTbl2Unpassed	' 中期检查表
-		opr=STUCLI_OPR_TABLE2
-		bGenerated=task_progress=tpTbl2Uploaded Or task_progress=tpTbl2Unpassed
+		section_id=sectionUploadZqjcb
+		is_generated=task_progress=tpTbl2Uploaded Or task_progress=tpTbl2Unpassed
 		filetype=3
 	Case tpTbl2Passed,tpTbl3Uploaded,tpTbl3Unpassed	' 预答辩申请表
-		opr=STUCLI_OPR_TABLE3
-		bGenerated=task_progress=tpTbl3Uploaded Or task_progress=tpTbl3Unpassed
+		section_id=sectionUploadYdbyjs
+		is_generated=task_progress=tpTbl3Uploaded Or task_progress=tpTbl3Unpassed
 		filetype=5
 	Case tpTbl3Passed,tpTbl4Uploaded,tpTbl4Unpassed	' 答辩审批材料
 		review_status=rs("REVIEW_STATUS")
 		If review_status>=rsReviewEval Then
-			opr=STUCLI_OPR_TABLE4
-			bGenerated=task_progress=tpTbl4Uploaded Or task_progress=tpTbl4Unpassed
+			section_id=sectionUploadSpcl
+			is_generated=task_progress=tpTbl4Uploaded Or task_progress=tpTbl4Unpassed
 			filetype=7
 		Else
-			opr=STUCLI_OPR_TABLE3
-			bUpload=False
+			section_id=sectionUploadYdbyjs
+			allow_upload=False
 			bRedirectToThesisUpload=True
 		End If
 	Case tpTbl4Passed ' 答辩审批材料审核通过
-		opr=STUCLI_OPR_TABLE4
-		bGenerated=True
+		section_id=sectionUploadSpcl
+		is_generated=True
 		filetype=7
-		bUpload=False
+		allow_upload=False
 	Case Else
-		bUpload=False
+		allow_upload=False
 	End Select
 	speciality_name=rs("SPECIALITY_NAME")
+	If foreign_student Then
+		If speciality_name="工商管理硕士" Then
+			speciality_name="Master of Business Administration"
+		End If
+	End If
 	subject=rs("THESIS_SUBJECT")
 	subject_en=rs("THESIS_SUBJECT_EN")
 	sub_research_field=rs("RESEARCHWAY_NAME")
@@ -73,100 +87,130 @@ Else
 	thesis_form=rs("THESIS_FORM")
 	tutor_modify_eval=rs("TUTOR_MODIFY_EVAL")
 End If
-If opr<>0 Then
-	bOpen=stuclient.isOpenFor(stu_type,opr)
-	startdate=stuclient.getOpentime(opr,STUCLI_OPENTIME_START)
-	enddate=stuclient.getOpentime(opr,STUCLI_OPENTIME_END)
-	If Not bOpen Then bUpload=False
-	If opr<=STUCLI_OPR_TABLE3 Then
-		bTblThesisUploaded=Not IsNull(rs("TBL_THESIS_FILE"&opr))
+If section_id<>0 Then
+	' 开题报告（EMBA为预答辩申请表），录入论文基本信息
+	is_new_dissertation=section_id=sectionUploadKtbg Or stu_type=7 And section_id=sectionUploadYdbyjs
+	If Not isActivityOpen(rs("ActivityId")) Then
+		time_flag=-3
+	Else
+		Set current_section=getSectionInfo(rs("ActivityId"), stu_type, section_id)
+		time_flag=compareNowWithSectionTime(current_section)
+		allow_upload=time_flag=0
+		If section_id<=sectionUploadYdbyjs Then
+			is_tbl_thesis_uploaded=Not IsNull(rs("TBL_THESIS_FILE"&section_id))
+		End If
 	End If
 End If
 ' 确定表格模板文件名
-Select Case opr
-Case STUCLI_OPR_TABLE1:template_name="ktbg"
-Case STUCLI_OPR_TABLE2:template_name="zqjcb"
-Case STUCLI_OPR_TABLE3:template_name="ydbyjs"
-Case STUCLI_OPR_TABLE4:template_name="spcl"
+Select Case section_id
+Case sectionUploadKtbg:template_name="ktbg"
+Case sectionUploadZqjcb:template_name="zqjcb"
+Case sectionUploadYdbyjs:template_name="ydbyjs"
+Case sectionUploadSpcl
+	If foreign_student Then
+		template_name="spcl_en"
+	Else
+		template_name="spcl"
+	End If
 End Select
-If opr<>STUCLI_OPR_TABLE3 Then
-	Select Case stu_type
-	Case 5
-		prefix="me_"
-	Case 6
-		prefix="mba_"
-	Case 7
-		prefix="emba_"
-	Case 9
-		prefix="mpacc_"
-	End Select
-Else
-	prefix=""
-End If
+Select Case stu_type
+Case 5
+	prefix="me_"
+Case 6
+	prefix="mba_"
+Case 7
+	prefix="emba_"
+Case 9
+	prefix="mpacc_"
+End Select
 template_file="template/doc/new/"&prefix&template_name&".doc"
 
-curStep=Request.QueryString("step")
-Select Case curStep
+step=Request.QueryString("step")
+Select Case step
 Case vbNullstring ' 填写信息页面
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="theme-color" content="#2D79B2" />
 <title>在线填写表格</title>
-<% useStylesheet("student") %>
-<% useScript(Array("jquery", "common", "upload", "uploadTable", "keywordList")) %>
+<% useStylesheet "student", "jeasyui" %>
+<% useScript "jquery", "jeasyui", "common", "upload", "uploadTable", "keywordList" %>
 </head>
 <body bgcolor="ghostwhite">
-<center><font size=4><b>在线填写表格</b></font
+<center><font size=4><b>在线填写表格</b></font>
+<form id="fmTable" action="?step=1" method="post">
 <table class="tblform" width="1000"><tr><td class="summary"><p><%
-	If Not bOpen Then
-%><span class="tip">提交<%=arrStuOprName(opr)%>的时间为<%=toDateTime(startdate,1)%>至<%=toDateTime(enddate,1)%>，本专业提交通道已关闭或当前不在开放时间内，不能提交表格！</span><%
-	ElseIf Not bUpload Then
+	If Not allow_upload Then
+		If time_flag=-3 Then
+%><span class="tip">当前评阅活动【<%=rs("ActivityName")%>】已关闭，不能提交表格！</span><%
+		ElseIf time_flag=-2 Then
+%><span class="tip">【<%=current_section("Name")%>】环节已关闭，不能提交表格！</span><%
+		ElseIf time_flag<>0 Then
+%><span class="tip">【<%=current_section("Name")%>】环节开放时间为<%=toDateTime(current_section("StartTime"),1)%>至<%=toDateTime(current_section("EndTime"),1)%>，当前不在开放时间内，不能提交表格！</span><%
+		Else
 %><span class="tip">当前状态为【<%=rs("STAT_TEXT")%>】，不能提交表格！</span><%
+		End If
 	Else
-%>当前填写的是：<span style="color:#ff0000;font-weight:bold"><%=arrStuOprName(opr)%></span><br/>
-请填写以下信息，然后点击&quot;提交&quot;按钮：<%
+%><p>当前填写的是：<span style="color:#ff0000;font-weight:bold"><%=arrStuOprName(section_id)%></span></p><%
+		If is_new_dissertation Then %>
+<p>请选择您要参加的评阅活动：
+<input id="activity_id" class="easyui-combobox" name="activity_id"
+    data-options="valueField:'id',
+	textField:'name',
+	editable: false,
+	prompt:'【请选择】',
+	width: 300,
+	panelHeight: 100,
+	value:<%=activity_id%>,
+	url:'../api/get-attendable-activities',
+	loadFilter:Common.curryLoadFilter(Array.prototype.reverse)"></p><%
+		End If %>
+<p>请填写以下信息，确认无误后点击&quot;提交&quot;按钮生成表格：</p><%
 	End If %></p></td></tr>
-<tr><td align="center"><form id="fmThesis" action="?step=1" method="post">
+<tr><td align="center">
 <input type="hidden" name="stuid" value="<%=Session("Stuid")%>" />
 <table class="tblform">
 <!--<tr><td><span class="tip">以下信息均为必填项</span></td></tr>-->
 <tr><td align="center"><%
-	If bUpload Then
-		Select Case opr
-		Case STUCLI_OPR_TABLE1
+	If allow_upload Then
+		Select Case section_id
+		Case sectionUploadKtbg
 %><!--#include file="template/form_ktbg.html"--><%
-		Case STUCLI_OPR_TABLE2
+		Case sectionUploadZqjcb
 %><!--#include file="template/form_zqjcb.html"--><%
-		Case STUCLI_OPR_TABLE3
+		Case sectionUploadYdbyjs
 %><!--#include file="template/form_ydbyjs.html"--><%
-		Case STUCLI_OPR_TABLE4
+		Case sectionUploadSpcl
+			If foreign_student Then
+%><!--#include file="template/form_spcl_en.html"--><%
+			Else
 %><!--#include file="template/form_spcl.html"--><%
+			End If
 		End Select
 	End If %>
 </td></tr><%
-	If opr>0 And opr<=STUCLI_OPR_TABLE3 And Not bTblThesisUploaded Then %>
-<tr><td align="center"><span class="tip">提示：您目前尚未上传<%=arrTblThesis(opr)%>，<a href="uploadTableThesis.asp">点击这里上传。</a></span></td></tr><%
+	If section_id>0 And section_id<=sectionUploadYdbyjs And allow_upload And Not is_tbl_thesis_uploaded Then %>
+<tr><td align="center"><span class="tip">提示：您目前尚未上传<%=arrTblThesis(section_id)%>，<a href="uploadTableThesis.asp">点击这里上传。</a></span></td></tr><%
 	End If %>
 <tr><td align="center"><p><%
-	If bUpload Then
-%><input type="submit" name="btnsubmit" value="提 交" />&nbsp;<%
+	If allow_upload Then
+%><input type="submit" id="btnsubmit" value="提 交" />&nbsp;<%
 	End If
-	If bGenerated Then
+	If is_generated Then
 %><input type="button" id="btndownload" value="下载打印" />&nbsp;<%
 	End If
-	If opr<>STUCLI_OPR_TABLE4 Then
-%><input type="button" id="btnuploadtblthesis" value="上传<%=arrTblThesis(opr)%>" />&nbsp;<%
+	If section_id<>sectionUploadSpcl Then
+%><input type="button" id="btnuploadtblthesis" value="上传<%=arrTblThesis(section_id)%>" />&nbsp;<%
 	End If
 %><input type="button" id="btnreturn" value="返回首页" onclick="location.href='home.asp'" /></p></td></tr>
 <tr><td><%
-	If opr<>0 Then %>
+	If section_id<>0 Then %>
 <div style="text-align:right"><hr />
-<a href="<%=template_file%>" target="_blank"><img src="../images/down.png" />下载<%=arrStuOprName(opr)%>模板...</a></div><%
-	End If %></td></tr></table></form></td></tr></table></center>
-<script type="text/javascript">
-<%
-If opr=STUCLI_OPR_TABLE1 Then %>
+<a href="<%=template_file%>" target="_blank"><img src="../images/down.png" />下载<%=arrStuOprName(section_id)%>模板...</a></div><%
+	End If %></td></tr></table></td></tr></table></form></center>
+<script type="text/javascript"><%
+
+	If section_id=sectionUploadKtbg And allow_upload Then %>
 	$('select[name="sub_research_field_select"]').change(function(){
 		$('input[name="sub_research_field"]').val(!this.value.length?'':$(this).find('option:selected').text());
 		var $custom_field=$('input[name="custom_sub_research_field"]');
@@ -186,329 +230,292 @@ If opr=STUCLI_OPR_TABLE1 Then %>
 		$('input[name="research_field"]').val(!this.value.length?'':$(this).find('option:selected').text());
 	});
 	initResearchFieldSelectBox($('select[name="research_field_select"]'),<%=stu_type%>);<%
-End If %>
+	End If %>
 	$('form').submit(function(event) {<%
-If opr=STUCLI_OPR_TABLE1 Then %>
+	If section_id=sectionUploadKtbg Then %>
 		if(!checkKeywords()) {
 			event.preventDefault();
 			return false;
 		}<%
-End If %>
+	End If %>
 		return submitUploadForm(this);
-	}).find(':submit').attr('disabled',<%=LCase(Not bUpload)%>);
+	}).find(':submit').attr('disabled',<%=LCase(Not allow_upload)%>);
 	$(':button#btnuploadtblthesis').click(
 		function() {
 			window.location.href='uploadTableThesis.asp';
-		});
+		}
+	);
 	$(':button#btndownload').click(
 		function() {
-			window.location.href='fetchfile.asp?tid=<%=thesisID%>&type=<%=filetype%>';
-		});
+			window.location.href='fetchDocument.asp?tid=<%=thesisID%>&type=<%=filetype%>';
+		}
+	);
 </script></body></html><%
 Case 1	' 上传进程
 
-	If Not bOpen Then
+	If time_flag=-3 Then
 		bError=True
-		errdesc="提交"&arrStuOprName(opr)&"的时间为"&FormatDateTime(startdate,1)&"至"&FormatDateTime(enddate,1)&"，本专业提交通道已关闭或当前不在开放时间内，不能提交表格！"
-	ElseIf Not bUpload Then
+		errdesc=Format("当前评阅活动【{0}】已关闭，不能提交表格！", rs("ActivityName"))
+	ElseIf time_flag=-2 Then
+		bError=True
+		errdesc=Format("【{0}】环节已关闭，不能提交表格！", current_section("Name"))
+	ElseIf time_flag<>0 Then
+		bError=True
+		errdesc=Format("【{0}】环节开放时间为{1}至{2}，当前不在开放时间内，不能提交表格！",_
+			current_section("Name"),_
+			toDateTime(current_section("StartTime"),1),_
+			toDateTime(current_section("EndTime"),1))
+	ElseIf Not allow_upload Then
 		bError=True
 		errdesc="当前状态为【"&rs("STAT_TEXT")&"】，不能提交表格！"
 	End If
 	If bError Then
-		%><body bgcolor="ghostwhite"><center><font color=red size="4"><%=errdesc%></font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
-  	CloseRs rs
-  	CloseRs rs2
-  	CloseConn conn
-		Response.End()
+		CloseRs rs
+		CloseRs rsStu
+		CloseConn conn
+		showErrorPage errdesc, "提示"
 	End If
-	
-	Dim fso
-	Set fso=Server.CreateObject("Scripting.FileSystemObject")
-	
+
+	Dim fso:Set fso=Server.CreateObject("Scripting.FileSystemObject")
+
 	' 检查上传目录是否存在
-	strUploadPath=Server.MapPath("upload")
-	If Not fso.FolderExists(strUploadPath) Then fso.CreateFolder(strUploadPath)
+	upload_path=Server.MapPath("upload")
+	If Not fso.FolderExists(upload_path) Then fso.CreateFolder(upload_path)
 	Set fso=Nothing
 	' 生成表格文件名
-	fileid=FormatDateTime(Now(),1)&Int(Timer)
-	strDestTableFile=fileid&".doc"
-	strDestTablePath=strUploadPath&"\"&strDestTableFile
+	export_file_name=FormatDateTime(Now(),1)&Int(Timer)&".doc"
+	export_file_path=upload_path&"\"&export_file_name
+	
+	Dim params, arr, i
 	' 生成表格
 	Dim tg:Set tg=New TableGen
-	
-	Select Case opr
-	Case STUCLI_OPR_TABLE1
-	
-		subject=Request.Form("subject_ch")
-		subject_en=Request.Form("subject_en")
-		research_field_id=Request.Form("research_field_select")
-		research_field=Request.Form("research_field")
-		sub_research_field_id=Request.Form("sub_research_field_select")
-		sub_research_field=Request.Form("sub_research_field")
-		custom_sub_research_field=Trim(Request.Form("custom_sub_research_field"))
-		school_tutor_name=Request.Form("school_tutor_name")
-		school_tutor_duty=Request.Form("school_tutor_duty")
-		school_tutor_research_field_id=Request.Form("school_tutor_research_field_select")
-		school_tutor_research_field=Request.Form("school_tutor_research_field")
-		afterschool_tutor_name=Request.Form("afterschool_tutor_name")
-		afterschool_tutor_duty=Request.Form("afterschool_tutor_duty")
-		afterschool_tutor_expertise=Request.Form("afterschool_tutor_expertise")
-		issue_source=Request.Form("issue_source")
-		abstract=Request.Form("abstract")
-		research_background=Request.Form("research_background")
-		research_solution=Request.Form("research_solution")
-		anticipated_result=Request.Form("anticipated_result")
-		
-		If Len(research_field_id)=0 Then
+
+	Select Case section_id
+	Case sectionUploadKtbg
+
+		Set params=getFormParams("activity_id","subject","subject_en","research_field_select","research_field",_
+			"sub_research_field_select","sub_research_field",_
+			"custom_sub_research_field","school_tutor_name","school_tutor_duty",_
+			"school_tutor_research_field_select","school_tutor_research_field",_
+			"afterschool_tutor_name","afterschool_tutor_duty","afterschool_tutor_expertise",_
+			"issue_source","abstract","keyword_ch","keyword_en","research_background",_
+			"research_solution","work_schedule_duration","work_schedule_content",_
+			"work_schedule_memo","anticipated_result")
+
+		If Len(params("research_field_select"))=0 Then
 			bError=True
 			errdesc="请选择工程领域！"
-		ElseIf Len(sub_research_field_id)=0 Then
+		ElseIf Len(params("sub_research_field_select"))=0 Then
 			bError=True
 			errdesc="请选择研究方向！"
-		ElseIf sub_research_field_id="-1" And Len(custom_sub_research_field)=0 Then
+		ElseIf params("sub_research_field_select")="-1" And Len(params("custom_sub_research_field"))=0 Then
 			bError=True
 			errdesc="请填写研究方向！"
 		End If
 		If bError Then
-	%><body bgcolor="ghostwhite"><center><font color=red size="4"><%=errdesc%></font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 			CloseRs rs
-	  	CloseRs rs2
-	  	CloseConn conn
-			Response.End()
+			CloseRs rsStu
+			CloseConn conn
+			showErrorPage errdesc, "提示"
 		End If
-		
-		tg.addInfo "StuName",Session("StuName")
-		tg.addInfo "StuNo",Session("StuNo")
-		tg.addInfo "StuType",stu_type
-		tg.addInfo "ResearchField",research_field
-		
-		tg.addInfo "ThesisSubjectCh",subject
-		tg.addInfo "ThesisSubjectEn",subject_en
-		tg.addInfo "SchoolTutorName",school_tutor_name
-		tg.addInfo "SchoolTutorDuty",school_tutor_duty
-		tg.addInfo "SchoolTutorResearchField",school_tutor_research_field
-		tg.addInfo "AfterSchoolTutorName",afterschool_tutor_name
-		tg.addInfo "AfterSchoolTutorDuty",afterschool_tutor_duty
-		tg.addInfo "AfterSchoolTutorExpertise",afterschool_tutor_expertise
-		tg.addInfo "IssueSource",issue_source
-		tg.addInfo "Abstract",abstract
-		For i=1 To Request.Form("keyword_ch").Count
-			If Len(Trim(Request.Form("keyword_ch")(i))) Then
-				If i>1 Then keywords_ch=keywords_ch&"　"
-				keywords_ch=keywords_ch&Trim(Request.Form("keyword_ch")(i))
-			End If
-		Next
-		tg.addInfo "KeywordsCh",keywords_ch
-		For i=1 To Request.Form("keyword_en").Count
-			If Len(Trim(Request.Form("keyword_en")(i))) Then
-				If i>1 Then keywords_en=keywords_en&"/"
-				keywords_en=keywords_en&Trim(Request.Form("keyword_en")(i))
-			End If
-		Next
-		tg.addInfo "KeywordsEn",keywords_en
-		
-		tg.addInfo "ResearchBackground",research_background
-		tg.addInfo "ResearchSolution",research_solution
-		
-		addFormInfoToArray tg,work_schedule_duration,"work_schedule_duration","WorkScheduleDuration"
-		addFormInfoToArray tg,work_schedule_content,"work_schedule_content","WorkScheduleContent"
-		addFormInfoToArray tg,work_schedule_memo,"work_schedule_memo","WorkScheduleMemo"
-		
-		tg.addInfo "AnticipatedResult",anticipated_result
-		
-	Case STUCLI_OPR_TABLE2
-	
-		subject=Request.Form("subject")
-		research_field=Request.Form("research_field")
-		thesis_progress=Request.Form("thesis_progress")
-		work_schedule=Request.Form("work_schedule")
-		
-		tg.addInfo "StuName",Session("StuName")
-		tg.addInfo "StuNo",Session("StuNo")
-		tg.addInfo "StuType",stu_type
-		tg.addInfo "ResearchField",research_field
-		
-		tg.addInfo "ThesisSubject",subject
-		tg.addInfo "ThesisProgress",thesis_progress
-		tg.addInfo "WorkSchedule",work_schedule
-		
-	Case STUCLI_OPR_TABLE3
-	
-		grade=Request.Form("grade")
-		speciality_name=Request.Form("speciality_name")
-		subject=Request.Form("subject")
-		predefence_date=Request.Form("predefence_date")
-		
-		If Len(grade)<>4 Or Not IsNumeric(grade) Then
+
+		tg.setField "StuName",Session("StuName")
+		tg.setField "StuNo",Session("StuNo")
+		tg.setField "StuType",stu_type
+		tg.setField "ResearchField",params("research_field")
+
+		tg.setField "ThesisSubjectCh",params("subject")
+		tg.setField "ThesisSubjectEn",params("subject_en")
+		tg.setField "SchoolTutorName",params("school_tutor_name")
+		tg.setField "SchoolTutorDuty",params("school_tutor_duty")
+		tg.setField "SchoolTutorResearchField",params("school_tutor_research_field")
+		tg.setField "AfterSchoolTutorName",params("afterschool_tutor_name")
+		tg.setField "AfterSchoolTutorDuty",params("afterschool_tutor_duty")
+		tg.setField "AfterSchoolTutorExpertise",params("afterschool_tutor_expertise")
+		tg.setField "IssueSource",params("issue_source")
+		tg.setField "Abstract",params("abstract")
+		tg.setField "KeywordsCh",Replace(params("keyword_ch")(1),", ","　")
+		tg.setField "KeywordsEn",Replace(params("keyword_en")(1),", ","/")
+
+		tg.setField "ResearchBackground",params("research_background")
+		tg.setField "ResearchSolution",params("research_solution")
+
+		tg.setArray "WorkScheduleDuration",params("work_schedule_duration")
+		tg.setArray "WorkScheduleContent",params("work_schedule_content")
+		tg.setArray "WorkScheduleMemo",params("work_schedule_memo")
+
+		tg.setField "AnticipatedResult",params("anticipated_result")
+
+	Case sectionUploadZqjcb
+
+		Set params=getFormParams("subject","research_field","thesis_progress","work_schedule")
+
+		tg.setField "StuName",Session("StuName")
+		tg.setField "StuNo",Session("StuNo")
+		tg.setField "StuType",stu_type
+		tg.setField "ResearchField",params("research_field")
+
+		tg.setField "ThesisSubject",params("subject")
+		tg.setField "ThesisProgress",params("thesis_progress")
+		tg.setField "WorkSchedule",params("work_schedule")
+
+	Case sectionUploadYdbyjs
+
+		Set params=getFormParams("activity_id","grade","speciality_name","subject","predefence_date")
+
+		If Not IsNumeric(params("grade")) Or Len(params("grade"))<>4 Then
 			bError=True
 			errdesc="年级填写无效，请重新输入（格式为四位数字）！"
-		ElseIf Not IsDate(predefence_date) Then
+		ElseIf Not IsDate(params("predefence_date")) Then
 			bError=True
 			errdesc="预答辩日期填写无效，请重新输入！"
 		End If
 		If bError Then
-	%><body bgcolor="ghostwhite"><center><font color=red size="4"><%=errdesc%></font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 			CloseRs rs
-	  	CloseRs rs2
-	  	CloseConn conn
-			Response.End()
+			CloseRs rsStu
+			CloseConn conn
+			showErrorPage errdesc, "提示"
 		End If
-		
-		tg.addInfo "StuName",Session("StuName")
-		tg.addInfo "Grade",grade
-		tg.addInfo "SpecialityName",speciality_name
-		tg.addInfo "ThesisSubject",subject
-		tg.addInfo "PredefenceYear",Year(predefence_date)
-		tg.addInfo "PredefenceMonth",Month(predefence_date)
-		tg.addInfo "PredefenceDay",Day(predefence_date)
-		
-	Case STUCLI_OPR_TABLE4
-	
-		research_field=Request.Form("research_field")
-		school_tutor_name_duty=Request.Form("school_tutor_name_duty")
-		after_school_tutor_name_duty=Request.Form("after_school_tutor_name_duty")
-		degree_application=Request.Form("degree_application")
-		sex=Request.Form("sex")
-		birth_ym=toYearMonth(Request.Form("birth_ym")(1),Request.Form("birth_ym")(2))
-		idcard_no=Request.Form("idcard_no")
-		native_place=Request.Form("native_place")
-		nation=Request.Form("nation")
-		entrance_ym=toYearMonth(Request.Form("entrance_ym")(1),Request.Form("entrance_ym")(2))
-		political_status=Request.Form("political_status")
-		study_type=Request.Form("study_type")
-		workplace_job=Request.Form("workplace_job")
-		graduated_at=Request.Form("graduated_at")
-		speciality_name=Request.Form("speciality_name")
-		graduation_ym=toYearMonth(Request.Form("graduation_ym")(1),Request.Form("graduation_ym")(2))
-		last_degree=Request.Form("last_degree")
-		honor_penalty=Request.Form("honor_penalty")
-		subject=Request.Form("subject")
-		thesis_word_count=Request.Form("thesis_word_count")
-		issue_source=Request.Form("issue_source")
-		speciality_name_code=Request.Form("speciality_name_code")
-		thesis_type=Request.Form("thesis_type")
-		thesis_duration=Request.Form("thesis_duration")
-		thesis_form=Request.Form("thesis_form")
-		thesis_introduction=Request.Form("thesis_introduction")
-		thesis_count=Request.Form("thesis_count")
-		thesis_count_domestic_journal=Request.Form("thesis_count_domestic_journal")
-		thesis_count_domestic_congress=Request.Form("thesis_count_domestic_congress")
-		thesis_count_foreign_journal=Request.Form("thesis_count_foreign_journal")
-		thesis_count_overseas_congress=Request.Form("thesis_count_overseas_congress")
-		thesis_count_patent=Request.Form("thesis_count_patent")
-		embodied_count=Request.Form("embodied_count")
-		school_tutor_eval=Request.Form("school_tutor_eval")
-		
-		tg.addInfo "StuNo",Session("StuNo")
-		tg.addInfo "StuName",Session("StuName")
-		tg.addInfo "ResearchField",research_field
-		tg.addInfo "SchoolTutorNameDuty",school_tutor_name_duty
-		tg.addInfo "AfterSchoolTutorNameDuty",after_school_tutor_name_duty
-		tg.addInfo "FillInDate",Year(Now)&"年"&Month(Now)&"月"&Day(Now)&"日"
-		tg.addInfo "DegreeApplication",degree_application
-		tg.addInfo "Sex",sex
-		tg.addInfo "BirthYearMonth",birth_ym
-		tg.addInfo "IDCardNo",idcard_no
-		tg.addInfo "NativePlace",native_place
-		tg.addInfo "Nation",nation
-		tg.addInfo "EntranceYearMonth",entrance_ym
-		tg.addInfo "PoliticalStatus",political_status
-		tg.addInfo "StudyType",study_type
-		tg.addInfo "WorkplaceJob",workplace_job
-		tg.addInfo "GraduatedAt",graduated_at
-		tg.addInfo "SpecialityName",speciality_name
-		tg.addInfo "GraduationYearMonth",graduation_ym
-		tg.addInfo "LastDegree",last_degree
-		
-		addFormInfoToArray tg,resume_duration,"resume_duration","ResumeDuration"
-		addFormInfoToArray tg,resume_place,"resume_place","ResumePlace"
-		addFormInfoToArray tg,resume_job,"resume_job","ResumeJob"
-		tg.addInfo "HonorPenalty",honor_penalty
-		
-		tg.addInfo "ThesisSubject",subject
-		tg.addInfo "ThesisWordCount",thesis_word_count
-		tg.addInfo "IssueSource",issue_source
-		tg.addInfo "SpecialityNameCode",speciality_name_code
-		tg.addInfo "ThesisType",thesis_type
-		tg.addInfo "ThesisDuration",thesis_duration
-		tg.addInfo "ThesisForm",thesis_form
-		tg.addInfo "ThesisIntroduction",thesis_introduction
-		
-		addFormInfoToArray tg,achievement_name,"achievement_name","AchievementName"
-		addFormInfoToArray tg,achievement_ym,"achievement_ym","AchievementYearMonth"
-		addFormInfoToArray tg,achievement_department,"achievement_department","AchievementDepartment"
-		addFormInfoToArray tg,achievement_authornum,"achievement_authornum","AchievementAuthorNum"
-		addFormInfoToArray tg,achievement_embody,"achievement_embody","AchievementEmbody"
-		ReDim achievement_id(UBound(achievement_name))
-		For i=0 To UBound(achievement_id)
-			If Len(Trim(achievement_name(i)))=0 Then Exit For
-			achievement_id(i)=i+1
+
+		tg.setField "StuName",Session("StuName")
+		tg.setField "Grade",params("grade")
+		tg.setField "SpecialityName",params("speciality_name")
+		tg.setField "ThesisSubject",params("subject")
+		tg.setField "PredefenceYear",Year(params("predefence_date"))
+		tg.setField "PredefenceMonth",Month(params("predefence_date"))
+		tg.setField "PredefenceDay",Day(params("predefence_date"))
+
+	Case sectionUploadSpcl
+
+		Set params=getFormParams("degree_application","sex","ethnic","nation","political_status","idcard_no","speciality_name",_
+			"tutor_name","research_field","study_type","workplace_job","graduated_at","before_speciality_name","last_degree",_
+			"resume_duration","resume_place","resume_job",_
+			"honor_penalty","achievement_name","achievement_ym","achievement_source","achievement_authornum","achievement_status",_
+			"dissertation_subject","dissertation_keywords","dissertation_word_count","issue_source","project_name_code",_
+			"dissertation_type","dissertation_duration","tutor_eval")
+		params("birthday")=toYearMonthDate(Request.Form("birthday")(1),Request.Form("birthday")(2),Request.Form("birthday")(3))
+		params("entrance_ym")=toYearMonth(Request.Form("entrance_ym")(1),Request.Form("entrance_ym")(2))
+		params("graduation_ym")=toYearMonth(Request.Form("graduation_ym")(1),Request.Form("graduation_ym")(2))
+		ReDim arr(params("resume_place").Count-1)
+		For i=0 To UBound(arr)
+				If Len(params("resume_place")(i+1))=0 Then
+				arr(i)=""
+			Else
+				arr(i)=Replace(params("resume_duration")(i+1), "_", "")
+			End If
 		Next
-		tg.addInfo "AchievementID",achievement_id
-		
-		tg.addInfo "ThesisCount",thesis_count
-		tg.addInfo "ThesisCountDomesticJournal",thesis_count_domestic_journal
-		tg.addInfo "ThesisCountDomesticCongress",thesis_count_domestic_congress
-		tg.addInfo "ThesisCountForeignJournal",thesis_count_foreign_journal
-		tg.addInfo "ThesisCountOverseasCongress",thesis_count_overseas_congress
-		tg.addInfo "ThesisCountPatent",thesis_count_patent
-		tg.addInfo "EmbodiedCount",embodied_count
-		tg.addInfo "SchoolTutorEval",school_tutor_eval
-		
+		params("resume_duration")=arr
+
+		If Len(params("sex"))=0 Then
+			showErrorPage "请完善【性别】信息！", "提示"
+		ElseIf stu_type=5 And Len(params("research_field"))=0 Then
+			showErrorPage "请完善【工程领域】信息！", "提示"
+		ElseIf Len(params("issue_source"))=0 Then
+			showErrorPage "请完善【论文选题来源】信息！", "提示"
+		ElseIf Len(params("dissertation_type"))=0 Then
+			showErrorPage "请完善【论文类型】信息！", "提示"
+		ElseIf Not IsNumeric(params("dissertation_word_count")) Then
+			showErrorPage "【论文字数】必须为数字（最多保留小数点后一位）！", "提示"
+		End If
+
+		tg.setField "StuNo", Session("StuNo")
+		tg.setField "StuName", Session("StuName")
+		If stu_type=5 Then
+			tg.setField "StuTypeName", Format("{0}（{1}）", stu_type_name, params("research_field"))
+		Else
+			tg.setField "StuTypeName", stu_type_name
+		End If
+		tg.setField "TutorName", params("tutor_name")
+		tg.setField "DefenceDate", Year(Now)&"年"&Month(Now)&"月  日"
+		tg.setField "DegreeApplication", params("degree_application")
+		tg.setField "Sex", params("sex")
+		tg.setField "Ethnic", params("ethnic")
+		tg.setField "Birthday", params("birthday")
+		tg.setField "Nation", params("nation")
+		tg.setField "PoliticalStatus", params("political_status")
+		tg.setField "EntranceYearMonth", params("entrance_ym")
+		tg.setField "IDCardNo", params("idcard_no")
+		tg.setField "SpecialityName", params("speciality_name")
+		tg.setField "StudyType", params("study_type")
+		tg.setField "GraduatedAt", params("graduated_at")
+		tg.setField "BeforeSpecialityName", params("before_speciality_name")
+		tg.setField "LastDegree", params("last_degree")
+		tg.setField "GraduationYearMonth", params("graduation_ym")
+
+		tg.setArray "ResumeDuration", params("resume_duration")
+		tg.setArray "ResumePlace", params("resume_place")
+		tg.setArray "ResumeJob", params("resume_job")
+
+		tg.setField "HonorPenalty", params("honor_penalty")
+
+		tg.setArray "AchievementName", params("achievement_name")
+		tg.setArray "AchievementYearMonth", params("achievement_ym")
+		tg.setArray "AchievementSource", params("achievement_source")
+		tg.setArray "AchievementAuthorNum", params("achievement_authornum")
+		tg.setArray "AchievementStatus", params("achievement_status")
+
+		tg.setField "DissertationSubject", params("dissertation_subject")
+		tg.setField "DissertationKeywords", params("dissertation_keywords")
+		tg.setField "DissertationWordCount", params("dissertation_word_count")
+		tg.setField "IssueSource", params("issue_source")
+		tg.setField "ProjectNameCode", params("project_name_code")
+		tg.setField "DissertationType", params("dissertation_type")
+		tg.setField "DissertationDuration", params("dissertation_duration")
+		tg.setField "TutorEval", params("tutor_eval")
+
 	End Select
-	
-	tg.generateTable strDestTablePath,template_name
+
+	tg.generateTable export_file_path, template_name
 	Set tg=Nothing
-	
-	Dim bInitThesisInfo
-	' 开题报告（EMBA为预答辩申请表），录入论文基本信息
-	bInitThesisInfo=opr=STUCLI_OPR_TABLE1 Or stu_type=7 And opr=STUCLI_OPR_TABLE3
-	
+
+	If params.Exists("subject") Then subject=params("subject")
+	If params.Exists("subject_en") Then subject_en=params("subject_en")
+
 	Dim arrTableFieldName,arrNewTaskProgress
 	arrTableFieldName=Array("","TABLE_FILE1","TABLE_FILE2","TABLE_FILE3","TABLE_FILE4")
 	arrNewTaskProgress=Array(0,tpTbl1Uploaded,tpTbl2Uploaded,tpTbl3Uploaded,tpTbl4Uploaded)
 	' 关联到数据库
-	sql="SELECT * FROM Dissertations WHERE STU_ID="&Session("StuId")&" ORDER BY PERIOD_ID DESC"
-	GetRecordSet conn,rs3,sql,result
+	sql="SELECT * FROM Dissertations WHERE STU_ID="&Session("StuId")&" ORDER BY ActivityId DESC"
+	GetRecordSet conn,rs3,sql,count
 	If rs3.EOF Then
 		' 添加记录
 		rs3.AddNew()
 	End If
-	If bInitThesisInfo Then
+	If is_new_dissertation Then
 		rs3("STU_ID")=Session("StuId")
-		rs3("REVIEW_TYPE")=new_review_type
+		rs3("ActivityId")=params("activity_id")
 		rs3("REVIEW_STATUS")=rsNone
 		rs3("REVIEW_FILE_STATUS")=0
 		rs3("REVIEW_RESULT")="5,5,6"
 		rs3("REVIEW_LEVEL")="0,0"
+		rs3("KEYWORDS")=Replace(params("keyword_ch")(1),", ","；")
+		rs3("KEYWORDS_EN")=Replace(params("keyword_en")(1),", ","；")
 	End If
-	rs3("PERIOD_ID")=sem_info(3)
 	rs3("THESIS_SUBJECT")=subject
 	rs3("THESIS_SUBJECT_EN")=subject_en
-	rs3("KEYWORDS")=Replace(Request.Form("keyword_ch"),", ","；")
-	rs3("KEYWORDS_EN")=Replace(Request.Form("keyword_en"),", ","；")
-	If sub_research_field_id="-1" Then sub_research_field=custom_sub_research_field
-	rs3("RESEARCHWAY_NAME")=sub_research_field
-	rs3(arrTableFieldName(opr))=strDestTableFile
-	rs3("TASK_PROGRESS")=arrNewTaskProgress(opr)
+	If params("sub_research_field_select")="-1" Then
+		rs3("RESEARCHWAY_NAME")=params("custom_sub_research_field")
+	ElseIf params.Exists("sub_research_field") Then
+		rs3("RESEARCHWAY_NAME")=params("sub_research_field")
+	End If
+	rs3(arrTableFieldName(section_id))=export_file_name
+	rs3("TASK_PROGRESS")=arrNewTaskProgress(section_id)
 	rs3.Update()
 	CloseRs rs3
-	
-	Dim logtxt
-	logtxt="学生["&Session("StuName")&"]提交["&arrStuOprName(opr)&"]。"
-	writeLog logtxt
+
+	writeLog Format("学生[{0}]上传[{1}]。",Session("Stuname"),arrStuOprName(section_id))
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="theme-color" content="#2D79B2" />
 <title>提交论文表格</title>
-<% useStylesheet("student") %>
-<% useScript("jquery") %>
+<% useStylesheet "student" %>
+<% useScript "jquery" %>
 </head>
 <body bgcolor="ghostwhite"><%
 	If Not bError Then %>
 <form id="fmFinish" action="home.asp" method="post">
-<input type="hidden" name="filename" value="<%=strDestTableFile%>" />
+<input type="hidden" name="filename" value="<%=export_file_name%>" />
 </form>
 <script type="text/javascript">alert("提交成功！");$('#fmFinish').submit();</script><%
 	Else
@@ -516,7 +523,7 @@ Case 1	' 上传进程
 	End If
 %></body></html><%
 End Select
-CloseRs rs2
 CloseRs rs
+CloseRs rsStu
 CloseConn conn
 %>

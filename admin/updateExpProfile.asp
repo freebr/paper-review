@@ -1,4 +1,4 @@
-﻿<!--#include file="../inc/db.asp"-->
+﻿<!--#include file="../inc/global.inc"-->
 <!--#include file="../inc/ExtendedRequest.inc"-->
 <!--#include file="common.asp"-->
 <%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
@@ -31,7 +31,7 @@ repeatpwd=upload.Form("repeatpwd")
 Connect conn
 ConnectOriginDb connOrigin
 sql="SELECT * FROM TEACHER_INFO WHERE TEACHERID="&Teacherid
-GetRecordSet connOrigin,rs,sql,result
+GetRecordSet connOrigin,rs,sql,count
 If sex<>"男" And sex<>"女" Then
 	bError=True
 	errdesc="请选择性别！"
@@ -115,7 +115,7 @@ CloseConn connOrigin
 
 ' 更新专家库
 sql="SELECT * FROM Experts WHERE TEACHER_ID="&TeacherId
-GetRecordSet conn,rs,sql,result
+GetRecordSet conn,rs,sql,count
 rs("EXPERT_NAME").Value=teachername
 rs("PRO_DUTY_NAME").Value=pro_duty_name
 rs("LAST_DIPLOMA").Value=last_diploma

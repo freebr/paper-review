@@ -87,7 +87,7 @@ function getProgress(sck,url) {
 function newUploadProgress(uploadid,stuid) {
 	var div=document.createElement("div");
 	div.id="divupload";
-	div.className="divupload";
+	div.className="upload";
 	div.style.width=350;
 	div.style.height=80;
 	div.style.visibility="visible";

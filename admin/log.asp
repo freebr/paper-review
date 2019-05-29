@@ -1,15 +1,14 @@
-﻿<%Response.Charset="utf-8"%>
-<!--#include file="../inc/db.asp"-->
+﻿<!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"-->
 <%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 logDate=Request.Form("logdate")
 If Len(logDate)=0 Then
 	arr=Split(Date,"/")
-	logDate=Format("{0}-{1}-{2}",Array(arr(0),Right("0"&arr(1),2),Right("0"&arr(2),2)))
+	logDate=Format("{0}-{1}-{2}",arr(0),Right("0"&arr(1),2),Right("0"&arr(2),2))
 	filename=FormatDateTime(Date,1)
 Else
 	arr=Split(logDate,"-")
-	filename=Format("{0}年{1}月{2}日",Array(Int(arr(0)),Int(arr(1)),Int(arr(2))))
+	filename=Format("{0}年{1}月{2}日",Int(arr(0)),Int(arr(1)),Int(arr(2)))
 End If
 Set fso=Server.CreateObject("Scripting.FileSystemObject")
 logFile=Server.MapPath("/log/ThesisReview/"&filename&".log")
@@ -22,13 +21,13 @@ End If
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta name="theme-color" content="#2D79B2" />
-<link href="../css/global.css" rel="stylesheet" type="text/css">
-<script src="../scripts/jquery-1.11.3.min.js" type="text/javascript"></script>
 <title>用户操作日志(<%=filename%>)</title>
+<% useStylesheet "admin" %>
+<% useScript "jquery" %>
 </head>
 <body bgcolor="ghostwhite">
 <center><br>
-<font size="3"><strong>用户操作日志(<%=filename%>)</strong></font>
+<font size="3"><b>用户操作日志(<%=filename%>)</b></font>
 <form name="fmViewlog" method="post">
 <table width="400" border="0" cellspacing="1" cellpadding="3" bgcolor="gainsboro">
 	<tr bgcolor="#ffffff">

@@ -8,7 +8,7 @@ Const wdStatisticPages=2
 Class ReviewGen
 	Dim m_author,m_tutorinfo,m_spec,m_researchway,m_date,m_thesis_subject
 	Dim m_expert_name,m_expert_pro_duty,m_expert_expertise,m_expert_workplace,m_expert_address,m_expert_mailcode
-	Dim m_expert_tel1,m_expert_tel2,m_expert_master_level,m_eval_text,m_correlation_type,m_reviewresult
+	Dim m_expert_tel1,m_expert_tel2,m_expert_master_level,m_eval_text,m_correlation_level,m_reviewresult
 	Dim m_scores,m_scoreparts,m_totalscore,m_reviewlevel,m_thesistype
 	Dim m_err_desc
 	Public Property Let Author(val)
@@ -59,8 +59,8 @@ Class ReviewGen
 	Public Property Let EvalText(val)
 		m_eval_text=val
 	End Property
-	Public Property Let CorrelationType(val)
-		m_correlation_type=val
+	Public Property Let CorrelationLevel(val)
+		m_correlation_level=val
 	End Property
 	Public Property Let ReviewResult(val)
 		m_reviewresult=val
@@ -106,7 +106,7 @@ Class ReviewGen
 				Case "$expert_tel1":val=m_expert_tel1
 				Case "$expert_tel2":val=m_expert_tel2
 				Case "$expert_master_level":val=String(m_expert_master_level,vbTab)&"√"
-				Case "$correlation_type":val=String(m_correlation_type,vbTab)&"√"
+				Case "$correlation_level":val=String(m_correlation_level,vbTab)&"√"
 				Case "$review_result"
 					If reviewfile_type=1 Or m_thesistype>=12 Then
 						val=String(m_reviewresult,vbTab)&"√"
@@ -193,7 +193,7 @@ Class ReviewGen
 		doc.Tables(2).Cell(1,3).Delete()
 		doc.Tables(2).Cell(1,2).Delete()
 		doc.Tables(2).Cell(1,1).Range.Text="论文题目"
-		doc.Tables(2).Cell(1,2).SetWidth 425.7,1
+		doc.Tables(2).Cell(1,2).SetWidth 412.65,1
 		doc.ExportAsFixedFormat filepath2,wdExportFormatPDF,,1
 		' 生成不含专家信息的评阅书
 		doc.Undo 6

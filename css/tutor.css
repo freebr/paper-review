@@ -3,8 +3,8 @@
 body.exp { background:url(../images/expert_bg.jpg) no-repeat fixed ghostwhite;
 					margin:0;font-size:10pt }
 table.tblform { border:0;background-color:#999999 }
-table.tblform tr { background-color:#ffffff }
-table.tblform tr.trbuttons { background-color:#cccccc }
+table.tblform > tbody > tr { background-color:#ffffff }
+table.tblform > tbody > tr.trbuttons { background-color:#cccccc }
 table.profile input[type="text"] { width:100% }
 div.divcontrol { display:inline }
 div.content { display:inline-block;background-color:#ffffff;filter:alpha(opacity=85);-webkit-opacity:0.85;-moz-opacity:0.85;

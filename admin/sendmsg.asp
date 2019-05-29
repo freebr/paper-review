@@ -1,5 +1,4 @@
-﻿<%Response.Charset="utf-8"%>
-<!--#include file="../inc/db.asp"-->
+﻿<!--#include file="../inc/global.inc"-->
 <!--#include file="../inc/setEditor.asp"-->
 <!--#include file="../inc/ckeditor/ckeditor.asp"-->
 <!--#include file="../inc/ckfinder/ckfinder.asp"-->
@@ -9,7 +8,7 @@ Const MAX_SMSCONTENT_LENGTH=150
 Dim sendtype,tid
 sendtype=Request("type")
 batch=Request.Form("batch")
-curstep=Request.QueryString("step")
+step=Request.QueryString("step")
 finalFilter=Request.Form("finalFilter2")
 pageSize=Request.Form("pageSize2")
 pageNo=Request.Form("pageNo2")
@@ -19,7 +18,7 @@ If Len(sendtype)=0 Or Not IsNumeric(sendtype) Then
 End If
 If IsEmpty(batch) Then batch=0
 
-Select Case curstep
+Select Case step
 Case vbNullString
 	tid=Request("tid")
 	If IsEmpty(tid) Then tid=Request("sel")
@@ -29,12 +28,12 @@ Case vbNullString
 	End If
 	Connect conn
 	sql="SELECT TEACHERNAME,MOBILE,EMAIL FROM ViewTeacherInfo WHERE TEACHERID IN ("&tid&")"
-	GetRecordSetNoLock conn,rs,sql,result
-	If result=1 Then
+	GetRecordSetNoLock conn,rs,sql,count
+	If count=1 Then
 		title="给["&rs("TEACHERNAME")&"]老师"
 		default_content="尊敬的"&rs("TEACHERNAME")&"老师：<br/>您好！"
-	ElseIf result>1 Then
-		title="给["&rs("TEACHERNAME")&"]等&nbsp;"&result&"&nbsp;名老师"
+	ElseIf count>1 Then
+		title="给["&rs("TEACHERNAME")&"]等&nbsp;"&count&"&nbsp;名老师"
 		default_content="尊敬的老师：<br/>您好！"
 	End If
 	If sendtype=1 Then
@@ -58,9 +57,9 @@ Case vbNullString
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="theme-color" content="#2D79B2" />
-<title>送审结果统计表</title>
-<% useStylesheet("admin") %>
-<% useScript(Array("jquery", "common")) %>
+<title><%=title%></title>
+<% useStylesheet "admin" %>
+<% useScript "jquery", "common" %>
 </head>
 <body bgcolor="ghostwhite">
 <center>
@@ -81,7 +80,7 @@ Case vbNullString
 <tr bgcolor="gainsboro" height="25">
 <td>内容：<br/><% SetEditorWithName "content",default_content,130 %></td></tr>
 <tr bgcolor="gainsboro" align="center" height="25">
-<td><input type="submit" name="btnsubmit" value="发 送" />&emsp;<input type="button" value="取 消" onclick="<%=cancelUrl%>" /></td></tr></table>
+<td><input type="button" id="btnsubmit" value="发 送" />&emsp;<input type="button" value="取 消" onclick="<%=cancelUrl%>" /></td></tr></table>
 <input type="hidden" name="finalFilter2" value="<%=finalFilter%>" />
 <input type="hidden" name="pageSize2" value=<%=pageSize%> />
 <input type="hidden" name="pageNo2" value=<%=pageNo%> />
@@ -89,10 +88,10 @@ Case vbNullString
 <input type="hidden" name="tid" value="<%=tid%>" />
 <input type="hidden" name="batch" value="<%=batch%>" /></form></center>
 <script type="text/javascript">
-	$(':submit').click(function() {
-		this.value="正在发送，请稍候……";
-		this.disabled=true;
-	}).attr('disabled',false);
+	$("#btnsubmit").click(function() {
+		$(this).val("正在发送，请稍候……").attr("disabled",true);
+		this.form.submit();
+	}).attr("disabled",false);
 </script></body></html><%
 Case 2
 	subject=Request.Form("subject")
@@ -120,7 +119,7 @@ Case 2
 	numSuccess=0
 	For i=0 To numRcpt-1
 		If sendtype=1 Then
-			ret=sendCustomSMS(arrRcpt(i),content)
+			ret=sendCustomSms(arrRcpt(i),content)
 			bSuccess=ret=0
 		ElseIf sendtype=2 Then
 			bSuccess=sendCustomEmail(arrRcpt(i),subject,content)

@@ -1,14 +1,13 @@
-﻿<%Response.Charset="utf-8"%>
+﻿<!--#include file="../inc/global.inc"-->
 <!--#include file="../inc/ExtendedRequest.inc"-->
-<!--#include file="../inc/db.asp"-->
 <!--#include file="common.asp"--><%
 If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 thesisID=Request.QueryString("tid")
-curstep=Request.QueryString("step")
+step=Request.QueryString("step")
 
-Select Case curstep
+Select Case step
 Case vbNullString	' 论文详情页面
-	period_id=Request.Form("In_PERIOD_ID2")
+	activity_id=Request.Form("In_ActivityId2")
 	teachtype_id=Request.Form("In_TEACHTYPE_ID2")
 	class_id=Request.Form("In_CLASS_ID2")
 	enter_year=Request.Form("In_ENTER_YEAR2")
@@ -24,8 +23,8 @@ Case vbNullString	' 论文详情页面
 	Dim table_file(4)
 	Connect conn
 	sql="SELECT *,dbo.getThesisStatusText(1,TASK_PROGRESS,1) AS STAT_TEXT1,dbo.getThesisStatusText(2,REVIEW_STATUS,1) AS STAT_TEXT2 FROM ViewThesisInfo WHERE ID="&thesisID
-	GetRecordSet conn,rs,sql,result
-	If result=0 Then
+	GetRecordSet conn,rs,sql,count
+	If count=0 Then
 	%><body bgcolor="ghostwhite"><center><font color=red size="4">数据库没有该论文记录！</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 	  CloseRs rs
 	  CloseConn conn
@@ -55,8 +54,8 @@ Case vbNullString	' 论文详情页面
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="theme-color" content="#2D79B2" />
 <title>上传表格/论文文件</title>
-<% useStylesheet("admin") %>
-<% useScript(Array("jquery", "common", "thesis")) %>
+<% useStylesheet "admin" %>
+<% useScript "jquery", "common", "thesis" %>
 </head>
 <body bgcolor="ghostwhite">
 <center><font size=4><b>上传表格/论文文件</font>
@@ -65,8 +64,7 @@ Case vbNullString	' 论文详情页面
 <tr><td>论文题目：&emsp;&emsp;&emsp;<input type="text" class="txt" name="new_subject" size="95%" value="<%=rs("THESIS_SUBJECT")%>" readonly /></td></tr>
 <tr><td>作者姓名：&emsp;&emsp;&emsp;<input type="text" class="txt" name="author" size="18" value="<%=rs("STU_NAME")%>" readonly />&nbsp;
 学号：<input type="text" class="txt" name="stuno" size="15" value="<%=rs("STU_NO")%>" readonly />&nbsp;
-学位类别：<input type="text" class="txt" name="degreename" size="10" value="<%=rs("TEACHTYPE_NAME")%>" readonly />&nbsp;
-学期：<input type="text" class="txt" name="new_period_id" size="6" value="<%=rs("PERIOD_ID")%>" readonly /></td></tr>
+学位类别：<input type="text" class="txt" name="degreename" size="10" value="<%=rs("TEACHTYPE_NAME")%>" readonly /></td></tr>
 <tr><td>指导教师：&emsp;&emsp;&emsp;<input type="text" class="txt" name="tutorname" size="95%" value="<%=rs("TUTOR_NAME")%>" readonly /></td></tr><%
 	If reviewfile_type=2 Then %>
 <tr><td>领域名称：&emsp;&emsp;&emsp;<input type="text" class="txt" name="speciality" size="95%" value="<%=rs("SPECIALITY_NAME")%>" readonly /></td></tr><%
@@ -100,7 +98,7 @@ GetMenuListPubTerm "ReviewStatuses","STATUS_ID2","STATUS_NAME",review_status,"AN
 <input type="button" value="返 回" onclick="history.go(-1)" />&emsp;
 <input type="button" value="返回论文列表" onclick="document.all.ret.submit()" />
 </p></td></tr></table>
-<input type="hidden" name="In_PERIOD_ID2" value="<%=period_id%>">
+<input type="hidden" name="In_ActivityId2" value="<%=activity_id%>">
 <input type="hidden" name="In_TEACHTYPE_ID2" value="<%=teachtype_id%>" />
 <input type="hidden" name="In_CLASS_ID2" value="<%=class_id%>" />
 <input type="hidden" name="In_ENTER_YEAR2" value="<%=enter_year%>" />
@@ -110,7 +108,7 @@ GetMenuListPubTerm "ReviewStatuses","STATUS_ID2","STATUS_NAME",review_status,"AN
 <input type="hidden" name="pageSize2" value="<%=pageSize%>" />
 <input type="hidden" name="pageNo2" value="<%=pageNo%>" /></form></center>
 <form id="ret" name="ret" action="thesisList.asp" method="post">
-<input type="hidden" name="In_PERIOD_ID" value="<%=period_id%>">
+<input type="hidden" name="In_ActivityId" value="<%=activity_id%>">
 <input type="hidden" name="In_TEACHTYPE_ID" value="<%=teachtype_id%>" />
 <input type="hidden" name="In_CLASS_ID" value="<%=class_id%>" />
 <input type="hidden" name="In_ENTER_YEAR" value="<%=enter_year%>" />
@@ -134,7 +132,7 @@ Case 2	' 文件上传页面
 	
 	new_task_progress=Upload.Form("new_task_progress")
 	new_review_status=Upload.Form("new_review_status")
-	period_id=Upload.Form("In_PERIOD_ID2")
+	activity_id=Upload.Form("In_ActivityId2")
 	teachtype_id=Upload.Form("In_TEACHTYPE_ID2")
 	class_id=Upload.Form("In_CLASS_ID2")
 	enter_year=Upload.Form("In_ENTER_YEAR2")
@@ -144,11 +142,11 @@ Case 2	' 文件上传页面
 	pageSize=Upload.Form("pageSize2")
 	pageNo=Upload.Form("pageNo2")
 	
-	Dim conn,rs,sql,sqlDetect,result
+	Dim conn,rs,sql,sqlDetect,count
 	sqlDetect=""
 	Connect conn
 	sql="SELECT * FROM Dissertations WHERE ID="&thesisID
-	GetRecordSet conn,rs,sql,result
+	GetRecordSet conn,rs,sql,count
 	If rs.EOF Then
 	%><body bgcolor="ghostwhite"><center><font color=red size="4">数据库没有该论文记录！</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 	  CloseRs rs
@@ -161,7 +159,7 @@ Case 2	' 文件上传页面
 	Dim arrFileListField:arrFileListField=Array("","TABLE_FILE1","TBL_THESIS_FILE1","TABLE_FILE2","TBL_THESIS_FILE2","TABLE_FILE3","TBL_THESIS_FILE3","TABLE_FILE4","THESIS_FILE","THESIS_FILE2","THESIS_FILE3","THESIS_FILE4","DETECT_REPORT")
 	Dim upFile,fso
 	Dim msg
-	Randomize
+	Randomize()
 	
 	Set fso=Server.CreateObject("Scripting.FileSystemObject")
 	For i=1 To UBound(arrFileListName)
@@ -204,7 +202,7 @@ Case 2	' 文件上传页面
 		conn.Execute sqlDetect
 	End If
 %><form id="ret" action="thesisDetail.asp?tid=<%=thesisID%>" method="post">
-<input type="hidden" name="In_PERIOD_ID2" value="<%=period_id%>">
+<input type="hidden" name="In_ActivityId2" value="<%=activity_id%>">
 <input type="hidden" name="In_TEACHTYPE_ID2" value="<%=teachtype_id%>" />
 <input type="hidden" name="In_CLASS_ID2" value="<%=class_id%>" />
 <input type="hidden" name="In_ENTER_YEAR2" value="<%=enter_year%>" />

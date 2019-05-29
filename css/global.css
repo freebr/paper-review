@@ -54,3 +54,7 @@ a.fileitem { text-decoration:none; }
 ol ul {
 	padding-left: 10px;
 }
+
+form[id^='form_'] div {
+	padding: 10px 5px;
+}

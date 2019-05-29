@@ -24,3 +24,8 @@ function batchSendNotice(fm,type) {
 function exportInfo(fm) {
 	submitForm(fm,"exportExpertInfo.asp");
 }
+function showExpertProfile(id) {
+	!window.tabmgr?window.open('expertProfile.asp?id='+id,'expert'+id):
+		window.tabmgr.newTab('/ThesisReview/admin/expertProfile.asp?id='+id);
+	return false;
+}

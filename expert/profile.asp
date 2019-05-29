@@ -1,4 +1,4 @@
-﻿<!--#include file="../inc/db.asp"-->
+﻿<!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"-->
 <%If IsEmpty(Session("Tid")) Then Response.Redirect("../error.asp?timeout")
 TeacherId=Session("Tid")
@@ -15,7 +15,7 @@ End If
 
 Connect conn
 sql="SELECT * FROM ViewExpertInfo WHERE TEACHER_ID="&TeacherId
-GetRecordSetNoLock conn,rs,sql,result
+GetRecordSetNoLock conn,rs,sql,count
 If rs.EOF Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4">数据库没有记录！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 	CloseRs rs
@@ -25,8 +25,8 @@ End If
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<% useStylesheet("tutor") %>
-<% useScript(Array("jquery", "common", "expert")) %>
+<% useStylesheet "tutor" %>
+<% useScript "jquery", "common", "expert" %>
 <title>个人信息编辑</title>
 </head>
 <body class="exp"><center><div class="content">

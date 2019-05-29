@@ -22,15 +22,15 @@ function chooseExpert(fm,tid) {
 function notifyExpert(fm,tid) {
 	submitForm(fm,"notifyExpert.asp?tid="+tid);
 }
-function batchFetchFile(fm) {
+function batchFetchDocument(fm) {
 	var ids='';
 	$(fm).find(':checked[name="sel"]').each(function(index,item){
 		ids+=(ids.length?',':'')+item.value;
 	});
-	tabmgr.goTo('/ThesisReview/admin/batchFetchFile.asp?sel='+ids,'批量下载表格/论文',true);
+	tabmgr.goTo('/ThesisReview/admin/batchFetchDocument.asp?sel='+ids,'批量下载表格/论文',true);
 }
 function batchUpdateThesis(fm) {
-	$(fm).find(':hidden[name="reviewfilestat"]')
+	$(fm).find(':hidden[name="review_display_status"]')
 			 .val($('select[name="selreviewfilestat"]').val());
 	submitForm(fm,"batchUpdateThesis.asp");
 }
@@ -40,22 +40,13 @@ function showAllRecords(fm) {
 function showThesisDetail(id,usertype) {
 	var client=['admin','student','tutor','expert'];
 	!window.tabmgr?window.open('thesisDetail.asp?tid='+id,'thesis'+id):
-								 window.tabmgr.newTab('/ThesisReview/'+client[usertype]+'/thesisDetail.asp?tid='+id);
+		window.tabmgr.newTab('/ThesisReview/'+client[usertype]+'/thesisDetail.asp?tid='+id);
 	return false;
 }
-function closeWindow(updateList) {
-	if(!window.tabmgr)
-		window.close()
-	else {
-		window.tabmgr.close(window);
-		if(updateList) {
-			window.tabmgr.tabs.forEach(function(tab) {
-				if(tab.url.indexOf("thesisList.asp")!==-1) {
-					tab.window.location.reload();
-				}
-			});
-		}
-	}
+function showExpertProfile(id) {
+	!window.tabmgr?window.open('expertProfile.asp?id='+id,'expert'+id):
+		window.tabmgr.newTab('/ThesisReview/admin/expertProfile.asp?id='+id);
+	return false;
 }
 function rollback(tid,user,opr) {
 	if(user!=0&&user!=1&&user!=2&&user!=3) return false;
@@ -81,7 +72,7 @@ function deleteDetectResult(tid,hash,opr) {
 	return false;
 }
 function modifyReview(tid,rid) {
-	submitForm(document.all.fmDetail,"extra/thesisDetail.asp?tid="+tid+"&rev="+rid+"&step=2");
+	submitForm(document.all.fmDetail,"extra/thesisDetail.asp?tid="+tid+"&rev="+rid);
 	return false;
 }
 function checkLength(txt,len) {

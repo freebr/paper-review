@@ -1,5 +1,4 @@
-﻿<%Response.Charset="utf-8"%>
-<!--#include file="../inc/db.asp"-->
+﻿<!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"-->
 <%If IsEmpty(Session("Suser")) Then Response.Redirect("../error.asp?timeout")
 stu_type=Session("StuType")
@@ -26,8 +25,8 @@ Dim arrSpecMatFiles:arrSpecMatFiles=Array("lwzxgf.doc",prefix&"lwzxsc20170714.pd
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="theme-color" content="#2D79B2" />
-<% useStylesheet("student") %>
-<% useScript(Array("jquery", "common")) %>
+<% useStylesheet "student" %>
+<% useScript "jquery", "common" %>
 <title>查看论文阶段相关资料</title>
 </head>
 <body bgcolor="ghostwhite">

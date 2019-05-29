@@ -1,6 +1,5 @@
-﻿<%Response.Charset="utf-8"
-Response.Expires=-1%>
-<!--#include file="../inc/db.asp"-->
+﻿<%Response.Expires=-1%>
+<!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"-->
 <%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 uid_type=Request("sel")
@@ -17,9 +16,9 @@ If bError Then
 End If
 
 Dim arr,arr2,user_type,user_id
-Dim conn,rs,sql,result
+Dim conn,rs,sql,count
 Dim mail_id
-Dim fieldval,logtxt,bAllowSms,bMailSuccess,bMobSuccess
+Dim fieldval,logtxt,bAllowSms,is_sent,bMobSuccess
 Dim numTutorNotify,numExpertNotify,numFailed,errMsg
 mail_id=getThesisReviewSystemMailIdByType(Now)
 numTutorNotify=0
@@ -34,7 +33,7 @@ For i=0 To UBound(arr)
 	user_type=arr2(0)
 	user_id=arr2(1)
 	sql="SELECT * FROM ViewNotifyInfo WHERE USER_ID="&user_id
-	GetRecordSetNoLock conn,rs,sql,result
+	GetRecordSetNoLock conn,rs,sql,count
 	If Not rs.EOF Then
 		Select Case user_type
 		Case 1	' 导师
@@ -42,21 +41,21 @@ For i=0 To UBound(arr)
 			tutorname=rs("USER_NAME")
 			tutormail=rs("USER_EMAIL")
 			notify_desc="您有 "
-	    If rs("AUDIT_COUNT")>0 Then
-	    	notify_desc=notify_desc&rs("AUDIT_COUNT")&" 份表格/论文待审核："
-	  	End If
-	    If rs("REQUEST_REVIEW_COUNT")>0 Then
-	    	notify_desc=notify_desc&rs("REQUEST_REVIEW_COUNT")&" 份论文已由教务员匹配专家并送审；"
-	  	End If
-	    If rs("INFO_IMPORTED_COUNT")>0 Then
-	    	notify_desc=notify_desc&rs("INFO_IMPORTED_COUNT")&" 份论文已给出答辩安排（意见）；"
-	  	End If
-	  	notify_desc=Left(notify_desc,Len(notify_desc)-1)
-  		fieldval=Array(tutorname,tutormail,notify_desc)
+			If rs("AUDIT_COUNT")>0 Then
+				notify_desc=notify_desc&rs("AUDIT_COUNT")&" 份表格/论文待审核："
+			End If
+			If rs("REQUEST_REVIEW_COUNT")>0 Then
+				notify_desc=notify_desc&rs("REQUEST_REVIEW_COUNT")&" 份论文已由教务员匹配专家并送审；"
+			End If
+			If rs("INFO_IMPORTED_COUNT")>0 Then
+				notify_desc=notify_desc&rs("INFO_IMPORTED_COUNT")&" 份论文已给出答辩安排（意见）；"
+			End If
+			notify_desc=Left(notify_desc,Len(notify_desc)-1)
+			fieldval=Array(tutorname,tutormail,notify_desc)
 			logtxt="行政人员["&Session("name")&"]通知导师待办事项，"
-			bMailSuccess=sendAnnouncementEmail(mail_id(11),tutormail,fieldval)
+			is_sent=sendNotifyMail(mail_id(11),tutormail,fieldval)
 			logtxt=logtxt&"发送邮件给导师["&tutorname&":"&tutormail&"]"
-			If bMailSuccess Then
+			If is_sent Then
 				numTutorNotify=numTutorNotify+1
 				logtxt=logtxt&"成功。"
 			Else
@@ -73,7 +72,7 @@ For i=0 To UBound(arr)
 			expertmob=rs("USER_MOBILE")
 			sql="SELECT A.TEACHERNO,COUNT(ID) AS REVIEW_COUNT,MIN(THESIS_SUBJECT) AS THESIS_SUBJECT FROM ViewThesisInfo "&_
 					"LEFT JOIN ViewTeacherInfo A ON A.TEACHERID="&expertid&" WHERE "&expertid&" IN (REVIEWER1,REVIEWER2) GROUP BY TEACHERNO"
-			GetRecordSetNoLock conn,rs2,sql,result
+			GetRecordSetNoLock conn,rs2,sql,count
 			review_count=rs2("REVIEW_COUNT")
 			If review_count=1 Then
 				subject="《"&rs2("THESIS_SUBJECT")&"》"
@@ -86,7 +85,7 @@ For i=0 To UBound(arr)
 			logtxt="行政人员["&Session("name")&"]通知专家评阅论文，"
 			ret=-1
 			If bAllowSms Then
-				ret=sendSMS(mail_id(4),expertmob,fieldval)
+				ret=sendNotifySms(mail_id(4),expertmob,fieldval)
 				logtxt=logtxt&"发送短信给评阅专家["&expertname&":"&expertmob&"]"
 				bMobSuccess=ret=0
 				If bMobSuccess Then
@@ -97,14 +96,14 @@ For i=0 To UBound(arr)
 			Else
 				bMobSuccess=False
 			End If
-			bMailSuccess=sendAnnouncementEmail(mail_id(3),expertmail,fieldval)
+			is_sent=sendNotifyMail(mail_id(3),expertmail,fieldval)
 			logtxt=logtxt&"发送邮件给评阅专家["&expertname&":"&expertmail&"]"
-			If bMailSuccess Then
+			If is_sent Then
 				logtxt=logtxt&"成功。"
 			Else
 				logtxt=logtxt&"失败。"
 			End If
-			If bMobSuccess Or bMailSuccess Then
+			If bMobSuccess Or is_sent Then
 				numExpertNotify=numExpertNotify+1
 			Else
 				numFailed=numFailed+1
@@ -116,7 +115,7 @@ For i=0 To UBound(arr)
 		
 		' 更新通知情况
 		sql_updnotify=sql_updnotify&"UPDATE NotifyList SET LAST_NOTIFY_TIME="&toSqlString(Now)&_
-																",LAST_NOTIFY_MAIL_RESULT="&Abs(Int(bMailSuccess))&",LAST_NOTIFY_MOB_RESULT="&Abs(Int(bMobSuccess))&_
+																",LAST_NOTIFY_MAIL_RESULT="&Abs(Int(is_sent))&",LAST_NOTIFY_MOB_RESULT="&Abs(Int(bMobSuccess))&_
 																" WHERE USER_ID="&user_id&";"
 	End If
 Next

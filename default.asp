@@ -1,5 +1,5 @@
-﻿<!--#include file="inc/db.asp"-->
-<%
+﻿<!--#include file="inc/global.inc"--><%
+
 If Request.QueryString()="logout" Then
 	If Len(Session("Name")) Then
 		msg="行政人员["&Session("Name")&"]登出。"
@@ -25,13 +25,13 @@ If Request.QueryString()="logout" Then
 	If Len(msg) Then WriteLog msg
 	Response.Redirect(redirectUrl)
 Else
-	Dim usertype,conn,sql,rs,result
+	Dim usertype,conn,sql,rs,count
 	usertype=Request.QueryString("usertype")
 	ConnectOriginDb conn
 	Select Case usertype
 	Case "admin"
 		sql="SELECT TEACHERID,TEACHERNO,TEACHERNAME,WRITEPRIVILEGETAGSTRING,READPRIVILEGETAGSTRING FROM TEACHER_INFO WHERE TEACHERID=863 AND VALID=0"
-		GetRecordSet conn,rs,sql,result
+		GetRecordSet conn,rs,sql,count
 		Session("Id")=rs("TEACHERID").Value
 		Session("No")=rs("TEACHERNO").Value
 		Session("Name")=rs("TEACHERNAME").Value
@@ -44,8 +44,8 @@ Else
 		stuno=Request.QueryString("no")
 		If IsEmpty(stuno) Then stuno="201200000000"
 		sql="SELECT * FROM VIEW_STUDENT_INFO WHERE STU_NO="&toSqlString(stuno)&" AND VALID=0"
-	  GetRecordSetNoLock conn,rs,sql,result
-	  If result>0 Then
+	  GetRecordSetNoLock conn,rs,sql,count
+	  If count>0 Then
 		  Session("StuId")=rs("STU_ID").Value
 		  Session("StuNo")=rs("STU_NO").Value
 		  Session("StuName")=rs("STU_NAME").Value
@@ -69,8 +69,8 @@ Else
 		username=Request.QueryString("name")
 		If IsEmpty(username) Then username="daoshi"
 		sql="SELECT TEACHERID,TEACHERNO,TEACHERNAME,WRITEPRIVILEGETAGSTRING,READPRIVILEGETAGSTRING FROM TEACHER_INFO WHERE TEACHERNO='"&username&"' AND VALID=0"
-		GetRecordSet conn,rs,sql,result
-	  If result>"Tid" Then
+		GetRecordSet conn,rs,sql,count
+	  If count>0 Then
 	    Session("TId")=rs("TEACHERID").Value
 			Session("TNo")=rs("TEACHERNO").Value
 	    Session("TName")=rs("TEACHERNAME").Value
@@ -84,8 +84,8 @@ Else
 		username=Request.QueryString("name")
 		If IsEmpty(username) Then username="zhuanjia1"
 		sql="SELECT TEACHERID,TEACHERNO,TEACHERNAME,WRITEPRIVILEGETAGSTRING,READPRIVILEGETAGSTRING FROM TEACHER_INFO WHERE TEACHERNO='"&username&"' AND VALID=0"
-		GetRecordSet conn,rs,sql,result
-   	If result>0 Then
+		GetRecordSet conn,rs,sql,count
+   	If count>0 Then
 			Session("TId")=rs("TEACHERID").Value
 			Session("TNo")=rs("TEACHERNO").Value
 	    Session("TName")=rs("TEACHERNAME").Value

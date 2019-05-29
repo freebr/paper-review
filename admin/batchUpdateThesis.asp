@@ -1,14 +1,14 @@
-﻿<%Response.Charset="utf-8"%>
-<!--#include file="../inc/db.asp"-->
-<%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
-Dim reviewfilestat,ids
-reviewfilestat=Request.Form("reviewfilestat")
+﻿<!--#include file="../inc/global.inc"-->
+<!--#include file="common.asp"--><%
+If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
+Dim review_display_status,ids
+review_display_status=Request.Form("review_display_status")
 ids=Request.Form("sel")
 If Len(ids)=0 Then
-%><body bgcolor="ghostwhite"><center><font color=red size="4">请选择论文记录！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
-	Response.End()
+	showErrorPage "请选择论文记录！", "提示"
 End If
 
+activity_id=Request.Form("In_ActivityId2")
 teachtype_id=Request.Form("In_TEACHTYPE_ID2")
 class_id=Request.Form("In_CLASS_ID2")
 enter_year=Request.Form("In_ENTER_YEAR2")
@@ -17,13 +17,14 @@ query_review_status=Request.Form("In_REVIEW_STATUS2")
 finalFilter=Request.Form("finalFilter2")
 pageSize=Request.Form("pageSize2")
 pageNo=Request.Form("pageNo2")
-FormGetToSafeRequest(reviewfilestat)
+FormGetToSafeRequest(review_display_status)
 FormGetToSafeRequest(ids)
 Connect conn
-sql="UPDATE Dissertations SET REVIEW_FILE_STATUS="&reviewfilestat&" WHERE ID IN ("&ids&")"
+sql="UPDATE Dissertations SET REVIEW_FILE_STATUS="&review_display_status&" WHERE ID IN ("&ids&")"
 conn.Execute sql
 CloseConn conn
 %><form id="ret" action="thesisList.asp" method="post">
+<input type="hidden" name="In_ActivityId" value="<%=activity_id%>">
 <input type="hidden" name="In_TEACHTYPE_ID" value="<%=teachtype_id%>" />
 <input type="hidden" name="In_CLASS_ID" value="<%=class_id%>" />
 <input type="hidden" name="In_ENTER_YEAR" value="<%=enter_year%>" />

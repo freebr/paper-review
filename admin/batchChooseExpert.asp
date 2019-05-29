@@ -1,11 +1,9 @@
-﻿<%Response.Charset="utf-8"%>
-<!--#include file="../inc/db.asp"-->
+﻿<!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"-->
 <%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 ids=Request.Form("sel")
 If Len(ids)=0 Then
-%><body bgcolor="ghostwhite"><center><font color=red size="4">请选择论文记录！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
-	Response.End()
+	showErrorPage "请选择论文记录！", "提示"
 End If
 
 teachtype_id=Request.Form("In_TEACHTYPE_ID2")
@@ -18,16 +16,16 @@ pageSize=Request.Form("pageSize2")
 pageNo=Request.Form("pageNo2")
 Connect conn
 sql="SELECT * FROM ViewThesisInfo WHERE ID IN ("&ids&")"
-GetRecordSetNoLock conn,rs,sql,result
+GetRecordSetNoLock conn,rs,sql,count
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<% useStylesheet("admin") %>
-<% useScript(Array("jquery", "common")) %>
+<% useStylesheet "admin" %>
+<% useScript "jquery", "common" %>
 </head>
 <body bgcolor="ghostwhite">
 <center>
-<font size=4><b>为<%=result%>篇送审论文匹配评阅专家（单击方框选择）</b></font>
+<font size=4><b>为<%=count%>篇送审论文匹配评阅专家（单击方框选择）</b></font>
 <form id="fmChooseExp" method="post" action="chooseExpert.asp?step=2">
 <input type="hidden" name="ids" value="<%=ids%>" />
 <input type="hidden" name="In_TEACHTYPE_ID" value="<%=teachtype_id%>" />
@@ -47,50 +45,50 @@ GetRecordSetNoLock conn,rs,sql,result
 <input type="hidden" name="pageSize2" value="<%=pageSize%>" />
 <input type="hidden" name="pageNo2" value="<%=pageNo%>" />
 <table width="800" cellpadding="2" cellspacing="1" bgcolor="dimgray">
-  <tr bgcolor="gainsboro" height="25">
-    <td align=center>论文题目</td>
-    <td width="80" align=center>姓名</td>
-    <td width="90" align=center>学号</td>
-    <td width="120" align=center>专业</td>
-    <td width="50" align=center>学位类别</td>
-    <td width="60" align=center>导师</td>
-		<td width="110" align=center>状态</td>
-  </tr><%
-  Dim review_result
-  For i=1 to rs.PageSize
-    If rs.EOF Then Exit For
-    substat=vbNullString
+	<tr bgcolor="gainsboro" height="25">
+		<td align="center">论文题目</td>
+		<td width="80" align="center">姓名</td>
+		<td width="90" align="center">学号</td>
+		<td width="120" align="center">专业</td>
+		<td width="50" align="center">学位类别</td>
+		<td width="60" align="center">导师</td>
+		<td width="110" align="center">状态</td>
+	</tr><%
+	Dim review_result
+	For i=1 to rs.PageSize
+		If rs.EOF Then Exit For
+		substat=vbNullString
 		If rs("TASK_PROGRESS")>=tpTbl4Uploaded Then
-    	stat=rs("TASK_PROGRESS_NAME")&"，"&rs("REVIEW_STATUS_NAME")
+			stat=rs("TASK_PROGRESS_NAME")&"，"&rs("REVIEW_STATUS_NAME")
 		ElseIf rs("REVIEW_STATUS")=0 Then
-    	stat=rs("TASK_PROGRESS_NAME")
-    Else
-    	stat=rs("REVIEW_STATUS_NAME")
-    	If rs("REVIEW_STATUS")>=rsReviewed And rs("REVIEW_FILE_STATUS")<>3 Then
-    		substat="评阅结果["&arrReviewFileStat(rs("REVIEW_FILE_STATUS"))&"]"
-    	End If
-  	End If
-  %><tr bgcolor="ghostwhite">
-    <td align=center><%=HtmlEncode(rs("THESIS_SUBJECT"))%></td>
-    <td align=center><%=HtmlEncode(rs("STU_NAME"))%></td>
-    <td align=center><%=rs("STU_NO")%></td>
-    <td align=center><%=HtmlEncode(rs("SPECIALITY_NAME"))%></td>
-    <td align=center><%=rs("TEACHTYPE_NAME")%></td>
-    <td align=center><%=HtmlEncode(rs("TUTOR_NAME"))%></td>
-    <td align=center><span class="thesisstat"><%=stat%></span><%
-    If Len(substat) Then
-    %><br/><span class="thesissubstat"><%=substat%></span><%
-    End If %></td></tr><%
-  	rs.MoveNext()
-  Next
+			stat=rs("TASK_PROGRESS_NAME")
+		Else
+			stat=rs("REVIEW_STATUS_NAME")
+			If rs("REVIEW_STATUS")>=rsReviewed And rs("REVIEW_FILE_STATUS")<>3 Then
+				substat="评阅结果["&arrReviewFileStat(rs("REVIEW_FILE_STATUS"))&"]"
+			End If
+		End If
+	%><tr bgcolor="ghostwhite">
+		<td align="center"><%=HtmlEncode(rs("THESIS_SUBJECT"))%></td>
+		<td align="center"><%=HtmlEncode(rs("STU_NAME"))%></td>
+		<td align="center"><%=rs("STU_NO")%></td>
+		<td align="center"><%=HtmlEncode(rs("SPECIALITY_NAME"))%></td>
+		<td align="center"><%=rs("TEACHTYPE_NAME")%></td>
+		<td align="center"><%=HtmlEncode(rs("TUTOR_NAME"))%></td>
+		<td align="center"><span class="thesisstat"><%=stat%></span><%
+		If Len(substat) Then
+		%><br/><span class="thesissubstat"><%=substat%></span><%
+		End If %></td></tr><%
+		rs.MoveNext()
+	Next
 %></table>
 <p><font size=4><b>请选择要匹配的评阅专家</b></font></p>
 <table class="tblform" width="800" cellpadding="2" cellspacing="1" bgcolor="dimgray">
 <tr bgcolor="gainsboro" align="center" height="25">
-<td width="100" align=center>专家一：</td>
-<td width="200" align=center><input type="text" class="selectbox" name="expertname" size=20 value="单击选择..." onclick="window.open('selectExpert.asp?ctrl1=expertname&ctrl2=expertid&item=0','','width=800,height=500,location=no,scrollbars=yes')"/><input type="hidden" name="expertid" /></td>
-<td width="100" align=center>专家二：</td>
-<td width="200" align=center><input type="text" class="selectbox" name="expertname" size=20 value="单击选择..." onclick="window.open('selectExpert.asp?ctrl1=expertname&ctrl2=expertid&item=1','','width=800,height=500,location=no,scrollbars=yes')"/><input type="hidden" name="expertid" /></td>
+<td width="100" align="center">专家一：</td>
+<td width="200" align="center"><input type="text" class="selectbox" name="expertname" size=20 value="单击选择..." onclick="window.open('selectExpert.asp?ctrl1=expertname&ctrl2=expertid&item=0','','width=800,height=500,location=no,scrollbars=yes')"/><input type="hidden" name="expertid" /></td>
+<td width="100" align="center">专家二：</td>
+<td width="200" align="center"><input type="text" class="selectbox" name="expertname" size=20 value="单击选择..." onclick="window.open('selectExpert.asp?ctrl1=expertname&ctrl2=expertid&item=1','','width=800,height=500,location=no,scrollbars=yes')"/><input type="hidden" name="expertid" /></td>
 </tr></table><p><input type="submit" name="btnsubmit" value="确 定" />&emsp;
 <input type="submit" name="btnreturn" value="返 回" onclick="this.form.action='thesisList.asp'" /></p></form></center></body>
 <script type="text/javascript">
@@ -99,6 +97,6 @@ GetRecordSetNoLock conn,rs,sql,result
 		this.form.submit();
 	}).attr('disabled',false);
 </script></html><%
-  CloseRs rs
-  CloseConn conn
+	CloseRs rs
+	CloseConn conn
 %>

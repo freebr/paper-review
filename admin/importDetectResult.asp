@@ -1,12 +1,11 @@
-﻿<%Response.Charset="utf-8"%>
-<!--#include file="../inc/ExtendedRequest.inc"-->
+﻿<!--#include file="../inc/ExtendedRequest.inc"-->
 <!--#include file="appgen.inc"-->
-<!--#include file="../inc/db.asp"-->
+<!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"--><%
 If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 
-curStep=Request.QueryString("step")
-Select Case curStep
+step=Request.QueryString("step")
+Select Case step
 Case vbNullstring ' 文件选择页面
 	reportNameFmt="\$stu_name_\$stu_no_.+\.(pdf|mht|htm(l?))"
 %><html>
@@ -14,8 +13,8 @@ Case vbNullstring ' 文件选择页面
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="theme-color" content="#2D79B2" />
 <title>导入论文查重信息</title>
-<% useStylesheet("admin") %>
-<% useScript(Array("jquery", "upload")) %>
+<% useStylesheet "admin" %>
+<% useScript "jquery", "upload" %>
 </head>
 <body bgcolor="ghostwhite">
 <center><font size=4><b>导入论文查重信息</b><br>
@@ -87,8 +86,8 @@ Case 2	' 上传进程
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="theme-color" content="#2D79B2" />
 <title>导入论文查重信息</title>
-<% useStylesheet("admin") %>
-<% useScript("jquery") %>
+<% useStylesheet "admin" %>
+<% useScript "jquery" %>
 </head>
 <body bgcolor="ghostwhite">
 <center><br /><b>导入论文查重信息</b><br /><br /><%
@@ -109,7 +108,7 @@ Case 3	' 数据读取，导入到数据库
 
 	Function addData()
 		' 添加数据
-		Dim sql,sql2,conn,result,rsReview
+		Dim sql,sql2,conn,count,rsReview
 		Dim detect_count,new_status,reproduct_ratio,review_status,stu_id,stu_name,stu_no,thesis_file,thesis_id
 		Dim numThesis
 		Dim bGenReport:bGenReport=False
@@ -118,7 +117,7 @@ Case 3	' 数据读取，导入到数据库
 		Dim regExp:Set regExp=New RegExp
 		Dim rag:Set rag=New ReviewAppGen
 		
-		Randomize
+		Randomize()
 		regExp.IgnoreCase=True
 		numThesis=0
 		Set folder=fso.GetFolder(Server.MapPath(reportBaseDir&reportDir))
@@ -155,7 +154,7 @@ Case 3	' 数据读取，导入到数据库
 			If Not bError Then
 				reportFilePath=reportDir&file.Name
 				sql="SELECT ID,STU_ID,STU_NAME,SPECIALITY_NAME,THESIS_SUBJECT,THESIS_FILE,REVIEW_STATUS,REVIEW_APP_EVAL,SUBMIT_REVIEW_TIME,DETECT_COUNT,TUTOR_ID,TUTOR_NAME FROM ViewThesisInfo WHERE STU_NO="&toSqlString(stu_no)
-				GetRecordSet conn,rsReview,sql,result
+				GetRecordSet conn,rsReview,sql,count
 				If rsReview.EOF Then
 					bError=True
 					errMsg=errMsg&"学号不存在:"""&stu_no&"""。"&vbNewLine
@@ -251,18 +250,18 @@ Case 3	' 数据读取，导入到数据库
 	reportNameFmt=Request.Form("reportNameFmt")
 	
 	' 打包文件
-	Dim sourcefile
+	Dim source_file
 	Dim rarExe,cmd,wsh
 	Dim numFailed,numSucceeded
 	
 	numFailed=0
 	numSucceeded=0
 	rarExe=Server.MapPath("rar/Rar.exe")
-	sourcefile=Server.MapPath(reportBaseDir&reportDir&rarFilename)
+	source_file=Server.MapPath(reportBaseDir&reportDir&rarFilename)
 	Set fso=Server.CreateObject("Scripting.FileSystemObject")
 	Set wsh=Server.CreateObject("WScript.Shell")
 	' 解压缩
-	cmd=""""&rarExe&""" e -o+ """&sourcefile&""" """&Server.MapPath(reportBaseDir&reportDir)&""""
+	cmd=""""&rarExe&""" e -o+ """&source_file&""" """&Server.MapPath(reportBaseDir&reportDir)&""""
 	Set exec=wsh.Exec(cmd)
 	exec.StdOut.ReadAll()
 	Set exec=Nothing

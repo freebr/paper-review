@@ -1,5 +1,4 @@
-﻿<%Response.Charset="utf-8"%>
-<!--#include file="../inc/db.asp"-->
+﻿<!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"-->
 <%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 
@@ -27,7 +26,7 @@ If bShowAll Then PageSize=-1
 '------------------------------------------------------
 Connect conn
 sql="SELECT * FROM ViewNotifyInfo WHERE 1=1 "&PubTerm&" ORDER BY USER_TYPE,USER_NAME"
-GetRecordSetNoLock conn,rs,sql,result
+GetRecordSetNoLock conn,rs,sql,count
 If IsEmpty(pageSize) Or Not IsNumeric(pageSize) Then
   pageSize=60
 Else
@@ -50,8 +49,8 @@ If rs.RecordCount>0 Then rs.AbsolutePage=pageNo
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<% useStylesheet("admin") %>
-<% useScript(Array("jquery", "common", "notifyList")) %>
+<% useStylesheet "admin" %>
+<% useScript "jquery", "common", "notifyList" %>
 </head>
 <body bgcolor="ghostwhite">
 <center>
@@ -110,14 +109,14 @@ End If %>
 <input type="hidden" name="usertype" id="usertype" value="0">
 <table width="1000" cellpadding="2" cellspacing="1" bgcolor="dimgray">
   <tr bgcolor="gainsboro" height="25">
-    <td width="100" align=center>通知对象</td>
-    <td width="50" align=center>身份</td>
-    <td align=center>待发送通知邮件情况</td>
-    <td width="100" align=center>上次通知日期</td>
-    <td width="100" align=center>上次通知结果</td>
-    <td width="120" align=center>最后使用评阅系统时间</td>
-    <td width="30" align=center>选择</td>
-    <td width="100" align=center>操作</td>
+    <td width="100" align="center">通知对象</td>
+    <td width="50" align="center">身份</td>
+    <td align="center">待发送通知邮件情况</td>
+    <td width="100" align="center">上次通知日期</td>
+    <td width="100" align="center">上次通知结果</td>
+    <td width="120" align="center">最后使用评阅系统时间</td>
+    <td width="30" align="center">选择</td>
+    <td width="100" align="center">操作</td>
   </tr><%
   Dim arrUserType:arrUserType=Array("","导师","评阅专家","学生")
   Dim arrNotifyResult:arrNotifyResult=Array("失败","成功")
@@ -153,14 +152,14 @@ End If %>
 	  	End Select
 	  End If
   %><tr bgcolor="ghostwhite">
-    <td align=center><a href="#" onclick="return showTeacherResume('<%=rs("USER_ID")%>')"><%=HtmlEncode(rs("USER_NAME"))%></a></td>
-    <td align=center><%=user_type%></td>
-    <td align=center><%=notify_desc%></td>
-    <td align=center><%=HtmlEncode(rs("LAST_NOTIFY_TIME"))%></td>
-    <td align=center><%=last_notify_result%></td>
-    <td align=center><%=HtmlEncode(rs("LAST_ACTIVE_TIME"))%></td>
-    <td align=center><input type="checkbox" name="sel" value="<%=rs("USER_TYPE")%>.<%=rs("USER_ID")%>" /></td>
-    <td align=center><input type="button" value="发送通知" onclick="notify($(this.form),<%=rs("USER_TYPE")%>,<%=rs("USER_ID")%>)" /></td></tr><%
+    <td align="center"><a href="#" onclick="return showTeacherResume('<%=rs("USER_ID")%>')"><%=HtmlEncode(rs("USER_NAME"))%></a></td>
+    <td align="center"><%=user_type%></td>
+    <td align="center"><%=notify_desc%></td>
+    <td align="center"><%=HtmlEncode(rs("LAST_NOTIFY_TIME"))%></td>
+    <td align="center"><%=last_notify_result%></td>
+    <td align="center"><%=HtmlEncode(rs("LAST_ACTIVE_TIME"))%></td>
+    <td align="center"><input type="checkbox" name="sel" value="<%=rs("USER_TYPE")%>.<%=rs("USER_ID")%>" /></td>
+    <td align="center"><input type="button" value="发送通知" onclick="notify($(this.form),<%=rs("USER_TYPE")%>,<%=rs("USER_ID")%>)" /></td></tr><%
   	rs.MoveNext()
   Next
 %></table></form></center></body></html><%

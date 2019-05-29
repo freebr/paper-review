@@ -1,10 +1,26 @@
 ﻿<%
 '=========================================
-' 专业学位论文电子评阅系统全局成员定义文件
-' 2016-09-11
+' 全局成员定义文件
+' 2019-05-10
 '=========================================
 
-' TASK_PROGRESS
+' 用户类型
+Const usertypeAdmin=0
+Const usertypeStudent=1
+Const usertypeTutor=2
+Const usertypeExpert=3
+
+' 通知类型
+Const notifytypeMail=0
+Const notifytypeSms=1
+
+' 学生类型
+Const stutypeME=16
+Const stutypeMBA=32
+Const stutypeEMBA=64
+Const stutypeMPAcc=256
+
+' 表格审核状态
 Const tpNone=0
 Const tpTbl1Uploaded=1
 Const tpTbl1Unpassed=2
@@ -18,7 +34,8 @@ Const tpTbl3Passed=9
 Const tpTbl4Uploaded=10
 Const tpTbl4Unpassed=11
 Const tpTbl4Passed=12
-' REVIEW_STATUS
+
+' 论文状态
 Const rsNone=0
 Const rsDetectThesisUploaded=1
 Const rsNotAgreeDetect=2
@@ -38,94 +55,120 @@ Const rsDefenceEval=15
 Const rsInstructEval=16
 Const rsFinalThesisUploaded=17
 
-Const STUTYPE_COUNT=4
-Const OPRTYPE_COUNT=8
+' 环节 Id
+Const sectionUploadKtbg = 1
+Const sectionUploadZqjcb = 2
+Const sectionUploadYdbyjs = 3
+Const sectionUploadSpcl = 4
+Const sectionUploadDetectReview = 5
+Const sectionUploadReview = 6
+Const sectionUploadDefence = 7
+Const sectionUploadFinal = 8
+Const sectionAudit = 9
+Const sectionReview = 10
 
-Class StudentClientInfo
-	Private opentime_start(),opentime_end()
-	Private m_client_status()
-	Private m_systemstatus
-	Private Sub Class_Initialize()
-		ReDim opentime_start(OPRTYPE_COUNT)
-		ReDim opentime_end(OPRTYPE_COUNT)
-		ReDim m_client_status(STUTYPE_COUNT,OPRTYPE_COUNT)
-	End Sub
-	Public Function getOpentime(Opr,TimeType)
-		If TimeType=STUCLI_OPENTIME_START Then
-			getOpentime=opentime_start(Opr)
-		ElseIf TimeType=STUCLI_OPENTIME_END Then
-			getOpentime=opentime_end(Opr)
-		End If
-	End Function
-	Public Function setOpentime(Opr,TimeType,ByVal Value)
-		If IsNull(Value) Then Value=0
-		If TimeType=STUCLI_OPENTIME_START Then
-			opentime_start(Opr)=Value
-		ElseIf TimeType=STUCLI_OPENTIME_END Then
-			opentime_end(Opr)=Value
-		End If
-		setOpentime=1
-	End Function
-	Public Function getClientStatus(StuType,Opr)
-		Dim i
-		Select Case StuType
-		Case STUCLI_STUTYPE_ME:i=1
-		Case STUCLI_STUTYPE_MBA:i=2
-		Case STUCLI_STUTYPE_EMBA:i=3
-		Case STUCLI_STUTYPE_MPACC:i=4
-		Case Else
-			getClientStatus=0
-			Exit Function
-		End Select
-		getClientStatus=m_client_status(i,Opr)
-	End Function
-	Public Function setClientStatus(val)
-		Dim arr,i,j
-		arr=Split(val,",")
-		For i=1 To STUTYPE_COUNT
-			For j=1 To OPRTYPE_COUNT
-				m_client_status(i,j)=arr(OPRTYPE_COUNT*i+j-OPRTYPE_COUNT)
-			Next
-		Next
-	End Function
-	Public Function isOpenFor(StuType,Opr)
-		Dim i
-		Select Case StuType
-		Case STUCLI_STUTYPE_ME:i=1
-		Case STUCLI_STUTYPE_MBA:i=2
-		Case STUCLI_STUTYPE_EMBA:i=3
-		Case STUCLI_STUTYPE_MPACC:i=4
-		Case Else
-			isOpenFor=False
-			Exit Function
-		End Select
-		isOpenFor=m_client_status(i,Opr)="1" And DateDiff("d",opentime_start(Opr),Now)>=0 And DateDiff("d",opentime_end(Opr),Now)<=0
-	End Function
-	Public Property Get SystemStatus()
-		SystemStatus=m_systemstatus
-	End Property
-	Public Property Let SystemStatus(val)
-		m_systemstatus=val
-	End Property
-End Class
+%>
+<script language="jscript" runat="server">
+	// 获取指定表单参数
+	function getFormParams() {
+		var dict=CreateDictionary();
+		for (i=0;i<arguments.length;++i) {
+			dict.Add(arguments[i],Request.Form(arguments[i]));
+		}
+		return dict;
+	}
+
+	// 引用指定脚本
+	function useScript() {
+		for(var i=0;i<arguments.length;++i) {
+			var alias=arguments[i];
+			var query_string;
+			if (alias.charAt(0)==='*') {
+				query_string='?t='+parseInt(Math.random()*1e5);
+				alias=alias.substr(1);
+			} else {
+				query_string='';
+			}
+			if (!dictScripts.Exists(alias)) {
+				Response.Write(Format('<{0} type="text/javascript">console.warn("useScript(): 脚本\"{1}\"未注册。");</{0}>',
+					'script', alias));
+			} else {
+				var value=dictScripts.Item(alias);
+				if (value.indexOf("|")!==-1) {
+					var arr=value.split("|");
+					for(var j=0;j<arr.length;++j) {
+						Response.Write(Format('<{0} type="text/javascript" src="{1}scripts/{2}.js{3}"></{0}>',
+							'script', baseUrl(), arr[j], query_string));
+					}
+				} else {
+					Response.Write(Format('<{0} type="text/javascript" src="{1}scripts/{2}.js{3}"></{0}>',
+						'script', baseUrl(), value, query_string));
+				}
+			}
+		}
+	}
+
+	// 引用指定样式表
+	function useStylesheet() {
+		for(var i=0;i<arguments.length;++i) {
+			var alias=arguments[i];
+			var query_string;
+			if (alias.charAt(0)==='*') {
+				query_string='?t='+parseInt(Math.random()*1e5);
+				alias=alias.substr(1);
+			} else {
+				query_string='';
+			}
+			if (!dictStylesheets.Exists(alias)) {
+				Response.Write(Format('<{0} type="text/javascript">console.warn("useStylesheet(): 样式表\"{0}\"未注册。");</{0}>',
+					'script', alias));
+			} else {
+				var value=dictStylesheets.Item(alias);
+				if (value.indexOf("|")!==-1) {
+					var arr=value.split("|");
+					for(var j=0;j<arr.length;++j) {
+						Response.Write(Format('<link href="{0}css/{1}.css{2}" rel="stylesheet" type="text/css" />',
+							baseUrl(), arr[j], query_string));
+					}
+				} else {
+					Response.Write(Format('<link href="{0}css/{1}.css{2}" rel="stylesheet" type="text/css" />',
+							baseUrl(), value, query_string));
+				}
+			}
+		}
+	}
+</script><%
 
 Function hasPrivilege(pArr,privilege)
-	If IsEmpty(pArr) Then 
+	If IsEmpty(pArr) Then
 		hasPrivilege=False
 		Exit Function
 	End If
 	pArr=split(pArr,",")
 	For i=0 To Ubound(pArr)-1
 		If pArr(i)=privilege Then
-      hasPrivilege=True
-      Exit Function
-	  End If
+			hasPrivilege=True
+			Exit Function
+		End If
 	Next
 	hasPrivilege=False
 End Function
 
 Function baseUrl()
 	baseUrl = "/ThesisReview/"
+End Function
+
+Function serverVar(name)
+	serverVar=Request.ServerVariables(name)
+End Function
+
+Function currentPage()
+	currentPage=LCase(Mid(serverVar("SCRIPT_NAME"),Len(baseUrl())+1))
+End Function
+
+Function currentClient()
+	Dim str:str=currentPage()
+	currentClient=LCase(Left(str,InStr(str,"/")-1))
 End Function
 
 Function getCurrentSemester()
@@ -145,12 +188,165 @@ Function getCurrentSemester()
 		cur_semester=2
 		semester_name="下"
 	End If
-	period_id=start_year&cur_semester
+	period_id=Int(start_year&cur_semester)
 	arr(0)=start_year
 	arr(1)=cur_semester
 	arr(2)=semester_name
 	arr(3)=period_id
 	getCurrentSemester=arr
+End Function
+
+Function getSystemConfigs()
+	Dim conn,rs,sql,count
+	Connect conn
+	sql="SELECT * FROM Configs"
+	GetRecordSetNoLock conn,rs,sql,count
+	If rs.EOF Then
+		CloseRs rs
+		CloseConn conn
+		Response.Redirect baseUrl()&"error.asp?no-config"
+		Exit Function
+	End If
+
+	Dim configs:Set configs=CreateDictionary()
+	Dim i
+	For i=0 To rs.Fields.Count-1
+		configs.Add rs.Fields(i).Name, rs(i).Value
+	Next
+	CloseRs rs
+	CloseConn conn
+	Set getSystemConfigs=configs
+End Function
+
+' 获取指定评阅活动的开放状态
+Function isActivityOpen(activity_id)
+	Dim conn,rs,sql
+	Connect conn
+	sql="SELECT IsOpen FROM Activities WHERE Id=?"
+	Dim ret:Set ret=ExecQuery(conn,sql,CmdParam("Id",adInteger,4,activity_id))
+	Set rs=ret("rs")
+	If rs.EOF Then
+		isActivityOpen=False
+	Else
+		isActivityOpen=rs(0).Value
+	End If
+	CloseRs rs
+	CloseConn conn
+End Function
+
+' 获取环节模板信息，或指定评阅活动的环节信息
+Function getSectionInfo(activity_id, stu_type_id, section_id)
+	Dim conn,rs,sql,count,ret
+	Connect conn
+	If IsNull(activity_id) Then
+		sql="SELECT Id,Name,ClientType,ClientTypeName FROM ViewSections WHERE ID=?"
+		Set ret=ExecQuery(conn,sql,CmdParam("SectionId",adInteger,4,section_id))
+	Else
+		sql="SELECT SectionId Id,SectionName Name,StuType,StuTypeName,ClientType,ClientTypeName,Enabled,StartTime,EndTime FROM ViewActivityPeriods WHERE ActivityId=? AND StuType=? AND SectionId=?"
+		Set ret=ExecQuery(conn,sql,_
+			CmdParam("ActivityId",adInteger,4,activity_id),_
+			CmdParam("StuType",adInteger,4,stu_type_id),_
+			CmdParam("SectionId",adInteger,4,section_id))
+	End If
+	Set rs=ret("rs")
+	count=ret("count")
+
+	If rs.EOF Then
+		getSectionInfo=Null
+		CloseRs rs
+		CloseConn conn
+		Exit Function
+	End If
+	Dim dict: Set dict=CreateDictionary()
+	Dim i
+	For i=0 To rs.Fields.Count-1
+		dict.Add rs.Fields(i).Name, rs(i).Value
+	Next
+	Set getSectionInfo=dict
+	CloseRs rs
+	CloseConn conn
+End Function
+
+' 获取指定的评阅活动信息
+Function getActivityInfo(activity_id)
+	If IsNull(activity_id) Then
+		Exit Function
+	End If
+	Dim conn:Connect conn
+	Dim sql:sql="SELECT * FROM ViewActivities WHERE Id=?"
+	Dim ret:Set ret=ExecQuery(conn,sql,CmdParam("Id",adInteger,4,activity_id))
+    Dim rs:Set rs=ret("rs")
+    Dim count:count=ret("count")
+	If count=0 Then
+		getLastActivityInfoOfStuType=Null
+		Exit Function
+	End If
+	Dim dict:Set dict=CreateDictionary()
+	Dim i
+	For i=0 To rs.Fields.Count-1
+		dict.Add rs.Fields(i).Name, rs(i).Value
+	Next
+	CloseRs rs
+	CloseConn conn
+	Set getActivityInfo=dict
+End Function
+
+' 获取指定学生类型中最新的评阅活动信息
+Function getLastActivityInfoOfStuType(stu_type_id)
+	If IsNull(stu_type_id) Then
+		stu_type_id=stutypeME Or stutypeMBA Or stutypeMPAcc Or stutypeEMBA
+	End If
+	Dim conn:Connect conn
+	Dim sql:sql="SELECT TOP 1 Id,Name FROM ViewActivities WHERE Valid=1 AND (?&StuType)<>0 ORDER BY SemesterId DESC"
+	Dim ret:Set ret=ExecQuery(conn,sql,CmdParam("StuTypes",adInteger,4,stu_type_id))
+    Dim rs:Set rs=ret("rs")
+    Dim count:count=ret("count")
+	If count=0 Then
+		getLastActivityInfoOfStuType=Null
+		Exit Function
+	End If
+	Dim dict:Set dict=CreateDictionary()
+	Dim i
+	For i=0 To rs.Fields.Count-1
+		dict.Add rs.Fields(i).Name, rs(i).Value
+	Next
+	CloseRs rs
+	CloseConn conn
+	Set getLastActivityInfoOfStuType=dict
+End Function
+
+' 比较指定时刻与某个时间范围的关系，0=在时间范围内，-1=在时间范围之前，1=在时间范围之后
+Function compareTimeRange(time,time1,time2)
+	If DateDiff("s", time1, time)<0 Then
+		compareTimeRange=-1
+	ElseIf DateDiff("s", time2, time)>0 Then
+		compareTimeRange=1
+	Else
+		compareTimeRange=0
+	End If
+End Function
+
+' 比较当前时刻与某个时间范围的关系
+Function compareNowWithTimeRange(time1,time2)
+	compareNowWithTimeRange=compareTimeRange(Now,time1,time2)
+End Function
+
+' 比较当前时间与指定环节的开放时间的关系
+Function compareNowWithSectionTime(section)
+	If Not section("Enabled") Then
+		compareNowWithSectionTime=-2
+		Exit Function
+	End If
+	compareNowWithSectionTime=compareNowWithTimeRange(section("StartTime"), section("EndTime"))
+End Function
+
+Function ensureSystemOpen()
+	Dim configs:Set configs=getSystemConfigs()
+	If configs("Status")="closed" Then
+		Response.Redirect baseUrl()&"error.asp?closed"
+		Exit Function
+	End If
+	ensureSystemOpen=1
 End Function
 
 // 注册系统选项
@@ -160,86 +356,18 @@ Dim dictSystemOptions:Set dictSystemOptions = Server.CreateObject("Scripting.Dic
 // 获取系统选项值（没有则使用默认值）
 Function getSystemOption(name,stu_type_id)
 	If Not dictSystemOptions.Exists(name) Then Exit Function
-	Dim conn,rs,sql,result
+	Dim conn,rs,sql,count
 	Connect conn
 	sql="EXEC spGetSystemOption ?,?,?"
-	Set rs=ExecQuery(conn,sql,Array(CmdParam("Name",adVarChar,adParamInput,50,name),_
-		CmdParam("StuTypeId",adInteger,adParamInput,4,stu_type_id),_
-		CmdParam("DefaultValue",adInteger,adParamInput,4,dictSystemOptions.Item(name)(1))),result)
+	Dim ret:Set ret=ExecQuery(conn,sql,_
+		CmdParam("Name",adVarWChar,50,name),_
+		CmdParam("StuTypeId",adInteger,4,stu_type_id),_
+		CmdParam("DefaultValue",adInteger,4,dictSystemOptions.Item(name)(1)))
+	Set rs=ret("rs")
+	count=ret("count")
 	getSystemOption=rs(0).Value
 	CloseRs rs
 	CloseConn conn
-End Function
-
-// 注册脚本别名
-Dim dictScripts:Set dictScripts = Server.CreateObject("Scripting.Dictionary")
-dictScripts.Add "admin",	"admin"
-dictScripts.Add "common",	Array("utils", "query")
-dictScripts.Add "drafting",	"drafting"
-dictScripts.Add "expert",	"expert"
-dictScripts.Add "expertList",	"expertList"
-dictScripts.Add "jeasyui",	Array("jeasyui/jquery.easyui.min", "jeasyui/easyloader")
-dictScripts.Add "jquery",	"jquery-1.12.4.min"
-dictScripts.Add "keywordList",	"keywordList"
-dictScripts.Add "notifyList",	"notifyList"
-dictScripts.Add "review",	"review"
-dictScripts.Add "reviewSettings",	"reviewSettings"
-dictScripts.Add "student",	"student"
-dictScripts.Add "systemSettings",	"systemSettings"
-dictScripts.Add "thesis",	"thesis"
-dictScripts.Add "tutor",	"tutor"
-dictScripts.Add "upload",	"upload"
-dictScripts.Add "uploadTable",	"uploadTable"
-dictScripts.Add "uploadThesis",	"uploadThesis"
-
-// 注册样式表别名
-Dim dictStylesheets:Set dictStylesheets = Server.CreateObject("Scripting.Dictionary")
-dictStylesheets.Add "admin",	"admin"
-dictStylesheets.Add "global",	"global"
-dictStylesheets.Add "jeasyui",	Array("jeasyui/themes/icon", "jeasyui/themes/bootstrap/easyui")
-dictStylesheets.Add "student",	"student"
-dictStylesheets.Add "tutor",	"tutor"
-
-Function useScript(arr)
-	If Not IsArray(arr) Then arr=Array(arr)
-	Dim i
-	For i=0 To UBound(arr)
-		Dim alias:alias=arr(i)
-		If Not dictScripts.Exists(alias) Then
-%><script type="text/javascript">console.warn("useScript(): 脚本别名'<%=alias%>'未注册。");</script><%
-		Else
-			Dim items:items=dictScripts.Item(alias)
-			If Not IsArray(items) Then
-%><script type="text/javascript" src="<%=baseUrl()%>scripts/<%=items%>.js"></script><%
-			Else
-				Dim j
-				For j=0 To UBound(items)
-%><script type="text/javascript" src="<%=baseUrl()%>scripts/<%=items(j)%>.js"></script><%
-				Next
-			End If
-		End If
-	Next
-End Function
-
-Function useStylesheet(arr)
-	If Not IsArray(arr) Then arr=Array(arr)
-	Dim i
-	For i=0 To UBound(arr)
-		Dim alias:alias=arr(i)
-		If Not dictStylesheets.Exists(alias) Then
-%><script type="text/javascript">console.warn("useStylesheet(): 样式表别名'<%=alias%>'未注册。");</script><%
-		Else
-			Dim items:items=dictStylesheets.Item(alias)
-			If Not IsArray(items) Then
-%><link href="<%=baseUrl()%>css/<%=items%>.css" rel="stylesheet" type="text/css" /><%
-			Else
-				Dim j
-				For j=0 To UBound(items)
-%><link href="<%=baseUrl()%>css/<%=items(j)%>.css" rel="stylesheet" type="text/css" /><%
-				Next
-			End If
-		End If
-	Next
 End Function
 
 Function CreateDictionary()
@@ -248,32 +376,123 @@ Function CreateDictionary()
 	Set ret = Nothing
 End Function
 
-Const STUCLI_OPR_TABLE1 = 1
-Const STUCLI_OPR_TABLE2 = 2
-Const STUCLI_OPR_TABLE3 = 3
-Const STUCLI_OPR_TABLE4 = 4
-Const STUCLI_OPR_DETECT_REVIEW = 5
-Const STUCLI_OPR_REVIEW = 6
-Const STUCLI_OPR_MODIFY = 7
-Const STUCLI_OPR_FINAL = 8
-Const STUCLI_OPENTIME_START = 1
-Const STUCLI_OPENTIME_END = 2
-Const STUCLI_STUTYPE_ME = 5
-Const STUCLI_STUTYPE_MBA = 6
-Const STUCLI_STUTYPE_EMBA = 7
-Const STUCLI_STUTYPE_MPACC = 9
-Const STUCLI_STATUS_CLOSED = 0
-Const STUCLI_STATUS_OPEN = 1
-Const STUCLI_STATUS_DEBUG = 2
+// 注册脚本别名
+Dim dictScripts:Set dictScripts=CreateDictionary()
+dictScripts.Add "admin",			"admin"
+dictScripts.Add "common",			"utils|query"
+dictScripts.Add "drafting",			"drafting"
+dictScripts.Add "expert",			"expert"
+dictScripts.Add "expertList",		"expertList"
+dictScripts.Add "jeasyui",			"jeasyui/jquery.easyui.min|jeasyui/easyloader"
+dictScripts.Add "jquery",			"jquery-1.12.4.min"
+dictScripts.Add "keywordList",		"keywordList"
+dictScripts.Add "notifyList",		"notifyList"
+dictScripts.Add "review",			"review"
+dictScripts.Add "reviewSettings",	"reviewSettings"
+dictScripts.Add "student",			"student"
+dictScripts.Add "systemSettings",	"systemSettings"
+dictScripts.Add "thesis",			"thesis"
+dictScripts.Add "tutor",			"tutor"
+dictScripts.Add "upload",			"upload"
+dictScripts.Add "uploadTable",		"uploadTable"
+dictScripts.Add "uploadThesis",		"uploadThesis"
 
-Dim arrStuTypeId:arrStuTypeId=Array(0,5,6,7,9)
-Dim arrStuTypeName:arrStuTypeName=Array("","ME","MBA","EMBA","MPAcc")
-Dim arrDiplomaName:arrDiplomaName=Array("","专科","本科","硕士研究生","博士研究生 ","博士后")
+// 注册样式表别名
+Dim dictStylesheets:Set dictStylesheets=CreateDictionary()
+dictStylesheets.Add "admin",		"admin"
+dictStylesheets.Add "global",		"global"
+dictStylesheets.Add "jeasyui",		"jeasyui/themes/icon|jeasyui/themes/bootstrap/easyui"
+dictStylesheets.Add "student",		"student"
+dictStylesheets.Add "tutor",		"tutor"
 
+' 添加日志记录
+Function writeLog(content)
+	Dim logfile,fso,stream,msg
+	logfile=Server.MapPath("/log/ThesisReview/"&toDateTime(Date,1)&".log")
+	Set fso=Server.CreateObject("Scripting.FileSystemObject")
+	Set stream=fso.OpenTextFile(logfile,8,true)
+	msg="["&Time&"]"&content
+	stream.WriteLine msg
+	stream.Close
+	Set fso=Nothing
+	writeLog=1
+End Function
+
+' 添加通知邮件（短信）发送事件记录
+Function writeNotificationEventLog(user_type,user_name,trigger_operation,receive_user_type,receive_user_name,recipient,notify_type,is_sent)
+	Dim user_type_names:user_type_names=Array("教务员","学生","导师","专家")
+	Dim log_text:log_text=Format("{0}[{1}]{2}，发送通知{3}给{4}[{5}:{6}]{7}。",_
+		user_type_names(user_type),user_name,trigger_operation,Array("邮件","短信")(notify_type),_
+		user_type_names(receive_user_type),receive_user_name,recipient,_
+		Array("失败","成功")(Abs(Int(is_sent))))
+	writeNotificationEventLog=writeLog(log_text)
+End Function
+
+' 显示错误提示
+Function showErrorPage(content, title)
+	Dim client_name, class_prop, statement
+	client_name=currentClient()
+	If client_name="expert" Then
+		class_prop="class=""exp"""
+		client_name="tutor"
+	Else
+		class_prop="bgcolor=""ghostwhite"""
+	End If
+	If isMatched("(expertProfile|fetchDocument|thesisDetail)\.asp",currentPage()) Then
+		statement="closeWindow();"
+	Else
+		statement="history.go(-1);"
+	End If
+%><html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="theme-color" content="#2D79B2" />
+<title><%=title%></title>
+<% useStylesheet client_name, "jeasyui" %>
+<% useScript "jquery", "jeasyui", "common" %>
+</head>
+<body <%=class_prop%>>
+<script type="text/javascript">
+	$.messager.alert("<%=toJsString(title)%>", "<%=toJsString(content)%>", "error",
+		function() {
+			<%=statement%>
+		}
+	);
+</script>
+</body></html><%
+
+	Response.End()
+	showErrorPage=1
+End Function
+
+Session("DebugInfo")=Empty
+Sub debug(info)
+	Session("DebugInfo")=Session("DebugInfo")&vbNewLine&info
+End Sub
+
+If currentPage()<>"default.asp" And IsEmpty(Session("id")) Then
+	ensureSystemOpen()
+End If
+
+Dim dictStuTypes:Set dictStuTypes=CreateDictionary()
+With dictStuTypes
+	.Add 5,Array("工程硕士", "ME")
+	.Add 6,Array("工商管理硕士", "MBA")
+	.Add 7,Array("高级管理人员工商管理硕士", "EMBA")
+	.Add 9,Array("会计硕士", "MPAcc")
+End With
+
+Dim arrDiplomaName:arrDiplomaName=Array("","专科","本科","硕士研究生","博士研究生","博士后")
+Dim arrDefenceResult:arrDefenceResult=Array("","优秀","良好","一般","较差")
+Dim arrGrantDegreeResult:arrGrantDegreeResult=Array("","同意毕业及授予学位","同意毕业，但不同意授予学位","不同意毕业")
+Dim arrReviewFileStat:arrReviewFileStat=Array("不开放显示","仅向导师显示","仅向学生显示","完全开放显示")
 ' 禁止缓存，仅在需要客户端重新请求 JS/CSS/HTML 等静态文件时使用
 Response.CacheControl="no-cache"
 Response.Charset="utf-8"
 %>
-<!--#include file="../inc/Conversion.inc" -->
-<!--#include file="../inc/JSONWriter.inc" -->
-<!--#include file="../inc/PinyinQuery.inc"-->
+<!--#include file="JSONWriter.inc"-->
+<!--#include file="PinyinQuery.inc"-->
+<!--#include file="conversion.asp"-->
+<!--#include file="database.asp"-->
+<!--#include file="mail.asp"-->
+<!--#include file="helper.asp"-->

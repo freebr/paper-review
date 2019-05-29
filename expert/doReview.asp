@@ -1,10 +1,9 @@
-﻿<%Response.Charset="utf-8"
-Response.Expires=-1%>
+﻿<%Response.Expires=-1%>
 <!--#include file="reviewgen.inc"-->
-<!--#include file="../inc/db.asp"-->
+<!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"--><%
-If IsEmpty(Session("Tid")) Then Response.Redirect("../error.asp?timeout")
-thesisID=Request.QueryString("tid")
+If IsEmpty(Session("TId")) Then Response.Redirect("../error.asp?timeout")
+dissertation_id=Request.QueryString("tid")
 teachtype_id=Request.Form("In_TEACHTYPE_ID2")
 spec_id=Request.Form("In_SPECIALITY_ID2")
 enter_year=Request.Form("In_ENTER_YEAR2")
@@ -13,7 +12,7 @@ query_review_status=Request.Form("In_REVIEW_STATUS2")
 finalFilter=Request.Form("finalFilter2")
 pageSize=Request.Form("pageSize2")
 pageNo=Request.Form("pageNo2")
-If Len(thesisID)=0 Or Not IsNumeric(thesisID) Then
+If Len(dissertation_id)=0 Or Not IsNumeric(dissertation_id) Then
 	bError=True
 	errdesc="参数无效。"
 ElseIf Not checkIfProfileFilledIn() Then
@@ -21,32 +20,32 @@ ElseIf Not checkIfProfileFilledIn() Then
 	errdesc="您尚未完善个人信息，<a href=""profile.asp"">请点击这里编辑。</a>"
 End If
 If bError Then
-%><html><head><% useStylesheet("tutor") %></head>
-<body class="exp"><center><div class="content"><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></div></center></body></html><%
-	Response.End()
+	showErrorPage errdesc, "提示"
 End If
-expert_master_level=Request.Form("masterlevel")
-correlation_type=Request.Form("correlationtype")
-reviewresult=Request.Form("reviewresult")
-reviewlevel=Request.Form("reviewlevel")
+master_level=Request.Form("master_level")
+correlation_level=Request.Form("correlation_level")
+review_result=Request.Form("review_result")
+review_level=Request.Form("review_level")
 eval_text=Request.Form("eval_text")
-Session("Debug")=1
+
+Dim conn,sql,ret,rs,count
 Connect conn
-sql="SELECT * FROM ViewThesisInfo WHERE ID="&thesisID&" AND "&Session("Tid")&" IN (REVIEWER1,REVIEWER2)"
-GetRecordSetNoLock conn,rs,sql,result
-If nSystemStatus<>2 Then
-	bError=True
-	errdesc="评阅系统的开放时间为"&toDateTime(startdate,1)&"至"&toDateTime(enddate,1)&"，当前不在开放时间内，不能评阅论文。"
-ElseIf Len(expert_master_level)=0 Then
+sql="SELECT * FROM ViewThesisInfo WHERE ID=? AND ? IN (REVIEWER1,REVIEWER2)"
+Set ret=ExecQuery(conn,sql,_
+	CmdParam("ID",adInteger,4,dissertation_id),_
+	CmdParam("TId",adInteger,4,Session("TId")))
+Set rs=ret("rs")
+count=ret("count")
+If Len(master_level)=0 Then
 	bError=True
 	errdesc="请选择您对论文涉及内容的熟悉程度！"
-ElseIf Len(correlation_type)=0 Then
+ElseIf Len(correlation_level)=0 Then
 	bError=True
 	errdesc="请选择学位论文内容与申请学位专业（领域）的相关性！"
-ElseIf Len(reviewresult)=0 Or reviewresult="0" Then
+ElseIf Len(review_result)=0 Or review_result="0" Then
 	bError=True
 	errdesc="请就是否同意举行论文答辩选择相应选项！"
-ElseIf InStr("1234",reviewresult)=0 Then
+ElseIf InStr("1234",review_result)=0 Then
 	bError=True
 	errdesc="“是否同意举行论文答辩”选项无效！"
 ElseIf Len(eval_text)=0 Then
@@ -55,7 +54,7 @@ ElseIf Len(eval_text)=0 Then
 ElseIf Len(eval_text)>2000 Then
 	bError=True
 	errdesc="评语字数超出限制（2000字）！"
-ElseIf result=0 Then
+ElseIf count=0 Then
 	bError=True
 	errdesc="数据库没有该论文记录，或您未受邀评阅该论文！"
 ElseIf rs("REVIEW_STATUS")<>rsMatchExpert And rs("REVIEW_STATUS")<>rsReviewed Then
@@ -77,37 +76,49 @@ Else
 		End If
 	Next
 	If Not bError Then
-		If Len(reviewlevel)=0 Then
+		If Len(review_level)=0 Then
 			bError=True
 			errdesc="缺少总体评价参数！"
 		End If
 	End If
 End If
 If bError Then
-%><html><head><% useStylesheet("tutor") %></head>
-<body class="exp"><center><div class="content"><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></div></center></body></html><%
-  CloseRs rs
-  CloseConn conn
-	Response.End()
+	CloseRs rs
+	CloseConn conn
+	showErrorPage errdesc, "提示"
 End If
 
-Dim reviewer_type
-Dim review_result(2),reviewer_master_level(1),review_file(1),review_time(1),review_level(1)
-If rs("REVIEWER1")=Session("Tid") Then
-	reviewer_type=0
+Dim section_access_info
+Set section_access_info=getSectionAccessibilityInfo(rs("ActivityId"),rs("TEACHTYPE_ID"),sectionReview)
+If Not section_access_info("accessible") Then
+	CloseRs rs
+  	CloseConn conn
+	showErrorPage section_access_info("tip"), "提示"
+End If
+
+Dim display_status,reviewer_num
+Dim arr_master_level(1)
+Dim arr_review_level(1)
+Dim arr_review_result(2)
+Dim arr_review_file(1)
+Dim arr_review_time(1)
+
+display_status=rs("REVIEW_FILE_STATUS")
+If rs("REVIEWER1")=Session("TId") Then
+	reviewer_num=0
 Else
-	reviewer_type=1
+	reviewer_num=1
 End If
 If Not IsNull(rs("REVIEW_RESULT")) Then
 	arr=Split(rs("REVIEW_RESULT"),",")
 	For i=0 To UBound(arr)
-		review_result(i)=Int(arr(i))
+		arr_review_result(i)=Int(arr(i))
 	Next
 End If
 If IsNull(rs("REVIEWER_EVAL_TIME")) Then
 	For i=0 To 1
-		reviewer_master_level(i)=0
-		review_level(i)=0
+		arr_master_level(i)=0
+		arr_review_level(i)=0
 	Next
 Else
 	arr2=Split(rs("REVIEWER_MASTER_LEVEL"),",")
@@ -115,10 +126,10 @@ Else
 	arr4=Split(rs("REVIEWER_EVAL_TIME"),",")
 	arr5=Split(rs("REVIEW_LEVEL"),",")
 	For i=0 To 1
-		reviewer_master_level(i)=Int(arr2(i))
-		review_file(i)=arr3(i)
-		review_time(i)=arr4(i)
-		review_level(i)=Int(arr5(i))
+		arr_master_level(i)=Int(arr2(i))
+		arr_review_file(i)=arr3(i)
+		arr_review_time(i)=arr4(i)
+		arr_review_level(i)=Int(arr5(i))
 	Next
 End If
 teachtype_id=rs("TEACHTYPE_ID")
@@ -131,8 +142,8 @@ speciality=rs("SPECIALITY_NAME")
 researchway=rs("RESEARCHWAY_NAME")
 scores=Request.Form("scores")
 CloseRs rs
-sql="SELECT * FROM Experts WHERE TEACHER_ID="&Session("Tid")
-GetRecordSetNoLock conn,rs,sql,result
+sql="SELECT * FROM Experts WHERE TEACHER_ID="&Session("TId")
+GetRecordSetNoLock conn,rs,sql,count
 expert_name=rs("EXPERT_NAME")
 expert_pro_duty=rs("PRO_DUTY_NAME")
 expert_expertise=rs("EXPERTISE")
@@ -144,28 +155,26 @@ expert_mobile=rs("MOBILE")
 CloseRs rs
 
 sql="SELECT REVIEW_FILE FROM ReviewTypes WHERE ID="&review_type
-GetRecordSetNoLock conn,rs,sql,result
+GetRecordSetNoLock conn,rs,sql,count
 If rs.EOF Then
-%><html><head><% useStylesheet("tutor") %></head>
-<body class="exp"><center><div class="content"><body bgcolor="ghostwhite"><center><font color=red size="4">操作不成功，找不到所需的评阅书模板文件，请联系系统管理员。</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></div></center></body></html><%
-  CloseRs rs
-  CloseConn conn
-	Response.End()
+	CloseRs rs
+	CloseConn conn
+	showErrorPage "评阅书模板丢失，无法完成评阅操作，请联系系统管理员。", "提示"
 End If
 ' 生成评阅书
-Dim rg,reviewtime,templatefile,reviewfile_type,filepath,filename,fullfilename
-templatefile=Server.MapPath("/ThesisReview/admin/upload/review/"&rs("REVIEW_FILE"))
+Dim rg,review_time,template_file,reviewfile_type,filepath,filename,full_filename
+template_file=Server.MapPath("../admin/upload/review/"&rs("REVIEW_FILE"))
 CloseRs rs
-reviewtime=Now
+review_time=Now()
 If teachtype_id=5 Or teachtype_id=6 Then
 	reviewfile_type=2
 Else
 	reviewfile_type=1
 End If
-Randomize
-filename=toDateTime(reviewtime,1)&Int(Timer)&Int(Rnd()*999)
-fullfilename=filename&".pdf"
-filepath=Server.MapPath("export")&"\"&fullfilename
+Randomize()
+filename=toDateTime(review_time,1)&Int(Timer)&Int(Rnd()*999)
+full_filename=filename&".pdf"
+filepath=Server.MapPath("export")&"\"&full_filename
 filepath2=Server.MapPath("export")&"\"&filename&"_nostu.pdf"
 filepath3=Server.MapPath("export")&"\"&filename&"_noexp.pdf"
 
@@ -183,30 +192,31 @@ rg.ExpertAddress=expert_address
 rg.ExpertMailcode=expert_mailcode
 rg.ExpertTel1=expert_telephone
 rg.ExpertTel2=expert_mobile
-rg.ExpertMasterLevel=expert_master_level
+rg.ExpertMasterLevel=master_level
 rg.EvalText=eval_text
-rg.CorrelationType=correlation_type
-rg.ReviewResult=reviewresult
-rg.ReviewLevel=reviewlevel
+rg.CorrelationLevel=correlation_level
+rg.ReviewResult=review_result
+rg.ReviewLevel=review_level
 rg.ThesisType=review_type
 If reviewfile_type=2 Then	' ME/MBA评阅书，计算评价指标总分
 	rg.Spec=speciality
 	rg.Scores=scores
 	Dim arrScorePartPower,arrScores,arrScorePower
 	Dim scoreParts,partScore,totalScore
-	loadReviewScoringInfo review_type,tmp,power1code,power2code
-	power1code=Replace(power1code,"[","Array(")
-	power1code=Replace(power1code,"]",")")
-	power2code=Replace(power2code,"[","Array(")
-	power2code=Replace(power2code,"]",")")
-	arrScorePartPower=Eval(power1code)
-	arrScorePower=Eval(power2code)
+	loadReviewScoringInfo review_type,tmp,code_power1,code_power2
+	code_power1=Replace(code_power1,"[","Array(")
+	code_power1=Replace(code_power1,"]",")")
+	code_power2=Replace(code_power2,"[","Array(")
+	code_power2=Replace(code_power2,"]",")")
+	arrScorePartPower=Eval(code_power1)
+	arrScorePower=Eval(code_power2)
 	arrScores=Split(scores,",")
 	totalScore=0
 	k=0
 	For i=0 To UBound(arrScorePartPower)
 		partScore=0
 		For j=0 To UBound(arrScorePower(i))
+			arrScores(k)=Int(arrScores(k))
 			partScore=partScore+arrScores(k)*arrScorePower(i)(j)
 			k=k+1
 		Next
@@ -217,17 +227,20 @@ If reviewfile_type=2 Then	' ME/MBA评阅书，计算评价指标总分
 	Next
 	rg.ScoreParts=scoreParts
 	rg.TotalScore=Round(totalScore)
+	score_data=Join(arrScores,",")
+Else
+	score_data=Null
 End If
-bError=rg.generateReview(filepath,filepath2,filepath3,templatefile,reviewfile_type)=0
+bError=rg.generateReview(filepath,filepath2,filepath3,template_file,reviewfile_type)=0
 Set rg=Nothing
 
-review_result(reviewer_type)=reviewresult
-review_level(reviewer_type)=reviewlevel
-reviewer_master_level(reviewer_type)=expert_master_level
-review_file(reviewer_type)=fullfilename
-review_time(reviewer_type)=reviewtime
+arr_master_level(reviewer_num)=master_level
+arr_review_level(reviewer_num)=review_level
+arr_review_result(reviewer_num)=review_result
+arr_review_file(reviewer_num)=full_filename
+arr_review_time(reviewer_num)=review_time
 ' 确定处理意见
-code=review_result(0)&review_result(1)
+code=arr_review_result(0)&arr_review_result(1)
 Select Case code
 Case "11":finalresult="1"
 Case "12","21":finalresult="2"
@@ -241,17 +254,32 @@ Case "34","43":finalresult="5"
 Case "44":finalresult="5"
 Case Else:finalresult="6"
 End Select
-review_result(2)=finalresult
+arr_review_result(2)=finalresult
+
+' 插入评阅记录
+sql="EXEC spAddReviewRecord ?,?,?,?,?,?,?,?,?,?,?,NULL"
+ExecNonQuery conn,sql,_
+	CmdParam("dissertation_id",adInteger,4,dissertation_id),_
+	CmdParam("reviewer_id",adInteger,4,Session("TId")),_
+	CmdParam("reviewer_master_level",adInteger,4,master_level),_
+	CmdParam("score_data",adVarWChar,500,score_data),_
+	CmdParam("comment",adLongVarWChar,5000,eval_text),_
+	CmdParam("correlation_level",adInteger,4,correlation_level),_
+	CmdParam("overall_rating",adInteger,4,review_level),_
+	CmdParam("defence_opinion",adInteger,4,review_result),_
+	CmdParam("review_time",adDate,4,review_time),_
+	CmdParam("review_file",adVarWChar,50,filename),_
+	CmdParam("display_status",adInteger,4,display_status)
 
 ' 更新记录
-sql="SELECT * FROM Dissertations WHERE ID="&thesisID
-GetRecordSet conn,rs,sql,result
-rs("REVIEW_RESULT")=join(review_result,",")
-rs("REVIEW_LEVEL")=join(review_level,",")
-rs("REVIEWER_MASTER_LEVEL")=join(reviewer_master_level,",")
-rs("REVIEWER_EVAL"&(reviewer_type+1))=eval_text
-rs("REVIEW_FILE")=join(review_file,",")
-rs("REVIEWER_EVAL_TIME")=join(review_time,",")
+sql="SELECT * FROM Dissertations WHERE ID="&dissertation_id
+GetRecordSet conn,rs,sql,count
+rs("REVIEW_RESULT")=ArrayJoin(arr_review_result,",")
+rs("REVIEW_LEVEL")=ArrayJoin(arr_review_level,",")
+rs("REVIEWER_MASTER_LEVEL")=ArrayJoin(arr_master_level,",")
+rs("REVIEWER_EVAL"&(reviewer_num+1))=eval_text
+rs("REVIEW_FILE")=ArrayJoin(arr_review_file,",")
+rs("REVIEWER_EVAL_TIME")=ArrayJoin(arr_review_time,",")
 If finalresult<>"6" Then
 	rs("REVIEW_STATUS")=rsReviewed
 End If
@@ -259,11 +287,12 @@ rs.Update()
 CloseRs rs
 CloseConn conn
 
-updateActiveTime Session("Tid")
+updateActiveTime Session("TId")
 
-logtxt="专家["&expert_name&"]提交评阅意见，论文：《"&subject&"》，作者："&author&"，评阅书："&fullfilename&"。"
+logtxt=Format("专家[{0}]提交评阅意见，论文：《{1}》，作者：{2}，评阅书：{3}。",_
+	expert_name,subject,author,full_filename)
 writeLog logtxt
-%><form id="ret" action="thesisDetail.asp?tid=<%=thesisID%>" method="post">
+%><form id="ret" action="thesisDetail.asp?tid=<%=dissertation_id%>" method="post">
 <input type="hidden" name="In_TEACHTYPE_ID2" value="<%=teachtype_id%>" />
 <input type="hidden" name="In_SPECIALITY_ID2" value="<%=spec_id%>" />
 <input type="hidden" name="finalFilter2" value="<%=toPlainString(finalFilter)%>" />

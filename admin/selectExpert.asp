@@ -1,6 +1,5 @@
-﻿<%Response.Charset="utf-8"
-Response.Expires=-1%>
-<!--#include file="../inc/db.asp"-->
+﻿<%Response.Expires=-1%>
+<!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"-->
 <%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 teachertype=Request.QueryString("type")
@@ -35,7 +34,7 @@ Else	' 校外专家
 	sql="SELECT * FROM ViewExpertInfo WHERE INSCHOOL=0 AND VALID=1 "&PubTerm&" ORDER BY EXPERT_NAME"
 	title="校外专家名单"
 End If
-GetRecordSetNoLock conn,rs,sql,result
+GetRecordSetNoLock conn,rs,sql,count
 If IsEmpty(pageSize) Or Not IsNumeric(pageSize) Then
   pageSize=60
 Else
@@ -60,8 +59,8 @@ If rs.RecordCount>0 Then rs.AbsolutePage=pageNo
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="theme-color" content="#2D79B2" />
 <title>选择专家</title>
-<% useStylesheet("admin") %>
-<% useScript(Array("jquery", "common", "expertList")) %>
+<% useStylesheet "admin" %>
+<% useScript "jquery", "common", "expertList" %>
 </head>
 <body bgcolor="ghostwhite" onload="return On_Load()">
 <center>
@@ -110,21 +109,21 @@ If rs.RecordCount>0 Then rs.AbsolutePage=pageNo
 	<input type="button" value="显示全部" onclick="showAllRecords(this.form)"></td></tr>
   <tr bgcolor="gainsboro" align="center" height="25"><%
 If teachertype=1 Then
-%><td width="100" align=center>姓名</td>
-  <td width="80" align=center>职称</td>
-  <td align=center>所在院系</td>
-	<td width="140" align=center>单位（住址）</td>
-	<td width="100" align=center>联系电话</td>
-	<td width="120" align=center>邮箱</td>
-	<td width="80" align=center>选择</td><%
+%><td width="100" align="center">姓名</td>
+  <td width="80" align="center">职称</td>
+  <td align="center">所在院系</td>
+	<td width="140" align="center">单位（住址）</td>
+	<td width="100" align="center">联系电话</td>
+	<td width="120" align="center">邮箱</td>
+	<td width="80" align="center">选择</td><%
 Else
-%><td width="100" align=center>姓名</td>
-  <td width="80" align=center>职称</td>
-  <td align=center>学科专长</td>
-	<td width="140" align=center>单位（住址）</td>
-	<td width="100" align=center>联系电话</td>
-	<td width="120" align=center>邮箱</td>
-	<td width="80" align=center>选择</td><%
+%><td width="100" align="center">姓名</td>
+  <td width="80" align="center">职称</td>
+  <td align="center">学科专长</td>
+	<td width="140" align="center">单位（住址）</td>
+	<td width="100" align="center">联系电话</td>
+	<td width="120" align="center">邮箱</td>
+	<td width="80" align="center">选择</td><%
 End If
 %></tr><%
 If teachertype=1 Then
@@ -132,13 +131,13 @@ If teachertype=1 Then
   	If rs.EOF Then Exit For
 %>
 <tr bgcolor="ghostwhite">
-  <td align=center><%=HtmlEncode(rs("TEACHER_NAME"))%></td>
-  <td align=center><%=HtmlEncode(rs("PRO_DUTYNAME"))%></td>
-  <td align=center><%=HtmlEncode(rs("DEPT_NAME"))%></td>
-  <td align=center><%=HtmlEncode(rs("Office_Address"))%></td>
-  <td align=center><%=HtmlEncode(rs("MOBILE"))%></td>
-  <td align=center><%=HtmlEncode(rs("EMAIL"))%></td>
-  <td align=center><a href="#" onclick="selectItem('<%=toJsString(rs("TEACHER_NAME"))%>',<%=rs("TEACHER_ID")%>)">选择</a></td>
+  <td align="center"><%=HtmlEncode(rs("TEACHER_NAME"))%></td>
+  <td align="center"><%=HtmlEncode(rs("PRO_DUTYNAME"))%></td>
+  <td align="center"><%=HtmlEncode(rs("DEPT_NAME"))%></td>
+  <td align="center"><%=HtmlEncode(rs("Office_Address"))%></td>
+  <td align="center"><%=HtmlEncode(rs("MOBILE"))%></td>
+  <td align="center"><%=HtmlEncode(rs("EMAIL"))%></td>
+  <td align="center"><a href="#" onclick="selectItem('<%=toJsString(rs("TEACHER_NAME"))%>',<%=rs("TEACHER_ID")%>)">选择</a></td>
 </td></tr><%
   	rs.MoveNext()
   Next
@@ -146,13 +145,13 @@ Else
   For i=1 To pageSize
   	If rs.EOF Then Exit For%>
 <tr bgcolor="ghostwhite">
-  <td align=center><%=HtmlEncode(rs("EXPERT_NAME"))%></td>
-  <td align=center><%=HtmlEncode(rs("PRO_DUTY_NAME"))%></td>
-  <td align=center><%=HtmlEncode(rs("EXPERTISE"))%></td>
-  <td align=center><%=HtmlEncode(rs("WORKPLACE"))%></td>
-  <td align=center><%=HtmlEncode(rs("MOBILE"))%></td>
-  <td align=center><%=HtmlEncode(rs("EMAIL"))%></td>
-  <td align=center><a href="#" onclick="selectItem('<%=toJsString(rs("EXPERT_NAME"))%>',<%=rs("TEACHER_ID")%>)">选择</a></td>
+  <td align="center"><%=HtmlEncode(rs("EXPERT_NAME"))%></td>
+  <td align="center"><%=HtmlEncode(rs("PRO_DUTY_NAME"))%></td>
+  <td align="center"><%=HtmlEncode(rs("EXPERTISE"))%></td>
+  <td align="center"><%=HtmlEncode(rs("WORKPLACE"))%></td>
+  <td align="center"><%=HtmlEncode(rs("MOBILE"))%></td>
+  <td align="center"><%=HtmlEncode(rs("EMAIL"))%></td>
+  <td align="center"><a href="#" onclick="selectItem('<%=toJsString(rs("EXPERT_NAME"))%>',<%=rs("TEACHER_ID")%>)">选择</a></td>
 </td></tr><%
   	rs.MoveNext()
   Next

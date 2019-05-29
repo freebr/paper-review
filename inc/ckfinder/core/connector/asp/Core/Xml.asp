@@ -98,7 +98,7 @@ Class CKFinder_Connector_Core_Xml
 	Private function sendXmlHeaders()
 '		Response.Clear
 
-		' Prevent the browser from caching the result.
+		' Prevent the browser from caching the count.
 		Response.CacheControl = "no-cache"
 
 		' Set the response format.

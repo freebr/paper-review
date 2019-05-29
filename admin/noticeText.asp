@@ -1,5 +1,4 @@
-﻿<%Response.Charset="utf-8"%>
-<!--#include file="../inc/db.asp"-->
+﻿<!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"-->
 <%Response.Expires=-1
 If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
@@ -9,19 +8,19 @@ If IsEmpty(stuType) Or Not IsNumeric(stuType) Then
 End If
 
 Dim dict:Set dict=Server.CreateObject("Scripting.Dictionary")
-
-Dim conn,rs,sql,num
+Dim conn,rs,sql,count
 json=Request.Form("json")
 If json="1" Then
-	Dim ret
 	sql="EXEC spGetNoticeText ?"
-	Set rs=ExecQuery(conn,sql,CmdParam("StudentType",adInteger,adParamInput,4,stuType),num)
-	
+	Dim ret:Set ret=ExecQuery(conn,sql,CmdParam("StudentType",adInteger,4,stuType))
+	Set rs=ret("rs")
+    count=ret("count")
+
 	Do While Not rs.EOF
 		dict.Add rs(0).Value, rs(1).Value
 		rs.MoveNext()
 	Loop
-	If num=0 Then
+	If count=0 Then
 %>{"status": "empty"}<%
 	Else
 		ret="{""status"": ""ok"", ""notices"": ["
@@ -41,17 +40,17 @@ Else
 	dict.Add "review_eval_reference", "送审评语的基本内容参考"
 	dict.Add "review_result_desc", "论文检测结果及论文评审结果说明"
 End If
-curstep=Request.QueryString("step")
-If Len(curstep)=0 Or Not IsNumeric(curstep) Then curstep="1"
+step=Request.QueryString("step")
+If Len(step)=0 Or Not IsNumeric(step) Then step="1"
 
-Select Case curstep
+Select Case step
 Case "1"
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="theme-color" content="#2D79B2" />
-<% useStylesheet("admin") %>
-<% useScript(Array("jquery", "common")) %>
+<% useStylesheet "admin" %>
+<% useScript "jquery", "common" %>
 </head>
 <body bgcolor="ghostwhite">
 <center><font size=4><b>提示文本设置</b></font>
@@ -69,8 +68,8 @@ Case "1"
 <tr bgcolor="ghostwhite">
 <td>学生类型：<select id="stuType" name="stuType">
 	<option value="0">【请选择】</option><%
-	For i=1 To UBound(arrStuTypeName) %>
-	<option value="<%=arrStuTypeId(i)%>"><%=arrStuTypeName(i)%></option><%
+	For Each item In dictStuTypes %>
+	<option value="<%=item%>"><%=dictStuTypes(item)(1)%></option><%
 	Next %>
 </select></td></tr>
 <tr bgcolor="ghostwhite">
@@ -81,7 +80,7 @@ Case "1"
 </td></tr><%
 	Next %>
 </table></td></tr>
-<tr bgcolor="ghostwhite"><td align="center"><input type="submit" value="更改设置">&emsp;<input type="button" id="btnreturn" value="返回系统设置首页"></td></tr>
+<tr bgcolor="ghostwhite"><td align="center"><input type="submit" value="更改设置">&emsp;<input type="button" id="btnreturn" value="返回系统基本设置页"></td></tr>
 </table></form>
 </center></body>
 <script type="text/javascript">
@@ -106,7 +105,7 @@ Case "1"
 </script></html><%
 Case "2"
 	Dim ok:ok="1"
-	Dim paramStudentType:Set paramStudentType=CmdParam("StudentType",adInteger,adParamInput,4,stuType)
+	Dim paramStudentType:Set paramStudentType=CmdParam("StudentType",adInteger,4,stuType)
 	Connect conn
 	For i=0 To dict.Count-1
 		Dim key:key=dict.Keys()(i)

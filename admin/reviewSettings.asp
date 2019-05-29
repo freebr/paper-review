@@ -1,22 +1,21 @@
-﻿<%Response.Charset="utf-8"%>
-<!--#include file="../inc/ExtendedRequest.inc"-->
-<!--#include file="../inc/db.asp"-->
+﻿<!--#include file="../inc/ExtendedRequest.inc"-->
+<!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"-->
 <%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
-Dim conn,rs,sql,result
+Dim conn,rs,sql,count
 Connect conn
-curStep=Request.QueryString("step")
-Select Case curStep
+step=Request.QueryString("step")
+Select Case step
 Case vbNullstring ' 设置页面
 	sql="SELECT * FROM ReviewTypes"
-	GetRecordSetNoLock conn,rs,sql,result
+	GetRecordSetNoLock conn,rs,sql,count
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="theme-color" content="#2D79B2" />
 <title>评阅书类型设置</title>
-<% useStylesheet("admin") %>
-<% useScript(Array("jquery", "common", "reviewSettings")) %>
+<% useStylesheet "admin" %>
+<% useScript "jquery", "common", "reviewSettings" %>
 </head>
 <body bgcolor="ghostwhite">
 <center><font size=4><b>评阅书类型设置</b></font>
@@ -53,7 +52,7 @@ Case 1	' 后台进程
 	
 	byteFileSize=0
 	ReDim arr_fileid(numItems)
-	Randomize
+	Randomize()
 	For i=1 To numItems
 		Set file=Upload.File("reviewFile"&i)
 		If Len(file.FileName)=0 Then
@@ -100,7 +99,7 @@ Case 1	' 后台进程
 	conn.Execute sql
 	
 	sql="SELECT * FROM ReviewTypes"
-	GetRecordSet conn,rs,sql,result
+	GetRecordSet conn,rs,sql,count
 	For i=0 To numItems-1
 		type_name=arr_typename(i)
 		teachtype_id=arr_teachtypeid(i)
@@ -128,8 +127,8 @@ Case 1	' 后台进程
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="theme-color" content="#2D79B2" />
 <title>评阅书类型设置</title>
-<% useStylesheet("admin") %>
-<% useScript("jquery") %>
+<% useStylesheet "admin" %>
+<% useScript "jquery" %>
 </head>
 <body bgcolor="ghostwhite">
 <script type="text/javascript">

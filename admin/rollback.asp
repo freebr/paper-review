@@ -1,6 +1,5 @@
-﻿<%Response.Charset="utf-8"
-Response.Expires=-1%>
-<!--#include file="../inc/db.asp"-->
+﻿<%Response.Expires=-1%>
+<!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"--><%
 If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 thesisID=Request.QueryString("tid")
@@ -19,10 +18,10 @@ If Len(thesisID)=0 Or Not IsNumeric(thesisID) Or Len(usertype)=0 Or Not IsNumeri
 	Response.End()
 End If
 
-Dim conn,rs,sql,sqlDetect,result
+Dim conn,rs,sql,sqlDetect,count
 Connect conn
 sql="SELECT * FROM Dissertations WHERE ID="&thesisID
-GetRecordSet conn,rs,sql,result
+GetRecordSet conn,rs,sql,count
 If rs.EOF Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4">数据库没有该论文记录！</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
   CloseRs rs
@@ -32,7 +31,7 @@ End If
 
 Dim detect_count
 sql="SELECT DETECT_COUNT FROM ViewThesisInfo WHERE ID="&thesisID
-GetRecordSet conn,rsDetect,sql,result
+GetRecordSet conn,rsDetect,sql,count
 detect_count=rsDetect(0).Value
 CloseRs rsDetect
 
@@ -150,12 +149,12 @@ Case 1	' 撤销专家评阅操作
 	review_result(2)=finalresult
 	
 	' 更新记录
-	rs("REVIEW_RESULT").Value=join(review_result,",")
-	rs("REVIEW_LEVEL").Value=join(review_level,",")
-	rs("REVIEWER_MASTER_LEVEL").Value=join(reviewer_master_level,",")
+	rs("REVIEW_RESULT").Value=ArrayJoin(review_result,",")
+	rs("REVIEW_LEVEL").Value=ArrayJoin(review_level,",")
+	rs("REVIEWER_MASTER_LEVEL").Value=ArrayJoin(reviewer_master_level,",")
 	rs("REVIEWER_EVAL"&(opr+1)).Value=eval_text
-	rs("REVIEW_FILE").Value=join(review_file,",")
-	rs("REVIEWER_EVAL_TIME").Value=join(review_time,",")
+	rs("REVIEW_FILE").Value=ArrayJoin(review_file,",")
+	rs("REVIEWER_EVAL_TIME").Value=ArrayJoin(review_time,",")
 	'rs("TUTOR_REVIEW_EVAL").Value=Null
 	rs("REVIEW_STATUS").Value=rsMatchExpert
 	

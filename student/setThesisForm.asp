@@ -1,6 +1,5 @@
-﻿<%Response.Charset="utf-8"
-Response.Expires=-1%>
-<!--#include file="../inc/db.asp"-->
+﻿<%Response.Expires=-1%>
+<!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"--><%
 If IsEmpty(Session("user")) Then Response.Redirect("../error.asp?timeout")
 thesisID=Request.Form("tid")

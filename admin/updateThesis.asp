@@ -1,35 +1,32 @@
-﻿<%Response.Charset="utf-8"
-Response.Expires=-1%>
+﻿<%Response.Expires=-1%>
 <!--#include file="../inc/ExtendedRequest.inc"-->
 <!--#include file="appgen.inc"-->
 <!--#include file="evalappend.inc"-->
-<!--#include file="../inc/db.asp"-->
+<!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"--><%
 If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
-Dim Upload
-Set Upload=New ExtendedRequest
-curstep=Request.QueryString("step")
+Dim Upload:Set Upload=New ExtendedRequest
+step=Request.QueryString("step")
 thesisID=Request.QueryString("tid")
+new_activity_id=Upload.Form("new_activity_id")
 new_subject_ch=Upload.Form("new_subject_ch")
 new_subject_en=Upload.Form("new_subject_en")
 new_researchway_name=Upload.Form("new_researchway_name")
 new_keywords_ch=Upload.Form("new_keywords_ch")
 new_keywords_en=Upload.Form("new_keywords_en")
 new_review_type=Upload.Form("new_review_type")
-new_period_id=Upload.Form("new_period_id")
 new_submit_review_time=Upload.Form("new_submit_review_time")
-new_reviewfilestat=Upload.Form("new_reviewfilestat")
 new_task_progress=Upload.Form("new_task_progress")
 new_review_status=Upload.Form("new_review_status")
 new_reproduct_ratio=Upload.Form("reproduct_ratio")
-new_defence_result=Upload.Form("defenceresult")
-new_grant_degree=Upload.Form("grantdegree")
+new_defence_result=Upload.Form("new_defence_result")
+new_grant_degree_result=Upload.Form("new_grant_degree_result")
 opr=Int(Upload.Form("opr"))
 submittype=Upload.Form("submittype")
 ispass=submittype="pass"
 eval_text=Upload.Form("eval_text")
 Set detect_report=Upload.File("detectreport")
-period_id=Upload.Form("In_PERIOD_ID2")
+activity_id=Upload.Form("In_ActivityId2")
 teachtype_id=Upload.Form("In_TEACHTYPE_ID2")
 class_id=Upload.Form("In_CLASS_ID2")
 enter_year=Upload.Form("In_ENTER_YEAR2")
@@ -61,9 +58,9 @@ ElseIf new_reproduct_ratio<>vbNullString And Not IsNumeric(new_reproduct_ratio) 
 ElseIf Not isMatched("[0-4]",new_defence_result) Then
 	bError=True
 	errdesc="答辩成绩输入无效！"
-ElseIf Not isMatched("[0-2]",new_grant_degree) Then
+ElseIf Not isMatched("[0-3]",new_grant_degree_result) Then
 	bError=True
-	errdesc="“是否同意授予学位”设置无效！"
+	errdesc="答辩表决结果设置无效！"
 ElseIf detect_report.FileName<>vbNullString And new_reproduct_ratio=vbNullString Then
 	bError=True
 	errdesc="请填写复制比！"
@@ -81,10 +78,10 @@ Else
 	new_reproduct_ratio=Null
 End If
 
-Dim conn,rs,sql,sqlDetect,result
+Dim conn,rs,sql,sqlDetect,count
 Connect conn
 sql="SELECT * FROM Dissertations WHERE ID="&thesisID
-GetRecordSet conn,rs,sql,result
+GetRecordSet conn,rs,sql,count
 If rs.EOF Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4">数据库没有该论文记录！</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
   CloseRs rs
@@ -158,7 +155,7 @@ Case 5	'  同意/不同意送检送审操作
 	' 更新记录
 	If ispass Then
 		sql="SELECT dbo.getDetectResultCount("&thesisID&")"
-		GetRecordSet conn,rsDetect,sql,result
+		GetRecordSet conn,rsDetect,sql,count
 		detect_count=rsDetect(0).Value
 		If detect_count>=1 Then
 			rs("DETECT_APP_EVAL")="该生已对论文进行修改，并已经导师检查，同意二次检测。"
@@ -201,7 +198,7 @@ Case 6	'  同意/不同意送审操作
 		' 生成送审申请表
 		Dim rag,review_time
 		review_time=Now
-		Randomize
+		Randomize()
 		filename=FormatDateTime(review_time,1)&Int(Timer)&Int(Rnd()*999)&".docx"
 		filepath=Server.MapPath("/ThesisReview/tutor/export")&"\"&filename
 		Set rag=New ReviewAppGen
@@ -290,17 +287,17 @@ If submittype=vbNullString Then
 		End If
 	End If
 
-	If Len(new_period_id)=0 Then
-		rs("PERIOD_ID")=Null
+	If Len(new_activity_id)=0 Then
+		rs("ActivityId")=Null
 	Else
-		rs("PERIOD_ID")=new_period_id
+		rs("ActivityId")=new_activity_id
 	End If
 	If Len(new_defence_result)<>0 Then
 		sql="UPDATE DefenceInfo SET DEFENCE_RESULT="&new_defence_result&" WHERE THESIS_ID="&thesisID
 		conn.Execute sql
 	End If
-	If Len(new_grant_degree)<>0 Then
-		rs("GRANT_DEGREE")=Array(Null,True,False)(new_grant_degree)
+	If Len(new_grant_degree_result)<>0 Then
+		rs("GRANT_DEGREE_RESULT")=new_grant_degree_result
 	End If
 	If Len(new_subject_ch)=0 Then
 		rs("THESIS_SUBJECT")=Null
@@ -337,9 +334,6 @@ If submittype=vbNullString Then
 	Else
 		rs("SUBMIT_REVIEW_TIME")=new_submit_review_time
 	End If
-	If Len(new_reviewfilestat) Then
-		rs("REVIEW_FILE_STATUS")=new_reviewfilestat
-	End If
 	If Len(new_task_progress) Then
 		rs("TASK_PROGRESS")=new_task_progress
 	End If
@@ -361,7 +355,7 @@ ElseIf opr<>0 Then
 	sendEmailToStudent thesisID,filetypename,ispass,eval_text
 End If
 %><form id="ret" action="thesisDetail.asp?tid=<%=thesisID%>" method="post">
-<input type="hidden" name="In_PERIOD_ID2" value="<%=period_id%>">
+<input type="hidden" name="In_ActivityId2" value="<%=activity_id%>">
 <input type="hidden" name="In_TEACHTYPE_ID2" value="<%=teachtype_id%>" />
 <input type="hidden" name="In_CLASS_ID2" value="<%=class_id%>" />
 <input type="hidden" name="In_ENTER_YEAR2" value="<%=enter_year%>" />

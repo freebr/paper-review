@@ -13,18 +13,34 @@ Class TableGen
 	Private Sub Class_Terminate()
 		Set m_info=Nothing
 	End Sub
-	Public Property Get ErrorDesc()
+	Property Get ErrorDesc()
 		ErrorDesc=m_err_desc
 	End Property
-	Public Function addInfo(key,value)
+	Function setField(key,value)
 		m_info.Add key,value
-		addInfo=1
+		setField=1
 	End Function
-	Public Function removeInfo(key)
+	Function setArray(prop_name,value)
+		If IsEmpty(value) Then
+			setField prop_name,Array()
+			Exit Function
+		End If
+		Dim arr:arr=value
+		If Not IsArray(arr) Then
+			ReDim arr(value.Count-1)
+			Dim i
+			For i=0 To UBound(arr)
+				arr(i)=value(i+1)
+			Next
+		End If
+		setField prop_name,arr
+		setArray=1
+	End Function
+	Function removeField(key)
 		m_info.Remove key
-		removeInfo=1
+		removeField=1
 	End Function
-	Public Function generateTable(filepath,template_name)
+	Function generateTable(filepath,template_name)
 		' 生成论文相关表格
 		Dim app,doc,template_file
 		'On Error Resume Next
@@ -33,7 +49,6 @@ Class TableGen
 		Set doc=app.Documents.Add(template_file)
 		app.Run "fillInTable",m_info,filepath
 		doc.Close(False)
-		Set range=Nothing
 		Set doc=Nothing
 		app.Quit()
 		Set app=Nothing

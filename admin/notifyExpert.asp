@@ -1,6 +1,5 @@
-﻿<%Response.Charset="utf-8"
-Response.Expires=-1%>
-<!--#include file="../inc/db.asp"-->
+﻿<%Response.Expires=-1%>
+<!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"-->
 <%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 thesisID=Request.QueryString("tid")
@@ -25,54 +24,49 @@ If bError Then
 	Response.End()
 End If
 
-Dim mail_id
-Dim numNotify,numSuccess,errMsg
-mail_id=getThesisReviewSystemMailIdByType(Now)
-numNotify=0
-numSuccess=0
-bAllowSms=True
-logtxt="行政人员["&Session("name")&"]通知专家评阅论文，"
+Dim numNotify:numNotify=0
+Dim numSuccess:numSuccess=0
+Dim send_sms:send_sms=True
+Dim dict:Set dict=CreateDictionary()
+Dim activity_id,stu_type,is_mail_sent,is_sms_sent
+Dim errMsg
 Connect conn
-sql="DECLARE @tmptbl TABLE(EXPERT_ID int,THESIS_SUBJECT nvarchar(200),REVNUM int);"&_
-	"INSERT INTO @tmptbl SELECT REVIEWER1,MIN(THESIS_SUBJECT),COUNT(ID) FROM ViewThesisInfo WHERE ID IN ("&thesisID&") AND REVIEWER_EVAL1 IS NULL GROUP BY REVIEWER1 "&_
-	"UNION ALL SELECT REVIEWER2,MIN(THESIS_SUBJECT),COUNT(ID) FROM ViewThesisInfo WHERE ID IN ("&thesisID&") AND REVIEWER_EVAL2 IS NULL GROUP BY REVIEWER2;"&_
-	"SELECT EXPERT_ID,EXPERT_NAME,TEACHERNO,MOBILE,EMAIL,MIN(THESIS_SUBJECT) AS THESIS_SUBJECT,SUM(REVNUM) AS REVIEW_NUM FROM @tmptbl LEFT JOIN ViewExpertInfo ON EXPERT_ID=TEACHER_ID GROUP BY EXPERT_ID,EXPERT_NAME,TEACHERNO,MOBILE,EMAIL;"
+sql="DECLARE @tmptbl TABLE(EXPERT_ID int,ActivityId int,StuType int,THESIS_SUBJECT nvarchar(200),REVNUM int);"&_
+	"INSERT INTO @tmptbl SELECT REVIEWER1,MAX(ActivityId),MIN(TEACHTYPE_ID),MIN(THESIS_SUBJECT),COUNT(ID) FROM ViewThesisInfo WHERE ID IN ("&thesisID&") AND REVIEWER_EVAL1 IS NULL GROUP BY REVIEWER1 "&_
+	"UNION ALL SELECT REVIEWER2,MAX(ActivityId),MIN(TEACHTYPE_ID),MIN(THESIS_SUBJECT),COUNT(ID) FROM ViewThesisInfo WHERE ID IN ("&thesisID&") AND REVIEWER_EVAL2 IS NULL GROUP BY REVIEWER2;"&_
+	"SELECT EXPERT_ID,EXPERT_NAME,TEACHERNO,MOBILE,EMAIL,MAX(ActivityId) ActivityId,MIN(StuType) StuType,MIN(THESIS_SUBJECT) THESIS_SUBJECT,SUM(REVNUM) REVIEW_NUM FROM @tmptbl LEFT JOIN ViewExpertInfo ON EXPERT_ID=TEACHER_ID GROUP BY EXPERT_ID,EXPERT_NAME,TEACHERNO,MOBILE,EMAIL;"
 Set rs=conn.Execute(sql)
-Set rs=rs.NextRecordSet
+Set rs=rs.NextRecordSet()
 Do While Not rs.EOF
+	activity_id=rs("ActivityId")
+	stu_type=rs("StuType")
 	review_num=rs("REVIEW_NUM")
 	If review_num=1 Then
-		subject="《"&rs("THESIS_SUBJECT")&"》"
+		dict("subject")=Format("《{0}》",rs("THESIS_SUBJECT"))
 	Else
-		subject="《"&rs("THESIS_SUBJECT")&"》等"&review_num&"篇论文"
+		dict("subject")=Format("《{0}》等{1}篇论文",rs("THESIS_SUBJECT"),review_num)
 	End If
-	expertname=rs("EXPERT_NAME")
-	expertmob=rs("MOBILE")
-	expertmail=rs("EMAIL")
-	postscript="您的登录名为&nbsp;<b>"&rs("TEACHERNO")&"</b>，初始密码为&nbsp:<b>123456</b>，登录后请务必修改您的密码"
-	' 发送通知短信和邮件
-	fieldval=Array(subject,expertname,expertmob,expertmail,postscript)
-	ret=-1
-	If bAllowSms Then
-		ret=sendSMS(mail_id(3),expertmob,fieldval)
-		logtxt=logtxt&"发送短信给评阅专家["&expertname&":"&expertmob&"]"
-		If ret=0 Then
-			logtxt=logtxt&"成功。"
-		Else
-			logtxt=logtxt&"失败("&ret&")。"
-		End If
-	End If
-	bSuccess=sendAnnouncementEmail(mail_id(3),expertmail,fieldval)
-	logtxt=logtxt&"发送邮件给评阅专家["&expertname&":"&expertmail&"]"
-	If bSuccess Then
-		logtxt=logtxt&"成功。"
+	dict("expertname")=rs("EXPERT_NAME")
+	dict("expertmob")=rs("MOBILE")
+	dict("expertmail")=rs("EMAIL")
+	dict("postscript")=Format("您的登录名为 <b>{0}</b>，初始密码为 <b>123456</b>，登录后请务必修改您的密码",rs("TEACHERNO"))
+	' 发送通知邮件
+	is_mail_sent=sendNotifyMail(activity_id,stu_type,"lwdpytzyj",dict("expertmail"),dict)
+	writeNotificationEventLog usertypeAdmin,Session("name"),"通知专家评阅论文",usertypeExpert,_
+		dict("expertname"),dict("expertmail"),notifytypeMail,is_mail_sent
+	If send_sms Then
+		' 发送通知短信
+		is_sms_sent=sendNotifySms(activity_id,stu_type,"lwdpytzdx",dict("expertmob"),dict)
+		writeNotificationEventLog usertypeAdmin,Session("name"),"通知专家评阅论文",usertypeExpert,_
+			dict("expertname"),dict("expertmob"),notifytypeSms,is_sms_sent
 	Else
-		logtxt=logtxt&"失败。"
+		is_sms_sent=False
 	End If
-	If ret=0 Or bSuccess Then
+	If is_mail_sent Or is_sms_sent Then
 		numSuccess=numSuccess+1
 	Else
-		errMsg=errMsg&"\r\n向["&expertname&"]发送通知失败，登记信息：手机["&expertmob&"]，邮箱["&expertmail&"]。"
+		errMsg=errMsg&Format("\r\n向[{0}]发送通知失败，手机：{1}，邮箱：{2}。",_
+			dict("expertname"),dict("expertmob"),dict("expertmail"))
 	End If
 	numNotify=numNotify+1
 	rs.MoveNext()
@@ -80,7 +74,6 @@ Loop
 CloseRs rs
 CloseConn conn
 
-writeLog logtxt
 If InStr(thesisID,",") Then
 	returl="thesisList.asp"
 Else

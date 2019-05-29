@@ -1,23 +1,20 @@
-﻿<%Response.Charset="utf-8"%>
+﻿<!--#include file="../inc/global.inc"-->
 <!--#include file="../inc/ExtendedRequest.inc"-->
-<!--#include file="../inc/db.asp"-->
 <!--#include file="common.asp"-->
 <%If IsEmpty(Session("StuId")) Then Response.Redirect("../error.asp?timeout")
-Dim opr,bOpen,bUpload
-Dim conn,rs,sql,result
-bOpen=True
-bUpload=True
-opr=0
-sem_info=getCurrentSemester()
+Dim section_id,time_flag,allow_upload
+Dim conn,rs,sql,count
+
+allow_upload=False
+section_id=0
 stu_type=Session("StuType")
+
 Connect conn
-sql="SELECT *,dbo.getThesisStatusText(1,TASK_PROGRESS,2) AS STAT_TEXT FROM ViewThesisInfo WHERE STU_ID="&Session("Stuid")&" ORDER BY PERIOD_ID DESC" 'AND PERIOD_ID="&sem_info(3)&" AND Valid=1"
-GetRecordSetNoLock conn,rs,sql,result
-sql="SELECT * FROM ViewStudentInfo WHERE STU_ID="&Session("Stuid")
-GetRecordSetNoLock conn,rs2,sql,result
-tutor_duty_name=getProDutyNameOf(rs2("TUTOR_ID"))
+sql="SELECT *,dbo.getThesisStatusText(1,TASK_PROGRESS,2) AS STAT_TEXT FROM ViewThesisInfo WHERE STU_ID="&Session("Stuid")&" ORDER BY ActivityId DESC"
+GetRecordSetNoLock conn,rs,sql,count
+sql="SELECT TUTOR_ID FROM ViewStudentInfo WHERE STU_ID="&Session("Stuid")
 If rs.EOF Then
-	opr=STUCLI_OPR_TABLE1
+	section_id=sectionUploadKtbg
 	task_progress=tpNone
 Else
 	subject_ch=rs("THESIS_SUBJECT")
@@ -26,49 +23,54 @@ Else
 	task_progress=rs("TASK_PROGRESS")
 	Select Case task_progress
 	Case tpNone,tpTbl1Uploaded,tpTbl1Unpassed	' 开题报告
-		opr=STUCLI_OPR_TABLE1
+		section_id=sectionUploadKtbg
 	Case tpTbl1Passed,tpTbl2Uploaded,tpTbl2Unpassed	' 中期检查表
-		opr=STUCLI_OPR_TABLE2
+		section_id=sectionUploadZqjcb
 	Case tpTbl2Passed,tpTbl3Uploaded,tpTbl3Unpassed	' 预答辩申请表
-		opr=STUCLI_OPR_TABLE3
+		section_id=sectionUploadYdbyjs
 	Case Else
-		bUpload=False
+		allow_upload=False
 	End Select
 End If
-If opr<>0 Then
-	bOpen=stuclient.isOpenFor(stu_type,opr)
-	startdate=stuclient.getOpentime(opr,STUCLI_OPENTIME_START)
-	enddate=stuclient.getOpentime(opr,STUCLI_OPENTIME_END)
-	If Not bOpen Then bUpload=False
+If section_id<>0 Then
+	If Not isActivityOpen(rs("ActivityId")) Then
+		time_flag=-3
+	Else
+		Set current_section=getSectionInfo(rs("ActivityId"), stu_type, section_id)
+		time_flag=compareNowWithSectionTime(current_section)
+		allow_upload=time_flag=0
+	End If
 End If
-curStep=Request.QueryString("step")
-Select Case curStep
+step=Request.QueryString("step")
+Select Case step
 Case vbNullstring ' 填写信息页面
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="theme-color" content="#2D79B2" />
 <title>上传表格附加论文</title>
-<% useStylesheet("student") %>
-<% useScript(Array("jquery", "common", "upload", "uploadThesis")) %>
+<% useStylesheet "student" %>
+<% useScript "jquery", "common", "upload", "uploadThesis" %>
 </head>
 <body bgcolor="ghostwhite">
 <center><font size=4><b>上传表格附加论文</b></font>
 <table class="tblform" width="1000" align="center"><tr><td class="summary"><p><%
-	If Not bOpen Then
-%><span class="tip">上传<%=arrTblThesis(opr)%>的时间为<%=toDateTime(startdate,1)%>至<%=toDateTime(enddate,1)%>，本专业上传通道已关闭或当前不在开放时间内，不能上传论文！</span><%
-	ElseIf Not bUpload Then
-%><span class="tip">当前状态为【<%=rs("STAT_TEXT")%>】，不能上传论文！</span><%
+	If Not allow_upload Then
+%><span class="tip">当前状态为【<%=rs("STAT_TEXT")%>】，不能上传附加论文！</span><%
+	ElseIf time_flag=-2 Then
+%><span class="tip">【<%=current_section("Name")%>】环节已关闭，不能上传附加论文！</span><%
+	ElseIf time_flag<>0 Then
+%><span class="tip">【<%=current_section("Name")%>】环节开放时间为<%=toDateTime(current_section("StartTime"),1)%>至<%=toDateTime(current_section("EndTime"),1)%>，当前不在开放时间内，不能上传附加论文！</span><%
 	Else
-%>当前上传的是：<span style="color:#ff0000;font-weight:bold"><%=arrTblThesisDetail(opr)%></span><br/>
+%>当前上传的是：<span style="color:#ff0000;font-weight:bold"><%=arrTblThesisDetail(section_id)%></span><br/>
 请选择要上传的文件，并点击&quot;提交&quot;按钮：<%
 	End If %></p></td></tr>
-<tr><td align="center"><form id="fmThesis" action="?step=1" method="post" enctype="multipart/form-data">
+<tr><td align="center"><form id="fmDissertation" action="?step=1" method="post" enctype="multipart/form-data">
 <table class="tblform">
 <tr><td><p>论文题目：《<input type="text" name="subject_ch" size="50" value="<%=subject_ch%>" />》</p>
 <p>（英文）：&nbsp;<input type="text" name="subject_en" size="53" maxlength="200" value="<%=subject_en%>" />&nbsp;</p>
-<p>文件名：<input type="file" name="thesisFile" size="50" title="<%=arrTblThesis(opr)%>" /><br/><span class="tip">Word&nbsp;或&nbsp;RAR&nbsp;格式，超过20M请先压缩成rar文件再上传，否则上传不成功</span></p>
-<p align="center"><input type="submit" name="btnsubmit" value="提 交"<%If Not bUpload Then %> disabled<% End If %> />&nbsp;
+<p>文件名：<input type="file" name="thesisFile" size="50" title="<%=arrTblThesis(section_id)%>" /><br/><span class="tip">Word&nbsp;或&nbsp;RAR&nbsp;格式，超过20M请先压缩成rar文件再上传，否则上传不成功</span></p>
+<p align="center"><input type="submit" name="btnsubmit" value="提 交"<%If Not allow_upload Then %> disabled<% End If %> />&nbsp;
 <input type="button" name="btnUploadTable" value="返回填写表格页面" onclick="location.href='uploadTableNew.asp'" />&nbsp;
 <input type="button" name="btnreturn" value="返回首页" onclick="location.href='home.asp'" /></p></td></tr></table>
 </form></td></tr></table></center>
@@ -79,7 +81,7 @@ Case vbNullstring ' 填写信息页面
 			if(valid) submitUploadForm(this); else return false;
 		});
 	<%
-	If Not bUpload Then %>
+	If Not allow_upload Then %>
 	$('input[name="thesisFile"]').attr('readOnly',true);
 	$(':submit').attr('disabled',true);<%
 	Else %>
@@ -87,30 +89,38 @@ Case vbNullstring ' 填写信息页面
 	End If %>
 </script></body></html><%
 Case 1	' 上传进程
-	If Not bOpen Then
+
+	If time_flag=-3 Then
 		bError=True
-		errdesc="上传"&arrTblThesis(opr)&"的时间为"&FormatDateTime(startdate,1)&"至"&FormatDateTime(enddate,1)&"，本专业上传通道已关闭或当前不在开放时间内，不能上传论文！"
-	ElseIf Not bUpload Then
+		errdesc=Format("当前评阅活动【{0}】已关闭，不能提交表格！", rs("ActivityName"))
+	ElseIf time_flag=-2 Then
 		bError=True
-		errdesc="当前状态为【"&rs("STAT_TEXT")&"】，不能上传论文！"
+		errdesc=Format("【{0}】环节已关闭，不能上传附加论文！",current_section("Name"))
+	ElseIf time_flag<>0 Then
+		bError=True
+		errdesc=Format("【{0}】环节开放时间为{1}至{2}，当前不在开放时间内，不能上传附加论文！",_
+			current_section("Name"),_
+			toDateTime(current_section("StartTime"),1),_
+			toDateTime(current_section("EndTime"),1))
+	ElseIf Not allow_upload Then
+		bError=True
+		errdesc="当前状态为【"&rs("STAT_TEXT")&"】，不能上传附加论文！"
 	End If
 	If bError Then
-		%><body bgcolor="ghostwhite"><center><font color=red size="4"><%=errdesc%></font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
-  	CloseRs rs
-  	CloseRs rs2
-  	CloseConn conn
-		Response.End()
+		CloseRs rs
+		CloseConn conn
+		showErrorPage errdesc, "提示"
 	End If
-	
+
 	Dim fso,Upload,thesisfile
 	Dim new_subject_ch,new_subject_en
-		
+
 	Set Upload=New ExtendedRequest
 	new_subject_ch=Upload.Form("subject_ch")
 	new_subject_en=Upload.Form("subject_en")
 	Set thesisfile=Upload.File("thesisFile")
 	Set fso=Server.CreateObject("Scripting.FileSystemObject")
-	
+
 	' 检查上传目录是否存在
 	strUploadPath=Server.MapPath("upload")
 	If Not fso.FolderExists(strUploadPath) Then fso.CreateFolder(strUploadPath)
@@ -141,57 +151,53 @@ Case 1	' 上传进程
 	Set fso=Nothing
 	Set thesisfile=Nothing
 	Set Upload=Nothing
-	
-	Dim arrTblThesisFieldName,arrNewTaskProgress
-	arrTblThesisFieldName=Array("","TBL_THESIS_FILE1","TBL_THESIS_FILE2","TBL_THESIS_FILE3")
-	arrNewTaskProgress=Array(0,tpTbl1Uploaded,tpTbl2Uploaded,tpTbl3Uploaded)
-	' 关联到数据库
-	sql="SELECT * FROM Dissertations WHERE STU_ID="&Session("Stuid")&" ORDER BY PERIOD_ID DESC"
-	GetRecordSet conn,rs3,sql,result
-	If rs3.EOF Then
-		' 添加记录
-		rs3.AddNew()
+
+	If Not bError Then
+		Dim arrTblThesisFieldName,arrNewTaskProgress
+		arrTblThesisFieldName=Array("","TBL_THESIS_FILE1","TBL_THESIS_FILE2","TBL_THESIS_FILE3")
+		arrNewTaskProgress=Array(0,tpTbl1Uploaded,tpTbl2Uploaded,tpTbl3Uploaded)
+		' 关联到数据库
+		sql="SELECT * FROM Dissertations WHERE STU_ID="&Session("Stuid")&" ORDER BY ActivityId DESC"
+		GetRecordSet conn,rs3,sql,count
+		If rs3.EOF Then
+			' 添加记录
+			rs3.AddNew()
+		End If
+		If section_id=sectionUploadKtbg Then	' 开题报告，录入论文基本信息
+			rs3("STU_ID")=Session("Stuid")
+			rs3("REVIEW_STATUS")=rsNone
+			rs3("REVIEW_FILE_STATUS")=0
+			rs3("REVIEW_RESULT")="5,5,6"
+			rs3("REVIEW_LEVEL")="0,0"
+			rs3("RESEARCHWAY_NAME")=""
+		End If
+		rs3("THESIS_SUBJECT")=new_subject_ch
+		rs3("THESIS_SUBJECT_EN")=new_subject_en
+		rs3(arrTblThesisFieldName(section_id))=strDestThesisFile
+		'rs3("TASK_PROGRESS")=arrNewTaskProgress(section_id)
+		rs3.Update()
+		CloseRs rs3
+		writeLog Format("学生[{0}]上传[{1}]。",Session("Stuname"),arrTblThesis(section_id))
 	End If
-	If opr=STUCLI_OPR_TABLE1 Then	' 开题报告，录入论文基本信息
-		rs3("STU_ID")=Session("Stuid")
-		rs3("REVIEW_STATUS")=rsNone
-		rs3("REVIEW_FILE_STATUS")=0
-		rs3("REVIEW_RESULT")="5,5,6"
-		rs3("REVIEW_LEVEL")="0,0"
-		rs3("RESEARCHWAY_NAME")=""
-	End If
-	rs3("PERIOD_ID")=sem_info(3)
-	rs3("THESIS_SUBJECT")=new_subject_ch
-	rs3("THESIS_SUBJECT_EN")=new_subject_en
-	rs3(arrTblThesisFieldName(opr))=strDestThesisFile
-	'rs3("TASK_PROGRESS")=arrNewTaskProgress(opr)
-	rs3.Update()
-	CloseRs rs3
-	' 向导师发送审核通知邮件
-	'sendEmailToTutor arrTblThesis(opr)
-	Dim logtxt
-	logtxt="学生["&Session("Stuname")&"]上传["&arrTblThesis(opr)&"]。"
-	writeLog logtxt
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="theme-color" content="#2D79B2" />
 <title>上传表格附加论文</title>
-<% useStylesheet("student") %>
-<% useScript("jquery") %>
+<% useStylesheet "student" %>
+<% useScript "jquery" %>
 </head>
 <body bgcolor="ghostwhite"><%
 	If Not bError Then %>
 <form id="fmFinish" action="home.asp" method="post">
 <input type="hidden" name="filename" value="<%=strDestTableFile%>" />
-<p>文件上传成功，正在关联数据...</p></form>
+</form>
 <script type="text/javascript">alert("上传成功！");$('#fmFinish').submit();</script><%
 	Else
 %><script type="text/javascript">alert("<%=errdesc%>");history.go(-1);</script><%
 	End If
 %></body></html><%
 End Select
-CloseRs rs2
 CloseRs rs
 CloseConn conn
 %>
