@@ -14,7 +14,7 @@ Tid=Session("Tid")
 finalFilter=Request.Form("finalFilter")
 If Len(finalFilter) Then PubTerm="AND ("&finalFilter&")"
 If activity_id=-1 Then
-	Dim activity:Set activity=getLastActivityInfoOfStuType(Null)
+	Dim activity:Set activity=getLastActivityInfoOfStuType(stutypeMBA)
 	If Not IsNull(activity) Then activity_id=activity("Id")
 End If
 If activity_id>0 Then PubTerm=PubTerm&" AND ActivityId="&activity_id

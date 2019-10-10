@@ -220,9 +220,9 @@ Function activityList(ctlname,stu_type_id,sel,showtip)
 	Dim conn:Connect conn
 	Dim sql,param
 	If IsNull(stu_type_id) Then
-		sql="SELECT TOP 10 Id,Name FROM ViewActivities WHERE Valid=1 ORDER BY Id DESC"
+		sql="SELECT Id,Name FROM ViewActivities WHERE Valid=1 ORDER BY Id DESC"
 	Else
-		sql="SELECT TOP 10 Id,Name FROM ViewActivities WHERE Valid=1 AND (?&StuType)<>0 ORDER BY Id DESC"
+		sql="SELECT Id,Name FROM ViewActivities WHERE Valid=1 AND (?&StuType)<>0 ORDER BY Id DESC"
 		Set param=CmdParam("StuTypes",adInteger,4,stu_type_id)
 	End If
 	Dim ret:Set ret=ExecQuery(conn,sql,param)

@@ -349,6 +349,26 @@ Function ensureSystemOpen()
 	ensureSystemOpen=1
 End Function
 
+Function verifyPasswordSecurityLevel(ByVal password)
+	Dim ret
+	If Len(password)<8 Then
+		ret=0
+	Else
+		Dim str_types:str_types=0
+		If isMatched("\d",password,False) Then str_types=str_types+1
+		If isMatched("[A-Z]",password,False) Then str_types=str_types+1
+		If isMatched("[a-z]",password,False) Then str_types=str_types+1
+		If isMatched("[`~!@#$%\^&*()\-=_+\[\]{}\\|;':"",./<>?]",password,False) Then str_types=str_types+1
+		If str_types<3 Then
+			ret=1
+		Else
+			ret=2
+		End If
+	End If
+	verifyPasswordSecurityLevel=ret
+End Function
+Dim arrSecurityLevelName:arrSecurityLevelName=Array("低强度","中等强度","高强度")
+
 // 注册系统选项
 Dim dictSystemOptions:Set dictSystemOptions = Server.CreateObject("Scripting.Dictionary")
 'dictSystemOptions.Add "send_accept_email",			Array("导师确认填报时，向学生发送通知邮件", 0)
@@ -438,7 +458,7 @@ Function showErrorPage(content, title)
 	Else
 		class_prop="bgcolor=""ghostwhite"""
 	End If
-	If isMatched("(expertProfile|fetchDocument|thesisDetail)\.asp",currentPage()) Then
+	If isMatched("(expertProfile|fetchDocument|thesisDetail)\.asp",currentPage(),True) Then
 		statement="closeWindow();"
 	Else
 		statement="history.go(-1);"
@@ -483,8 +503,8 @@ With dictStuTypes
 End With
 
 Dim arrDiplomaName:arrDiplomaName=Array("","专科","本科","硕士研究生","博士研究生","博士后")
-Dim arrDefenceResult:arrDefenceResult=Array("","优秀","良好","一般","较差")
-Dim arrGrantDegreeResult:arrGrantDegreeResult=Array("","同意毕业及授予学位","同意毕业，但不同意授予学位","不同意毕业")
+Dim arrDefenceResult:arrDefenceResult=Array("未录入","优秀","良好","一般","较差")
+Dim arrGrantDegreeResult:arrGrantDegreeResult=Array("未录入","同意毕业及授予学位","同意毕业，但不同意授予学位","不同意毕业")
 Dim arrReviewFileStat:arrReviewFileStat=Array("不开放显示","仅向导师显示","仅向学生显示","完全开放显示")
 ' 禁止缓存，仅在需要客户端重新请求 JS/CSS/HTML 等静态文件时使用
 Response.CacheControl="no-cache"

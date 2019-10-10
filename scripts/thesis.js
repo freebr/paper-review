@@ -1,4 +1,4 @@
-﻿function submitForm(fm,action,enctype) {
+﻿function submitForm(fm,action,enctype,data) {
 	if(typeof(fm.size)==='function')fm=fm[0];
 	if(!!action)fm.action=action;
 	if(fm.name=='query_nocheck') {
@@ -13,6 +13,11 @@
 		}
 	}
 	fm.encoding=(!enctype)?"application/x-www-form-urlencoded":enctype;
+	if(data instanceof Object) {
+		for(var key in data) {
+			$(fm).append($("<input type='hidden'>").attr({ name: key, value: data[key] }));
+		}
+	}
 	fm.submit();
 	return false;
 }
@@ -58,21 +63,21 @@ function rollback(tid,user,opr) {
 							["该学生的所有送检论文和送检报告","该论文的匹配专家结果","该论文的答辩安排信息","该论文的答辩委员会修改意见","该论文的教指会分会修改意见"]]
 	var msg=msg_templ[user]+msg_templ_ps[user][opr]+"将会被删除且不可恢复！"
 	if (confirm(msg)) {
-		submitForm(document.all.fmDetail,"rollback.asp?tid="+tid+"&user="+user+"&opr="+opr);
+		submitForm(document.all.fmDetail,"rollback.asp",null,{ tid: tid, user: user, rollback_opr: opr });
 		return true;
 	}
 	return false;
 }
-function deleteDetectResult(tid,hash,opr) {
+function deleteDetectResult(tid,hash,delete_type) {
 	var msg=["确实要删除该送检报告吗（送检论文仍将保留）？","确实要删除该条送检记录吗﹙送检论文和报告将被删除﹚？"];
-	if (confirm(msg[opr])) {
-		submitForm(document.all.fmDetail,"delDetectResult.asp?tid="+tid+"&hash="+hash+"&opr="+opr);
+	if (confirm(msg[delete_type])) {
+		submitForm(document.all.fmDetail,"delDetectResult.asp",null,{ tid: tid, hash: hash, delete_type: delete_type });
 		return true;
 	}
 	return false;
 }
 function modifyReview(tid,rid) {
-	submitForm(document.all.fmDetail,"extra/thesisDetail.asp?tid="+tid+"&rev="+rid);
+	submitForm(document.all.fmDetail,"extra/thesisDetail.asp",null,{ tid: tid, rev: rid });
 	return false;
 }
 function checkLength(txt,len) {

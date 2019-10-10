@@ -45,7 +45,7 @@ If (filetype=8 Or filetype=12) And Len(hash) Then
 	End If
 	CloseRs rsDetect
 ElseIf filetype=16 Then
-	review_order=toUnsignedInt(Request.Form("review_order"))
+	review_order=toUnsignedInt(Request.QueryString("order"))
 	If review_order=-1 Then review_order=0
 	sql="SELECT * FROM ViewReviewRecords WHERE DissertationId=? AND ReviewOrder=?"
 	Set ret=ExecQuery(conn,sql,_

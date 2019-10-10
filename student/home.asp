@@ -258,7 +258,7 @@ End Function
 			
 			' 显示答辩成绩
 			If Not IsNull(defence_result) And defence_result<>0 Then %>
-	<hr/><p class="defenceresult"><span>您的答辩成绩为：<%=getDefenceResultText(defence_result)%>，答辩表决结果：<%=getGrantDegreeResultText(grant_degree_result)%></span></p><%
+	<hr/><p class="defenceresult"><span>您的答辩成绩为：<%=arrDefenceResult(defence_result)%>，答辩表决结果：<%=arrGrantDegreeResult(grant_degree_result)%></span></p><%
 			End If
 		End If
 %></td></tr>

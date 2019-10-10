@@ -1,13 +1,10 @@
 ﻿<!--#include file="../../inc/global.inc"-->
 <!--#include file="common.asp"--><%
 If IsEmpty(Session("Id")) Then Response.Redirect("../../error.asp?timeout")
-thesisID=Request.QueryString("tid")
-If IsEmpty(thesisID) Then
-	stuname=Request.QueryString("stu")
-End If
+thesisID=Request.Form("tid")
 teachtype_id=Request.Form("In_TEACHTYPE_ID2")
 class_id=Request.Form("In_CLASS_ID2")
-reviewer=Request.QueryString("rev")
+reviewer=Request.Form("rev")
 finalFilter=Request.Form("finalFilter2")
 pageSize=Request.Form("pageSize2")
 pageNo=Request.Form("pageNo2")

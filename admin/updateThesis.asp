@@ -38,7 +38,7 @@ pageNo=Upload.Form("pageNo2")
 If Len(thesisID)=0 Or Not IsNumeric(thesisID) Or Not IsNumeric(opr) Then
 	bError=True
 	errdesc="参数无效。"
-ElseIf submittype<>vbNullString And Not isMatched("[0-8]",opr) Then
+ElseIf submittype<>vbNullString And Not isMatched("[0-8]",opr,True) Then
 	bError=True
 	errdesc="操作无效。"
 ElseIf submittype="unpass" And opr<=3 Or submittype<>vbNullString And (opr=4 Or opr=5 Or opr=6) Then
@@ -55,10 +55,10 @@ ElseIf Not (new_submit_review_time = vbNullString Or IsDate(new_submit_review_ti
 ElseIf new_reproduct_ratio<>vbNullString And Not IsNumeric(new_reproduct_ratio) Then
 	bError=True
 	errdesc="复制比输入无效，请输入 0-100 间的数字！"
-ElseIf Not isMatched("[0-4]",new_defence_result) Then
+ElseIf Not isMatched("[0-4]",new_defence_result,True) Then
 	bError=True
 	errdesc="答辩成绩输入无效！"
-ElseIf Not isMatched("[0-3]",new_grant_degree_result) Then
+ElseIf Not isMatched("[0-3]",new_grant_degree_result,True) Then
 	bError=True
 	errdesc="答辩表决结果设置无效！"
 ElseIf detect_report.FileName<>vbNullString And new_reproduct_ratio=vbNullString Then

@@ -84,18 +84,6 @@ Function getFinalResultText(n)
 	getFinalResultText=ret
 End Function
 
-' 根据编码返回答辩成绩
-Function getDefenceResultText(n)
-	Dim arr:arr=Array("未录入","优秀","良好","一般","较差")
-	getDefenceResultText=arr(n)
-End Function
-
-' 根据编码返回答辩表决结果
-Function getGrantDegreeResultText(n)
-	Dim arr:arr=Array("未录入","不同意毕业","同意毕业及授予学位","同意毕业，但不同意授予学位")
-	getGrantDegreeResultText=arr(n)
-End Function
-
 Function getSectionAccessibilityInfo(activity_id, stu_type_id, section_id, dissertation_status)
 	Dim section, time_flag, tip
 	Dim accessible:accessible=False

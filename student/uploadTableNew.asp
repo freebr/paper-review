@@ -309,8 +309,7 @@ Case 1	' 上传进程
 			bError=True
 			errdesc="请选择研究方向！"
 		ElseIf params("sub_research_field_select")="-1" And Len(params("custom_sub_research_field"))=0 Then
-			bError=True
-			errdesc="请填写研究方向！"
+			params("custom_sub_research_field")="其他"
 		End If
 		If bError Then
 			CloseRs rs
@@ -488,8 +487,10 @@ Case 1	' 上传进程
 		rs3("REVIEW_FILE_STATUS")=0
 		rs3("REVIEW_RESULT")="5,5,6"
 		rs3("REVIEW_LEVEL")="0,0"
-		rs3("KEYWORDS")=Replace(params("keyword_ch")(1),", ","；")
-		rs3("KEYWORDS_EN")=Replace(params("keyword_en")(1),", ","；")
+		If params.Exists("keyword_ch") Then
+			rs3("KEYWORDS")=Replace(params("keyword_ch")(1),", ","；")
+			rs3("KEYWORDS_EN")=Replace(params("keyword_en")(1),", ","；")
+		End If
 	End If
 	rs3("THESIS_SUBJECT")=subject
 	rs3("THESIS_SUBJECT_EN")=subject_en

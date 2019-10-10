@@ -99,7 +99,7 @@ Case 3	' 数据读取，导入到数据库
 	select_mode=Request.Form("selectmode")
 	send_email=Request.Form("sendemail")="on"
 	sql="CREATE TABLE #ret(CountInsert int,CountUpdate int,CountError int,FirstImportThesisIDs nvarchar(MAX),IsError bit,ErrMsg nvarchar(MAX));"&_
-		"INSERT INTO #ret EXEC spImportDefenceEval '"&filepath&"',"&select_mode&"; SELECT * FROM #ret"
+			"INSERT INTO #ret EXEC spImportDefenceEval '"&filepath&"',"&select_mode&"; SELECT * FROM #ret"
 	Connect conn
 	Set rs=conn.Execute(sql).NextRecordSet()
 	countInsert=rs("CountInsert")

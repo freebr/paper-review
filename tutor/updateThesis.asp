@@ -20,7 +20,7 @@ pageNo=Request.Form("pageNo2")
 If Len(thesisID)=0 Or Not IsNumeric(thesisID) Then
 	bError=True
 	errdesc="参数无效。"
-ElseIf Not isMatched("[1-8]",opr) Then
+ElseIf Not isMatched("[1-8]",opr,True) Then
 	bError=True
 	errdesc="操作无效。"
 ElseIf submittype="unpass" And opr<=3 Or opr=4 Or opr=5 Or opr=6 Or opr=8 Or opr=9 Then

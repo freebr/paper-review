@@ -8,7 +8,10 @@
 <title>登录密码修改</title>
 <% useStylesheet "tutor" %>
 <% useScript "jquery" %>
-<script>
+<script type="text/javascript"><%
+    If Not IsEmpty(Session("PasswordWarning")) Then
+%>alert("<%=toJsString(Session("PasswordWarning"))%>");<%
+    End If %>
 function chkInput(){
     if(document.all.newPwd.value==""){
         alert("请输入新密码!");
@@ -32,8 +35,13 @@ function chkInput(){
 <body class="exp"><center><div class="content">
 <form action="setPassword.asp" method="post" onsubmit="return chkInput()">
 <input type="hidden" name="teacherid" value="<%=TeacherId%>">
-<caption><b><font class="title">登录密码修改</font></b></caption>
-<table class="tblform" width="400" cellspacing=1 cellpadding=3>
+<h2><b><font class="title">登录密码修改</font></b></h2>
+<table class="tblform" width="750" cellspacing="1" cellpadding="3">
+<tr>
+<td colspan="3" align="center">
+您当前的密码强度：<span class="pwd-security-level-<%=Session("PasswordSecurityLevel")%>">【<%=arrSecurityLevelName(Session("PasswordSecurityLevel"))%>】</span>
+</td>
+</tr>
 <tr>
 <td>
 新密码
@@ -42,7 +50,7 @@ function chkInput(){
 <input type="password" name="newPwd" style="width:150px">
 </td>
 <td align="center">
-请输入新密码
+请输入新密码<span style="color: red">（长度8~24位，必须包含数字、大写字母、小写字母、特殊字符中至少三种）</span>
 </td>
 </tr>
 <tr>
@@ -57,7 +65,7 @@ function chkInput(){
 </td>
 </tr>
 <tr>
-<td colspan=3><p align="center"><input type="submit" value="提 交" /></p></td>
+<td colspan="3"><p align="center"><input type="submit" value="确认修改" /></p></td>
 </tr>
 </table>
 </form>

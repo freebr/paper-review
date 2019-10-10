@@ -149,7 +149,7 @@ Case 3	' 数据读取，导入到数据库
 						Loop While count>0
 						rsTea("TEACHERNO").Value=s
 						rsTea("TEACHERNAME").Value=fieldValue(0)
-						rsTea("USER_PASSWORD").Value="12345678" ' generatePassword()
+						rsTea("USER_PASSWORD").Value="expert@12345" ' generatePassword()
 						rsTea("IFTEACHER").Value=3
 						rsTea("Office_Address").Value=fieldValue(3)
 						rsTea("MOBILE").Value=fieldValue(4)

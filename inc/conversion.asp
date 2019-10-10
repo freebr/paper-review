@@ -195,11 +195,11 @@ Function ArrayJoin(arr,delim)
 	ArrayJoin=ret
 End Function
 
-Function isMatched(pattern,s)
+Function isMatched(pattern,s,ignoreCase)
 	' 判断指定字符串是否满足指定模式
 	Dim regEx:Set regEx=New RegExp
 	regEx.Pattern=pattern
-	regEx.IgnoreCase=True
+	regEx.IgnoreCase=ignoreCase
 	isMatched=regEx.Test(s)
 	Set regEx=Nothing
 End Function

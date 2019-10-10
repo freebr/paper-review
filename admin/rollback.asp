@@ -1,10 +1,9 @@
-﻿<%Response.Expires=-1%>
-<!--#include file="../inc/global.inc"-->
+﻿<!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"--><%
 If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
-thesisID=Request.QueryString("tid")
-usertype=Request.QueryString("user")
-opr=Request.QueryString("opr")
+thesisID=Request.Form("tid")
+usertype=Request.Form("user")
+opr=Request.Form("rollback_opr")
 teachtype_id=Request.Form("In_TEACHTYPE_ID2")
 class_id=Request.Form("In_CLASS_ID2")
 enter_year=Request.Form("In_ENTER_YEAR2")
@@ -24,8 +23,8 @@ sql="SELECT * FROM Dissertations WHERE ID="&thesisID
 GetRecordSet conn,rs,sql,count
 If rs.EOF Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4">数据库没有该论文记录！</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
-  CloseRs rs
-  CloseConn conn
+	CloseRs rs
+	CloseConn conn
 	Response.End()
 End If
 
