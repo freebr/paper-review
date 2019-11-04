@@ -20,9 +20,27 @@ pageNo=Request.Form("pageNo2")
 FormGetToSafeRequest(review_display_status)
 FormGetToSafeRequest(ids)
 Connect conn
-sql="UPDATE Dissertations SET REVIEW_FILE_STATUS="&review_display_status&" WHERE ID IN ("&ids&")"
+sql="SELECT THESIS_SUBJECT, STU_NAME FROM ViewDissertations_admin WHERE ID IN ("&ids&")"
+GetRecordSetNoLock conn,rs,sql,count
+
+Dim titles: titles=""
+Do While Not rs.EOF
+	If Len(titles) Then titles=titles&"；"
+	titles=titles&Format("《{0}》，作者：{1}", Array(rs(0), rs(1)))
+	rs.MoveNext()
+Loop
+CloseRs rs
+
+sql=Format("UPDATE Dissertations SET REVIEW_FILE_STATUS={0} WHERE ID IN ({1})",_
+	Array(review_display_status, ids))
+conn.Execute sql
+
+sql=Format("UPDATE ReviewRecords SET DisplayStatus={0},DisplayStatusModifiedBy={1} WHERE DissertationId IN ({2})",_
+	Array(review_display_status, Session("Id"), ids))
 conn.Execute sql
 CloseConn conn
+
+writeEventLog 0,Session("Name"),"对以下论文修改评阅书开放状态为["&arrReviewFileStat(review_display_status)&"]："&titles&"。"
 %><form id="ret" action="thesisList.asp" method="post">
 <input type="hidden" name="In_ActivityId" value="<%=activity_id%>">
 <input type="hidden" name="In_TEACHTYPE_ID" value="<%=teachtype_id%>" />

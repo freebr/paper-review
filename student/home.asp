@@ -4,19 +4,19 @@
 Dim bTableFilledIn:bTableFilledIn=Array(0,False,False,False,False)
 Dim bTblThesisUploaded:bTblThesisUploaded=Array(0,False,False,False)
 Dim arrTableStat(4),arrFileListName,arrFileListPath,arrFileListField
-Dim review_result(2)
+Dim review_result(2),bReviewFileVisible(1)
 Dim defence_member,defence_members,defence_memo
 Dim defence_result,grant_degree_result
 
 arrFileListName=Array("","开题报告表","开题论文","中期检查表","中期论文","预答辩申请表","预答辩论文","答辩及授予学位审批材料","一次送检论文","二次送检论文","送审论文","答辩论文","定稿论文","一次送检论文检测报告","二次送检论文检测报告","论文评阅书 1","论文评阅书 2")
 arrFileListPath=Array("","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/admin/upload/report","/ThesisReview/admin/upload/report","/ThesisReview/expert/export","/ThesisReview/expert/export")
-arrFileListField=Array("","TABLE_FILE1","TBL_THESIS_FILE1","TABLE_FILE2","TBL_THESIS_FILE2","TABLE_FILE3","TBL_THESIS_FILE3","TABLE_FILE4","DETECT_THESIS1","DETECT_THESIS2","THESIS_FILE2","THESIS_FILE3","THESIS_FILE4","DETECT_REPORT1","DETECT_REPORT2","REVIEW_FILE1","REVIEW_FILE2")
+arrFileListField=Array("","TABLE_FILE1","TBL_THESIS_FILE1","TABLE_FILE2","TBL_THESIS_FILE2","TABLE_FILE3","TBL_THESIS_FILE3","TABLE_FILE4","DETECT_THESIS1","DETECT_THESIS2","THESIS_FILE2","THESIS_FILE3","THESIS_FILE4","DETECT_REPORT1","DETECT_REPORT2","ReviewFile1","ReviewFile2")
 sem_info=getCurrentSemester()
 task_progress=0
 stu_type=Session("StuType")
 
 Connect conn
-sql="SELECT *,dbo.getThesisStatusText(1,TASK_PROGRESS,2) AS STAT1_DESC,dbo.getThesisStatusText(2,REVIEW_STATUS,2) AS STAT2_DESC,LEFT(REVIEW_FILE,CHARINDEX(',',REVIEW_FILE)-1) AS REVIEW_FILE1,RIGHT(REVIEW_FILE,LEN(REVIEW_FILE)-CHARINDEX(',',REVIEW_FILE)) AS REVIEW_FILE2 FROM ViewThesisInfo WHERE STU_ID="&Session("Stuid")&" ORDER BY ActivityId DESC"
+sql="SELECT * FROM ViewDissertations_student WHERE STU_ID="&Session("Stuid")&" ORDER BY ActivityId DESC"
 GetRecordSetNoLock conn,rs,sql,count
 If rs.EOF Then
 	task_prog_text="未上传开题报告"
@@ -26,7 +26,9 @@ Else
 	task_progress=rs("TASK_PROGRESS")
 	reproduct_ratio=toNumericString(rs("REPRODUCTION_RATIO"))
 	detect_count=rs("DETECT_COUNT")
-	bReviewFileVisible=(rs("REVIEW_FILE_STATUS") And 2)<>0
+	bReviewFileVisible(0)=(rs("ReviewFileDisplayStatus1") And 2)<>0
+	bReviewFileVisible(1)=(rs("ReviewFileDisplayStatus2") And 2)<>0
+	bAllReviewFileVisible=bReviewFileVisible(0) And bReviewFileVisible(1)
 	defence_member=rs("DEFENCE_MEMBER")
 	defence_result=rs("DEFENCE_RESULT")
 	grant_degree_result=rs("GRANT_DEGREE_RESULT")
@@ -50,8 +52,8 @@ Else
 	Next
 	review_status=rs("REVIEW_STATUS")
 	review_type=rs("REVIEW_TYPE")
-	task_prog_text=rs("STAT1_DESC")
-	review_stat_text=rs("STAT2_DESC")
+	task_prog_text=rs("TaskProgressText")
+	review_stat_text=rs("ReviewStatusText")
 	If Not IsNull(rs("REVIEW_RESULT")) Then
 		arrRevRet=Split(rs("REVIEW_RESULT"),",")
 		For i=0 To UBound(arrRevRet)
@@ -115,15 +117,21 @@ Function showStepInfo(stepDisplay,stepCounter,bHidden)
 %><span style="color:dimgray">专家已完成论文评阅，请等候导师进行确认。</span><%
 	Case rsReviewEval
 %><span style="color:dimgray">专家已完成论文评阅，请按照评阅书意见对论文进行修改，然后上传答辩论文。</span><br/><%
-		If bReviewFileVisible Then
-%>评阅意见&nbsp;1：【<%=getReviewResultText(review_result(0))%>】&nbsp;评阅意见&nbsp;2：【<%=getReviewResultText(review_result(1))%>】&nbsp;总体评价：【<%=getFinalResultText(review_result(2))%>】<br/><%
-			For i=0 To 1
-				If arrRevRet(i)<>5 Then	' 该专家已评阅
-					If i=1 Then Response.Write "&emsp;"
-%><a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=<%=15+i%>" target="_blank">点击下载第<%=i+1%>份评阅书</a></span><%
-				End If
-			Next
+		If bReviewFileVisible(0) Then
+%>评阅意见&nbsp;1：【<%=getReviewResultText(review_result(0))%>】&nbsp;<%
 		End If
+		If bReviewFileVisible(1) Then
+%>评阅意见&nbsp;2：【<%=getReviewResultText(review_result(1))%>】&nbsp;<%
+		End If
+		If bAllReviewFileVisible Then
+%>总体评价：【<%=getFinalResultText(review_result(2))%>】<br/><%
+		End If
+		For i=0 To 1
+			If arrRevRet(i)<>5 And bReviewFileVisible(i) Then	' 该专家已评阅且评阅书开放显示
+				If i=1 Then Response.Write "&emsp;"
+%><a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=<%=15+i%>" target="_blank">点击下载第<%=i+1%>份评阅书</a></span><%
+			End If
+		Next
 	Case rsModifyThesisUploaded
 %><span style="color:dimgray">您已上传答辩论文，请等候导师审核。<%
 		If task_progress<tpTbl4Uploaded Then
@@ -298,7 +306,7 @@ End Function
 			If Not IsNull(filename) Then
 				If i=15 Or i=16 Then
 					' 根据评阅书显示设置决定是否显示文件
-					If Not bReviewFileVisible Then filename=""
+					If Not bReviewFileVisible(i-15) Then filename=""
 				End If
 				filepath=arrFileListPath(i)&"/"&filename
 				fullfilepath=Server.MapPath(arrFileListPath(i))&"\"&filename

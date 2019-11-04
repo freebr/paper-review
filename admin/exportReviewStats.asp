@@ -200,7 +200,7 @@ arrSheetName=Array("送审结果统计表","全部论文列表")
 
 Connect conn
 selectFields="dbo.getThesisStatusText(1,TASK_PROGRESS,1)+'，'+dbo.getThesisStatusText(2,REVIEW_STATUS,1),THESIS_SUBJECT,STU_NAME,STU_NO,SPECIALITY_NAME,RESEARCHWAY_NAME,THESIS_FORM,TUTOR_NAME,"&_
-						 "dbo.getStatusOfReviewFile(ID,0,0),dbo.getStatusOfReviewFile(ID,0,1),dbo.getStatusOfReviewFile(ID,0,2),dbo.getStatusOfReviewFile(ID,0,3),"&_
+						 "dbo.isFileExisted(ID,0,0),dbo.isFileExisted(ID,0,1),dbo.isFileExisted(ID,0,2),dbo.isFileExisted(ID,0,3),"&_
 						 "dbo.getDetectResultString(ID) AS RATIO,EXPERT_NAME1,EXPERT_WORKPLACE1,EXPERT_NAME2,EXPERT_WORKPLACE2,"&_
 						 "dbo.getReviewResultText(LEFT(REVIEW_RESULT,1)) AS REVIEW_RESULT1,dbo.getReviewResultText(SUBSTRING(REVIEW_RESULT,3,1)) AS REVIEW_RESULT2,dbo.getFinalResultText(RIGHT(REVIEW_RESULT,1)) AS FINAL_RESULT,DEFENCE_EVAL,dbo.getDefenceResultText(DEFENCE_RESULT),INSTRUCT_MODIFY_EVAL"
 ' 导出送审结果统计表

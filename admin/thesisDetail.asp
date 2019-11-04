@@ -146,10 +146,10 @@ Case vbNullString	' 论文详情页面
 <body bgcolor="ghostwhite">
 <center><font size=4><b>专业硕士论文详情<br/>论文当前状态：【<%=stat%>】</b></font>
 <form id="fmDetail" action="updateThesis.asp?tid=<%=thesisID%>" enctype="multipart/form-data" method="post">
-<table width="800" cellspacing="0" cellpadding="0">
+<table width="1000" cellspacing="0" cellpadding="0">
 <tr><td><p align="right"><input type="button" id="btnupload" value="上传表格/论文文件..." onclick="submitForm(this.form,'uploadThesisFile.asp?tid=<%=thesisID%>')" /></p>
 </td></tr></table>
-<table class="tblform" width="800" cellspacing="1" cellpadding="3">
+<table class="tblform" width="1000" cellspacing="1" cellpadding="3">
 <tr><td>评阅活动：&emsp;&emsp;&emsp;<input class="easyui-combobox" id="activity_id" name="new_activity_id" /></td></tr>
 <tr><td>论文题目：&emsp;&emsp;&emsp;<input type="text" class="txt" name="new_subject_ch" size="95%" value="<%=rs("THESIS_SUBJECT")%>" /></td></tr>
 <tr><td>（英文）：&emsp;&emsp;&emsp;<input type="text" class="txt" name="new_subject_en" size="85%" value="<%=rs("THESIS_SUBJECT_EN")%>" /></td></tr>
@@ -358,7 +358,7 @@ GetMenuListPubTerm "ReviewStatuses","STATUS_ID2","STATUS_NAME",review_status,"AN
 <input type="hidden" name="finalFilter2" value="<%=toPlainString(finalFilter)%>" />
 <input type="hidden" name="pageSize2" value="<%=pageSize%>" />
 <input type="hidden" name="pageNo2" value="<%=pageNo%>" /></form>
-<table class="tblform" width="800" cellspacing=1 cellpadding=3>
+<table class="tblform" width="1000" cellspacing=1 cellpadding=3>
 <tr style="background-color: #cccccc"><td><p>论文检测结果及论文评审结果说明：</p>
 <%=getNoticeText(rs("TEACHTYPE_ID"),"review_result_desc")%>
 </td></tr></table></center>
@@ -377,8 +377,7 @@ GetMenuListPubTerm "ReviewStatuses","STATUS_ID2","STATUS_NAME",review_status,"AN
 		var display_status_values=[
 			{ value: 0, text: "不开放显示" },
 			{ value: 1, text: "仅向导师显示" },
-			{ value: 2, text: "仅向学生显示" },
-			{ value: 3, text: "完全开放显示" }
+			{ value: 2, text: "完全开放显示" }
 		];
 		function onReviewRecordsSelect(index, data) {
     		$(this).datagrid("endEdit", $(this).data("selected"))
@@ -432,7 +431,7 @@ GetMenuListPubTerm "ReviewStatuses","STATUS_ID2","STATUS_NAME",review_status,"AN
 				},
 				{ field: 'review_time', title: '评阅时间', width: 150, align: 'center' },
 				{ field: 'overall_rating_text', title: '总体评价', width: 60, align: 'center' },
-				{ field: 'defence_opinion_text', title: '是否同意答辩', width: 100, align: 'center' },
+				{ field: 'defence_opinion_text', title: '是否同意答辩', width: 150, align: 'center' },
 				{ field: 'review_file', title: '评阅书', width: 150, align: 'center',
 					formatter: function(value, row, index) {
 						return '<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=16&order='+row.review_order+'" target="_blank">点击下载</a>';
@@ -454,7 +453,8 @@ GetMenuListPubTerm "ReviewStatuses","STATUS_ID2","STATUS_NAME",review_status,"AN
 							onChange: onReviewRecordsDisplayStatusChange
 						}
 					}
-				}
+				},
+				{ field: 'display_status_modified_by_name', title: '显示状态修改人', width: 140, align: 'center' }
 			]],
 			height: 200,
 			collapsible: true,
@@ -576,7 +576,7 @@ Case 2	' 填写评语页面
 <body bgcolor="ghostwhite">
 <center><font size=4><b><%=operation_name%></b></font>
 <form id="fmOper" action="updateThesis.asp?tid=<%=thesisID%>" method="post" enctype="multipart/form-data" style="margin-top:0;padding-top:10px">
-<table class="tblform" width="800" cellspacing="1" cellpadding="3">
+<table class="tblform" width="1000" cellspacing="1" cellpadding="3">
 <tr><td>作者姓名：<input type="text" class="txt" name="author" value="<%=rs("STU_NAME")%>" readonly /></td>
 <td>学号：<input type="text" class="txt" name="stuno" value="<%=rs("STU_NO")%>" readonly /></td>
 <td>导师姓名、职称：<input type="text" class="txt" name="tutorinfo" value="<%=rs("TUTOR_NAME")%>&nbsp;<%=tutor_duty_name%>" readonly /></td></tr>

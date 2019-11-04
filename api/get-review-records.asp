@@ -15,7 +15,7 @@ Function main(args)
     ensureArgument args, arg, data
     Dim conn,rs,sql,count
     Connect conn
-    sql="SELECT Id,ReviewOrder,ReviewOrderText,ReviewerId,ReviewerName,ReviewTime,OverallRatingText,DefenceOpinionText,ReviewFile,DisplayStatus,Creator,CreatorName FROM ViewReviewRecords WHERE DissertationId=?"
+    sql="SELECT Id,ReviewOrder,ReviewOrderText,ReviewerId,ReviewerName,ReviewTime,OverallRatingText,DefenceOpinionText,ReviewFile,DisplayStatus,DisplayStatusModifiedByName,Creator,CreatorName FROM ViewReviewRecords WHERE DissertationId=?"
     Dim ret:Set ret=ExecQuery(conn,sql,CmdParam("DissertationId",adInteger,4,arg("id")))
     Set rs=ret("rs")
     count=ret("count")

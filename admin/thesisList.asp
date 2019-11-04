@@ -211,7 +211,7 @@ If bQuery Then
 			stat=rs("STAT_TEXT1")
 		Else
 			stat=rs("STAT_TEXT2")
-			If rs("REVIEW_STATUS")>=rsReviewed And rs("REVIEW_FILE_STATUS")<>3 Then
+			If rs("REVIEW_STATUS")>=rsReviewed And rs("REVIEW_FILE_STATUS")<>2 Then
 				substat="评阅结果["&arrReviewFileStat(rs("REVIEW_FILE_STATUS"))&"]"
 			End If
 		End If
@@ -222,7 +222,7 @@ If bQuery Then
 		End If
 	%><tr bgcolor="ghostwhite">
 		<td align="center"><a href="#" onclick="return showThesisDetail(<%=rs("ID")%>,0)"><%=HtmlEncode(rs("THESIS_SUBJECT"))%></a></td>
-		<td align="center"><%=HtmlEncode(rs("STU_NAME"))%></td>
+		<td align="center"><a href="#" onclick="return showStudentProfile(<%=rs("STU_ID")%>,0)"><%=HtmlEncode(rs("STU_NAME"))%></a></td>
 		<td align="center"><%=rs("STU_NO")%></td>
 		<td align="center"><%=HtmlEncode(rs("SPECIALITY_NAME"))%></td>
 		<td align="center"><%=rs("TEACHTYPE_NAME")%></td>

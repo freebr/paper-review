@@ -448,6 +448,13 @@ Function writeNotificationEventLog(user_type,user_name,trigger_operation,receive
 	writeNotificationEventLog=writeLog(log_text)
 End Function
 
+' 添加操作事件记录
+Function writeEventLog(user_type,user_name,trigger_operation)
+	Dim user_type_names:user_type_names=Array("教务员","学生","导师","专家")
+	Dim log_text:log_text=Format("{0}[{1}]{2}。",user_type_names(user_type),user_name,trigger_operation)
+	writeEventLog=writeLog(log_text)
+End Function
+
 ' 显示错误提示
 Function showErrorPage(content, title)
 	Dim client_name, class_prop, statement
@@ -505,7 +512,7 @@ End With
 Dim arrDiplomaName:arrDiplomaName=Array("","专科","本科","硕士研究生","博士研究生","博士后")
 Dim arrDefenceResult:arrDefenceResult=Array("未录入","优秀","良好","一般","较差")
 Dim arrGrantDegreeResult:arrGrantDegreeResult=Array("未录入","同意毕业及授予学位","同意毕业，但不同意授予学位","不同意毕业")
-Dim arrReviewFileStat:arrReviewFileStat=Array("不开放显示","仅向导师显示","仅向学生显示","完全开放显示")
+Dim arrReviewFileStat:arrReviewFileStat=Array("不开放显示","仅向导师显示","完全开放显示")
 ' 禁止缓存，仅在需要客户端重新请求 JS/CSS/HTML 等静态文件时使用
 Response.CacheControl="no-cache"
 Response.Charset="utf-8"

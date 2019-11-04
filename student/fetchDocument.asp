@@ -5,7 +5,7 @@ Dim arrFileListName,arrFileListNamePostfix,arrFileListPath,arrFileListField
 arrFileListName=Array("","开题报告表","开题论文","中期检查表","中期论文","预答辩申请表","预答辩论文","答辩及授予学位审批材料","一次送检论文","二次送检论文","送审论文","答辩论文","定稿论文","一次送检论文检测报告","二次送检论文检测报告","论文评阅书 1","论文评阅书 2")
 arrFileListNamePostfix=Array("","开题报告表","开题论文","中期检查表","中期论文","预答辩申请表","预答辩论文","答辩审批材料","","","","","","一次检测报告","二次检测报告","论文评阅书(1)","论文评阅书(2)")
 arrFileListPath=Array("","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/admin/upload/report","/ThesisReview/admin/upload/report","/ThesisReview/expert/export","/ThesisReview/expert/export")
-arrFileListField=Array("","TABLE_FILE1","TBL_THESIS_FILE1","TABLE_FILE2","TBL_THESIS_FILE2","TABLE_FILE3","TBL_THESIS_FILE3","TABLE_FILE4","DETECT_THESIS1","DETECT_THESIS2","THESIS_FILE2","THESIS_FILE3","THESIS_FILE4","DETECT_REPORT1","DETECT_REPORT2","REVIEW_FILE1","REVIEW_FILE2")
+arrFileListField=Array("","TABLE_FILE1","TBL_THESIS_FILE1","TABLE_FILE2","TBL_THESIS_FILE2","TABLE_FILE3","TBL_THESIS_FILE3","TABLE_FILE4","DETECT_THESIS1","DETECT_THESIS2","THESIS_FILE2","THESIS_FILE3","THESIS_FILE4","DETECT_REPORT1","DETECT_REPORT2","ReviewFile1","ReviewFile2")
 thesisID=Request.QueryString("tid")
 filetype=Request.QueryString("type")
 If Not IsNumeric(filetype) Then
@@ -20,7 +20,7 @@ If bError Then
 End If
 
 Connect conn
-sql="SELECT *,LEFT(REVIEW_FILE,CHARINDEX(',',REVIEW_FILE)-1) AS REVIEW_FILE1,RIGHT(REVIEW_FILE,LEN(REVIEW_FILE)-CHARINDEX(',',REVIEW_FILE)) AS REVIEW_FILE2 FROM ViewThesisInfo WHERE ID="&thesisID&" AND Valid=1"
+sql="SELECT * FROM ViewDissertations_student WHERE ID="&thesisID
 GetRecordSetNoLock conn,rs,sql,count
 If rs.EOF Then
 	CloseRs rs
@@ -29,18 +29,22 @@ If rs.EOF Then
 End If
 
 Dim source_file,fileExt,newfilename
+Dim bReviewFileVisible(1)
 Dim fso,file,stream
 Set fso=Server.CreateObject("Scripting.FileSystemObject")
 source_file=rs(arrFileListField(filetype))
+bReviewFileVisible(0)=(rs("ReviewFileDisplayStatus1") And 2)<>0
+bReviewFileVisible(1)=(rs("ReviewFileDisplayStatus2") And 2)<>0
 If IsNull(source_file) Then
 	source_file=""
 Else
 	fileExt=LCase(fso.GetExtensionName(source_file))
 	If filetype=15 Or filetype=16 Then ' 评阅书则提供无专家信息版本
 		' 根据评阅书显示设置决定是否显示文件
-		If (rs("REVIEW_FILE_STATUS") And 2)=0 Then
+		If Not bReviewFileVisible(filetype-15) Then
 			source_file=arrFileListPath(filetype)
 		Else
+			fileExt="pdf"
 			source_file=arrFileListPath(filetype)&"/"&fso.GetBaseName(source_file)&"_noexp."&fileExt
 		End If
 	Else

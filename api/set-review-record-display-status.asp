@@ -16,10 +16,11 @@ Function main(args)
     ensureArgument args, arg, data
     Dim conn,sql,count
     Connect conn
-    sql="UPDATE ReviewRecords SET DisplayStatus=? WHERE Id=?"
+    sql="UPDATE ReviewRecords SET DisplayStatus=?,DisplayStatusModifiedBy=? WHERE Id=?"
     'On Error Resume Next
     count=ExecNonQuery(conn,sql,_
         CmdParam("DisplayStatus",adInteger,4,arg("display_status")),_
+        CmdParam("DisplayStatusModifiedBy",adInteger,4,Session("Id")),_
         CmdParam("Id",adGUID,16,arg("id")))
     If Err.Number Then
         data.Add "status", "error"
