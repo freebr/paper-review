@@ -58,7 +58,6 @@ Class ExtendedRequest
 		streamReq.Type = 1
 		streamReq.Mode = 3
 		streamReq.Open
-		On ErrOr Resume Next
 		Do
 			If iBytesUploaded+iBlockSize>Request.TotalBytes Then
 				iBlockSize=Request.TotalBytes-iBytesUploaded
@@ -70,7 +69,6 @@ Class ExtendedRequest
 		  	streamProg.SaveToFile sStreamProgFile,2
 		  End If
 		Loop While iBytesUploaded<Request.TotalBytes
-		On ErrOr GoTo 0
 		If isStudent Then
 		  streamProg.Close()
 		  fso.DeleteFile sStreamProgFile
@@ -78,7 +76,7 @@ Class ExtendedRequest
 		  Set fso=Nothing
 		End If
 		streamReq.Position=0
-		RequestData =streamReq.Read
+		RequestData = streamReq.Read
 		iFormStart = 1
 		iFormEnd = LenB(RequestData)
 		bCrlf = ChrB(13) & ChrB(10)
@@ -197,7 +195,7 @@ Class FileInfo
   End Sub
 
 	Public Function SaveAs(FullPath)
-	  Dim dr,ErrOrChar,i
+	  Dim dr
 	  SaveAs=True
 	  If Trim(fullpath)="" Or FileStart=0 Or FileName="" Or Right(fullpath,1)="/" Then exit Function
 	  Set dr=CreateObject("ADODB.Stream")

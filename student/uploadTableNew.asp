@@ -90,7 +90,9 @@ End If
 If section_id<>0 Then
 	' 开题报告（EMBA为预答辩申请表），录入论文基本信息
 	is_new_dissertation=section_id=sectionUploadKtbg Or stu_type=7 And section_id=sectionUploadYdbyjs
-	If Not isActivityOpen(rs("ActivityId")) Then
+	If rs.EOF Then
+		allow_upload=True
+	ElseIf Not isActivityOpen(rs("ActivityId")) Then
 		time_flag=-3
 	Else
 		Set current_section=getSectionInfo(rs("ActivityId"), stu_type, section_id)
@@ -160,8 +162,10 @@ Case vbNullstring ' 填写信息页面
 	editable: false,
 	prompt:'【请选择】',
 	width: 300,
-	panelHeight: 100,
-	value:<%=activity_id%>,
+	panelHeight: 100,<%
+	If activity_id<>0 Then %>
+	value:<%=activity_id%>,<%
+	End If %>
 	url:'../api/get-attendable-activities',
 	loadFilter:Common.curryLoadFilter(Array.prototype.reverse)"></p><%
 		End If %>
@@ -302,7 +306,10 @@ Case 1	' 上传进程
 			"research_solution","work_schedule_duration","work_schedule_content",_
 			"work_schedule_memo","anticipated_result")
 
-		If Len(params("research_field_select"))=0 Then
+		If Len(params("activity_id"))=0 Then
+			bError=True
+			errdesc="请选择要参加的评阅活动！"
+		ElseIf Len(params("research_field_select"))=0 Then
 			bError=True
 			errdesc="请选择工程领域！"
 		ElseIf Len(params("sub_research_field_select"))=0 Then
@@ -362,7 +369,10 @@ Case 1	' 上传进程
 
 		Set params=getFormParams("activity_id","grade","speciality_name","subject","predefence_date")
 
-		If Not IsNumeric(params("grade")) Or Len(params("grade"))<>4 Then
+		If Len(params("activity_id"))=0 Then
+			bError=True
+			errdesc="请选择要参加的评阅活动！"
+		ElseIf Not IsNumeric(params("grade")) Or Len(params("grade"))<>4 Then
 			bError=True
 			errdesc="年级填写无效，请重新输入（格式为四位数字）！"
 		ElseIf Not IsDate(params("predefence_date")) Then

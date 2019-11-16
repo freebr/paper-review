@@ -33,7 +33,9 @@ Else
 	End Select
 End If
 If section_id<>0 Then
-	If Not isActivityOpen(rs("ActivityId")) Then
+	If rs.EOF Then
+		allow_upload=True
+	ElseIf Not isActivityOpen(rs("ActivityId")) Then
 		time_flag=-3
 	Else
 		Set current_section=getSectionInfo(rs("ActivityId"), stu_type, section_id)

@@ -2,10 +2,10 @@
 <!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"--><%
 
-activity_id=toUnsignedInt(Request.Form("In_ActivityId2"))
 step=Request.QueryString("step")
 Select Case step
 Case vbNullstring ' 文件选择页面
+	activity_id=toUnsignedInt(Request.Form("In_ActivityId2"))
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -47,7 +47,7 @@ Case 2	' 上传进程
 
 	Set Upload=New ExtendedRequest
 	Set file=Upload.File("excelFile")
-	activity_id=Upload.Form("In_ActivityId")
+	activity_id=toUnsignedInt(Upload.Form("In_ActivityId"))
 	task_progress=Upload.Form("In_TASK_PROGRESS")
 	review_status=Upload.Form("In_REVIEW_STATUS")
 	select_mode=Upload.Form("selectmode")
@@ -164,7 +164,7 @@ Case 3	' 数据读取，导入到数据库
 
 						sql_upd_apply=sql_upd_apply&"IF NOT EXISTS(SELECT STU_ID FROM TutorRecruitSys..ApplyInfo WHERE STU_ID="&stuid&" AND RECRUIT_ID="&recid&") BEGIN;"&_
 													"DELETE FROM TutorRecruitSys..ApplyInfo WHERE STU_ID="&stuid&" AND TURN_NUM=1;"&_
-													"INSERT INTO TutorRecruitSys..ApplyInfo (STU_ID,TUTOR_ID,RECRUIT_ID,ActivityId,TURN_NUM,APPLY_TIME,TUTOR_REPLY_TIME,APPLY_STATUS) VALUES("&stuid&","&tutorid&","&recid&","&activity_id&",1,'"&Now&"','"&Now&"',3); END;"
+													"INSERT INTO TutorRecruitSys..ApplyInfo (STU_ID,TUTOR_ID,RECRUIT_ID,PERIOD_ID,TURN_NUM,APPLY_TIME,TUTOR_REPLY_TIME,APPLY_STATUS) VALUES("&stuid&","&tutorid&","&recid&","&activity("SemesterId")&",1,'"&Now&"','"&Now&"',3); END;"
 
 						numThesis=numThesis+1
 					Else
@@ -195,7 +195,7 @@ Case 3	' 数据读取，导入到数据库
 	Dim bError,errMsg
 
 	filename=Request.Form("filename")
-	activity_id=Request.Form("In_ActivityId")
+	activity_id=toUnsignedInt(Request.Form("In_ActivityId"))
 	task_progress=Request.Form("In_TASK_PROGRESS")
 	review_status=Request.Form("In_REVIEW_STATUS")
 	select_mode=Request.Form("selectmode")
