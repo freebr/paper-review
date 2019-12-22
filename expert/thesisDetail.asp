@@ -1,9 +1,9 @@
 ﻿<!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"--><%
-If IsEmpty(Session("Tid")) Then Response.Redirect("../error.asp?timeout")
+If IsEmpty(Session("TId")) Then Response.Redirect("../error.asp?timeout")
 If Not hasPrivilege(Session("Twriteprivileges"),"I10") Then Response.Redirect("../error.asp?no-privilege")
 step=Request.QueryString("step")
-thesisID=Request.QueryString("tid")
+dissertation_id=Request.QueryString("tid")
 teachtype_id=Request.Form("In_TEACHTYPE_ID2")
 spec_id=Request.Form("In_SPECIALITY_ID2")
 finalFilter=Request.Form("finalFilter2")
@@ -16,9 +16,9 @@ Else
 End If
 
 Connect conn
-sql="SELECT * FROM ViewDissertations_expert WHERE ID="&thesisID&" AND "&Session("Tid")&" IN (REVIEWER1,REVIEWER2)"
+sql="SELECT * FROM ViewDissertations_expert WHERE ID="&dissertation_id&" AND "&Session("TId")&" IN (REVIEWER1,REVIEWER2)"
 GetRecordSet conn,rs,sql,count
-If Len(thesisID)=0 Or Not IsNumeric(thesisID) Then
+If Len(dissertation_id)=0 Or Not IsNumeric(dissertation_id) Then
 	bError=True
 	errdesc="参数无效。"
 ElseIf count=0 Then
@@ -44,12 +44,12 @@ Dim formAction
 author_stu_type=rs("TEACHTYPE_ID")
 Select Case author_stu_type
 Case 5,6,9
-	formAction="?tid="&thesisID&"&step=2"
+	formAction="?tid="&dissertation_id&"&step=2"
 Case Else
-	formAction="?tid="&thesisID&"&step=3"
+	formAction="?tid="&dissertation_id&"&step=3"
 End Select
 
-If rs("REVIEWER1")=Session("Tid") Then
+If rs("REVIEWER1")=Session("TId") Then
 	reviewer=0
 Else
 	reviewer=1
@@ -119,12 +119,12 @@ Case vbNullString	' 论文详情页面
 	If Not IsNull(rs("THESIS_FORM")) And Len(rs("THESIS_FORM")) Then %>
 <tr><td>论文形式：&emsp;&emsp;&emsp;<input type="text" class="txt" name="thesisform" size="95%" value="<%=rs("THESIS_FORM")%>" readonly /></td></tr><%
 	End If %>
-<tr><td>送审论文：&emsp;&emsp;&emsp;<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=1" target="_blank">点击下载</a></td></tr><%
+<tr><td>送审论文：&emsp;&emsp;&emsp;<a class="resc" href="fetchDocument.asp?tid=<%=dissertation_id%>&type=1" target="_blank">点击下载</a></td></tr><%
 	If Len(review_time(reviewer)) Then
 %><tr><td height="10"></td></tr><%
 		If Len(review_file(reviewer)) Then
 %><tr><td>您已于&nbsp;<%=toDateTime(review_time(reviewer),1)%>&nbsp;<%=toDateTime(review_time(reviewer),4)%>&nbsp;评阅该论文</td></tr>
-<tr><td>论文评阅书：&emsp;&emsp;<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=<%=2+reviewer%>" target="_blank">点击下载</a></td></tr><%
+<tr><td>论文评阅书：&emsp;&emsp;<a class="resc" href="fetchDocument.asp?tid=<%=dissertation_id%>&type=<%=2+reviewer%>" target="_blank">点击下载</a></td></tr><%
 		End If %>
 <tr><td>您对本论文涉及内容的熟悉程度：<%=masterLevelRadios("master_level",reviewer_master_level(reviewer))%></td></tr>
 <tr><td>对学位论文的总体评价：<%=reviewLevelRadios("review_level",reviewfile_type,review_level(reviewer))%></td></tr>
@@ -194,13 +194,13 @@ Case 2	' 评阅须知
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="theme-color" content="#2D79B2" />
-<title>浏览评阅须知</title>
+<title>阅读评阅须知</title>
 <% useStylesheet "tutor" %>
 <% useScript "jquery", "common" %>
 </head>
 <body class="exp">
 <center><div class="content"><font size=4><b>评阅须知：在开始评阅前，请您仔细阅读下面的《<%=noticeName%>》</b></font>
-<form id="fmDetail" action="?tid=<%=thesisID%>&step=3" method="post">
+<form id="fmDetail" action="?tid=<%=dissertation_id%>&step=3" method="post">
 <table class="tblform" width="800" align="center" cellspacing="1" cellpadding="3">
 <tr><td><p align="center"><anchor id="top" />
 <span class="tip">共&nbsp;<%=pageCount%>&nbsp;页，当前是第&nbsp;<span id="numPage"></span>&nbsp;页</span></p></td></tr>
@@ -271,6 +271,10 @@ Case 2	' 评阅须知
 	});
 </script></html><%
 Case 3	' 评阅页面
+	view_name = "thesisDetail_review_"&dissertation_id
+	' 获取视图状态
+	view_state = getViewState(Session("TId"),usertypeExpert,view_name)
+
 	tutor_duty_name=getProDutyNameOf(rs("TUTOR_ID"))
 	If reviewfile_type=2 Then
 		loadReviewScoringInfo rs("REVIEW_TYPE"),code_scoring,code_power1,code_power2
@@ -285,23 +289,25 @@ Case 3	' 评阅页面
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="theme-color" content="#2D79B2" />
 <title>评阅论文</title>
-<% useStylesheet "tutor" %>
-<% useScript "jquery", "common", "thesis", "review", "drafting" %>
+<% useStylesheet "tutor", "jeasyui" %>
+<% useScript "jquery", "jeasyui", "common", "thesis", "review", "viewState" %>
 </head>
 <body class="exp">
 <center><div class="content"><font size=4><b>评阅论文</b></font>
-<form id="fmReview" action="doReview.asp?tid=<%=thesisID%>" method="post" style="margin-top:0;padding-top:10px">
+<form id="fmReview" action="doReview.asp?tid=<%=dissertation_id%>" method="post" style="margin-top:0;padding-top:10px">
+<table width="800" cellspacing="1" cellpadding="3">
+<tr><td><input type="button" id="btnsavedraft" value="保存草稿" />&emsp;
+<input type="button" id="btnloaddraft" value="读取草稿" /></td></tr>
+</table>
 <table class="tblform" width="800" cellspacing="1" cellpadding="3">
 <tr><td>申请学位专业名称：<input type="text" class="txt" name="speciality" size="25" value="<%=rs("SPECIALITY_NAME")%>" readonly /></td>
 <td>研究方向：<input type="text" class="txt" name="researchway" size="25" value="<%=rs("RESEARCHWAY_NAME")%>" readonly /></td>
 <td>学院名称：<input type="text" class="txt" name="faculty" value="工商管理学院" readonly /></td></tr>
 <tr><td colspan="3">学位论文题目：<input type="text" class="txt" name="subject" size="70" value="<%=rs("THESIS_SUBJECT")%>" readonly />
-&emsp;送审论文：<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=1" target="_blank">点击下载</a></td></tr>
+&emsp;送审论文：<a class="resc" href="fetchDocument.asp?tid=<%=dissertation_id%>&type=1" target="_blank">点击下载</a></td></tr>
 <tr><td colspan="3">评阅专家对论文的学术评语<span class="eval_notice">（包括选题意义；文献资料的掌握；数据、材料的收集、论证、结论是否合理；基本论点、结论和建议有无理论意义和实践价值；论文的不足之处和建议等，200-2000字）</span>：<span id="eval_text_tip"></span></td></tr>
 <tr><td colspan="3"><textarea name="eval_text" rows="10" style="width:100%">
-<%=eval_text%></textarea><br/>
-<input type="button" id="btnsavedraft" value="保存草稿" />&emsp;
-<input type="button" id="btnloaddraft" value="读取草稿" /></td></tr>
+<%=eval_text%></textarea></td></tr>
 <tr><td colspan="3">对本论文涉及内容的熟悉程度：<%=masterLevelRadios("master_level",reviewer_master_level(reviewer))%></td></tr><%
 	Dim strJsArrRemarkStd
 	Select Case author_stu_type
@@ -328,7 +334,7 @@ Case 3	' 评阅页面
 <tr><td align="center"><%=correlation_level_name%></td><td align="center" colspan="2"><%=correlationLevelRadios("correlation_level",1)%></td></tr>
 <tr><td align="center">是否同意举行论文答辩</td><td align="center" colspan="2"><%=reviewResultRadios("review_result",review_result(reviewer))%></td></tr>
 <tr class="trbuttons">
-<td colspan="3"><p align="center"><input type="button" id="btnsubmit" name="btnsubmit" value="提 交" />&emsp;
+<td colspan="3"><p align="center"><input type="submit" id="btnsubmit" value="提 交" />&emsp;
 <input type="button" value="返 回" onclick="history.go(-1)" />&emsp;
 <input type="button" value="关 闭" onclick="closeWindow()" />
 </p></td></tr></table>
@@ -350,35 +356,32 @@ Case 3	' 评阅页面
 <input type="hidden" name="pageSize" value="<%=pageSize%>" />
 <input type="hidden" name="pageNo" value="<%=pageNo%>" /></form></body>
 <script type="text/javascript">
-	$(document).ready(function(){
+	$(document).ready(function() {
 		$('[name="eval_text"]').keyup(function(){checkLength(this,2000)});<%
-				If reviewfile_type=2 Then %>
+		If reviewfile_type=2 Then %>
 		if ($('#total_score').size()>0) {
 			this.powers={'power1':<%=code_power1%>,'power2':<%=code_power2%>};
 			this.remarkStd=<%=strJsArrRemarkStd%>;
 			addScoreEventListener();
 			showTotalScore();
 		}<%
-				End If %>
-		if($('#btnsubmit').size()>0) {
-			$('#btnsubmit').click(function() {<%
-				If reviewfile_type=2 Then %>
-				if($('[name="review_level"]').val()==4)
-					if(!confirm("检测到您给出的分数过低，请确认是否对每项得分点按百分制打分。"))
-						return false;<%
-				End If %>
-				if(confirm("确定要提交吗？")) {
-					$(this).val("正在提交，请稍候……").attr('disabled',true);
-					this.form.submit();
-				}
-			}).attr('disabled',false);
-		}
-		$('#btnsavedraft').click(function() {
-			saveAsDraft(<%=thesisID%>);
+		End If %>
+		initViewState($("form"), {
+			user_id: <%=Session("TId")%>,
+			user_type: <%=usertypeExpert%>,
+			view_name: "<%=view_name%>",
+			view_state: <%=isNullString(view_state, "null")%>
+		}, showTotalScore);
+		$('form').submit(function() {<%
+		If reviewfile_type=2 Then %>
+			if($('[name="review_level"]').val()==4)
+				if(!confirm("检测到您给出的分数过低，请确认是否对每项得分点按百分制打分。"))
+					return false;<%
+		End If %>
+			if(!confirm("确定要提交吗？")) return false;
+			$(':submit').val("正在提交，请稍候……").attr('disabled',true);
 		});
-		verifyDraft(<%=thesisID%>);
-		// 每30秒对草稿进行自动保存
-		setInterval('saveAsDraft(<%=thesisID%>,true)',30000);
+		$(':submit').attr('disabled',false);
 	});
 </script></html><%
 End Select

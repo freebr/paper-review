@@ -212,7 +212,24 @@ Case vbNullstring ' 填写信息页面
 <div style="text-align:right"><hr />
 <a href="<%=template_file%>" target="_blank"><img src="../images/down.png" />下载<%=arrStuOprName(section_id)%>模板...</a></div><%
 	End If %></td></tr></table></td></tr></table></form></center>
-<script type="text/javascript"><%
+<script type="text/javascript">
+	function initCurrentViewState() {
+		initViewState($("form"), {
+			user_id: <%=Session("StuId")%>,
+			user_type: <%=usertypeStudent%>,
+			view_name: "<%=view_name%>",
+			view_state: <%=isNullString(view_state, "null")%>
+		}, function(data) {
+			var keywords_ch = [], keywords_en = [];
+			[].concat(data.keyword_ch).forEach(function(item) {
+				keywords_ch.push(item.value);
+			});
+			[].concat(data.keyword_en).forEach(function(item) {
+				keywords_en.push(item.value);
+			});
+			setKeywords(keywords_ch, keywords_en);
+		});
+	}<%
 	If section_id=sectionUploadKtbg And allow_upload Then %>
 	$('select[name="sub_research_field_select"]').change(function(){
 		$('input[name="sub_research_field"]').val(!this.value.length?'':$(this).find('option:selected').text());
@@ -233,31 +250,10 @@ Case vbNullstring ' 填写信息页面
 		$('input[name="research_field"]').val(!this.value.length?'':$(this).find('option:selected').text());
 	});
 	initResearchFieldSelectBox($('select[name="research_field_select"]'),<%=stu_type%>)
-		.then(function() {
-			initViewState($("form"), {
-				user_id: <%=Session("StuId")%>,
-				user_type: <%=usertypeStudent%>,
-				view_name: "<%=view_name%>",
-				view_state: <%=isNullString(view_state, "null")%>
-			}, function(data) {
-				var keywords_ch = [], keywords_en = [];
-				[].concat(data.keyword_ch).forEach(function(item) {
-					keywords_ch.push(item.value);
-				});
-				[].concat(data.keyword_en).forEach(function(item) {
-					keywords_en.push(item.value);
-				});
-				setKeywords(keywords_ch, keywords_en);
-			});
-		});<%
+		.then(initCurrentViewState);<%
 	Else
 	%>
-		initViewState($("form"), {
-			user_id: <%=Session("StuId")%>,
-			user_type: <%=usertypeStudent%>,
-			view_name: "<%=view_name%>",
-			view_state: <%=isNullString(view_state, "null")%>
-		});<%
+		initCurrentViewState();<%
 	End If %>
 	$('form').submit(function(event) {<%
 	If section_id=sectionUploadKtbg And allow_upload Then %>

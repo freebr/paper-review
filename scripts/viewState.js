@@ -1,21 +1,29 @@
 function restoreViewState($form, data, callback) {
-    $form.find(':input[name]:not([type=button],[type=submit])').val('');
+    $form.find(':input[name]:not([type=button],[type=submit],[type=radio],[type=checkbox],[readonly])').val('');
+    $form.find(':input[type=radio]:not([readonly]),:input[type=checkbox]:not([readonly])').attr('checked', false);
     for(var field in data) {
         var state = data[field];
         var $el = $form.find(":input[name="+field+"]");
         if (Array.isArray(state)) {
             state.forEach(function(s, index) {
-                $el.eq(index).val(s.value).attr('disabled', s.disabled);
+                var $sub = $el.eq(index);
+                if (!$sub.size()) return;
+                if (['radio', 'checkbox'].indexOf($sub.attr('type')) != -1) {
+                    $sub.prop({'checked': s.checked, 'disabled': s.disabled});
+                } else {
+                    $sub.val(s.value).attr('disabled', s.disabled);
+                }
+                if ($sub[0].tagName.toLowerCase() == 'select') $sub.change();
             });
         } else {
             $el = $el.eq(0);
-            if ($el.type == 'radio' || $el.type == 'checkbox') {
-                $el.attr('checked', state.value);
+            if (['radio', 'checkbox'].indexOf($el.attr('type')) != -1) {
+                $el.prop('checked', state.checked);
             } else {
                 $el.val(state.value);
             }
-            if ($el[0].tagName.toLowerCase() == 'select') $el.change();
             $el.attr('disabled', state.disabled);
+            if ($el[0].tagName.toLowerCase() == 'select') $el.change();
         }
     }
     typeof callback === "function" && callback(data);
@@ -24,19 +32,18 @@ function restoreViewState($form, data, callback) {
 function bundleViewState($form) {
     $form = $($form);
     var bundle = {};
-    $.each($.makeArray($form.find(':input[name]:not([type=button],[type=submit])')),
+    $.each($.makeArray($form.find(':input[name]:not([type=button],[type=submit],[readonly])')),
         function(index, el) {
-            if (el.readOnly) return;
             var name = el.name;
             var state = {};
-            var type = el.tagName == 'input' ? el.type : el.tagName;
+            var type = el.tagName.toLowerCase() == 'input' ? el.type : el.tagName.toLowerCase();
             switch(type) {
                 case "select":
                     state.value = el.selectedIndex === -1 ? null : el.options[el.selectedIndex];
                     break;
                 case "radio":
                 case "checkbox":
-                    state.value = el.checked;
+                    state.checked = el.checked;
                     break;
                 case "textarea":
                 default:
@@ -60,7 +67,7 @@ function initViewState($form, init_data, callback) {
     $form = $($form);
     var $hidden=$("<input name='view_state' type='hidden' />");
     $form.submit(function() {
-        $hidden.val(bundleViewState($form));
+        $(":hidden[name=view_state]").val(bundleViewState($form));
     }).append($hidden);
     $form.find('#btnsavedraft').click(function() {
         $.post("../api/save-view-state",
@@ -87,7 +94,7 @@ function initViewState($form, init_data, callback) {
             function (data) {
                 if (data.status==='ok') {
                     if (!data.data) {
-                        $.messager.show({ msg: "当前没有已保存的草稿可读取。", title: "读取草稿", timeout: 2000 });
+                        $.messager.show({ msg: "当前没有可读取的草稿。", title: "读取草稿", timeout: 2000 });
                         return;
                     }
                     if (!confirm("确定读取草稿吗？这将覆盖当前所做的修改。")) return;

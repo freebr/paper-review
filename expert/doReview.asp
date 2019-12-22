@@ -12,6 +12,7 @@ query_review_status=Request.Form("In_REVIEW_STATUS2")
 finalFilter=Request.Form("finalFilter2")
 pageSize=Request.Form("pageSize2")
 pageNo=Request.Form("pageNo2")
+view_state=Request.Form("view_state")
 If Len(dissertation_id)=0 Or Not IsNumeric(dissertation_id) Then
 	bError=True
 	errdesc="参数无效。"
@@ -30,7 +31,7 @@ eval_text=Request.Form("eval_text")
 
 Dim conn,sql,ret,rs,count
 Connect conn
-sql="SELECT * FROM ViewThesisInfo WHERE ID=? AND ? IN (REVIEWER1,REVIEWER2)"
+sql="SELECT * FROM ViewDissertations WHERE ID=? AND ? IN (REVIEWER1,REVIEWER2)"
 Set ret=ExecQuery(conn,sql,_
 	CmdParam("ID",adInteger,4,dissertation_id),_
 	CmdParam("TId",adInteger,4,Session("TId")))
@@ -287,6 +288,9 @@ rs.Update()
 CloseRs rs
 CloseConn conn
 
+' 保存视图状态
+view_name = "thesisDetail_review_"&dissertation_id
+setViewState Session("TId"),usertypeExpert,view_name,view_state
 updateActiveTime Session("TId")
 
 logtxt=Format("专家[{0}]提交评阅意见，论文：《{1}》，作者：{2}，评阅书：{3}。",_
