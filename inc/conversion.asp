@@ -116,6 +116,10 @@ Function toNumericString(ByVal str)
 	toNumericString=str
 End Function
 
+Function isNullString(ByVal str, ByVal default)
+	If IsNull(str) Then isNullString = default Else isNullString = str
+End Function
+
 Function toUnsignedInt(ByVal str)
 	str=Trim(str)
 	If IsNull(str) Or IsEmpty(str) Then

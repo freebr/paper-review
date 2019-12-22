@@ -2,6 +2,7 @@
 	return fn.substring(fn.lastIndexOf('.')).toLowerCase();
 }
 function checkIfPdfRar($ctlupload) {
+	$ctlupload=$($ctlupload);
 	if(!$ctlupload.size()) return true;
 	var ctl=$ctlupload[0];
 	var fileName=ctl.value;
@@ -17,6 +18,7 @@ function checkIfPdfRar($ctlupload) {
 	return true;
 }
 function checkIfWord($ctlupload) {
+	$ctlupload=$($ctlupload);
 	if(!$ctlupload.size()) return true;
 	var ctl=$ctlupload[0];
 	var fileName=ctl.value;
@@ -32,6 +34,7 @@ function checkIfWord($ctlupload) {
 	return true;
 }
 function checkIfRar($ctlupload) {
+	$ctlupload=$($ctlupload);
 	if(!$ctlupload.size()) return true;
 	var ctl=$ctlupload[0];
 	var fileName=ctl.value;
@@ -47,6 +50,7 @@ function checkIfRar($ctlupload) {
 	return true;
 }
 function checkIfWordRar($ctlupload) {
+	$ctlupload=$($ctlupload);
 	if(!$ctlupload.size()) return true;
 	var ctl=$ctlupload[0];
 	var fileName=ctl.value;
@@ -62,6 +66,7 @@ function checkIfWordRar($ctlupload) {
 	return true;
 }
 function checkIfDetectReview($ctlupload,index) {
+	$ctlupload=$($ctlupload);
 	if(index==undefined)
 		return checkIfWordRar($ctlupload.eq(0))&&checkIfPdfRar($ctlupload.eq(1));
 	else
@@ -104,7 +109,7 @@ function showUploadProgress() {
 	var div=document.getElementById("divupload");
 	var perc=uploadProgress.bytesUploaded/uploadProgress.bytesTotal;
 	var text="正在提交，请稍候……已完成："+Math.round(perc*10000)/100+'%<br/>'
-					+"("+Math.round(uploadProgress.bytesUploaded/102.4)/10+"kB/"+Math.round(uploadProgress.bytesTotal/102.4)/10+"kB)"
+		+"("+Math.round(uploadProgress.bytesUploaded/102.4)/10+"kB/"+Math.round(uploadProgress.bytesTotal/102.4)/10+"kB)"
 	div.innerHTML='<p>'+text+'</p>';
 	return;
 }

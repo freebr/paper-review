@@ -48,6 +48,12 @@ function showThesisDetail(id,usertype) {
 		window.tabmgr.newTab('/ThesisReview/'+client[usertype]+'/thesisDetail.asp?tid='+id);
 	return false;
 }
+function showStudentProfile(id,usertype) {
+	var client=['admin','student','tutor','expert'];
+	!window.tabmgr?window.open('studentProfile.asp?id='+id):
+		window.tabmgr.newTab('/ThesisReview/'+client[usertype]+'/studentProfile.asp?id='+id);
+	return false;
+}
 function showExpertProfile(id) {
 	!window.tabmgr?window.open('expertProfile.asp?id='+id,'expert'+id):
 		window.tabmgr.newTab('/ThesisReview/admin/expertProfile.asp?id='+id);

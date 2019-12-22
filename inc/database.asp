@@ -1,12 +1,12 @@
 ﻿<!--#include file="adovbs.inc"--><%
-Sub Connect(conn)
-	Dim connstr
-	connstr=getConnectionString("ThesisReviewSys")
+Function Connect(conn)
+	Dim connstr:connstr=getConnectionString("ThesisReviewSys")
 	Set conn=Server.CreateObject("ADODB.Connection")
 	conn.CommandTimeout=300
 	conn.CursorLocation=adUseClient
 	conn.Open connstr
-End Sub
+	Set Connect = conn
+End Function
 Sub ConnectOriginDb(conn)
 	Dim connstr
 	connstr=getConnectionString("SCUT_MD")
@@ -32,7 +32,7 @@ End Function
 <script language="jscript" runat="server">
 	function ExecQuery(conn,sql) {
 		// 执行查询或存储过程
-		if (!conn) Connect(conn);
+		conn = conn || Connect(conn);
 		var cmd=new ActiveXObject("ADODB.Command");
 		cmd.ActiveConnection=conn;
 		cmd.CommandText=sql;
@@ -47,7 +47,7 @@ End Function
 	}
 	function ExecNonQuery(conn,sql) {
 		// 执行不返回记录的存储过程
-		if (!conn) Connect(conn);
+		conn = conn || Connect(conn);
 		var countAffected=0;
 		var cmd=new ActiveXObject("ADODB.Command");
 		cmd.ActiveConnection=conn;

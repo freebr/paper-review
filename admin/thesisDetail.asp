@@ -18,7 +18,7 @@ End If
 
 Dim table_file(4)
 Connect conn
-sql="SELECT *,dbo.getThesisStatusText(1,TASK_PROGRESS,1) AS STAT_TEXT1,dbo.getThesisStatusText(2,REVIEW_STATUS,1) AS STAT_TEXT2 FROM ViewThesisInfo WHERE ID="&thesisID
+sql="SELECT *,dbo.getThesisStatusText(1,TASK_PROGRESS,1) AS STAT_TEXT1,dbo.getThesisStatusText(2,REVIEW_STATUS,1) AS STAT_TEXT2 FROM ViewDissertations WHERE ID="&thesisID
 GetRecordSet conn,rs,sql,count
 If count=0 Then
 	CloseRs rs
@@ -205,11 +205,11 @@ Case vbNullString	' 论文详情页面
 <tr><td>送检论文：&emsp;&emsp;&emsp;<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=8" target="_blank">点击下载</a>&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,0,6)">撤销</a></td></tr><%
 	End If
 	If review_status>=rsDetectThesisUploaded Then %>
-<tr><td>送检论文检测报告：<%
-		If IsNull(rs("DETECT_REPORT")) Then %>
-未上传<%
-		Else %>
-<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=12" target="_blank">点击下载</a><%
+<tr><td>检测报告：&emsp;&emsp;&emsp;<%
+		If IsNull(rs("DETECT_REPORT")) Then
+%>未上传<%
+		Else
+%><a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=12" target="_blank">点击下载</a><%
 		End If
 %>&emsp;<input type="file" name="detectreport" size="30" /></td></tr>
 <tr><td>论文检测记录（按检测先后顺序）：<%
@@ -249,23 +249,23 @@ Case vbNullString	' 论文详情页面
 		If Not IsNull(review_app) Then
 %><a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=13" target="_blank" >点击下载</a>&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,2,2)">撤销</a>&emsp;<%
 		End If
-%><input type="button" id="genReviewApp" value="更新送审申请表" /></td></tr><%
+%>无&emsp;<input type="button" id="genReviewApp" value="自动生成送审申请表" /></td></tr><%
 	End If
 	If review_status>=rsMatchExpert Then %>
-<tr><td>论文评阅书：&emsp;&emsp;<%
+<tr><td>论文评阅书：<div class="inline-list-container"><div class="inline-list"><%
 		If Len(review_file(0)) Then
-%><br/>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;1.<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=14" target="_blank">点击下载</a>（返回于&nbsp;<%=review_time(0)%>）&emsp;<a href="#" onclick="return modifyReview(<%=thesisID%>,0)">修改</a>&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,1,0)">撤销</a><%
+%><div class="inline-list-item">1.<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=14" target="_blank">点击下载</a>（返回于&nbsp;<%=review_time(0)%>）&emsp;<a href="#" onclick="return modifyReview(<%=thesisID%>,0)">修改</a>&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,1,0)">撤销</a></div><%
 		End If
 		If Len(review_file(1)) Then
-%><br/>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;2.<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=15" target="_blank">点击下载</a>（返回于&nbsp;<%=review_time(1)%>）&emsp;<a href="#" onclick="return modifyReview(<%=thesisID%>,1)">修改</a>&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,1,1)">撤销</a><%
+%><div class="inline-list-item">2.<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=15" target="_blank">点击下载</a>（返回于&nbsp;<%=review_time(1)%>）&emsp;<a href="#" onclick="return modifyReview(<%=thesisID%>,1)">修改</a>&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,1,1)">撤销</a></div><%
 		End If
-%></td></tr><%
+%></div></div></td></tr><%
 	End If
 	If review_status>=rsModifyThesisUploaded And Len(thesis_file_modified) Then %>
 <tr><td>答辩论文：&emsp;&emsp;&emsp;<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=10" target="_blank">点击下载</a>&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,0,8)">撤销</a></td></tr><%
 	End If
 	If review_status>=rsFinalThesisUploaded And Len(thesis_file_final) Then %>
-<tr><td>定稿论文：&emsp;&emsp;<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=11" target="_blank">点击下载</a>&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,0,9)">撤销</a></td></tr><%
+<tr><td>定稿论文：&emsp;&emsp;&emsp;<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=11" target="_blank">点击下载</a>&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,0,9)">撤销</a></td></tr><%
 	End If
 	If task_progress>=tpTbl4Uploaded And Len(table_file(4)) Then %>
 <tr><td>答辩审批材料：&emsp;<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=7" target="_blank">点击下载</a>&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,0,10)">撤销</a></td></tr><%
@@ -283,22 +283,23 @@ Case vbNullString	' 论文详情页面
 <table id="datagrid_review_records"></table>
 </td></tr><%
 	If Not IsNull(rs("TASK_EVAL")) Then %>
-<tr><td>导师对表格的审核意见：&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,2,0)">撤销</a><br/><%=toPlainString(rs("TASK_EVAL"))%></td></tr><%
+<tr><td>导师对表格的审核意见：&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,2,0)">撤销</a><br/><%=toPlainString(isNullString(rs("TASK_EVAL"),"未填写"))%></td></tr><%
 	End If
 	If Not IsNull(rs("DETECT_APP_EVAL")) Then %>
-<tr><td>导师送检意见：&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,2,1)">撤销</a><br/><%=toPlainString(rs("DETECT_APP_EVAL"))%></td></tr><%
+<tr><td>导师送检意见：&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,2,1)">撤销</a><br/><%=toPlainString(isNullString(rs("DETECT_APP_EVAL"),"未填写"))%></td></tr><%
 	End If
 	If Not IsNull(rs("REVIEW_APP_EVAL")) Then %>
-<tr><td>导师送审意见：&emsp;提交时间：<input type="text" name="new_submit_review_time" value="<%=rs("SUBMIT_REVIEW_TIME")%>" />&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,2,2)">撤销</a><br/><%=toPlainString(rs("REVIEW_APP_EVAL"))%></td></tr><%
+<tr><td>导师送审意见：&emsp;提交时间：<input type="text" name="new_submit_review_time" value="<%=rs("SUBMIT_REVIEW_TIME")%>" />&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,2,2)">撤销</a>
+<br/><%=toPlainString(isNullString(rs("REVIEW_APP_EVAL"),"未填写"))%></td></tr><%
 	End If
 	If Not IsNull(rs("TUTOR_MODIFY_EVAL")) Then %>
-<tr><td><%=tutor_modify_eval_title%>：&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,2,3)">撤销</a><br/><%=toPlainString(rs("TUTOR_MODIFY_EVAL"))%></td></tr><%
+<tr><td><%=tutor_modify_eval_title%>：&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,2,3)">撤销</a><br/><%=toPlainString(isNullString(rs("TUTOR_MODIFY_EVAL"),"未填写"))%></td></tr><%
 	End If
 	If Not IsNull(rs("DEFENCE_EVAL")) Then %>
-<tr><td>答辩委员会修改意见：&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,3,3)">撤销</a><br/><%=toPlainString(rs("DEFENCE_EVAL"))%></td></tr><%
+<tr><td>答辩委员会修改意见：&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,3,3)">撤销</a><br/><%=toPlainString(isNullString(rs("DEFENCE_EVAL"),"未填写"))%></td></tr><%
 	End If
 	If Not IsNull(rs("INSTRUCT_MODIFY_EVAL")) Then %>
-<tr><td>学院学位评定分委员会修改意见：&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,3,4)">撤销</a><br/><%=toPlainString(rs("INSTRUCT_MODIFY_EVAL"))%></td></tr><%
+<tr><td>学院学位评定分委员会修改意见：&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,3,4)">撤销</a><br/><%=toPlainString(isNullString(rs("INSTRUCT_MODIFY_EVAL"),"未填写"))%></td></tr><%
 	End If
 	If has_defence_plan Then %>
 <tr><td>答辩安排：已导入&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,3,2)">撤销</a>

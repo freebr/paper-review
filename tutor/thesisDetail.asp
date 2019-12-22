@@ -52,7 +52,7 @@ task_progress=rs("TASK_PROGRESS")
 review_status=rs("REVIEW_STATUS")
 stat_text1=rs("STAT_TEXT1")
 stat_text2=rs("STAT_TEXT2")
-bIsReviewVisible=(rs("REVIEW_FILE_STATUS") And 1)<>0
+bIsReviewVisible=rs("REVIEW_FILE_STATUS")<>0
 reproduct_ratio=rs("REPRODUCTION_RATIO")
 defence_result=rs("DEFENCE_RESULT")
 grant_degree_result=rs("GRANT_DEGREE_RESULT")
@@ -206,11 +206,11 @@ Case vbNullString	' 论文详情页面
 <tr><td>送检论文：&emsp;&emsp;&emsp;<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=8" target="_blank">点击下载</a></td></tr><%
 	End If
 	If review_status>=rsDetectThesisUploaded Then %>
-<tr><td>送检论文检测报告：<%
-		If IsNull(rs("DETECT_REPORT")) Then %>
-未上传<%
-		Else %>
-<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=12" target="_blank">点击下载</a><%
+<tr><td>检测报告：&emsp;&emsp;&emsp;<%
+		If IsNull(rs("DETECT_REPORT")) Then
+%>未上传<%
+		Else
+%><a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=12" target="_blank">点击下载</a><%
 		End If
 %></td></tr>
 <tr><td>论文检测记录（按检测先后顺序）：<%
@@ -249,21 +249,21 @@ Case vbNullString	' 论文详情页面
 		End If
 		' 根据评阅书显示设置决定是否显示文件
 		If numReviewed And bIsReviewVisible Then %>
-<tr><td>论文评阅书：&emsp;&emsp;<%
+<tr><td>论文评阅书：<div class="inline-list-container"><div class="inline-list"><%
 			If Len(review_file(0)) Then
-%>1.<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=14" target="_blank">点击下载</a>（返回于&nbsp;<%=review_time(0)%>）&emsp;<%
+%><div class="inline-list-item">1.<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=14" target="_blank">点击下载</a>（返回于&nbsp;<%=review_time(0)%>）</div><%
 			End If
 			If Len(review_file(1)) Then
-%>2.<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=15" target="_blank">点击下载</a>（返回于&nbsp;<%=review_time(1)%>）<%
+%><div class="inline-list-item">2.<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=15" target="_blank">点击下载</a>（返回于&nbsp;<%=review_time(1)%>）</div><%
 			End If
-%></td></tr><%
+%></div></div></td></tr><%
 		End If
 	End If
 	If review_status>=rsModifyThesisUploaded And Len(thesis_file_modified) Then %>
-<tr><td>答辩论文：&emsp;&emsp;<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=10" target="_blank">点击下载</a></td></tr><%
+<tr><td>答辩论文：&emsp;&emsp;&emsp;<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=10" target="_blank">点击下载</a></td></tr><%
 	End If
 	If review_status>=rsFinalThesisUploaded And Len(thesis_file_final) Then %>
-<tr><td>定稿论文：&emsp;&emsp;<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=11" target="_blank">点击下载</a>&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,0,5)">撤销</a></td></tr><%
+<tr><td>定稿论文：&emsp;&emsp;&emsp;<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=11" target="_blank">点击下载</a>&emsp;<a href="#" onclick="return rollback(<%=thesisID%>,0,5)">撤销</a></td></tr><%
 	End If
 	If task_progress>=tpTbl4Uploaded And Len(table_file(4)) Then %>
 <tr><td>答辩审批材料：&emsp;<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=7" target="_blank">点击下载</a></td></tr><%
@@ -277,22 +277,25 @@ Case vbNullString	' 论文详情页面
 <tr><td>处理意见：&emsp;&emsp;&emsp;<%=finalResultList("review_result",review_result(2),false)%></td></tr><%
 	End If
 	If Not IsNull(rs("TASK_EVAL")) Then %>
-<tr><td>导师对表格的审核意见：&emsp;<%=toPlainString(rs("TASK_EVAL"))%></td></tr><%
+<tr><td>导师对表格的审核意见：&emsp;<%=toPlainString(isNullString(rs("TASK_EVAL"),"未填写"))%></td></tr><%
 	End If
 	If review_status>=rsNotAgreeDetect Then %>
-<tr><td>导师送检意见：&emsp;<%=toPlainString(rs("DETECT_APP_EVAL"))%></td></tr><%
+<tr><td>导师送检意见：&emsp;<%=toPlainString(isNullString(rs("DETECT_APP_EVAL"),"未填写"))%></td></tr><%
 	End If
-	If review_status=rsAgreeDetect Or review_status>=rsNotAgreeReview Then %>
-<tr><td>导师送审意见（<%=rs("SUBMIT_REVIEW_TIME")%>）：&emsp;<%=toPlainString(rs("REVIEW_APP_EVAL"))%></td></tr><%
+	If review_status=rsAgreeDetect Or review_status>=rsNotAgreeReview Then
+		submit_review_time=rs("SUBMIT_REVIEW_TIME")
+		If Not IsNull(submit_review_time) Then submit_review_time="("&submit_review_time&")"
+	%>
+<tr><td>导师送审意见<%=submit_review_time%>：&emsp;<%=toPlainString(isNullString(rs("REVIEW_APP_EVAL"),"未填写"))%></td></tr><%
 	End If
 	If review_status>=rsModifyUnpassed Then %>
-<tr><td><%=tutor_modify_eval_title%>：<%=toPlainString(rs("TUTOR_MODIFY_EVAL"))%></td></tr><%
+<tr><td><%=tutor_modify_eval_title%>：<%=toPlainString(isNullString(rs("TUTOR_MODIFY_EVAL"),"未填写"))%></td></tr><%
 	End If
 	If review_status>=rsDefenceEval Then %>
-<tr><td>答辩委员会修改意见：<br/><%=toPlainString(rs("DEFENCE_EVAL"))%></td></tr><%
+<tr><td>答辩委员会修改意见：<br/><%=toPlainString(isNullString(rs("DEFENCE_EVAL"),"未填写"))%></td></tr><%
 	End If
 	If review_status>=rsInstructEval Then %>
-<tr><td>学院学位评定分委员会修改意见：<br/><%=toPlainString(rs("INSTRUCT_MODIFY_EVAL"))%></td></tr><%
+<tr><td>学院学位评定分委员会修改意见：<br/><%=toPlainString(isNullString(rs("INSTRUCT_MODIFY_EVAL"),"未填写"))%></td></tr><%
 	End If
 	If Not IsNull(rs("DEFENCE_MEMBER")) Then
 		Dim defence_members,defence_memo

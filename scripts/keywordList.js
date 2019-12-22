@@ -1,23 +1,4 @@
-﻿function onKeywordBlur() {
-	if(!this.value.length) {
-		if(this.name=='keyword_ch')
-			this.value='请输入…';
-		else
-			this.value='Please input...';
-		$(this).css({'color':'#999999','font-weight':'bold'});
-		this.dirty=false;
-	}
-}
-function onKeywordFocus() {
-	if(!this.dirty) {
-		this.value='';
-		$(this).css({'color':'#000000','font-weight':''});
-	}
-}
-function onKeywordChange() {
-	this.dirty=true;
-}
-function onKeywordRemove() {
+﻿function onKeywordRemove() {
 	removeKeyword($(this).parents('tr').eq(0));
 	return false;
 }
@@ -30,7 +11,6 @@ function addKeyword() {
 	var keywordpair=$('tr.keywordpair').eq(-1);
 	tr.className='keywordpair';
 	tr.innerHTML=keywordpair.html();
-	$(tr).find('input.keyword').blur();
 	keywordpair.after(tr);
 	return;
 }
@@ -60,8 +40,8 @@ function setKeywordCount(new_count) {
 }
 function setKeywords(keywords_ch,keywords_en) {
 	setKeywordCount(keywords_ch.length);
-	var i=0;$('input[name="keyword_ch"]').each(function(){onKeywordFocus.call(this);$(this).val(keywords_ch[i++]).change().blur();});
-	i=0;$('input[name="keyword_en"]').each(function(){onKeywordFocus.call(this);$(this).val(keywords_en[i++]).change().blur();});
+	var i=0;$('input[name="keyword_ch"]').each(function(){$(this).val(keywords_ch[i++]);});
+	i=0;$('input[name="keyword_en"]').each(function(){$(this).val(keywords_en[i++]);});
 	return;
 }
 function checkKeywords() {
@@ -73,19 +53,20 @@ function checkKeywords() {
 				item.focus();
 				return false;
 			}
+			value = item.value.trim();
+			if (!value.length) return false;
 			if (item.name==='keyword_ch') {
-				keywords_ch.push(item.value);
+				keywords_ch.push(value);
 			} else {
-				keywords_en.push(item.value);
+				keywords_en.push(value);
 			}
 		}
 	);
-	$('input[name="keyword_ch"]').val(keywords_ch.join(', '));
-	$('input[name="keyword_en"]').val(keywords_en.join(', '));
+	$('input[name="keyword_ch_all"]').val(keywords_ch.join(', '));
+	$('input[name="keyword_en_all"]').val(keywords_en.join(', '));
 	return true;
 }
 $(function() {
-	$('input.keyword').on({'blur':onKeywordBlur,'focus':onKeywordFocus,'change':onKeywordChange}).blur();
 	$(this).on('click','a.linkAdd',function() {
 		addKeyword();
 		return false;

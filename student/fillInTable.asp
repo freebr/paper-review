@@ -8,13 +8,13 @@ Dim researchway_list
 Dim conn,rs,sql,count
 
 activity_id=0
-allow_upload=False
 section_id=0
+allow_upload=False
 stu_type=Session("StuType")
 researchway_list=loadResearchwayList(stu_type)
 
 Connect conn
-sql="SELECT *,dbo.getThesisStatusText(1,TASK_PROGRESS,2) AS STAT_TEXT FROM ViewThesisInfo WHERE STU_ID="&Session("Stuid")&" ORDER BY ActivityId DESC"
+sql="SELECT *,dbo.getThesisStatusText(1,TASK_PROGRESS,2) AS STAT_TEXT FROM ViewDissertations WHERE STU_ID="&Session("Stuid")&" ORDER BY ActivityId DESC"
 GetRecordSetNoLock conn,rs,sql,count
 sql="SELECT STU_NO,SEX,IFFOREIGN,ENTER_YEAR,TEACHERNAME,TUTOR_ID FROM ViewStudentInfo WHERE STU_ID="&Session("Stuid")
 GetRecordSetNoLock conn,rsStu,sql,count
@@ -43,34 +43,29 @@ Else
 	Select Case task_progress
 	Case tpNone,tpTbl1Uploaded,tpTbl1Unpassed	' 开题报告
 		section_id=sectionUploadKtbg
-		is_generated=task_progress=tpTbl1Uploaded Or task_progress=tpTbl1Unpassed
+		is_generated=Not IsNull(rs("TABLE_FILE1"))
 		filetype=1
 	Case tpTbl1Passed,tpTbl2Uploaded,tpTbl2Unpassed	' 中期检查表
 		section_id=sectionUploadZqjcb
-		is_generated=task_progress=tpTbl2Uploaded Or task_progress=tpTbl2Unpassed
+		is_generated=Not IsNull(rs("TABLE_FILE2"))
 		filetype=3
 	Case tpTbl2Passed,tpTbl3Uploaded,tpTbl3Unpassed	' 预答辩申请表
 		section_id=sectionUploadYdbyjs
-		is_generated=task_progress=tpTbl3Uploaded Or task_progress=tpTbl3Unpassed
+		is_generated=Not IsNull(rs("TABLE_FILE3"))
 		filetype=5
 	Case tpTbl3Passed,tpTbl4Uploaded,tpTbl4Unpassed	' 答辩审批材料
 		review_status=rs("REVIEW_STATUS")
 		If review_status>=rsReviewEval Then
 			section_id=sectionUploadSpcl
-			is_generated=task_progress=tpTbl4Uploaded Or task_progress=tpTbl4Unpassed
+			is_generated=Not IsNull(rs("TABLE_FILE4"))
 			filetype=7
 		Else
 			section_id=sectionUploadYdbyjs
-			allow_upload=False
-			bRedirectToThesisUpload=True
 		End If
 	Case tpTbl4Passed ' 答辩审批材料审核通过
 		section_id=sectionUploadSpcl
 		is_generated=True
 		filetype=7
-		allow_upload=False
-	Case Else
-		allow_upload=False
 	End Select
 	speciality_name=rs("SPECIALITY_NAME")
 	If foreign_student Then
@@ -127,6 +122,10 @@ Case 9
 End Select
 template_file="template/doc/new/"&prefix&template_name&".doc"
 
+view_name = "fillInTable_"&arrStuOprName(section_id)
+' 获取视图状态
+view_state = getViewState(Session("StuId"),usertypeStudent,view_name)
+
 step=Request.QueryString("step")
 Select Case step
 Case vbNullstring ' 填写信息页面
@@ -136,43 +135,42 @@ Case vbNullstring ' 填写信息页面
 <meta name="theme-color" content="#2D79B2" />
 <title>在线填写表格</title>
 <% useStylesheet "student", "jeasyui" %>
-<% useScript "jquery", "jeasyui", "common", "upload", "uploadTable", "keywordList" %>
+<% useScript "jquery", "jeasyui", "common", "upload", "fillInTable", "keywordList", "viewState" %>
 </head>
 <body bgcolor="ghostwhite">
 <center><font size=4><b>在线填写表格</b></font>
 <form id="fmTable" action="?step=1" method="post">
-<table class="tblform" width="1000"><tr><td class="summary"><p><%
+<table class="tblform" width="1000"><tr><td class="summary"><%
 	If Not allow_upload Then
 		If time_flag=-3 Then
-%><span class="tip">当前评阅活动【<%=rs("ActivityName")%>】已关闭，不能提交表格！</span><%
+%><p><span class="tip">当前评阅活动【<%=rs("ActivityName")%>】已关闭，不能提交表格！</span></p><%
 		ElseIf time_flag=-2 Then
-%><span class="tip">【<%=current_section("Name")%>】环节已关闭，不能提交表格！</span><%
+%><p><span class="tip">【<%=current_section("Name")%>】环节已关闭，不能提交表格！</span></p><%
 		ElseIf time_flag<>0 Then
-%><span class="tip">【<%=current_section("Name")%>】环节开放时间为<%=toDateTime(current_section("StartTime"),1)%>至<%=toDateTime(current_section("EndTime"),1)%>，当前不在开放时间内，不能提交表格！</span><%
+%><p><span class="tip">【<%=current_section("Name")%>】环节开放时间为<%=toDateTime(current_section("StartTime"),1)%>至<%=toDateTime(current_section("EndTime"),1)%>，当前不在开放时间内，不能提交表格！</span></p><%
 		Else
-%><span class="tip">当前状态为【<%=rs("STAT_TEXT")%>】，不能提交表格！</span><%
+%><p><span class="tip">当前状态为【<%=rs("STAT_TEXT")%>】，不能提交表格！</span></p><%
 		End If
 	Else
 %><p>当前填写的是：<span style="color:#ff0000;font-weight:bold"><%=arrStuOprName(section_id)%></span></p><%
 		If is_new_dissertation Then %>
 <p>请选择您要参加的评阅活动：
 <input id="activity_id" class="easyui-combobox" name="activity_id"
-    data-options="valueField:'id',
-	textField:'name',
+    data-options="valueField: 'id',
+	textField: 'name',
 	editable: false,
-	prompt:'【请选择】',
+	prompt: '【请选择】',
 	width: 300,
 	panelHeight: 100,<%
 	If activity_id<>0 Then %>
-	value:<%=activity_id%>,<%
+	value: <%=activity_id%>,<%
 	End If %>
-	url:'../api/get-attendable-activities',
-	loadFilter:Common.curryLoadFilter(Array.prototype.reverse)"></p><%
+	url: '../api/get-attendable-activities',
+	loadFilter: Common.curryLoadFilter(Array.prototype.reverse)"></p><%
 		End If %>
 <p>请填写以下信息，确认无误后点击&quot;提交&quot;按钮生成表格：</p><%
-	End If %></p></td></tr>
+	End If %></td></tr>
 <tr><td align="center">
-<input type="hidden" name="stuid" value="<%=Session("Stuid")%>" />
 <table class="tblform">
 <!--<tr><td><span class="tip">以下信息均为必填项</span></td></tr>-->
 <tr><td align="center"><%
@@ -198,7 +196,9 @@ Case vbNullstring ' 填写信息页面
 	End If %>
 <tr><td align="center"><p><%
 	If allow_upload Then
-%><input type="submit" id="btnsubmit" value="提 交" />&nbsp;<%
+%><input type="button" id="btnsavedraft" value="保存草稿" />&nbsp;
+<input type="button" id="btnloaddraft" value="读取草稿" />&nbsp;
+<input type="submit" id="btnsubmit" value="提 交" />&nbsp;<%
 	End If
 	If is_generated Then
 %><input type="button" id="btndownload" value="下载打印" />&nbsp;<%
@@ -213,7 +213,6 @@ Case vbNullstring ' 填写信息页面
 <a href="<%=template_file%>" target="_blank"><img src="../images/down.png" />下载<%=arrStuOprName(section_id)%>模板...</a></div><%
 	End If %></td></tr></table></td></tr></table></form></center>
 <script type="text/javascript"><%
-
 	If section_id=sectionUploadKtbg And allow_upload Then %>
 	$('select[name="sub_research_field_select"]').change(function(){
 		$('input[name="sub_research_field"]').val(!this.value.length?'':$(this).find('option:selected').text());
@@ -233,17 +232,42 @@ Case vbNullstring ' 填写信息页面
 		$('select[name="school_tutor_research_field_select"]').change();
 		$('input[name="research_field"]').val(!this.value.length?'':$(this).find('option:selected').text());
 	});
-	initResearchFieldSelectBox($('select[name="research_field_select"]'),<%=stu_type%>);<%
+	initResearchFieldSelectBox($('select[name="research_field_select"]'),<%=stu_type%>)
+		.then(function() {
+			initViewState($("form"), {
+				user_id: <%=Session("StuId")%>,
+				user_type: <%=usertypeStudent%>,
+				view_name: "<%=view_name%>",
+				view_state: <%=isNullString(view_state, "null")%>
+			}, function(data) {
+				var keywords_ch = [], keywords_en = [];
+				[].concat(data.keyword_ch).forEach(function(item) {
+					keywords_ch.push(item.value);
+				});
+				[].concat(data.keyword_en).forEach(function(item) {
+					keywords_en.push(item.value);
+				});
+				setKeywords(keywords_ch, keywords_en);
+			});
+		});<%
+	Else
+	%>
+		initViewState($("form"), {
+			user_id: <%=Session("StuId")%>,
+			user_type: <%=usertypeStudent%>,
+			view_name: "<%=view_name%>",
+			view_state: <%=isNullString(view_state, "null")%>
+		});<%
 	End If %>
 	$('form').submit(function(event) {<%
-	If section_id=sectionUploadKtbg Then %>
+	If section_id=sectionUploadKtbg And allow_upload Then %>
 		if(!checkKeywords()) {
 			event.preventDefault();
 			return false;
 		}<%
 	End If %>
 		return submitUploadForm(this);
-	}).find(':submit').attr('disabled',<%=LCase(Not allow_upload)%>);
+	});
 	$(':button#btnuploadtblthesis').click(
 		function() {
 			window.location.href='uploadTableThesis.asp';
@@ -302,14 +326,14 @@ Case 1	' 上传进程
 			"custom_sub_research_field","school_tutor_name","school_tutor_duty",_
 			"school_tutor_research_field_select","school_tutor_research_field",_
 			"afterschool_tutor_name","afterschool_tutor_duty","afterschool_tutor_expertise",_
-			"issue_source","abstract","keyword_ch","keyword_en","research_background",_
+			"issue_source","abstract","keyword_ch_all","keyword_en_all","research_background",_
 			"research_solution","work_schedule_duration","work_schedule_content",_
-			"work_schedule_memo","anticipated_result")
+			"work_schedule_memo","anticipated_result","view_state")
 
 		If Len(params("activity_id"))=0 Then
 			bError=True
 			errdesc="请选择要参加的评阅活动！"
-		ElseIf Len(params("research_field_select"))=0 Then
+		ElseIf stu_type = 5 And Len(params("research_field_select"))=0 Then
 			bError=True
 			errdesc="请选择工程领域！"
 		ElseIf Len(params("sub_research_field_select"))=0 Then
@@ -340,8 +364,8 @@ Case 1	' 上传进程
 		tg.setField "AfterSchoolTutorExpertise",params("afterschool_tutor_expertise")
 		tg.setField "IssueSource",params("issue_source")
 		tg.setField "Abstract",params("abstract")
-		tg.setField "KeywordsCh",Replace(params("keyword_ch")(1),", ","　")
-		tg.setField "KeywordsEn",Replace(params("keyword_en")(1),", ","/")
+		tg.setField "KeywordsCh",Replace(params("keyword_ch_all"),", ","　")
+		tg.setField "KeywordsEn",Replace(params("keyword_en_all"),", ","/")
 
 		tg.setField "ResearchBackground",params("research_background")
 		tg.setField "ResearchSolution",params("research_solution")
@@ -354,7 +378,7 @@ Case 1	' 上传进程
 
 	Case sectionUploadZqjcb
 
-		Set params=getFormParams("subject","research_field","thesis_progress","work_schedule")
+		Set params=getFormParams("subject","research_field","thesis_progress","work_schedule","view_state")
 
 		tg.setField "StuName",Session("StuName")
 		tg.setField "StuNo",Session("StuNo")
@@ -367,7 +391,7 @@ Case 1	' 上传进程
 
 	Case sectionUploadYdbyjs
 
-		Set params=getFormParams("activity_id","grade","speciality_name","subject","predefence_date")
+		Set params=getFormParams("activity_id","grade","speciality_name","subject","predefence_date","view_state")
 
 		If Len(params("activity_id"))=0 Then
 			bError=True
@@ -401,7 +425,7 @@ Case 1	' 上传进程
 			"resume_duration","resume_place","resume_job",_
 			"honor_penalty","achievement_name","achievement_ym","achievement_source","achievement_authornum","achievement_status",_
 			"dissertation_subject","dissertation_keywords","dissertation_word_count","issue_source","project_name_code",_
-			"dissertation_type","dissertation_duration","tutor_eval")
+			"dissertation_type","dissertation_duration","tutor_eval","view_state")
 		params("birthday")=toYearMonthDate(Request.Form("birthday")(1),Request.Form("birthday")(2),Request.Form("birthday")(3))
 		params("entrance_ym")=toYearMonth(Request.Form("entrance_ym")(1),Request.Form("entrance_ym")(2))
 		params("graduation_ym")=toYearMonth(Request.Form("graduation_ym")(1),Request.Form("graduation_ym")(2))
@@ -497,9 +521,9 @@ Case 1	' 上传进程
 		rs3("REVIEW_FILE_STATUS")=0
 		rs3("REVIEW_RESULT")="5,5,6"
 		rs3("REVIEW_LEVEL")="0,0"
-		If params.Exists("keyword_ch") Then
-			rs3("KEYWORDS")=Replace(params("keyword_ch")(1),", ","；")
-			rs3("KEYWORDS_EN")=Replace(params("keyword_en")(1),", ","；")
+		If params.Exists("keyword_ch_all") Then
+			rs3("KEYWORDS")=Replace(params("keyword_ch_all"),", ","；")
+			rs3("KEYWORDS_EN")=Replace(params("keyword_en_all"),", ","；")
 		End If
 	End If
 	rs3("THESIS_SUBJECT")=subject
@@ -514,7 +538,9 @@ Case 1	' 上传进程
 	rs3.Update()
 	CloseRs rs3
 
-	writeLog Format("学生[{0}]上传[{1}]。",Session("Stuname"),arrStuOprName(section_id))
+	' 保存视图状态
+	setViewState Session("StuId"),usertypeStudent,view_name,params("view_state")
+	writeLog Format("学生[{0}]填写提交[{1}]。",Session("Stuname"),arrStuOprName(section_id))
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />

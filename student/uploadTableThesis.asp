@@ -2,21 +2,23 @@
 <!--#include file="../inc/ExtendedRequest.inc"-->
 <!--#include file="common.asp"-->
 <%If IsEmpty(Session("StuId")) Then Response.Redirect("../error.asp?timeout")
-Dim section_id,time_flag,allow_upload
+Dim is_new_dissertation:is_new_dissertation=False
+Dim activity_id,section_id,time_flag,allow_upload
 Dim conn,rs,sql,count
 
-allow_upload=False
+activity_id=0
 section_id=0
+allow_upload=False
 stu_type=Session("StuType")
 
 Connect conn
-sql="SELECT *,dbo.getThesisStatusText(1,TASK_PROGRESS,2) AS STAT_TEXT FROM ViewThesisInfo WHERE STU_ID="&Session("Stuid")&" ORDER BY ActivityId DESC"
+sql="SELECT *,dbo.getThesisStatusText(1,TASK_PROGRESS,2) AS STAT_TEXT FROM ViewDissertations WHERE STU_ID="&Session("Stuid")&" ORDER BY ActivityId DESC"
 GetRecordSetNoLock conn,rs,sql,count
-sql="SELECT TUTOR_ID FROM ViewStudentInfo WHERE STU_ID="&Session("Stuid")
 If rs.EOF Then
 	section_id=sectionUploadKtbg
 	task_progress=tpNone
 Else
+	activity_id=rs("ActivityId")
 	subject_ch=rs("THESIS_SUBJECT")
 	subject_en=rs("THESIS_SUBJECT_EN")
 	' 表格审核进度
@@ -28,11 +30,10 @@ Else
 		section_id=sectionUploadZqjcb
 	Case tpTbl2Passed,tpTbl3Uploaded,tpTbl3Unpassed	' 预答辩申请表
 		section_id=sectionUploadYdbyjs
-	Case Else
-		allow_upload=False
 	End Select
 End If
 If section_id<>0 Then
+	is_new_dissertation=section_id=sectionUploadKtbg Or stu_type=7 And section_id=sectionUploadYdbyjs
 	If rs.EOF Then
 		allow_upload=True
 	ElseIf Not isActivityOpen(rs("ActivityId")) Then
@@ -51,40 +52,56 @@ Case vbNullstring ' 填写信息页面
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="theme-color" content="#2D79B2" />
 <title>上传表格附加论文</title>
-<% useStylesheet "student" %>
-<% useScript "jquery", "common", "upload", "uploadThesis" %>
+<% useStylesheet "student", "jeasyui" %>
+<% useScript "jquery", "jeasyui", "common", "upload", "uploadThesis" %>
 </head>
 <body bgcolor="ghostwhite">
 <center><font size=4><b>上传表格附加论文</b></font>
-<table class="tblform" width="1000" align="center"><tr><td class="summary"><p><%
+<form id="fmDissertation" action="?step=1" method="post" enctype="multipart/form-data">
+<table class="tblform" width="1000" align="center"><tr><td class="summary"><%
 	If Not allow_upload Then
-%><span class="tip">当前状态为【<%=rs("STAT_TEXT")%>】，不能上传附加论文！</span><%
+%><p><span class="tip">当前状态为【<%=rs("STAT_TEXT")%>】，不能上传附加论文！</span></p><%
 	ElseIf time_flag=-2 Then
-%><span class="tip">【<%=current_section("Name")%>】环节已关闭，不能上传附加论文！</span><%
+%><p><span class="tip">【<%=current_section("Name")%>】环节已关闭，不能上传附加论文！</span></p><%
 	ElseIf time_flag<>0 Then
-%><span class="tip">【<%=current_section("Name")%>】环节开放时间为<%=toDateTime(current_section("StartTime"),1)%>至<%=toDateTime(current_section("EndTime"),1)%>，当前不在开放时间内，不能上传附加论文！</span><%
+%><p><span class="tip">【<%=current_section("Name")%>】环节开放时间为<%=toDateTime(current_section("StartTime"),1)%>至<%=toDateTime(current_section("EndTime"),1)%>，当前不在开放时间内，不能上传附加论文！</span></p><%
 	Else
-%>当前上传的是：<span style="color:#ff0000;font-weight:bold"><%=arrTblThesisDetail(section_id)%></span><br/>
-请选择要上传的文件，并点击&quot;提交&quot;按钮：<%
-	End If %></p></td></tr>
-<tr><td align="center"><form id="fmDissertation" action="?step=1" method="post" enctype="multipart/form-data">
+%><p>当前上传的是：<span style="color:#ff0000;font-weight:bold"><%=arrTblThesisDetail(section_id)%></span></p><%
+		If is_new_dissertation Then %>
+<p>请选择您要参加的评阅活动：
+<input id="activity_id" class="easyui-combobox" name="activity_id"
+    data-options="valueField: 'id',
+	textField: 'name',
+	editable: false,
+	prompt: '【请选择】',
+	width: 300,
+	panelHeight: 100,<%
+	If activity_id<>0 Then %>
+	value: <%=activity_id%>,<%
+	End If %>
+	url: '../api/get-attendable-activities',
+	loadFilter: Common.curryLoadFilter(Array.prototype.reverse)"></p><%
+		End If %>
+<p>请选择要上传的文件，并点击&quot;提交&quot;按钮：</p><%
+	End If %></td></tr>
+<tr><td align="center">
 <table class="tblform">
 <tr><td><p>论文题目：《<input type="text" name="subject_ch" size="50" value="<%=subject_ch%>" />》</p>
 <p>（英文）：&nbsp;<input type="text" name="subject_en" size="53" maxlength="200" value="<%=subject_en%>" />&nbsp;</p>
-<p>文件名：<input type="file" name="thesisFile" size="50" title="<%=arrTblThesis(section_id)%>" /><br/><span class="tip">Word&nbsp;或&nbsp;RAR&nbsp;格式，超过20M请先压缩成rar文件再上传，否则上传不成功</span></p>
-<p align="center"><input type="submit" name="btnsubmit" value="提 交"<%If Not allow_upload Then %> disabled<% End If %> />&nbsp;
-<input type="button" name="btnUploadTable" value="返回填写表格页面" onclick="location.href='uploadTableNew.asp'" />&nbsp;
+<p>文件名：<input type="file" name="thesis_file" size="50" title="<%=arrTblThesis(section_id)%>" /><br/><span class="tip">Word&nbsp;或&nbsp;RAR&nbsp;格式，超过20M请先压缩成rar文件再上传，否则上传不成功</span></p>
+<p align="center"><input type="submit" id="btnsubmit" value="提 交"<%If Not allow_upload Then %> disabled<% End If %> />&nbsp;
+<input type="button" name="btnUploadTable" value="返回填写表格页面" onclick="location.href='fillInTable.asp'" />&nbsp;
 <input type="button" name="btnreturn" value="返回首页" onclick="location.href='home.asp'" /></p></td></tr></table>
-</form></td></tr></table></center>
+</td></tr></table></form></center>
 <script type="text/javascript">
-	$('input[name="thesisFile"]').change(function(){if(this.value.length)checkIfWordRar(this);});
+	$('input[name="thesis_file"]').change(function(){if(this.value.length)checkIfWordRar(this);});
 	$('form').submit(function(){
-			var valid=checkIfWordRar(this.thesisFile);
+			var valid=checkIfWordRar(this.thesis_file);
 			if(valid) submitUploadForm(this); else return false;
 		});
 	<%
 	If Not allow_upload Then %>
-	$('input[name="thesisFile"]').attr('readOnly',true);
+	$('input[name="thesis_file"]').attr('readOnly',true);
 	$(':submit').attr('disabled',true);<%
 	Else %>
 	$(':submit').attr('disabled',false);<%
@@ -114,22 +131,26 @@ Case 1	' 上传进程
 		showErrorPage errdesc, "提示"
 	End If
 
-	Dim fso,Upload,thesisfile
+	Dim fso,Upload,thesis_file
 	Dim new_subject_ch,new_subject_en
 
 	Set Upload=New ExtendedRequest
+	activity_id=Upload.Form("activity_id")
 	new_subject_ch=Upload.Form("subject_ch")
 	new_subject_en=Upload.Form("subject_en")
-	Set thesisfile=Upload.File("thesisFile")
+	Set thesis_file=Upload.File("thesis_file")
 	Set fso=Server.CreateObject("Scripting.FileSystemObject")
 
 	' 检查上传目录是否存在
 	strUploadPath=Server.MapPath("upload")
 	If Not fso.FolderExists(strUploadPath) Then fso.CreateFolder(strUploadPath)
-	thesisfileExt=LCase(thesisfile.FileExt)
-	If InStr("doc docx rar",thesisfileExt)=0 Then	' 不被允许的文件类型
+	thesis_file_ext=LCase(thesis_file.FileExt)
+	If is_new_dissertation And Len(activity_id)=0 Then
 		bError=True
-		errdesc="上传论文所选择的不是 Word 文件或 RAR 压缩文件！"
+		errdesc="请选择要参加的评阅活动！"
+	ElseIf InStr("doc docx rar",thesis_file_ext)=0 Then	' 不被允许的文件类型
+		bError=True
+		errdesc="所上传的不是 Word 文件或 RAR 压缩文件！"
 	ElseIf Len(new_subject_ch)=0 Then
 		bError=True
 		errdesc="请填写论文题目！"
@@ -144,20 +165,19 @@ Case 1	' 上传进程
 		byteFileSize=0
 		' 生成日期格式文件名
 		fileid=FormatDateTime(Now(),1)&Int(Timer)
-		strDestThesisFile=fileid&"."&thesisfileExt
+		strDestThesisFile=fileid&"."&thesis_file_ext
 		strDestPath=strUploadPath&"\"&strDestThesisFile
-		byteFileSize=thesisfile.FileSize
+		byteFileSize=thesis_file.FileSize
 		' 保存论文文件
-		thesisfile.SaveAs strDestPath
+		thesis_file.SaveAs strDestPath
 	End If
 	Set fso=Nothing
-	Set thesisfile=Nothing
+	Set thesis_file=Nothing
 	Set Upload=Nothing
 
 	If Not bError Then
-		Dim arrTblThesisFieldName,arrNewTaskProgress
+		Dim arrTblThesisFieldName
 		arrTblThesisFieldName=Array("","TBL_THESIS_FILE1","TBL_THESIS_FILE2","TBL_THESIS_FILE3")
-		arrNewTaskProgress=Array(0,tpTbl1Uploaded,tpTbl2Uploaded,tpTbl3Uploaded)
 		' 关联到数据库
 		sql="SELECT * FROM Dissertations WHERE STU_ID="&Session("Stuid")&" ORDER BY ActivityId DESC"
 		GetRecordSet conn,rs3,sql,count
@@ -165,8 +185,9 @@ Case 1	' 上传进程
 			' 添加记录
 			rs3.AddNew()
 		End If
-		If section_id=sectionUploadKtbg Then	' 开题报告，录入论文基本信息
+		If is_new_dissertation Then	' 新论文记录，录入论文基本信息
 			rs3("STU_ID")=Session("Stuid")
+			rs3("ActivityId")=activity_id
 			rs3("REVIEW_STATUS")=rsNone
 			rs3("REVIEW_FILE_STATUS")=0
 			rs3("REVIEW_RESULT")="5,5,6"
@@ -176,9 +197,9 @@ Case 1	' 上传进程
 		rs3("THESIS_SUBJECT")=new_subject_ch
 		rs3("THESIS_SUBJECT_EN")=new_subject_en
 		rs3(arrTblThesisFieldName(section_id))=strDestThesisFile
-		'rs3("TASK_PROGRESS")=arrNewTaskProgress(section_id)
 		rs3.Update()
 		CloseRs rs3
+
 		writeLog Format("学生[{0}]上传[{1}]。",Session("Stuname"),arrTblThesis(section_id))
 	End If
 %><html>

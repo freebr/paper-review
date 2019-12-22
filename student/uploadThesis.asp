@@ -13,7 +13,7 @@ section_id=0
 stu_type=Session("StuType")
 
 Connect conn
-sql="SELECT *,dbo.getThesisStatusText(2,REVIEW_STATUS,2) AS STAT_TEXT FROM ViewThesisInfo WHERE STU_ID="&Session("StuId")&" ORDER BY ActivityId DESC"
+sql="SELECT *,dbo.getThesisStatusText(2,REVIEW_STATUS,2) AS STAT_TEXT FROM ViewDissertations WHERE STU_ID="&Session("StuId")&" ORDER BY ActivityId DESC"
 GetRecordSetNoLock conn,rs,sql,count
 sql="SELECT * FROM ViewStudentInfo WHERE STU_ID="&Session("StuId")
 GetRecordSetNoLock conn,rsStu,sql,count
@@ -62,7 +62,9 @@ Else
 	thesis_form=rs("THESIS_FORM").Value
 End If
 If section_id<>0 Then
-	If Not isActivityOpen(rs("ActivityId")) Then
+	If rs.EOF Then
+		allow_upload=True
+	ElseIf Not isActivityOpen(rs("ActivityId")) Then
 		time_flag=-3
 	Else
 		Set current_section=getSectionInfo(rs("ActivityId"), stu_type, section_id)
@@ -80,7 +82,7 @@ End If
 If redirect_to_tbl_upload Then
 	CloseRs rs
 	CloseConn conn
-	Response.Redirect "uploadTableNew.asp"
+	Response.Redirect "fillInTable.asp"
 End If
 
 step=Request.QueryString("step")

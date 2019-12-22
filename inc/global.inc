@@ -90,7 +90,7 @@ Const sectionReview = 10
 				query_string='';
 			}
 			if (!dictScripts.Exists(alias)) {
-				Response.Write(Format('<{0} type="text/javascript">console.warn("useScript(): 脚本\"{1}\"未注册。");</{0}>',
+				Response.Write(Format('<{0} type="text/javascript">console.warn("useScript(): 脚本\\"{1}\\"未注册。");</{0}>',
 					'script', alias));
 			} else {
 				var value=dictScripts.Item(alias);
@@ -120,7 +120,7 @@ Const sectionReview = 10
 				query_string='';
 			}
 			if (!dictStylesheets.Exists(alias)) {
-				Response.Write(Format('<{0} type="text/javascript">console.warn("useStylesheet(): 样式表\"{0}\"未注册。");</{0}>',
+				Response.Write(Format('<{0} type="text/javascript">console.warn("useStylesheet(): 样式表\\"{0}\\"未注册。");</{0}>',
 					'script', alias));
 			} else {
 				var value=dictStylesheets.Item(alias);
@@ -414,8 +414,9 @@ dictScripts.Add "systemSettings",	"systemSettings"
 dictScripts.Add "thesis",			"thesis"
 dictScripts.Add "tutor",			"tutor"
 dictScripts.Add "upload",			"upload"
-dictScripts.Add "uploadTable",		"uploadTable"
+dictScripts.Add "fillInTable",		"fillInTable"
 dictScripts.Add "uploadThesis",		"uploadThesis"
+dictScripts.Add "viewState",		"viewState"
 
 // 注册样式表别名
 Dim dictStylesheets:Set dictStylesheets=CreateDictionary()
@@ -424,6 +425,37 @@ dictStylesheets.Add "global",		"global"
 dictStylesheets.Add "jeasyui",		"jeasyui/themes/icon|jeasyui/themes/bootstrap/easyui"
 dictStylesheets.Add "student",		"student"
 dictStylesheets.Add "tutor",		"tutor"
+
+' 设置视图状态
+Function setViewState(userId,userType,viewName,viewStateData)
+	Dim conn,sql
+	Connect conn
+	sql="EXEC spSetViewState ?,?,?,?"
+	ExecNonQuery conn,sql,_
+		CmdParam("UserId",adInteger,4,userId),_
+		CmdParam("UserType",adInteger,4,userType),_
+		CmdParam("ViewName",adVarWChar,50,viewName),_
+		CmdParam("ViewStateData",adVarWChar,65535,viewStateData)
+	CloseConn conn
+End Function
+
+' 获取视图状态
+Function getViewState(userId,userType,viewName)
+	Dim conn,sql,ret,rs
+	Connect conn
+	sql="EXEC spGetViewState ?,?,?"
+	Set ret=ExecQuery(conn,sql,_
+		CmdParam("UserId",adInteger,4,userId),_
+		CmdParam("UserType",adInteger,4,userType),_
+		CmdParam("ViewName",adVarWChar,50,viewName))
+	Set rs=ret("rs")
+	If rs.EOF Then
+		getViewState=Null
+	Else
+		getViewState=rs(0).Value
+	End If
+	CloseConn conn
+End Function
 
 ' 添加日志记录
 Function writeLog(content)

@@ -24,3 +24,15 @@ option.user-id-category {
 	color: blue;
 	font-weight: bold;
 }
+
+div.inline-list-container {
+	display: inline-block;
+}
+div.inline-list {
+	display: flex;
+	flex-direction: column;
+	text-indent: 2em;
+}
+div.inline-list-item {
+	flex-basis: 1.5em;
+}
