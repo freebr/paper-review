@@ -88,7 +88,15 @@ Function main(args)
         For j=0 To UBound(mail_template_keys)
             Set params(2)=CmdParam("Name",adVarWChar,50,mail_template_keys(j))
             Set params(3)=CmdParam("MailSubject",adVarWChar,50,mail_templates(mail_template_keys(j)))
-            Set params(4)=CmdParam("MailContent",adVarWChar,3000,"")
+        	' 获取同类型的上一活动邮件（短信）模板内容
+            Dim sql3:sql3="SELECT * FROM ActivityMailTemplates WHERE StuType=? AND Name=? AND Valid=1 ORDER BY Id DESC"
+            Dim ret2:Set ret2=ExecQuery(conn,sql3,params(1),params(2))
+            Dim mail_content:mail_content=""
+            If ret2("count") Then
+                Dim rs2:Set rs2=ret2("rs")
+                mail_content=rs2("MailContent")
+            End If
+            Set params(4)=CmdParam("MailContent",adVarWChar,3000,mail_content)
             count=ExecNonQuery(conn,sql2,params(0),params(1),params(2),params(3),params(4))
         Next
     Next

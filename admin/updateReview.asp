@@ -3,7 +3,7 @@
 <!--#include file="../tutor/appgen.inc"--><%
 Response.Expires=-1
 Response.Buffer=True
-sql="SELECT * FROM ViewThesisInfo WHERE REVIEW_APP IS NULL AND REVIEW_STATUS>="&rsAgreeReview
+sql="SELECT * FROM ViewDissertations WHERE REVIEW_APP IS NULL AND REVIEW_STATUS>="&rsAgreeReview
 GetRecordSet conn,rs,sql,count
 n=0
 Do While Not rs.EOF

@@ -103,7 +103,7 @@ Case 3	' 数据读取，导入到数据库
 		Do While Not rs.EOF
 			If IsNull(rs(0)) Then Exit Do
 			' 按学号检索
-			sql="SELECT ID,STU_ID FROM ViewThesisInfo WHERE VALID=1 AND STU_NO="&toSqlString(rs(2))&" AND TEACHTYPE_ID="&getTeachTypeIdByName(rs(0))&" ORDER BY STU_ID DESC"
+			sql="SELECT ID,STU_ID FROM ViewDissertations WHERE VALID=1 AND STU_NO="&toSqlString(rs(2))&" AND TEACHTYPE_ID="&getTeachTypeIdByName(rs(0))&" ORDER BY STU_ID DESC"
 			GetRecordSetNoLock conn,rsa,sql,count
 			If rsa.EOF Then
 				bError=True
@@ -170,7 +170,7 @@ Case 3	' 数据读取，导入到数据库
 		Dim operation_name,activity_id,stu_type,is_sent
 		dict("filename")="答辩安排信息"
 		operation_name=Format("导入[{0}]",dict("filename"))
-		sql="SELECT ActivityId,TEACHTYPE_ID,STU_NAME,STU_NO,CLASS_NAME,SPECIALITY_NAME,EMAIL,THESIS_SUBJECT,TUTOR_NAME,TUTOR_EMAIL FROM ViewThesisInfo WHERE STU_ID=?"
+		sql="SELECT ActivityId,TEACHTYPE_ID,STU_NAME,STU_NO,CLASS_NAME,SPECIALITY_NAME,EMAIL,THESIS_SUBJECT,TUTOR_NAME,TUTOR_EMAIL FROM ViewDissertations WHERE STU_ID=?"
 		For i=0 To UBound(arrStuIds)
 			Set ret=ExecQuery(conn,sql,CmdParam("ID",adInteger,4,arrStuIds(i)))
 			Set rs=ret("rs")

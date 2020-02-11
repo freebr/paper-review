@@ -20,7 +20,7 @@ Case vbNullString	' 选择页面
 		thesis_ids=Request.Form("sel")
 	End If
 	Connect conn
-	sql="SELECT * FROM ViewThesisInfo WHERE ID IN ("&thesis_ids&")"
+	sql="SELECT * FROM ViewDissertations WHERE ID IN ("&thesis_ids&")"
 	GetRecordSet conn,rs,sql,count
 	If rs("TEACHTYPE_ID")=5 Then
 		reviewfile_type=2
@@ -150,7 +150,7 @@ Case 2	' 后台处理
 		Dim arrDissertations:arrDissertations=Split(thesis_ids,",")
 		Dim activity_id,stu_type,is_sent
 		Dim dict:Set dict=CreateDictionary()
-		sql="SELECT ActivityId,TEACHTYPE_ID,STU_NAME,STU_NO,CLASS_NAME,SPECIALITY_NAME,EMAIL,THESIS_SUBJECT,TUTOR_NAME,TUTOR_EMAIL FROM ViewThesisInfo WHERE ID=?"
+		sql="SELECT ActivityId,TEACHTYPE_ID,STU_NAME,STU_NO,CLASS_NAME,SPECIALITY_NAME,EMAIL,THESIS_SUBJECT,TUTOR_NAME,TUTOR_EMAIL FROM ViewDissertations WHERE ID=?"
 		For i=0 To UBound(arrDissertations)
 			Set ret=ExecQuery(conn,sql,CmdParam("ID",adInteger,4,arrDissertations(i)))
 			Set rs=ret("rs")

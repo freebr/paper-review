@@ -15,7 +15,7 @@ finalFilter=Request.Form("finalFilter2")
 pageSize=Request.Form("pageSize2")
 pageNo=Request.Form("pageNo2")
 Connect conn
-sql="SELECT * FROM ViewThesisInfo WHERE ID IN ("&ids&")"
+sql="SELECT * FROM ViewDissertations WHERE ID IN ("&ids&")"
 GetRecordSetNoLock conn,rs,sql,count
 %><html>
 <head>

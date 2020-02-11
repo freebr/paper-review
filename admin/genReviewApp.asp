@@ -17,7 +17,7 @@ If Len(thesisID)=0 Or Not IsNumeric(thesisID) Then
 %><body bgcolor="ghostwhite"><center><font color="red" size="4">参数无效。</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 	Response.End()
 End If
-sql="SELECT * FROM ViewThesisInfo WHERE ID="&thesisID
+sql="SELECT * FROM ViewDissertations WHERE ID="&thesisID
 GetRecordSet conn,rs,sql,count
 ' 生成送审申请表
 Dim rag

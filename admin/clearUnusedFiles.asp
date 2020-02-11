@@ -35,7 +35,7 @@ del_count=0
 field_str=Join(arr,",")
 For Each file In files
 	If DateDiff("d",startdate,file.DateCreated)>=0 And DateDiff("d",file.DateCreated,enddate)>0 Then
-		sql="SELECT STU_NAME,STU_ID FROM ViewThesisInfo WHERE '"&file.Name&"' IN ("&field_str&")"
+		sql="SELECT STU_NAME,STU_ID FROM ViewDissertations WHERE '"&file.Name&"' IN ("&field_str&")"
 		GetRecordSetNoLock conn,rs,sql,count
 		If Not rs.EOF Then
 			Response.Write "文件 "&file.Name&" 正由学生["&rs(0)&"]("&rs(1)&")使用。<br/>"

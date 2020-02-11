@@ -108,7 +108,7 @@ Case 3	' 数据读取，导入到数据库
 		Dim arrDissertations:arrDissertations=Split(thesis_ids,",")
 		Dim dict:Set dict=CreateDictionary()
 		Dim activity_id,stu_type,is_sent
-		sql="SELECT ActivityId,TEACHTYPE_ID,STU_NAME,STU_NO,CLASS_NAME,SPECIALITY_NAME,EMAIL,THESIS_SUBJECT,TUTOR_NAME,TUTOR_EMAIL FROM ViewThesisInfo WHERE ID=?"
+		sql="SELECT ActivityId,TEACHTYPE_ID,STU_NAME,STU_NO,CLASS_NAME,SPECIALITY_NAME,EMAIL,THESIS_SUBJECT,TUTOR_NAME,TUTOR_EMAIL FROM ViewDissertations WHERE ID=?"
 		For i=0 To UBound(arrDissertations)
 			Set ret=ExecQuery(conn,sql,CmdParam("ID",adInteger,4,arrDissertations(i)))
 			Set rs=ret("rs")

@@ -701,7 +701,7 @@ End Class
 ''					'array with different datatypes
 ''					output = (new JSON)("anArray", array(2, "x", null), true)
 ''					'generates "anArray": [2, "x", null]
-''					'(note: the last parameter was true, thus no surrounding brackets in the count)
+''					'(note: the last parameter was true, thus no surrounding brackets in the result)
 ''					% >
 ''					</code>
 '' @REQUIRES:		-

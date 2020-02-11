@@ -1,0 +1,13 @@
+admin/export/*
+admin/rar/*
+admin/tmp/*
+admin/upload/report/*
+admin/upload/review/*
+admin/upload/xls/*
+expert/export/*
+expert/tmp/*
+student/tmp/*
+student/unused
+student/upload/*
+tutor/export/*.doc
+tutor/export/*.docx

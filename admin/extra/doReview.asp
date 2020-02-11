@@ -27,7 +27,7 @@ review_result=Request.Form("review_result")
 review_level=Request.Form("review_level")
 eval_text=Request.Form("eval_text")
 Connect conn
-sql="SELECT * FROM ViewThesisInfo WHERE ID="&dissertation_id
+sql="SELECT * FROM ViewDissertations WHERE ID="&dissertation_id
 GetRecordSetNoLock conn,rs,sql,count
 If Len(master_level)=0 Then
 	bError=True

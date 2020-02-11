@@ -121,7 +121,7 @@ End Function
 Function sendEmailToStudent(dissertation_id,file_type_name,is_pass,ByVal eval_text)
 	If Len(eval_text)=0 Then eval_text="无"
 	Dim conn:Connect conn
-	Dim sql:sql="SELECT ActivityId,TEACHTYPE_ID,STU_NAME,STU_NO,CLASS_NAME,SPECIALITY_NAME,EMAIL,THESIS_SUBJECT,TUTOR_NAME,TUTOR_EMAIL FROM ViewThesisInfo WHERE ID=?"
+	Dim sql:sql="SELECT ActivityId,TEACHTYPE_ID,STU_NAME,STU_NO,CLASS_NAME,SPECIALITY_NAME,EMAIL,THESIS_SUBJECT,TUTOR_NAME,TUTOR_EMAIL FROM ViewDissertations WHERE ID=?"
 	Dim ret:Set ret=ExecQuery(conn,sql,CmdParam("ID",adInteger,4,dissertation_id))
 	Dim rs:Set rs=ret("rs")
 	Dim activity_id:activity_id=rs("ActivityId")

@@ -1,5 +1,5 @@
 ﻿<table width="100%">
-<tr><td align="center"><span class="tip">提示：因暂不支持图文编辑，如报告中含图片，请将报告与论文一同打包压缩后上传。<a href="uploadTableThesis.asp">点击这里上传</a>。</span></td></tr>
+<tr><td align="center"><span class="tip">提示：因暂不支持图文编辑，如报告中含图片，请<a href="<%=template_file%>" target="_blank">下载开题报告表模板</a>并填写后，<a href="uploadTable.asp">点击这里直接上传表格文件</a>。</span></td></tr>
 <tr><td class="section"><p>封面</p></td>
 	<tr><td><p>姓&emsp;&emsp;名：<input type="text" name="stu_name" size="80" value="<%=Session("StuName")%>" readonly /></p></td></tr>
 	<tr><td><p>学&emsp;&emsp;号：<input type="text" name="stu_no" size="80" value="<%=Session("StuNo")%>" readonly /></p></td></tr>
@@ -7,7 +7,7 @@
 	<tr><td><p>专业类别：<input type="text" name="stu_type" size="80" value="<%=getTeachTypeNameById(stu_type)%>" readonly /></p></td></tr>
 	<tr><td><p>工程领域：<select name="research_field_select"></select><input type="hidden" name="research_field" /></p></td></tr>
 	<tr><td><p>研究方向：<select name="sub_research_field_select"></select><input type="hidden" name="sub_research_field" />
-	<input type="text" name="custom_sub_research_field" size="20" placeholder="请输入…" /></p></td></tr>
+	<input type="text" name="custom_sub_research_field" size="20" placeholder="请输入…" value="<%=sub_research_field%>" /></p></td></tr>
 	<tr><td class="section"><p>一、摘要</p></td>
 	<tr><td><table width="100%">
 	<tr><td rowspan="2"><p>论文题目</p></td>
@@ -27,9 +27,9 @@
 	<tr><td><p>摘要（不超过800字）：</p></td></tr>
 	<tr><td><p align="center"><textarea name="abstract" rows="20" cols="100" maxlength="900"></textarea></p></td></tr>
 	<tr><td><table width="420">
-	<tr><td colspan="3"><p>关键词（不少于三个，左边为中文，右边为英文）：</td></tr>
-	<tr class="keywordpair"><td><p><input type="text" name="keyword_ch" class="keyword" size="10" /></p></td>
-	<td><p><input type="text" name="keyword_en" class="keyword" size="20" /></p></td>
+	<tr><td colspan="3"><p>关键词（不少于三个，左边为中文，右边为英文）：<input type="hidden" name="keyword_ch_all" /><input type="hidden" name="keyword_en_all" /></td></tr>
+	<tr class="keywordpair"><td><p><input type="text" name="keyword_ch" class="keyword" size="10" placeholder="请输入……" /></p></td>
+	<td><p><input type="text" name="keyword_en" class="keyword" size="20" placeholder="Please input..." /></p></td>
 	<td><a class="linkRemove" href="#" title="删除此关键字"><img src="../images/student/remove.png" width="20" height="20" /></a></td></tr>
 	<tr><td colspan="3"><a class="linkAdd" href="#" title="增加关键字"><img src="../images/student/add.png" width="20" height="20" /></a></p></td></tr>
 	</table></td></tr>

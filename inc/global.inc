@@ -52,8 +52,11 @@ Const rsModifyThesisUploaded=12
 Const rsModifyUnpassed=13
 Const rsModifyPassed=14
 Const rsDefenceEval=15
-Const rsInstructEval=16
-Const rsFinalThesisUploaded=17
+Const rsBlindReviewThesisUploaded=16
+Const rsBlindReviewUnpassed=17
+Const rsBlindReviewPassed=18
+Const rsInstructEval=19
+Const rsFinalThesisUploaded=20
 
 ' 环节 Id
 Const sectionUploadKtbg = 1
@@ -428,6 +431,7 @@ dictStylesheets.Add "tutor",		"tutor"
 
 ' 设置视图状态
 Function setViewState(userId,userType,viewName,viewStateData)
+	If Len(viewStateData) = 0 Then viewStateData=Null
 	Dim conn,sql
 	Connect conn
 	sql="EXEC spSetViewState ?,?,?,?"

@@ -90,7 +90,7 @@ ArrayList(k,5)="AND TEACHTYPE_ID IN (5,6,7,9)"
 
 k=1
 ArrayList(k,0)="专业名称"
-ArrayList(k,1)="ViewThesisInfo"
+ArrayList(k,1)="ViewDissertations"
 ArrayList(k,2)="SPECIALITY_ID"
 ArrayList(k,3)="SPECIALITY_NAME"
 ArrayList(k,4)=spec_id

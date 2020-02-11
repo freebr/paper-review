@@ -135,7 +135,7 @@ Case vbNullstring ' 填写信息页面
 <meta name="theme-color" content="#2D79B2" />
 <title>在线填写表格</title>
 <% useStylesheet "student", "jeasyui" %>
-<% useScript "jquery", "jeasyui", "common", "upload", "fillInTable", "keywordList", "viewState" %>
+<% useScript "jquery", "jeasyui", "common", "upload", "fillInTable", "keywordList", "*viewState" %>
 </head>
 <body bgcolor="ghostwhite">
 <center><font size=4><b>在线填写表格</b></font>
@@ -333,10 +333,10 @@ Case 1	' 上传进程
 			bError=True
 			errdesc="请选择工程领域！"
 		ElseIf Len(params("sub_research_field_select"))=0 Then
-			bError=True
-			errdesc="请选择研究方向！"
+		 	bError=True
+		 	errdesc="请选择研究方向！"
 		ElseIf params("sub_research_field_select")="-1" And Len(params("custom_sub_research_field"))=0 Then
-			params("custom_sub_research_field")="其他"
+		 	params("custom_sub_research_field")="其他"
 		End If
 		If bError Then
 			CloseRs rs

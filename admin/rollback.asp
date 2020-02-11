@@ -29,7 +29,7 @@ If rs.EOF Then
 End If
 
 Dim detect_count
-sql="SELECT DETECT_COUNT FROM ViewThesisInfo WHERE ID="&thesisID
+sql="SELECT DETECT_COUNT FROM ViewDissertations WHERE ID="&thesisID
 GetRecordSet conn,rsDetect,sql,count
 detect_count=rsDetect(0).Value
 CloseRs rsDetect

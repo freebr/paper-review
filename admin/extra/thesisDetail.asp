@@ -15,9 +15,9 @@ If Len(thesisID)=0 And Len(stuname)=0 Then
 Else
 	Connect conn
 	If Len(thesisID) Then
-		sql="SELECT * FROM ViewThesisInfo WHERE ID="&thesisID
+		sql="SELECT * FROM ViewDissertations WHERE ID="&thesisID
 	Else
-		sql="SELECT * FROM ViewThesisInfo WHERE STU_NAME="&toSqlString(stuname)
+		sql="SELECT * FROM ViewDissertations WHERE STU_NAME="&toSqlString(stuname)
 	End If
 	GetRecordSet conn,rs,sql,count
 	If count=0 Then

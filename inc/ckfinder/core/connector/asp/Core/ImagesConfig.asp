@@ -126,7 +126,7 @@ class CKFinder_Connector_Core_ImagesConfig
 		Component = mComponent
 	end property
 
-	' When the componet is "Auto", we store back the count from the detection:
+	' When the componet is "Auto", we store back the result from the detection:
 	public property let Component(name)
 		mComponent = name
 	end property

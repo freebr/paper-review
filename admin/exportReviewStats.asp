@@ -210,7 +210,7 @@ Set ret=ExecQuery(conn,sql,_
   CmdParam("@stu_types",adInteger,4,Session("AdminType")("ManageStuTypes")))
 Set rs(0)=ret("rs")
 ' 导出送审论文列表
-sql="SELECT "&selectFields&" FROM ViewThesisInfo WHERE VALID=1 "&PubTerm
+sql="SELECT "&selectFields&" FROM ViewDissertations WHERE VALID=1 "&PubTerm
 Set ret=ExecQuery(conn,sql)
 Set rs(1)=ret("rs")
 

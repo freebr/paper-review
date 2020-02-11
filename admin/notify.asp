@@ -70,7 +70,7 @@ For i=0 To UBound(arr)
 			expertname=rs("USER_NAME")
 			expertmail=rs("USER_EMAIL")
 			expertmob=rs("USER_MOBILE")
-			sql="SELECT A.TEACHERNO,COUNT(ID) AS REVIEW_COUNT,MIN(THESIS_SUBJECT) AS THESIS_SUBJECT FROM ViewThesisInfo "&_
+			sql="SELECT A.TEACHERNO,COUNT(ID) AS REVIEW_COUNT,MIN(THESIS_SUBJECT) AS THESIS_SUBJECT FROM ViewDissertations "&_
 					"LEFT JOIN ViewTeacherInfo A ON A.TEACHERID="&expertid&" WHERE "&expertid&" IN (REVIEWER1,REVIEWER2) GROUP BY TEACHERNO"
 			GetRecordSetNoLock conn,rs2,sql,count
 			review_count=rs2("REVIEW_COUNT")

@@ -2,7 +2,7 @@
 Dim count:count=0
 
 'Response.Charset="utf-8"
-sql="SELECT * FROM ViewThesisInfo WHERE DEFENCE_RESULT <>0 OR DEFENCE_MODIFY_EVAL IS NOT NULL"
+sql="SELECT * FROM ViewDissertations WHERE DEFENCE_RESULT <>0 OR DEFENCE_MODIFY_EVAL IS NOT NULL"
 GetRecordSet conn,rs,sql,count
 
 Response.Write "正在转移答辩结果……"

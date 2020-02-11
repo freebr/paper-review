@@ -39,7 +39,7 @@ function bundleViewState($form) {
             var type = el.tagName.toLowerCase() == 'input' ? el.type : el.tagName.toLowerCase();
             switch(type) {
                 case "select":
-                    state.value = el.selectedIndex === -1 ? null : el.options[el.selectedIndex];
+                    state.value = el.selectedIndex === -1 ? null : el.value;
                     break;
                 case "radio":
                 case "checkbox":

@@ -298,6 +298,7 @@ End Function
 <p style="font-size:10pt">当前还没有上传或生成过任何文件！</b></p>
 <%
 	Else %>
+<p style="font-size:10pt">评阅活动：<b><%=rs("ActivityName")%></b></p>
 <p style="font-size:10pt">论文题目：<b><%=rs("THESIS_SUBJECT")%></b></p><p><ul class="filelist"><%
 		Dim fso,file
 		Set fso=Server.CreateObject("Scripting.FileSystemObject")

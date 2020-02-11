@@ -2,8 +2,7 @@
 <!--#include file="common.asp"--><%
 If IsEmpty(Session("Tid")) Then Response.Redirect("../error.asp?timeout")
 
-Dim bModified,PubTerm,PageNo,PageSize
-bModified=Request.QueryString("modified")="1"
+Dim PubTerm,PageNo,PageSize
 activity_id=toUnsignedInt(Request.Form("In_ActivityId"))
 teachtype_id=toUnsignedInt(Request.Form("In_TEACHTYPE_ID"))
 spec_id=toUnsignedInt(Request.Form("In_SPECIALITY_ID"))
@@ -14,8 +13,9 @@ Tid=Session("Tid")
 finalFilter=Request.Form("finalFilter")
 If Len(finalFilter) Then PubTerm="AND ("&finalFilter&")"
 If activity_id=-1 Then
-	Dim activity:Set activity=getLastActivityInfoOfStuType(stutypeMBA)
-	If Not IsNull(activity) Then activity_id=activity("Id")
+	' Dim activity:Set activity=getLastActivityInfoOfStuType(stutypeMBA)
+	' If Not IsNull(activity) Then activity_id=activity("Id")
+	activity_id = 0
 End If
 If activity_id>0 Then PubTerm=PubTerm&" AND ActivityId="&activity_id
 If teachtype_id>0 Then PubTerm=PubTerm&" AND TEACHTYPE_ID="&teachtype_id
@@ -24,13 +24,7 @@ If enter_year>0 Then PubTerm=PubTerm&" AND ENTER_YEAR="&enter_year
 If query_task_progress>-1 Then PubTerm=PubTerm&" AND TASK_PROGRESS="&query_task_progress
 If query_review_status>-1 Then PubTerm=PubTerm&" AND REVIEW_STATUS="&query_review_status
 
-If bModified Then
-	PubTerm=PubTerm&" AND REVIEW_STATUS>="&rsModifyThesisUploaded
-	table_title="修改后专业硕士指导论文列表"
-Else
-	table_title="专业硕士指导论文列表"
-End If
-PubTerm=PubTerm&" ORDER BY ISTABLE DESC,ISMODIFY DESC,ISEVAL DESC,ISREVIEW DESC,ISDETECT DESC"
+PubTerm=PubTerm&" ORDER BY ISTABLE DESC,ISMODIFY DESC,ISEVAL DESC,ISREVIEW DESC,ISDETECT DESC,ActivityId DESC"
 '----------------------PAGE-------------------------
 PageNo=""
 PageSize=""
@@ -75,7 +69,7 @@ If rs.RecordCount>0 Then rs.AbsolutePage=pageNo
 </head>
 <body bgcolor="ghostwhite" onload="return On_Load()">
 <center>
-<font size=4><b><%=table_title%></b></font>
+<font size=4><b>专业硕士指导论文列表</b></font>
 <table width="1000" cellspacing="4" cellpadding="0">
 <form id="query_nocheck" method="post" onsubmit="if(Chk_Select())return chkField();else return false">
 <tr><td><table cellspacing="4" cellpadding="0">
@@ -94,7 +88,7 @@ ArrayList(k,5)="AND TEACHTYPE_ID IN (5,6,7,9)"
 
 k=1
 ArrayList(k,0)="专业名称"
-ArrayList(k,1)="ViewThesisInfo"
+ArrayList(k,1)="ViewDissertations"
 ArrayList(k,2)="SPECIALITY_ID"
 ArrayList(k,3)="SPECIALITY_NAME"
 ArrayList(k,4)=spec_id
@@ -169,18 +163,16 @@ Next
 		<td width="80" align="center">姓名</td>
 		<td width="90" align="center">学号</td>
 		<td width="120" align="center">专业</td>
-		<td width="50" align="center">学位类别</td><%
-		If Not bModified Then %>
+		<td width="50" align="center">学位类别</td>
 		<td width="80" align="center">送审结果1</td>
-		<td width="80" align="center">送审结果2</td><%
-		End If %>
+		<td width="80" align="center">送审结果2</td>
 		<td width="80" align="center">处理意见</td>
 		<td width="180" align="center">状态</td>
 	</tr><%
 	Dim bIsReviewVisible
 	For i=1 to rs.PageSize
 		If rs.EOF Then Exit For
-		bIsReviewVisible=rs("REVIEW_FILE_STATUS")=1 Or rs("REVIEW_FILE_STATUS")=3
+		bIsReviewVisible=rs("REVIEW_FILE_STATUS")<>0
 		substat=vbNullString
 		If rs("TASK_PROGRESS")>=tpTbl4Uploaded Then
 			stat=rs("STAT_TEXT1")&"，"&rs("STAT_TEXT2")
@@ -219,14 +211,12 @@ Next
 		End If
 	%><tr bgcolor="ghostwhite" height="30">
 		<td align="center"><a href="#" onclick="return showThesisDetail(<%=rs("ID")%>,2)"><%=HtmlEncode(rs("THESIS_SUBJECT"))%></a></td>
-		<td align="center"><%=HtmlEncode(rs("STU_NAME"))%></td>
+		<td align="center"><a href="#" onclick="return showStudentProfile(<%=rs("STU_ID")%>,2)"><%=HtmlEncode(rs("STU_NAME"))%></a></td>
 		<td align="center"><%=rs("STU_NO")%></td>
 		<td align="center"><%=HtmlEncode(rs("SPECIALITY_NAME"))%></td>
-		<td align="center"><%=rs("TEACHTYPE_NAME")%></td><%
-		If Not bModified Then %>
+		<td align="center"><%=rs("TEACHTYPE_NAME")%></td>
 		<td align="center"><%=rs("REVIEW_RESULT_TEXT1_tutor")%></td>
-		<td align="center"><%=rs("REVIEW_RESULT_TEXT2_tutor")%></td><%
-	End If %>
+		<td align="center"><%=rs("REVIEW_RESULT_TEXT2_tutor")%></td>
 		<td align="center"><%=rs("FINAL_RESULT_TEXT_tutor")%>
 		<td align="center"><a href="#" onclick="return showThesisDetail(<%=rs("ID")%>,2)"><span class="<%=cssclass%>"><%=stat%></span></a><%
 		If Len(substat) Then

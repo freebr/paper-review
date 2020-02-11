@@ -40,7 +40,7 @@ End If
 
 Dim conn,sql,ret,rs,count
 Connect conn
-sql="SELECT * FROM ViewThesisInfo WHERE ID=?"
+sql="SELECT * FROM ViewDissertations WHERE ID=?"
 Set ret=ExecQuery(conn,sql,CmdParam("ID",adInteger,4,thesisID))
 Set rs=ret("rs")
 If rs.EOF Then
