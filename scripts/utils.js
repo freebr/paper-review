@@ -347,7 +347,7 @@ function closeWindow(updateList) {
 		window.tabmgr.close(window);
 		if(updateList) {
 			window.tabmgr.tabs.forEach(function(tab) {
-				if(tab.url.indexOf("thesisList.asp")!==-1) {
+				if(tab.url.indexOf("paperList.asp")!==-1) {
 					tab.window.location.reload();
 				}
 			});

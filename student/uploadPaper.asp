@@ -2,11 +2,11 @@
 <!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"-->
 <%If IsEmpty(Session("StuId")) Then Response.Redirect("../error.asp?timeout")
-Dim section_id,time_flag,allow_upload,redirect_to_tbl_upload,table_ready
+Dim section_id,time_flag,uploadable,redirect_to_tbl_upload,table_ready
 Dim researchway_list
 Dim conn,rs,sql,count
 
-allow_upload=False
+uploadable=False
 redirect_to_tbl_upload=False
 table_ready=True
 section_id=0
@@ -22,57 +22,63 @@ If rs.EOF Then
 	table_ready=False
 	section_id=sectionUploadDetectReview
 	review_status=rsNone
-	allow_upload=False
+	uploadable=False
 	redirect_to_tbl_upload=True
-ElseIf rs("TASK_PROGRESS").Value<tpTbl3Passed Then
+ElseIf rs("TASK_PROGRESS")<tpTbl3Passed Then
 	table_ready=False
 	section_id=sectionUploadDetectReview
 	review_status=rsNone
-	allow_upload=False
+	uploadable=False
 	redirect_to_tbl_upload=True
 Else
 	' 评阅状态
-	review_status=rs("REVIEW_STATUS").Value
+	review_status=rs("REVIEW_STATUS")
 	Select Case review_status
-	Case rsNone,rsDetectThesisUploaded,rsNotAgreeDetect,rsDetectUnpassed
+	Case rsNone,rsDetectPaperUploaded,rsRefusedDetect,rsDetectUnpassed
 		' 上传送检论文和送审论文
 		section_id=sectionUploadDetectReview
-	Case rsNotAgreeReview
+	Case rsRefusedReview
 		' 上传送审论文
 		section_id=sectionUploadReview
-	Case rsReviewEval,rsModifyThesisUploaded
+	Case rsReviewEval,rsDefencePaperUploaded,rsRefusedDefence
 		' 上传答辩论文
 		section_id=sectionUploadDefence
-	Case rsModifyPassed
+	Case rsAgreedDefence
 		section_id=sectionUploadDefence
-		allow_upload=False
-	Case rsInstructEval,rsFinalThesisUploaded
+		uploadable=False
+	Case rsDefenceEval,rsInstructReviewPaperUploaded,rsRefusedInstructReview
+		' 上传教指委论文
+		section_id=sectionUploadInstructReview
+	Case rsAgreedInstructReview,rsInstructReviewDetected,rsMatchedInstructMember
+		section_id=sectionUploadInstructReview
+		uploadable=False
+	Case rsInstructEval,rsFinalPaperUploaded
 		' 上传定稿论文
 		section_id=sectionUploadFinal
 	Case Else
-		allow_upload=False
+		uploadable=False
 	End Select
-	subject_ch=rs("THESIS_SUBJECT").Value
-	subject_en=rs("THESIS_SUBJECT_EN").Value
-	keywords_ch=rs("KEYWORDS").Value
-	keywords_en=rs("KEYWORDS_EN").Value
-	sub_research_field=rs("RESEARCHWAY_NAME").Value
-	review_type=rs("REVIEW_TYPE").Value
-	reproduct_ratio=toNumericString(rs("REPRODUCTION_RATIO").Value)
-	thesis_form=rs("THESIS_FORM").Value
+	subject_ch=rs("THESIS_SUBJECT")
+	subject_en=rs("THESIS_SUBJECT_EN")
+	keywords_ch=rs("KEYWORDS")
+	keywords_en=rs("KEYWORDS_EN")
+	sub_research_field=rs("RESEARCHWAY_NAME")
+	review_type=rs("REVIEW_TYPE")
+	reproduct_ratio=toNumericString(rs("REPRODUCTION_RATIO"))
+	thesis_form=rs("THESIS_FORM")
 End If
 If section_id<>0 Then
 	If rs.EOF Then
-		allow_upload=True
+		uploadable=True
 	ElseIf Not isActivityOpen(rs("ActivityId")) Then
 		time_flag=-3
 	Else
 		Set current_section=getSectionInfo(rs("ActivityId"), stu_type, section_id)
 		time_flag=compareNowWithSectionTime(current_section)
-		allow_upload=time_flag=0
+		uploadable=time_flag=0
 		upload_stuff_name=arrStuOprName(section_id)
 		If section_id=sectionUploadDetectReview Then
-			If rs.EOF Then n=0 Else n=Sgn(rs("DETECT_COUNT").Value)
+			If rs.EOF Then n=0 Else n=Sgn(rs("DETECT_COUNT"))
 			subtype=Array("一次","二次")(n)
 			upload_stuff_name=subtype&upload_stuff_name
 		End If
@@ -96,11 +102,11 @@ Case vbNullstring ' 填写信息页面
 <meta name="theme-color" content="#2D79B2" />
 <title>上传论文</title>
 <% useStylesheet "student" %>
-<% useScript "jquery", "upload", "uploadThesis" %>
+<% useScript "jquery", "upload", "uploadPaper" %>
 </head>
 <body bgcolor="ghostwhite">
-<table class="tblform" width="1000" align="center"><tr><td class="summary"><p><%
-	If Not allow_upload Then
+<table class="form" width="1000" align="center"><tr><td class="summary"><p><%
+	If Not uploadable Then
 		If time_flag=-3 Then
 %><span class="tip">当前评阅活动【<%=rs("ActivityName")%>】已关闭，不能上传论文！</span><%
 		ElseIf time_flag=-2 Then
@@ -110,7 +116,7 @@ Case vbNullstring ' 填写信息页面
 		ElseIf Not table_ready Then
 %><span class="tip">表格审核进度未完成，不能上传论文！</span><%
 		Else
-%><span class="tip">当前论文状态为【<%=rs("STAT_TEXT").Value%>】，不能上传论文！</span><%
+%><span class="tip">当前论文状态为【<%=rs("STAT_TEXT")%>】，不能上传论文！</span><%
 		End If
 	Else
 %>当前上传的是：<span style="color:#ff0000;font-weight:bold"><%=upload_stuff_name%></span><%
@@ -127,7 +133,7 @@ Case vbNullstring ' 填写信息页面
 <tr><td><form id="fmDissertation" action="?step=1" method="post" enctype="multipart/form-data">
 <input type="hidden" name="uploadid" value="_student_thesisReview_uploadThesis_asp" />
 <input type="hidden" name="stuid" value="<%=Session("StuId")%>" />
-<table class="tblform" width="800">
+<table class="form" width="800">
 <tr><td align="center"><span class="tip">以下信息均为必填项</span></td></tr>
 <tr><td>
 <p>论文题目：《<input type="text" name="subject_ch" size="70" maxlength="200" value="<%=subject_ch%>" />》</p>
@@ -168,17 +174,17 @@ Case vbNullstring ' 填写信息页面
 	If section_id=sectionUploadDetectReview Then
 		callbackValidate="checkIfDetectReview"
 %><p>送检论文文件：<input type="file" name="detectFile" size="50" title="送检论文文件" /><%
-		If allow_upload Then
+		If uploadable Then
 %><span class="tip">Word&nbsp;格式</span><%
 		End If
 %></p><p>送审论文文件：<input type="file" name="reviewFile" size="50" title="送审论文文件" /><%
-		If allow_upload Then
+		If uploadable Then
 %><span class="tip">PDF&nbsp;格式</span><%
 		End If
 %></p><%
 	Else
 %><p>论文文件：<input type="file" name="upFile" size="50" title="论文文件" /><%
-		If allow_upload Then %><span class="tip"><%
+		If uploadable Then %><span class="tip"><%
 			Select Case section_id
 			Case sectionUploadReview
 				callbackValidate="checkIfPdfRar" %>
@@ -200,7 +206,7 @@ PDF&nbsp;格式<%
 1．该学位论文为公开学位论文，其中不涉及国家秘密项目和其它不宜公开的内容，否则将由本人承担因学位论文涉密造成的损失和相关的法律责任；<br/>
 2．该学位论文是本人在导师的指导下独立进行研究所取得的研究成果，不存在学术不端行为。</p><%
 	End If %>
-<p align="center"><input type="submit" name="btnsubmit" value="提 交"<%If Not allow_upload Then %> disabled<% End If %> /></p></td></tr>
+<p align="center"><input type="submit" name="btnsubmit" value="提 交"<%If Not uploadable Then %> disabled<% End If %> /></p></td></tr>
 <tr><td>
 <div id="divdown" style="display: none">
 <p><a href="template/fzbsmb.doc" target="_blank"><img src="../images/down.png" />下载硕士学位论文文字复制比情况说明表</a></p>
@@ -254,7 +260,7 @@ PDF&nbsp;格式<%
 		});
 		initAllSubResearchFieldSelectBox($('select[name="sub_research_field_select"]'),<%=stu_type%>,'<%=sub_research_field%>');
 		<%
-		If Not allow_upload Then %>
+		If Not uploadable Then %>
 		$('input[name="subject_ch"],input[name="subject_en"]').attr('readOnly',true);
 		$('input[name="keywords_ch"],input[name="keywords_en"]').attr('readOnly',true);
 		$('a.linkAdd,a.linkRemove').attr('disabled',true);
@@ -284,12 +290,12 @@ Case 1	' 上传进程
 			current_section("Name"),_
 			toDateTime(current_section("StartTime"),1),_
 			toDateTime(current_section("EndTime"),1))
-	ElseIf Not allow_upload Then
+	ElseIf Not uploadable Then
 		bError=True
 		If Not table_ready Then
 			errdesc="表格审核进度未完成，不能上传论文！"
 		Else
-			errdesc="当前状态为【"&rs("STAT_TEXT").Value&"】，不能上传论文！"
+			errdesc="当前状态为【"&rs("STAT_TEXT")&"】，不能上传论文！"
 		End If
 	End If
 	If bError Then
@@ -400,17 +406,18 @@ Case 1	' 上传进程
 			destPath2=uploadPath&"\"&destFile2
 			file2.SaveAs destPath2
 
-			If review_status=rsDetectThesisUploaded Then
-				sqlDetect="EXEC spDeleteDetectResult "&rs("ID").Value&","&toSqlString(rs3("THESIS_FILE").Value)&";"
+			If review_status=rsDetectPaperUploaded Then
+				sqlDetect="EXEC spDeleteDetectResult "&rs("ID")&","&toSqlString(rs3("THESIS_FILE"))&";"
 			End If
-			sqlDetect=sqlDetect&"EXEC spAddDetectResult "&rs("ID").Value&","&toSqlString(destFile)&",NULL,NULL,NULL;"
+			sqlDetect=sqlDetect&"EXEC spAddDetectResult "&rs("ID")&","&toSqlString(destFile)&",NULL,NULL,NULL,1;"
 			rs3("THESIS_FILE")=destFile
 			rs3("THESIS_FILE2")=destFile2
 			rs3("KEYWORDS")=new_keywords_ch
 			rs3("KEYWORDS_EN")=new_keywords_en
 			rs3("REVIEW_TYPE")=new_review_type
-			rs3("REVIEW_STATUS")=rsDetectThesisUploaded
-			If rs("DETECT_COUNT").Value=0 Then
+			rs3("REVIEW_STATUS")=rsDetectPaperUploaded
+			If rs("DETECT_COUNT")=0 Then
+				rs3("SUBMIT_REVIEW_TIME")=Null
 				rs3("DETECT_APP_EVAL")=Null
 				rs3("REVIEW_APP_EVAL")=Null
 			End If
@@ -419,14 +426,22 @@ Case 1	' 上传进程
 			rs3("KEYWORDS")=new_keywords_ch
 			rs3("KEYWORDS_EN")=new_keywords_en
 			rs3("REVIEW_STATUS")=rsRedetectPassed
+			rs3("SUBMIT_REVIEW_TIME")=Null
 			rs3("REVIEW_APP_EVAL")=Null
 		Case sectionUploadDefence ' 答辩论文
 			rs3("THESIS_FILE3")=destFile
-			rs3("REVIEW_STATUS")=rsModifyThesisUploaded
+			rs3("REVIEW_STATUS")=rsDefencePaperUploaded
 			rs3("TUTOR_MODIFY_EVAL")=Null
-		Case sectionUploadFinal ' 定稿论文
+		Case sectionUploadInstructReview ' 教指会盲评论文
+			If review_status=rsInstructReviewPaperUploaded Then
+				sqlDetect="EXEC spDeleteDetectResult "&rs("ID")&","&toSqlString(rs3("THESIS_FILE4"))&";"
+			End If
+			sqlDetect=sqlDetect&"EXEC spAddDetectResult "&rs("ID")&","&toSqlString(destFile)&",NULL,NULL,NULL,2;"
 			rs3("THESIS_FILE4")=destFile
-			rs3("REVIEW_STATUS")=rsFinalThesisUploaded
+			rs3("REVIEW_STATUS")=rsInstructReviewPaperUploaded
+		Case sectionUploadFinal ' 定稿论文
+			rs3("THESIS_FILE5")=destFile
+			rs3("REVIEW_STATUS")=rsFinalPaperUploaded
 		End Select
 		rs3.Update()
 		CloseRs rs3

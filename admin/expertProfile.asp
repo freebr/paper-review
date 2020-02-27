@@ -33,7 +33,7 @@ End If
 <input type="hidden" name="teacherid" value="<%=TeacherId%>">
 <span class="title">查看评阅专家信息</span>
 <p><span class="tip">以下信息均为必填项</span></p>
-<table class="tblform profile" width="1000" cellspacing="1" cellpadding="3">
+<table class="form profile" width="1000" cellspacing="1" cellpadding="3">
 <tr height="30">
 	<td bgcolor="gainsboro" align="center">姓名</td>
 	<td bgcolor="white"><input type="text" name="teachername" class="txt" value="<%=HtmlEncode(rs("EXPERT_NAME").Value)%>" /></td>
@@ -89,7 +89,7 @@ End If
 <input type="button" id="btnsubmit" value="提 交" onclick="submitForm(this.form)" />&nbsp;
 <input type="button" id="btnreturn" value="关 闭" onclick="closeWindow()" /></td></tr></table>
 <span class="title">登录密码修改</span>
-<table class="tblform" width="1000" cellspacing="1" cellpadding="3">
+<table class="form" width="1000" cellspacing="1" cellpadding="3">
 <tr height="30">
 <td bgcolor="white" colspan="6" align="center">请输入新密码：<input type="password" class="txt" name="newpwd" id="newpwd" style="width:150px" />&emsp;
 确认新密码：<input type="password" class="txt" name="repeatpwd" id="repeatpwd" style="width:150px" /></td>

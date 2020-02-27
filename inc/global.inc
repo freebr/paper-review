@@ -37,26 +37,28 @@ Const tpTbl4Passed=12
 
 ' 论文状态
 Const rsNone=0
-Const rsDetectThesisUploaded=1
-Const rsNotAgreeDetect=2
-Const rsAgreeDetect=3
+Const rsDetectPaperUploaded=1
+Const rsRefusedDetect=2
+Const rsAgreedDetect=3
 Const rsDetectUnpassed=4
 Const rsRedetectUnpassed=5
 Const rsRedetectPassed=6
-Const rsNotAgreeReview=7
-Const rsAgreeReview=8
-Const rsMatchExpert=9
+Const rsRefusedReview=7
+Const rsAgreedReview=8
+Const rsMatchedReviewer=9
 Const rsReviewed=10
 Const rsReviewEval=11
-Const rsModifyThesisUploaded=12
-Const rsModifyUnpassed=13
-Const rsModifyPassed=14
+Const rsDefencePaperUploaded=12
+Const rsRefusedDefence=13
+Const rsAgreedDefence=14
 Const rsDefenceEval=15
-Const rsBlindReviewThesisUploaded=16
-Const rsBlindReviewUnpassed=17
-Const rsBlindReviewPassed=18
-Const rsInstructEval=19
-Const rsFinalThesisUploaded=20
+Const rsInstructReviewPaperUploaded=16
+Const rsRefusedInstructReview=17
+Const rsAgreedInstructReview=18
+Const rsInstructReviewDetected=19
+Const rsMatchedInstructMember=20
+Const rsInstructEval=21
+Const rsFinalPaperUploaded=22
 
 ' 环节 Id
 Const sectionUploadKtbg = 1
@@ -66,9 +68,21 @@ Const sectionUploadSpcl = 4
 Const sectionUploadDetectReview = 5
 Const sectionUploadReview = 6
 Const sectionUploadDefence = 7
-Const sectionUploadFinal = 8
-Const sectionAudit = 9
-Const sectionReview = 10
+Const sectionUploadInstructReview = 8
+Const sectionUploadFinal = 9
+Const sectionAudit = 10
+Const sectionReview = 11
+
+' 审核意见类型
+Const auditTypeKtbg = 1
+Const auditTypeZqjcb = 2
+Const auditTypeYdbyjs = 3
+Const auditTypeSpcl = 4
+Const auditTypeDetectReview = 5
+Const auditTypeReviewApp = 6
+Const auditTypeReviewResult = 7
+Const auditTypeDefence = 8
+Const auditTypeInstructReview = 9
 
 %>
 <script language="jscript" runat="server">
@@ -158,7 +172,7 @@ Function hasPrivilege(pArr,privilege)
 End Function
 
 Function baseUrl()
-	baseUrl = "/ThesisReview/"
+	baseUrl = "/PaperReview/"
 End Function
 
 Function serverVar(name)
@@ -414,11 +428,11 @@ dictScripts.Add "review",			"review"
 dictScripts.Add "reviewSettings",	"reviewSettings"
 dictScripts.Add "student",			"student"
 dictScripts.Add "systemSettings",	"systemSettings"
-dictScripts.Add "thesis",			"thesis"
+dictScripts.Add "paper",			"paper"
 dictScripts.Add "tutor",			"tutor"
 dictScripts.Add "upload",			"upload"
 dictScripts.Add "fillInTable",		"fillInTable"
-dictScripts.Add "uploadThesis",		"uploadThesis"
+dictScripts.Add "uploadPaper",		"uploadPaper"
 dictScripts.Add "viewState",		"viewState"
 
 // 注册样式表别名
@@ -461,10 +475,28 @@ Function getViewState(userId,userType,viewName)
 	CloseConn conn
 End Function
 
+' 若指定目录不存在，则新建目录
+Function ensurePathExists(path)
+	Set fso=Server.CreateObject("Scripting.FileSystemObject")
+	' 检查上传目录是否存在
+	If fso.FolderExists(path) Then
+		ensurePathExists = True
+	Else
+		fso.CreateFolder(path)
+		ensurePathExists = False
+	End If
+	Set fso=Nothing
+End Function
+
+' 生成日期格式文件名
+Function generateDateTimeFilename(ext)
+	generateDateTimeFilename = FormatDateTime(Now(),1)&Int(Timer)&"."&ext
+End Function
+
 ' 添加日志记录
 Function writeLog(content)
 	Dim logfile,fso,stream,msg
-	logfile=Server.MapPath("/log/ThesisReview/"&toDateTime(Date,1)&".log")
+	logfile=Server.MapPath("/log/PaperReview/"&toDateTime(Date,1)&".log")
 	Set fso=Server.CreateObject("Scripting.FileSystemObject")
 	Set stream=fso.OpenTextFile(logfile,8,true)
 	msg="["&Time&"]"&content
@@ -549,6 +581,10 @@ Dim arrDiplomaName:arrDiplomaName=Array("","专科","本科","硕士研究生","
 Dim arrDefenceResult:arrDefenceResult=Array("未录入","优秀","良好","一般","较差")
 Dim arrGrantDegreeResult:arrGrantDegreeResult=Array("未录入","同意毕业及授予学位","同意毕业，但不同意授予学位","不同意毕业")
 Dim arrReviewFileStat:arrReviewFileStat=Array("不开放显示","仅向导师显示","完全开放显示")
+Dim arrDefaultFileListName:arrDefaultFileListName=Array("","开题报告表","开题论文","中期检查表","中期论文","预答辩申请表","预答辩论文","答辩及授予学位审批材料","送检论文","送审论文","答辩论文","教指委盲评论文","定稿论文","送检论文检测报告","硕士学位论文送审申请表","论文评阅书 1","论文评阅书 2")
+Dim arrDefaultFileListNamePostfix:arrDefaultFileListNamePostfix=Array("","开题报告表","开题论文","中期检查表","中期论文","预答辩申请表","预答辩论文","答辩审批材料","","","","","","检测报告","送审审核表","论文评阅书(1)","论文评阅书(2)")
+Dim arrDefaultFileListPath:arrDefaultFileListPath=Array("","/PaperReview/student/upload","/PaperReview/student/upload","/PaperReview/student/upload","/PaperReview/student/upload","/PaperReview/student/upload","/PaperReview/student/upload","/PaperReview/student/upload","/PaperReview/student/upload","/PaperReview/student/upload","/PaperReview/student/upload","/PaperReview/student/upload","/PaperReview/student/upload","/PaperReview/admin/upload/report","/PaperReview/tutor/export","/PaperReview/expert/export","/PaperReview/expert/export")
+Dim arrDefaultFileListField:arrDefaultFileListField=Array("","TABLE_FILE1","TBL_THESIS_FILE1","TABLE_FILE2","TBL_THESIS_FILE2","TABLE_FILE3","TBL_THESIS_FILE3","TABLE_FILE4","THESIS_FILE","THESIS_FILE2","THESIS_FILE3","THESIS_FILE4","THESIS_FILE5","DETECT_REPORT","REVIEW_APP","REVIEW_FILE1","REVIEW_FILE2")
 ' 禁止缓存，仅在需要客户端重新请求 JS/CSS/HTML 等静态文件时使用
 Response.CacheControl="no-cache"
 Response.Charset="utf-8"
@@ -559,3 +595,4 @@ Response.Charset="utf-8"
 <!--#include file="database.asp"-->
 <!--#include file="mail.asp"-->
 <!--#include file="helper.asp"-->
+<!DOCTYPE html>

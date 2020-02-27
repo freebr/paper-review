@@ -2,19 +2,22 @@
 <!--#include file="common.asp"--><%
 If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 Dim arrFileListName,arrFileListNamePostfix,arrFileListPath,arrFileListField
-arrFileListName=Array("","开题报告表","开题论文","中期检查表","中期论文","预答辩申请表","预答辩论文","答辩及授予学位审批材料","送检论文","送审论文","答辩论文","定稿论文","送检论文检测报告","硕士学位论文送审申请表","论文评阅书 1","论文评阅书 2","论文评阅书")
-arrFileListNamePostfix=Array("","开题报告表","开题论文","中期检查表","中期论文","预答辩申请表","预答辩论文","答辩审批材料","","","","","检测报告","送审审核表","论文评阅书(1)","论文评阅书(2)","论文评阅书")
-arrFileListPath=Array("","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/admin/upload/report","/ThesisReview/tutor/export","/ThesisReview/expert/export","/ThesisReview/expert/export","/ThesisReview/expert/export")
-arrFileListField=Array("","TABLE_FILE1","TBL_THESIS_FILE1","TABLE_FILE2","TBL_THESIS_FILE2","TABLE_FILE3","TBL_THESIS_FILE3","TABLE_FILE4","THESIS_FILE","THESIS_FILE2","THESIS_FILE3","THESIS_FILE4","DETECT_REPORT","REVIEW_APP","REVIEW_FILE1","REVIEW_FILE2")
+arrFileListName=Array("","开题报告表","开题论文","中期检查表","中期论文","预答辩申请表","预答辩论文","答辩及授予学位审批材料","送检论文","送审论文","答辩论文","盲评论文","定稿论文","送检论文检测报告","硕士学位论文送审申请表","论文评阅书 1","论文评阅书 2","论文评阅书")
+arrFileListNamePostfix=Array("","开题报告表","开题论文","中期检查表","中期论文","预答辩申请表","预答辩论文","答辩审批材料","","","","","","检测报告","送审审核表","论文评阅书(1)","论文评阅书(2)","论文评阅书")
+arrFileListPath=Array("","/PaperReview/student/upload","/PaperReview/student/upload","/PaperReview/student/upload","/PaperReview/student/upload","/PaperReview/student/upload","/PaperReview/student/upload","/PaperReview/student/upload","/PaperReview/student/upload","/PaperReview/student/upload","/PaperReview/student/upload","/PaperReview/student/upload","/PaperReview/student/upload","/PaperReview/admin/upload/report","/PaperReview/tutor/export","/PaperReview/expert/export","/PaperReview/expert/export","/PaperReview/expert/export")
+arrFileListField=Array("","TABLE_FILE1","TBL_THESIS_FILE1","TABLE_FILE2","TBL_THESIS_FILE2","TABLE_FILE3","TBL_THESIS_FILE3","TABLE_FILE4","THESIS_FILE","THESIS_FILE2","THESIS_FILE3","THESIS_FILE4","THESIS_FILE5","DETECT_REPORT","REVIEW_APP","REVIEW_FILE1","REVIEW_FILE2")
 thesisID=Request.QueryString("tid")
 filetype=Request.QueryString("type")
 hash=Request.QueryString("hash")
 If Not IsNumeric(filetype) Then
 	bError=True
 	errdesc="参数无效。"
-ElseIf filetype<1 Or filetype>16 Then
-	bError=True
-	errdesc="参数无效。"
+Else
+	filetype=Int(filetype)
+	If filetype<1 Or filetype>UBound(arrFileListName) Then
+		bError=True
+		errdesc="参数无效。"
+	End If
 End If
 If bError Then
 	showErrorPage errdesc, "提示"
@@ -33,7 +36,7 @@ Dim source_file,fileExt,newfilename
 Dim fso,file,stream
 Set fso=Server.CreateObject("Scripting.FileSystemObject")
 
-If (filetype=8 Or filetype=12) And Len(hash) Then
+If (filetype=8 Or filetype=13) And Len(hash) Then
 	sql="SELECT * FROM ViewDetectResult WHERE THESIS_ID=? AND HASH=?"
 	Set ret=ExecQuery(conn,sql,_
 		CmdParam("THESIS_ID",adInteger,4,thesisID),CmdParam("HASH",adVarWChar,100,hash))
@@ -44,7 +47,7 @@ If (filetype=8 Or filetype=12) And Len(hash) Then
 		source_file=rsDetect("DETECT_REPORT").Value
 	End If
 	CloseRs rsDetect
-ElseIf filetype=16 Then
+ElseIf filetype=17 Then
 	review_order=toUnsignedInt(Request.QueryString("order"))
 	If review_order=-1 Then review_order=0
 	sql="SELECT * FROM ViewReviewRecords WHERE DissertationId=? AND ReviewOrder=?"

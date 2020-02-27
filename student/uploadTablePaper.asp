@@ -3,12 +3,12 @@
 <!--#include file="common.asp"-->
 <%If IsEmpty(Session("StuId")) Then Response.Redirect("../error.asp?timeout")
 Dim is_new_dissertation:is_new_dissertation=False
-Dim activity_id,section_id,time_flag,allow_upload
+Dim activity_id,section_id,time_flag,uploadable
 Dim conn,rs,sql,count
 
 activity_id=0
 section_id=0
-allow_upload=False
+uploadable=False
 stu_type=Session("StuType")
 
 Connect conn
@@ -35,13 +35,13 @@ End If
 If section_id<>0 Then
 	is_new_dissertation=section_id=sectionUploadKtbg Or stu_type=7 And section_id=sectionUploadYdbyjs
 	If rs.EOF Then
-		allow_upload=True
+		uploadable=True
 	ElseIf Not isActivityOpen(rs("ActivityId")) Then
 		time_flag=-3
 	Else
 		Set current_section=getSectionInfo(rs("ActivityId"), stu_type, section_id)
 		time_flag=compareNowWithSectionTime(current_section)
-		allow_upload=time_flag=0
+		uploadable=time_flag=0
 	End If
 End If
 step=Request.QueryString("step")
@@ -53,13 +53,13 @@ Case vbNullstring ' 填写信息页面
 <meta name="theme-color" content="#2D79B2" />
 <title>上传表格附加论文</title>
 <% useStylesheet "student", "jeasyui" %>
-<% useScript "jquery", "jeasyui", "common", "upload", "uploadThesis" %>
+<% useScript "jquery", "jeasyui", "common", "upload", "uploadPaper" %>
 </head>
 <body bgcolor="ghostwhite">
 <center><font size=4><b>上传表格附加论文</b></font>
 <form id="fmDissertation" action="?step=1" method="post" enctype="multipart/form-data">
-<table class="tblform" width="1000" align="center"><tr><td class="summary"><%
-	If Not allow_upload Then
+<table class="form" width="1000" align="center"><tr><td class="summary"><%
+	If Not uploadable Then
 %><p><span class="tip">当前状态为【<%=rs("STAT_TEXT")%>】，不能上传附加论文！</span></p><%
 	ElseIf time_flag=-2 Then
 %><p><span class="tip">【<%=current_section("Name")%>】环节已关闭，不能上传附加论文！</span></p><%
@@ -85,11 +85,11 @@ Case vbNullstring ' 填写信息页面
 <p>请选择要上传的文件，并点击&quot;提交&quot;按钮：</p><%
 	End If %></td></tr>
 <tr><td align="center">
-<table class="tblform">
+<table class="form">
 <tr><td><p>论文题目：《<input type="text" name="subject_ch" size="50" value="<%=subject_ch%>" />》</p>
 <p>（英文）：&nbsp;<input type="text" name="subject_en" size="53" maxlength="200" value="<%=subject_en%>" />&nbsp;</p>
 <p>文件名：<input type="file" name="thesis_file" size="50" title="<%=arrTblThesis(section_id)%>" /><br/><span class="tip">Word&nbsp;或&nbsp;RAR&nbsp;格式，超过20M请先压缩成rar文件再上传，否则上传不成功</span></p>
-<p align="center"><input type="submit" id="btnsubmit" value="提 交"<%If Not allow_upload Then %> disabled<% End If %> />&nbsp;
+<p align="center"><input type="submit" id="btnsubmit" value="提 交"<%If Not uploadable Then %> disabled<% End If %> />&nbsp;
 <input type="button" name="btnUploadTable" value="返回填写表格页面" onclick="location.href='fillInTable.asp'" />&nbsp;
 <input type="button" name="btnreturn" value="返回首页" onclick="location.href='home.asp'" /></p></td></tr></table>
 </td></tr></table></form></center>
@@ -100,7 +100,7 @@ Case vbNullstring ' 填写信息页面
 			if(valid) submitUploadForm(this); else return false;
 		});
 	<%
-	If Not allow_upload Then %>
+	If Not uploadable Then %>
 	$('input[name="thesis_file"]').attr('readOnly',true);
 	$(':submit').attr('disabled',true);<%
 	Else %>
@@ -121,7 +121,7 @@ Case 1	' 上传进程
 			current_section("Name"),_
 			toDateTime(current_section("StartTime"),1),_
 			toDateTime(current_section("EndTime"),1))
-	ElseIf Not allow_upload Then
+	ElseIf Not uploadable Then
 		bError=True
 		errdesc="当前状态为【"&rs("STAT_TEXT")&"】，不能上传附加论文！"
 	End If

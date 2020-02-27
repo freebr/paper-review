@@ -102,7 +102,7 @@ function newUploadProgress(uploadid,stuid) {
 	document.body.appendChild(div);
 	sckUpload=createSocket();
 	sckUpload.onProgress=showUploadProgress;
-	setInterval("getProgress(sckUpload,'ThesisReview/student/tmp/"+stuid+uploadid+".json')",1000);
+	setInterval("getProgress(sckUpload,'PaperReview/student/tmp/"+stuid+uploadid+".json')",1000);
 	return;
 }
 function showUploadProgress() {

@@ -3,7 +3,7 @@
 <!--#include file="../tutor/appgen.inc"--><%
 Response.Expires=-1
 Response.Buffer=True
-sql="SELECT * FROM ViewDissertations WHERE REVIEW_APP IS NULL AND REVIEW_STATUS>="&rsAgreeReview
+sql="SELECT * FROM ViewDissertations WHERE REVIEW_APP IS NULL AND REVIEW_STATUS>="&rsAgreedReview
 GetRecordSet conn,rs,sql,count
 n=0
 Do While Not rs.EOF
@@ -17,7 +17,7 @@ Do While Not rs.EOF
 	eval_text=rs("REVIEW_APP_EVAL")
 	If IsNull(eval_text) Then eval_text=""
 	filename=toDateTime(review_time,1)&Int(Timer)&Int(Rnd()*999)&".doc"
-	filepath=Server.MapPath("/ThesisReview/tutor/export")&"\"&filename
+	filepath=Server.MapPath("/PaperReview/tutor/export")&"\"&filename
 	Set rag=New ReviewAppGen
 	rag.Author=rs("STU_NAME")
 	rag.StuNo=rs("STU_NO")

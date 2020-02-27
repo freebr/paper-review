@@ -26,6 +26,6 @@ function exportInfo(fm) {
 }
 function showExpertProfile(id) {
 	!window.tabmgr?window.open('expertProfile.asp?id='+id,'expert'+id):
-		window.tabmgr.newTab('/ThesisReview/admin/expertProfile.asp?id='+id);
+		window.tabmgr.newTab('/PaperReview/admin/expertProfile.asp?id='+id);
 	return false;
 }

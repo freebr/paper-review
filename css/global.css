@@ -1,13 +1,52 @@
 ﻿body {
-	font-size:9pt;
-	margin:0 auto;
-	background-color:ghostwhite;
+	font-size: 12px;
+	background-color: ghostwhite;
 }
+
+div.box {
+	width: 1000px;
+	margin: 0 auto;
+}
+
+div.fields {
+	display: flex;
+	width: 100%;
+}
+
+div.fields:not(:last-child) {
+	margin: 15px 0;
+}
+
+div.fields > div:not(:first-child) {
+	margin: 0 20px;
+}
+
 table {
-	font-size:9pt;
+	font-size: 12px;
 	color:#000034;
 	word-break:break-all;
 }
+
+h1 {
+	text-align: center;
+	font: bold 22px caption;
+}
+
+h2 {
+	text-align: center;
+	font: bold 16px small-caption;
+}
+
+.form { width: 100%; border: 0 }
+.template { width: 100%; border: 1px solid #999999 }
+.field-name { text-align: right }
+.field-name ~ td { width: 840px }
+.buttons { padding: 10px 0; background-color:#8ec8ff; text-align: center }
+.buttons input { margin: 0 10px; min-width: 100px }
+.notice-text { background-color: #cccccc }
+fieldset { width: 100%; margin-bottom: 10px; border-radius: 5px; border: 1px solid #003cff }
+legend { font: bold 16px caption; color: #003cff }
+legend a { font: normal 12px caption; margin: 0 10px }
 
 div#defenceplan { width:100%;border:1px solid #3399dd }
 div#defenceplan table { table-layout:fixed;width:100%;text-align:center }
@@ -15,27 +54,27 @@ div#defenceplan table thead tr { background-color:#3399dd;color:white }
 div#defenceplan table td { padding:5px }
 
 form {
-	font-size:9pt;
+	font-size: 12px;
 }
 input {
-	font-size:9pt;
+	font-size: 12px;
 }
 input.date {
-	width:150px;
-	text-align:center;
+	width: 150px;
+	text-align: center;
 }
 input.txt { background:none;border-top:0;border-left:0;border-right:0;border-bottom:1px solid dimgray }
-input.score { text-align:center }
-input.scorep { text-align:center; border:0 }
+input.score { text-align: center }
+input.scorep { text-align: center; border: 0 }
 span.loading { display:inline-block;width:100px;background:url(../images/loading.gif) center no-repeat }
 span.tip { background:url(../images/bulb_yellow.png) left center no-repeat #ffface;padding-left:20px;padding-right:5px;
 					 border:1px solid #cccccc;color:#00aa00;font-size:10pt }
-span.thesisstat { color:#0000ff }
-span.thesisstat_unhandled { color:#ff0000;font-weight:bold }
-span.thesissubstat { color:#cc00ee }
-span.eval_notice { color:#ff0000;font-weight:bold }
-hr { border:1px solid #cccccc }
-img {border:0}
+span.thesisstat { color: #0000ff }
+span.thesisstat_unhandled { color: #ff0000; font-weight: bold }
+span.thesissubstat { color: #cc00ee }
+span.eval_notice { color: #ff0000; font-weight: bold }
+hr { border: 1px solid #cccccc }
+img { border: 0 }
 
 a:visited {
 	color:black;

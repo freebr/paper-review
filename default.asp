@@ -63,22 +63,22 @@ Else
 		  Session("StuClass")=rs("CLASS_ID").Value
 			url="student"
 		End If
-	  CloseRs rs
+		CloseRs rs
 		CloseConn conn
 	Case "tutor"
 		username=Request.QueryString("name")
 		If IsEmpty(username) Then username="daoshi"
 		sql="SELECT TEACHERID,TEACHERNO,TEACHERNAME,WRITEPRIVILEGETAGSTRING,READPRIVILEGETAGSTRING FROM TEACHER_INFO WHERE TEACHERNO='"&username&"' AND VALID=0"
 		GetRecordSet conn,rs,sql,count
-	  If count>0 Then
-	    Session("TId")=rs("TEACHERID").Value
+		If count>0 Then
+			Session("TId")=rs("TEACHERID").Value
 			Session("TNo")=rs("TEACHERNO").Value
-	    Session("TName")=rs("TEACHERNAME").Value
-	    Session("TWritePrivileges")=rs("WRITEPRIVILEGETAGSTRING").Value
-	    Session("TReadPrivileges")=rs("READPRIVILEGETAGSTRING").Value
+			Session("TName")=rs("TEACHERNAME").Value
+			Session("TWritePrivileges")=rs("WRITEPRIVILEGETAGSTRING").Value
+			Session("TReadPrivileges")=rs("READPRIVILEGETAGSTRING").Value
 			url="tutor"
-	  End If
-   	CloseRs rs
+		End If
+		CloseRs rs
 		CloseConn conn
 	Case "expert"
 		username=Request.QueryString("name")
@@ -86,13 +86,13 @@ Else
 		sql="SELECT TEACHERID,TEACHERNO,TEACHERNAME,WRITEPRIVILEGETAGSTRING,READPRIVILEGETAGSTRING FROM TEACHER_INFO WHERE TEACHERNO='"&username&"' AND VALID=0"
 		GetRecordSet conn,rs,sql,count
    	If count>0 Then
-			Session("TId")=rs("TEACHERID").Value
-			Session("TNo")=rs("TEACHERNO").Value
+		Session("TId")=rs("TEACHERID").Value
+		Session("TNo")=rs("TEACHERNO").Value
 	    Session("TName")=rs("TEACHERNAME").Value
 	    Session("TWritePrivileges")=rs("WRITEPRIVILEGETAGSTRING").Value
 	    Session("TReadPrivileges")=rs("READPRIVILEGETAGSTRING").Value
 	    Session("IsExpert")=True
-			url="expert"
+		url="expert"
 	  End If
    	CloseRs rs
 		CloseConn conn

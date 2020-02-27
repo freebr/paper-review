@@ -17,7 +17,7 @@ Case vbNullstring ' 文件选择页面
 <% useScript "jquery", "upload" %>
 </head>
 <body bgcolor="ghostwhite">
-<center><font size=4><b>导入论文查重信息</b><br>
+<center><font size=4><b>导入教指会盲评论文查重信息</b><br>
 <form id="fmUpload" action="?step=2" method="POST" enctype="multipart/form-data">
 <p>请选择要导入的 Excel 文件：<input type="file" name="excelFile" size="100" title="论文查重信息表" /><br />
 请选择检测报告 RAR 文件：<input type="file" name="rarFile" size="100" title="检测报告压缩文件" /><br />
@@ -90,14 +90,14 @@ Case 2	' 上传进程
 <% useScript "jquery" %>
 </head>
 <body bgcolor="ghostwhite">
-<center><br /><b>导入论文查重信息</b><br /><br /><%
+<center><br /><b>导入教指委盲评论文查重信息</b><br /><br /><%
 	If Not bError Then %>
 <form id="fmUploadFinish" action="?step=3" method="POST">
 <input type="hidden" name="tableFilepath" value="<%=strDestTablePath%>" />
 <input type="hidden" name="rarFilename" value="<%=strDestRarFile%>" />
 <input type="hidden" name="reportDir" value="<%=reportDir%>" />
 <input type="hidden" name="reportNameFmt" value="<%=reportNameFmt%>" />
-<p>文件上传成功，正在导入论文查重信息和关联检测报告...</p></form>
+<p>文件上传成功，正在导入教指委盲评论文查重信息和关联检测报告...</p></form>
 <script type="text/javascript">setTimeout("$('#fmUploadFinish').submit()",500);</script><%
 	Else
 %>
@@ -109,7 +109,7 @@ Case 3	' 数据读取，导入到数据库
 	Function addData()
 		' 添加数据
 		Dim sql,sql2,conn,count,rsReview
-		Dim detect_count,new_status,reproduct_ratio,review_status,stu_id,stu_name,stu_no,thesis_file,dissertation_id
+		Dim detect_count,new_status,reproduct_ratio,stu_id,stu_name,stu_no,thesis_file,dissertation_id
 		Dim numThesis
 		Dim will_make_app:will_make_app=False
 		Dim reportFilePath,reportFilename,bFileExists
@@ -153,7 +153,7 @@ Case 3	' 数据读取，导入到数据库
 			End If
 			If Not bError Then
 				reportFilePath=reportDir&file.Name
-				sql="SELECT ID,STU_ID,STU_NAME,SPECIALITY_NAME,THESIS_SUBJECT,THESIS_FILE,REVIEW_STATUS,REVIEW_APP_EVAL,SUBMIT_REVIEW_TIME,DETECT_COUNT,TUTOR_ID,TUTOR_NAME FROM ViewDissertations WHERE STU_NO="&toSqlString(stu_no)
+				sql="SELECT ID,STU_ID,STU_NAME,THESIS_FILE4 FROM ViewDissertations WHERE STU_NO="&toSqlString(stu_no)
 				GetRecordSet conn,rsReview,sql,count
 				If rsReview.EOF Then
 					bError=True
@@ -162,71 +162,9 @@ Case 3	' 数据读取，导入到数据库
 					dissertation_id=rsReview("ID")
 					stu_id=rsReview("STU_ID")
 					stu_name=rsReview("STU_NAME")
-					review_status=rsReview("REVIEW_STATUS")
-					thesis_file=rsReview("THESIS_FILE")
-					detect_count=rsReview("DETECT_COUNT")
-					If review_status=rsAgreedDetect Then
-						If reproduct_ratio<=10 Then	' 通过
-							If detect_count>=1 Then	' 二次检测
-								new_status=rsRedetectPassed
-							Else
-								new_status=rsAgreedReview
-								will_make_app=True
-							End If
-						Else	' 不通过
-							If detect_count>=1 Then	' 二次检测
-								new_status=rsRedetectUnpassed
-							Else
-								new_status=rsDetectUnpassed
-							End If
-						End If
-					Else	' 更新为与当前检测次数一致的状态
-						If reproduct_ratio<=10 Then	' 通过
-							If detect_count>=2 Then	' 二次检测
-								new_status=rsRedetectPassed
-							Else
-								new_status=rsAgreedReview
-								will_make_app=True
-							End If
-						Else	' 不通过
-							If detect_count>=2 Then	' 二次检测
-								new_status=rsRedetectUnpassed
-							Else
-								new_status=rsDetectUnpassed
-							End If
-						End If
-					End If
-					If will_make_app Then
-						' 生成送审申请表
-						Dim author:author=stu_name
-						Dim tutor_id:tutor_id=rsReview("TUTOR_ID")
-						Dim tutor_info:tutor_info=rsReview("TUTOR_NAME")&" "&getProDutyNameOf(tutor_id)
-						Dim speciality:speciality=rsReview("SPECIALITY_NAME")
-						Dim subject:subject=rsReview("THESIS_SUBJECT")
-						Dim eval_text:eval_text=rsReview("REVIEW_APP_EVAL")
-						Dim audit_time:audit_time=rsReview("SUBMIT_REVIEW_TIME")
-						If IsNull(audit_time) Then audit_time=Now
-						Dim filename:filename=FormatDateTime(audit_time,1)&Int(Timer)&Int(Rnd()*999)&".docx"
-						Dim filepath:filepath=Server.MapPath("/PaperReview/tutor/export")&"\"&filename
-						rag.Author=author
-						rag.StuNo=stu_no
-						rag.TutorInfo=tutor_info
-						rag.Spec=speciality
-						rag.Date=FormatDateTime(audit_time,1)
-						rag.Subject=subject
-						rag.EvalText=eval_text
-						rag.ReproductRatio=reproduct_ratio
-						If rag.generateApp(filepath)=0 Then
-							bError=True
-							errMsg=errMsg&"为学生"""&stu_name&"""的论文生成送审申请表时出错。"&vbNewLine
-						Else
-							sql2=sql2&"UPDATE Dissertations SET REVIEW_APP="&toSqlString(filename)&" WHERE STU_ID="&stu_id&";"
-						End If
-					End If
-					sql2=sql2&"UPDATE Dissertations SET REPRODUCTION_RATIO="&reproduct_ratio&",DETECT_REPORT="&toSqlString(reportFilePath)&",REVIEW_STATUS="&new_status&" WHERE STU_ID="&stu_id&";"
-					sql2=sql2&"EXEC spAddDetectResult "&dissertation_id&","&toSqlString(thesis_file)&","&toSqlString(Now)&","&toSqlString(reportFilePath)&","&reproduct_ratio&",1;"
-					sql3=sql3&Format("EXEC spAddAuditRecord {0},{1},{2},{3},{4},1,{5};",dissertation_id,_
-						toSqlString(filename),auditTypeReviewApp,toSqlString(audit_time),tutor_id,toSqlString(eval_text))
+					thesis_file=rsReview("THESIS_FILE4")
+					sql2=sql2&"UPDATE Dissertations SET INSTRUCT_REVIEW_REPRODUCTION_RATIO="&reproduct_ratio&",INSTRUCT_REVIEW_DETECT_REPORT="&toSqlString(reportFilePath)&",REVIEW_STATUS="&rsInstructReviewDetected&" WHERE STU_ID="&stu_id&";"
+					sql2=sql2&"EXEC spAddDetectResult "&dissertation_id&","&toSqlString(thesis_file)&","&toSqlString(Now)&","&toSqlString(reportFilePath)&","&reproduct_ratio&",2;"
 					numThesis=numThesis+1
 				End If
 				CloseRs rsReview
@@ -235,9 +173,6 @@ Case 3	' 数据读取，导入到数据库
 		Loop
 		If Len(sql2) Then
 			conn.Execute sql2
-		End If
-		If Len(sql3) Then
-			conn.Execute sql3
 		End If
 		CloseConn conn
 		Set rag=Nothing

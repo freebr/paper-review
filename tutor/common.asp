@@ -65,6 +65,24 @@ Function getNoticeText(stuType,noticeName)
 	CloseConn conn
 End Function
 
+Function addAuditRecord(dissertation_id,filename,audit_type,audit_time,is_passed,eval_text)
+	If Len(eval_text)=0 Then
+		If is_passed Then eval_text="审核通过" Else eval_text="审核不通过"
+	End If
+	Dim conn,sql
+	Connect conn
+	sql="EXEC spAddAuditRecord ?,?,?,?,?,?,?,NULL"
+	ExecNonQuery conn,sql,_
+		CmdParam("dissertation_id",adInteger,4,dissertation_id),_
+		CmdParam("audit_file",adVarWChar,50,filename),_
+		CmdParam("audit_type",adInteger,4,audit_type),_
+		CmdParam("audit_time",adDate,4,audit_time),_
+		CmdParam("auditor_id",adInteger,4,Session("TId")),_
+		CmdParam("is_passed",adVarWChar,500,is_passed),_
+		CmdParam("comment",adLongVarWChar,5000,eval_text)
+	CloseConn conn
+End Function
+
 Function updateActiveTime(teacherID)
 	' 更新数据库中用户使用评阅系统时间的记录
 	Dim conn,sql

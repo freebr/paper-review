@@ -83,14 +83,14 @@ GetRecordSetNoLock conn,rs,sql,count
 	Next
 %></table>
 <p><font size=4><b>请选择要匹配的评阅专家</b></font></p>
-<table class="tblform" width="800" cellpadding="2" cellspacing="1" bgcolor="dimgray">
+<table class="form" width="800" cellpadding="2" cellspacing="1" bgcolor="dimgray">
 <tr bgcolor="gainsboro" align="center" height="25">
 <td width="100" align="center">专家一：</td>
 <td width="200" align="center"><input type="text" class="selectbox" name="expertname" size=20 value="单击选择..." onclick="window.open('selectExpert.asp?ctrl1=expertname&ctrl2=expertid&item=0','','width=800,height=500,location=no,scrollbars=yes')"/><input type="hidden" name="expertid" /></td>
 <td width="100" align="center">专家二：</td>
 <td width="200" align="center"><input type="text" class="selectbox" name="expertname" size=20 value="单击选择..." onclick="window.open('selectExpert.asp?ctrl1=expertname&ctrl2=expertid&item=1','','width=800,height=500,location=no,scrollbars=yes')"/><input type="hidden" name="expertid" /></td>
 </tr></table><p><input type="submit" name="btnsubmit" value="确 定" />&emsp;
-<input type="submit" name="btnreturn" value="返 回" onclick="this.form.action='thesisList.asp'" /></p></form></center></body>
+<input type="submit" name="btnreturn" value="返 回" onclick="this.form.action='paperList.asp'" /></p></form></center></body>
 <script type="text/javascript">
 	$('#btnsubmit').click(function(){
 		$(this).val('正在提交，请稍候……').attr('disabled',true);

@@ -122,7 +122,7 @@ Case 5	'  同意/不同意送检送审操作
 	Or Len(subject)=0) Then
 		bError=True
 		errdesc="缺少必要的字段信息！"
-	ElseIf review_status>=rsNotAgreeDetect Then
+	ElseIf review_status>=rsRefusedDetect Then
 		bError=True
 		errdesc="本论文当前状态下不能执行此操作！"
 	End If
@@ -143,13 +143,13 @@ Case 5	'  同意/不同意送检送审操作
 		End If
 		rs("REVIEW_APP_EVAL")=eval_text
 		rs("SUBMIT_REVIEW_TIME")=Now
-		rs("REVIEW_STATUS")=rsAgreeDetect
+		rs("REVIEW_STATUS")=rsAgreedDetect
 		CloseRs rsDetect
 	Else
 		rs("DETECT_APP_EVAL")=eval_text
 		rs("REVIEW_APP_EVAL")=Null
 		rs("SUBMIT_REVIEW_TIME")=Now
-		rs("REVIEW_STATUS")=rsNotAgreeDetect
+		rs("REVIEW_STATUS")=rsRefusedDetect
 	End If
 	rs.Update()
 	CloseRs rs
@@ -167,7 +167,7 @@ Case 6	'  同意/不同意送审操作
 	Or Len(subject)=0 Or is_pass And Len(reproduct_ratio)=0 Then
 		bError=True
 		errdesc="缺少必要的字段信息！"
-	ElseIf review_status>=rsNotAgreeReview Then
+	ElseIf review_status>=rsRefusedReview Then
 		bError=True
 		errdesc="本论文当前状态下不能执行此操作！"
 	End If
@@ -196,9 +196,9 @@ Case 6	'  同意/不同意送审操作
 		Set rag=Nothing
 		rs("REVIEW_APP")=filename
 		rs("SUBMIT_REVIEW_TIME")=review_time
-		rs("REVIEW_STATUS")=rsAgreeReview
+		rs("REVIEW_STATUS")=rsAgreedReview
 	Else
-		rs("REVIEW_STATUS")=rsNotAgreeReview
+		rs("REVIEW_STATUS")=rsRefusedReview
 	End If
 	' 更新记录
 	rs("REVIEW_APP_EVAL")=eval_text
@@ -223,7 +223,7 @@ Case 7	' 评阅书审阅确认操作
 	CloseConn conn
 Case 8	'  提交答辩论文审核意见操作
 	file_type_name="答辩论文"
-	If review_status>=rsModifyUnpassed Then
+	If review_status>=rsRefusedDefence Then
 		bError=True
 		errdesc="本论文当前状态下不能执行此操作！"
 	End If
@@ -235,10 +235,10 @@ Case 8	'  提交答辩论文审核意见操作
 	' 更新记录
 	If is_pass Then
 		'eval_text="已审阅，同意答辩"
-		rs("REVIEW_STATUS")=rsModifyPassed
+		rs("REVIEW_STATUS")=rsAgreedDefence
 	Else
 		'eval_text="不同意答辩，请继续修改论文"
-		rs("REVIEW_STATUS")=rsModifyUnpassed
+		rs("REVIEW_STATUS")=rsRefusedDefence
 	End If
 	rs("TUTOR_MODIFY_EVAL")=eval_text
 	rs("TUTOR_MODIFY_EVAL_TIME")=Now

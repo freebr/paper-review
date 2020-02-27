@@ -65,7 +65,7 @@ If rs.RecordCount>0 Then rs.AbsolutePage=pageNo
 <meta name="theme-color" content="#2D79B2" />
 <title>查看论文列表</title>
 <% useStylesheet "tutor" %>
-<% useScript "jquery", "common", "thesis" %>
+<% useScript "jquery", "common", "paper" %>
 </head>
 <body bgcolor="ghostwhite" onload="return On_Load()">
 <center>
@@ -125,7 +125,7 @@ GetMenuListPubTerm "ReviewStatuses","STATUS_ID2","STATUS_NAME",query_review_stat
 <input type="submit" value="在结果中查找" onclick="genFinalFilter()">
 &nbsp;
 每页
-<select name="pageSize" onchange="if(Chk_Select())submitForm($('#fmThesisList'))">
+<select name="pageSize" onchange="if(Chk_Select())submitForm($('#paperList'))">
 <option value="-1" <%If pageSize=-1 Then%>selected<%End If%>>全部</option>
 <option value="20" <%If rs.PageSize=20 Then%>selected<%End If%>>20</option>
 <option value="40" <%If rs.PageSize=40 Then%>selected<%End If%>>40</option>
@@ -134,7 +134,7 @@ GetMenuListPubTerm "ReviewStatuses","STATUS_ID2","STATUS_NAME",query_review_stat
 条
 &nbsp;
 转到
-<select name="pageNo" onchange="if(Chk_Select())submitForm($('#fmThesisList'))">
+<select name="pageNo" onchange="if(Chk_Select())submitForm($('#paperList'))">
 <%
 For i=1 to rs.PageCount
 		Response.write "<option value="&i
@@ -147,7 +147,7 @@ Next
 &nbsp;
 共<%=rs.RecordCount%>条
 </td></tr></form></table>
-<form id="fmThesisList" method="post">
+<form id="paperList" method="post">
 <input type="hidden" name="In_ActivityId2" value="<%=activity_id%>">
 <input type="hidden" name="In_TEACHTYPE_ID2" value="<%=teachtype_id%>">
 <input type="hidden" name="In_SPECIALITY_ID2" value="<%=spec_id%>">
@@ -195,7 +195,7 @@ Next
 		reviewer_eval_time=rs("REVIEWER_EVAL_TIME")
 		If rs("ISTABLE") Or rs("ISMODIFY") Or rs("ISEVAL") Or rs("ISREVIEW") Or rs("ISDETECT") Then
 			cssclass="thesisstat_unhandled"
-		ElseIf rs("REVIEW_STATUS")=rsAgreeReview And reviewer<>-1 Then
+		ElseIf rs("REVIEW_STATUS")=rsAgreedReview And reviewer<>-1 Then
 			If IsNull(reviewer_eval_time) Then
 				cssclass="thesisstat_unhandled"
 			Else

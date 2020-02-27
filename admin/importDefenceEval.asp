@@ -150,7 +150,7 @@ Case 3	' 数据读取，导入到数据库
 <%Else %>
 	alert("操作成功，<%=countInsert%> 条记录已导入，<%=countUpdate%> 条记录已更新。");
 <%End If
-%>location.href="thesisList.asp";
+%>location.href="paperList.asp";
 </script><%
 End Select
 %>

@@ -1,5 +1,5 @@
 admin/export/*
-admin/rar/*
+admin/rar/*.rar
 admin/tmp/*
 admin/upload/report/*
 admin/upload/review/*

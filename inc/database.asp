@@ -1,6 +1,6 @@
 ﻿<!--#include file="adovbs.inc"--><%
 Function Connect(conn)
-	Dim connstr:connstr=getConnectionString("ThesisReviewSys")
+	Dim connstr:connstr=getConnectionString("PaperReviewSystem")
 	Set conn=Server.CreateObject("ADODB.Connection")
 	conn.CommandTimeout=300
 	conn.CursorLocation=adUseClient
@@ -11,13 +11,13 @@ Sub ConnectOriginDb(conn)
 	Dim connstr
 	connstr=getConnectionString("SCUT_MD")
 	Set conn=Server.CreateObject("ADODB.Connection")
-  conn.CommandTimeout=300
-  conn.CursorLocation=adUseClient
+	conn.CommandTimeout=300
+	conn.CursorLocation=adUseClient
 	conn.Open connstr
 End Sub
 Function getConnectionString(initDbName)
 	Dim ret
-	ret="Provider=SQLNCLI10;Persist Security Info=True;User ID=ThesisReviewSys;Password=freebr@qq.com;Initial Catalog="&initDbName
+	ret="Provider=SQLNCLI10;Persist Security Info=True;User ID=PaperReviewSystem;Password=freebr@qq.com;Initial Catalog="&initDbName
 	ret=ret&";Data Source=116.57.68.162,14033;Pooling=true;Max Pool Size=512;Min Pool Size=50;Connection Lifetime=999;"
 	getConnectionString=ret
 End Function

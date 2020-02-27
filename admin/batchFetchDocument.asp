@@ -1,12 +1,6 @@
-﻿<%Response.Expires=-1%>
-<!--#include file="../inc/global.inc"-->
-<!--#include file="common.asp"-->
-<%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
-Dim arrFileListName,arrFileListNamePostfix,arrFileListPath,arrFileListField
-arrFileListName=Array("","开题报告表","开题论文","中期检查表","中期论文","预答辩申请表","预答辩论文","答辩及授予学位审批材料","送检论文","送审论文","答辩论文","定稿论文","送检论文检测报告","硕士学位论文送审申请表","论文评阅书 1","论文评阅书 2")
-arrFileListNamePostfix=Array("","开题报告表","开题论文","中期检查表","中期论文","预答辩申请表","预答辩论文","答辩审批材料","","","","","检测报告","送审审核表","论文评阅书(1)","论文评阅书(2)")
-arrFileListPath=Array("","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/admin/upload/report","/ThesisReview/tutor/export","/ThesisReview/expert/export","/ThesisReview/expert/export")
-arrFileListField=Array("","TABLE_FILE1","TBL_THESIS_FILE1","TABLE_FILE2","TBL_THESIS_FILE2","TABLE_FILE3","TBL_THESIS_FILE3","TABLE_FILE4","THESIS_FILE","THESIS_FILE2","THESIS_FILE3","THESIS_FILE4","DETECT_REPORT","REVIEW_APP","REVIEW_FILE1","REVIEW_FILE2")
+﻿<!--#include file="../inc/global.inc"-->
+<!--#include file="common.asp"--><%
+If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 filetype=Request.Form("filetype")
 ids=Request("sel")
 numRecord=UBound(Split(ids,","))+1
@@ -27,8 +21,8 @@ Case vbNullString	' 选择页面
 <form action="?step=2" method="POST">
 <p>您选择了&nbsp;<%=numRecord%>&nbsp;条论文记录</p>
 <p>请选择要下载的文件：<select name="filetype"><option value="0">请选择</option><%
-For i=1 To UBound(arrFileListName) %>
-<option value="<%=i%>"><%=arrFileListName(i)%></option><%
+For i=1 To UBound(arrDefaultFileListName) %>
+<option value="<%=i%>"><%=arrDefaultFileListName(i)%></option><%
 Next
 %></select></p>
 <p>打包压缩文件名：<input type="text" name="rarfilename" size="40" />.rar&nbsp;</p>
@@ -38,7 +32,7 @@ Next
 <p align="left"><span id="output" style="color:#000099;font-size:9pt"></span></p></center></body>
 <script type="text/javascript">
 $(document).ready(function(){
-	var progfile="http://www.cnsba.com/ThesisReview/admin/rar/tmp/prog_<%=Session("id")%>.txt";
+	var progfile="http://www.cnsba.com/PaperReview/admin/rar/tmp/prog_<%=Session("id")%>.txt";
 	$('select').change(function() {
 		if(!this.selectedIndex)return;
 		$(':text').val(this.options[this.selectedIndex].innerText+"<%=rarFilenamePostfix%>");
@@ -75,9 +69,12 @@ Case 2	' 下载页面
 	ElseIf Not IsNumeric(filetype) Then
 		bError=True
 		errdesc="参数无效。"
-	ElseIf filetype<1 Or filetype>15 Then
-		bError=True
-		errdesc="请选择要批量下载的文件类型！"
+	Else
+		filetype=Int(filetype)
+		If filetype<1 Or filetype>UBound(arrDefaultFileListName) Then
+			bError=True
+			errdesc="请选择要批量下载的文件类型！"
+		End If
 	End If
 	If bError Then
 	%><body bgcolor="ghostwhite"><center><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
@@ -87,7 +84,7 @@ Case 2	' 下载页面
 	rarFilename=Trim(Request.Form("rarfilename"))
 	If LCase(Right(rarFilename,4))=".rar" Then rarFilename=Trim(Left(rarFilename,Len(rarFilename)-4))
 	If Len(rarFilename)=0 Then	' 取默认文件名
-		rarFilename=arrFileListName(filetype)&"(共"&numRecord&"份)"
+		rarFilename=arrDefaultFileListName(filetype)&"(共"&numRecord&"份)"
 	End If
 	rarFilename=rarFilename&".rar"
 	Connect conn
@@ -127,21 +124,21 @@ Case 2	' 下载页面
 	streamLog.Open()
 	Set wsh=Server.CreateObject("WScript.Shell")
 	Do While Not rs.EOF
-		source_file=rs(arrFileListField(filetype))
+		source_file=rs(arrDefaultFileListField(filetype))
 		If IsNull(source_file) Then
 			source_file=""
 		Else
 			fileExt=LCase(fso.GetExtensionName(source_file))
 			oldfilename=source_file
-			source_file=Server.MapPath(arrFileListPath(filetype)&"/"&source_file)
+			source_file=Server.MapPath(arrDefaultFileListPath(filetype)&"/"&source_file)
 		End If
 		If Not fso.FileExists(source_file) Then
 			numFailed=numFailed+1
 			errMsg=errMsg&vbNewLine&numFailed&"."&rs("STU_NAME")&"的论文《"&rs("THESIS_SUBJECT")&"》没有所需类型的文件。"
 		Else
-			If Len(arrFileListNamePostfix(filetype)) Then
-				'newfilename=rs("SPECIALITY_NAME")&rs("STU_NAME")&rs("STU_NO")&"-"&arrFileListNamePostfix(filetype)
-				newfilename=rs("STU_NAME")&"_"&rs("STU_NO")&"_"&arrFileListNamePostfix(filetype)
+			If Len(arrDefaultFileListNamePostfix(filetype)) Then
+				'newfilename=rs("SPECIALITY_NAME")&rs("STU_NAME")&rs("STU_NO")&"-"&arrDefaultFileListNamePostfix(filetype)
+				newfilename=rs("STU_NAME")&"_"&rs("STU_NO")&"_"&arrDefaultFileListNamePostfix(filetype)
 			Else
 				subject=Replace(rs("THESIS_SUBJECT"),":","_")
 				subject=Replace(subject,"""","_")
@@ -184,7 +181,7 @@ Case 2	' 下载页面
 	exec.StdOut.ReadAll()
 	fso.DeleteFolder rarDir
 	If numSucceeded=0 Then
-%><body bgcolor="ghostwhite"><center><font color=red size="4">所选论文没有<%=arrFileListName(filetype)%>！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
+%><body bgcolor="ghostwhite"><center><font color=red size="4">所选论文没有<%=arrDefaultFileListName(filetype)%>！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 		Response.End()
 	End If
 	' 添加压缩文件注释
@@ -205,7 +202,7 @@ Case 2	' 下载页面
 	Set exec=Nothing
 	Set streamLog=Nothing
 	Set fso=Nothing
-	url="/ThesisReview/admin/rar/"&rarFilename
+	url="/PaperReview/admin/rar/"&rarFilename
 %><script type="text/javascript">
 	alert("文件已打包完毕，点击“确定”按钮开始下载。");
 	location.href='<%=url%>';

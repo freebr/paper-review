@@ -1,8 +1,5 @@
 ﻿@import "global.css";
 
-table.tblform { border:0;background-color:#999999 }
-table.tblform > tbody > tr { background-color:#ffffff }
-table.tblform > tbody > tr.trbuttons { background-color:#cccccc }
 table.profile input[type="text"] { width:100% }
 div.divcontrol { display:inline }
 span.title { font-size:12pt;font-weight:bold;color:#0000aa }

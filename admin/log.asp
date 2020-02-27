@@ -11,7 +11,7 @@ Else
 	filename=Format("{0}年{1}月{2}日",Int(arr(0)),Int(arr(1)),Int(arr(2)))
 End If
 Set fso=Server.CreateObject("Scripting.FileSystemObject")
-logFile=Server.MapPath("/log/ThesisReview/"&filename&".log")
+logFile=Server.MapPath("/log/PaperReview/"&filename&".log")
 If fso.FileExists(logFile) Then
 	Set stream=fso.OpenTextFile(logFile)
 Else

@@ -3,12 +3,12 @@
 <!--#include file="common.asp"-->
 <%If IsEmpty(Session("StuId")) Then Response.Redirect("../error.asp?timeout")
 Dim is_new_dissertation:is_new_dissertation=False
-Dim activity_id,section_id,time_flag,allow_upload
+Dim activity_id,section_id,time_flag,uploadable
 Dim conn,rs,sql,count
 
 activity_id=0
 section_id=0
-allow_upload=False
+uploadable=False
 stu_type=Session("StuType")
 
 Connect conn
@@ -60,13 +60,13 @@ End If
 If section_id<>0 Then
 	is_new_dissertation=section_id=sectionUploadKtbg Or stu_type=7 And section_id=sectionUploadYdbyjs
 	If rs.EOF Then
-		allow_upload=True
+		uploadable=True
 	ElseIf Not isActivityOpen(rs("ActivityId")) Then
 		time_flag=-3
 	Else
 		Set current_section=getSectionInfo(rs("ActivityId"), stu_type, section_id)
 		time_flag=compareNowWithSectionTime(current_section)
-		allow_upload=time_flag=0
+		uploadable=time_flag=0
 	End If
 End If
 step=Request.QueryString("step")
@@ -83,8 +83,8 @@ Case vbNullstring ' 填写信息页面
 <body bgcolor="ghostwhite">
 <center><font size=4><b>上传表格文件</b></font>
 <form id="fmDissertation" action="?step=1" method="post" enctype="multipart/form-data">
-<table class="tblform" width="1000" align="center"><tr><td class="summary"><%
-	If Not allow_upload Then
+<table class="form" width="1000" align="center"><tr><td class="summary"><%
+	If Not uploadable Then
 %><p><span class="tip">当前状态为【<%=rs("STAT_TEXT")%>】，不能上传表格文件！</span></p><%
 	ElseIf time_flag=-2 Then
 %><p><span class="tip">【<%=current_section("Name")%>】环节已关闭，不能上传表格文件！</span></p><%
@@ -110,7 +110,7 @@ Case vbNullstring ' 填写信息页面
 <p>请选择要上传的文件，并点击&quot;提交&quot;按钮：</p><%
 	End If %></td></tr>
 <tr><td align="center">
-<table class="tblform">
+<table class="form">
 <tr><td><p>论文题目：《<input type="text" name="subject_ch" size="50" value="<%=subject_ch%>" />》</p>
 <p>（英文）：&nbsp;<input type="text" name="subject_en" size="53" maxlength="200" value="<%=subject_en%>" /></p><%
 	If is_new_dissertation Then %>
@@ -129,7 +129,7 @@ Case vbNullstring ' 填写信息页面
 	End If %>
 </table></td></tr>
 <tr><td align="center"><p><%
-	If allow_upload Then
+	If uploadable Then
 %><input type="submit" id="btnsubmit" value="提 交" />&nbsp;<%
 	End If
 	If is_generated Then
@@ -145,7 +145,7 @@ Case vbNullstring ' 填写信息页面
 		setKeywords([<%=str_keywords_ch%>],[<%=str_keywords_en%>]);
 	});<%
 		End If
-		If allow_upload Then %>
+		If uploadable Then %>
 	$('select[name="sub_research_field_select"]').change(function(){
 		$('input[name="sub_research_field"]').val(!this.value.length?'':$(this).find('option:selected').text());
 		var $custom_field=$('input[name="custom_sub_research_field"]');
@@ -163,7 +163,7 @@ Case vbNullstring ' 填写信息页面
 		End If
 	End If %>
 	$('form').submit(function(event) {<%
-	If is_new_dissertation And allow_upload Then %>
+	If is_new_dissertation And uploadable Then %>
 		if(!checkKeywords()) {
 			event.preventDefault();
 			return false;
@@ -173,7 +173,7 @@ Case vbNullstring ' 填写信息页面
 		if(valid) submitUploadForm(this); else return false;
 	});
 	$('input[name="table_file"]').change(function(){if(this.value.length)checkIfWordRar(this);});<%
-	If Not allow_upload Then %>
+	If Not uploadable Then %>
 	$('input[name="table_file"]').attr('readOnly',true);<%
 	End If %>
 	$(':button#btndownload').click(
@@ -196,7 +196,7 @@ Case 1	' 上传进程
 			current_section("Name"),_
 			toDateTime(current_section("StartTime"),1),_
 			toDateTime(current_section("EndTime"),1))
-	ElseIf Not allow_upload Then
+	ElseIf Not uploadable Then
 		bError=True
 		errdesc="当前状态为【"&rs("STAT_TEXT")&"】，不能上传表格文件！"
 	End If

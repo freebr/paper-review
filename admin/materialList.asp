@@ -31,7 +31,7 @@ Dim arrSpecMatFiles:arrSpecMatFiles=Array("lwzxgf.doc",prefix&"lwzxsc20170714.pd
 </head>
 <body bgcolor="ghostwhite">
 <center><font size=4><b>查看论文阶段相关资料</b></font>
-<table class="tblform" width="800"><tr><td align="left"><%
+<table class="form" width="800"><tr><td align="left"><%
 For i=0 To UBound(arrTemplateNames)
 	link="template/doc/"&arrTemplateFiles(i)
 	ext=UCase(Mid(arrTemplateFiles(i),InStrRev(arrTemplateFiles(i),".")+1))

@@ -3,10 +3,10 @@ Server.ScriptTimeout=10000%>
 <!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"--><%
 Dim uppath,fso,folder,files
-Dim arr:arr=Split("THESIS_FILE,THESIS_FILE2,THESIS_FILE3,THESIS_FILE4,TABLE_FILE1,TABLE_FILE2,TABLE_FILE3,TABLE_FILE4,TBL_THESIS_FILE1,TBL_THESIS_FILE2,TBL_THESIS_FILE3",",")
+Dim arr:arr=Split("THESIS_FILE,THESIS_FILE2,THESIS_FILE3,THESIS_FILE4,THESIS_FILE5,TABLE_FILE1,TABLE_FILE2,TABLE_FILE3,TABLE_FILE4,TBL_THESIS_FILE1,TBL_THESIS_FILE2,TBL_THESIS_FILE3",",")
 Dim conn,rs,sql,count
 
-uppath=Server.MapPath("/ThesisReview/student/upload")
+uppath=Server.MapPath("/PaperReview/student/upload")
 startdate=Request.QueryString("from")
 If IsEmpty(startdate) Then startdate="1900-1-1"
 startdate=CDate(startdate)

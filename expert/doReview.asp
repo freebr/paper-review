@@ -58,7 +58,7 @@ ElseIf Len(eval_text)>2000 Then
 ElseIf count=0 Then
 	bError=True
 	errdesc="数据库没有该论文记录，或您未受邀评阅该论文！"
-ElseIf rs("REVIEW_STATUS")<>rsMatchExpert And rs("REVIEW_STATUS")<>rsReviewed Then
+ElseIf rs("REVIEW_STATUS")<>rsMatchedReviewer And rs("REVIEW_STATUS")<>rsReviewed Then
 	bError=True
 	errdesc="本论文当前状态下不允许评阅！"
 Else

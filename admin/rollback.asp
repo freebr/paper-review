@@ -31,106 +31,109 @@ End If
 Dim detect_count
 sql="SELECT DETECT_COUNT FROM ViewDissertations WHERE ID="&thesisID
 GetRecordSet conn,rsDetect,sql,count
-detect_count=rsDetect(0).Value
+detect_count=rsDetect(0)
 CloseRs rsDetect
 
 Select Case usertype
 Case 0	' 撤销学生上传操作
 	Select Case opr
 	Case 0
-		rs("TABLE_FILE1").Value=Null
-		'rs("TASK_EVAL").Value=Null
-		If IsNull(rs("TBL_THESIS_FILE1").Value) Then
-			rs("TASK_PROGRESS").Value=0
+		rs("TABLE_FILE1")=Null
+		'rs("TASK_EVAL")=Null
+		If IsNull(rs("TBL_THESIS_FILE1")) Then
+			rs("TASK_PROGRESS")=0
 		Else
-			rs("TASK_PROGRESS").Value=tpTbl1Uploaded
+			rs("TASK_PROGRESS")=tpTbl1Uploaded
 		End If
-		rs("REVIEW_STATUS").Value=0
+		rs("REVIEW_STATUS")=0
 	Case 1
-		rs("TBL_THESIS_FILE1").Value=Null
-		'rs("TASK_EVAL").Value=Null
-		If IsNull(rs("TABLE_FILE1").Value) Then
-			rs("TASK_PROGRESS").Value=0
+		rs("TBL_THESIS_FILE1")=Null
+		'rs("TASK_EVAL")=Null
+		If IsNull(rs("TABLE_FILE1")) Then
+			rs("TASK_PROGRESS")=0
 		Else
-			rs("TASK_PROGRESS").Value=tpTbl1Uploaded
+			rs("TASK_PROGRESS")=tpTbl1Uploaded
 		End If
-		rs("REVIEW_STATUS").Value=0
+		rs("REVIEW_STATUS")=0
 	Case 2
-		rs("TABLE_FILE2").Value=Null
-		'rs("TASK_EVAL").Value=Null
-		If IsNull(rs("TBL_THESIS_FILE2").Value) Then
-			rs("TASK_PROGRESS").Value=tpTbl1Passed
+		rs("TABLE_FILE2")=Null
+		'rs("TASK_EVAL")=Null
+		If IsNull(rs("TBL_THESIS_FILE2")) Then
+			rs("TASK_PROGRESS")=tpTbl1Passed
 		Else
-			rs("TASK_PROGRESS").Value=tpTbl2Uploaded
+			rs("TASK_PROGRESS")=tpTbl2Uploaded
 		End If
-		rs("REVIEW_STATUS").Value=0
+		rs("REVIEW_STATUS")=0
 	Case 3
-		rs("TBL_THESIS_FILE2").Value=Null
-		'rs("TASK_EVAL").Value=Null
-		If IsNull(rs("TABLE_FILE2").Value) Then
-			rs("TASK_PROGRESS").Value=tpTbl1Passed
+		rs("TBL_THESIS_FILE2")=Null
+		'rs("TASK_EVAL")=Null
+		If IsNull(rs("TABLE_FILE2")) Then
+			rs("TASK_PROGRESS")=tpTbl1Passed
 		Else
-			rs("TASK_PROGRESS").Value=tpTbl2Uploaded
+			rs("TASK_PROGRESS")=tpTbl2Uploaded
 		End If
-		rs("REVIEW_STATUS").Value=0
+		rs("REVIEW_STATUS")=0
 	Case 4
-		rs("TABLE_FILE3").Value=Null
-		'rs("TASK_EVAL").Value=Null
-		If IsNull(rs("TBL_THESIS_FILE3").Value) Then
-			rs("TASK_PROGRESS").Value=tpTbl2Passed
+		rs("TABLE_FILE3")=Null
+		'rs("TASK_EVAL")=Null
+		If IsNull(rs("TBL_THESIS_FILE3")) Then
+			rs("TASK_PROGRESS")=tpTbl2Passed
 		Else
-			rs("TASK_PROGRESS").Value=tpTbl3Uploaded
+			rs("TASK_PROGRESS")=tpTbl3Uploaded
 		End If
-		rs("REVIEW_STATUS").Value=0
+		rs("REVIEW_STATUS")=0
 	Case 5
-		rs("TBL_THESIS_FILE3").Value=Null
-		'rs("TASK_EVAL").Value=Null
-		If IsNull(rs("TABLE_FILE3").Value) Then
-			rs("TASK_PROGRESS").Value=tpTbl2Passed
+		rs("TBL_THESIS_FILE3")=Null
+		'rs("TASK_EVAL")=Null
+		If IsNull(rs("TABLE_FILE3")) Then
+			rs("TASK_PROGRESS")=tpTbl2Passed
 		Else
-			rs("TASK_PROGRESS").Value=tpTbl3Uploaded
+			rs("TASK_PROGRESS")=tpTbl3Uploaded
 		End If
-		rs("REVIEW_STATUS").Value=0
+		rs("REVIEW_STATUS")=0
 	Case 6
-		rs("THESIS_FILE").Value=Null
-		'rs("DETECT_APP_EVAL").Value=Null
-		rs("TASK_PROGRESS").Value=tpTbl3Passed
-		rs("REVIEW_STATUS").Value=0
+		rs("THESIS_FILE")=Null
+		'rs("DETECT_APP_EVAL")=Null
+		rs("TASK_PROGRESS")=tpTbl3Passed
+		rs("REVIEW_STATUS")=0
 	Case 7
-		rs("THESIS_FILE2").Value=Null
-		'rs("REVIEW_APP_EVAL").Value=Null
-		rs("REVIEW_STATUS").Value=rsAgreeDetect
+		rs("THESIS_FILE2")=Null
+		'rs("REVIEW_APP_EVAL")=Null
+		rs("REVIEW_STATUS")=rsAgreedDetect
 	Case 8
-		rs("THESIS_FILE3").Value=Null
-		'rs("TUTOR_MODIFY_EVAL").Value=Null
-		rs("REVIEW_STATUS").Value=rsReviewEval
+		rs("THESIS_FILE3")=Null
+		'rs("TUTOR_MODIFY_EVAL")=Null
+		rs("REVIEW_STATUS")=rsReviewEval
 	Case 9
-		rs("THESIS_FILE4").Value=Null
-		rs("REVIEW_STATUS").Value=rsInstructEval
+		rs("THESIS_FILE4")=Null
+		rs("REVIEW_STATUS")=rsDefenceEval
 	Case 10
-		rs("TABLE_FILE4").Value=Null
-		'rs("TASK_EVAL").Value=Null
-		rs("TASK_PROGRESS").Value=tpTbl3Passed
+		rs("THESIS_FILE5")=Null
+		rs("REVIEW_STATUS")=rsInstructEval
+	Case 11
+		rs("TABLE_FILE4")=Null
+		'rs("TASK_EVAL")=Null
+		rs("TASK_PROGRESS")=tpTbl3Passed
 	End Select
 Case 1	' 撤销专家评阅操作
 
 	Dim review_result(2),reviewer_master_level(1),review_file(1),review_time(1),review_level(1)
-	If Not IsNull(rs("REVIEW_RESULT").Value) Then
-		arr=Split(rs("REVIEW_RESULT").Value,",")
+	If Not IsNull(rs("REVIEW_RESULT")) Then
+		arr=Split(rs("REVIEW_RESULT"),",")
 		For i=0 To UBound(arr)
 			review_result(i)=Int(arr(i))
 		Next
 	End If
-	If IsNull(rs("REVIEWER_EVAL_TIME").Value) Then
+	If IsNull(rs("REVIEWER_EVAL_TIME")) Then
 		For i=0 To 1
 			reviewer_master_level(i)=0
 			review_level(i)=0
 		Next
 	Else
-		arr2=Split(rs("REVIEWER_MASTER_LEVEL").Value,",")
-		arr3=Split(rs("REVIEW_FILE").Value,",")
-		arr4=Split(rs("REVIEWER_EVAL_TIME").Value,",")
-		arr5=Split(rs("REVIEW_LEVEL").Value,",")
+		arr2=Split(rs("REVIEWER_MASTER_LEVEL"),",")
+		arr3=Split(rs("REVIEW_FILE"),",")
+		arr4=Split(rs("REVIEWER_EVAL_TIME"),",")
+		arr5=Split(rs("REVIEW_LEVEL"),",")
 		For i=0 To 1
 			reviewer_master_level(i)=Int(arr2(i))
 			review_file(i)=arr3(i)
@@ -148,84 +151,84 @@ Case 1	' 撤销专家评阅操作
 	review_result(2)=finalresult
 	
 	' 更新记录
-	rs("REVIEW_RESULT").Value=ArrayJoin(review_result,",")
-	rs("REVIEW_LEVEL").Value=ArrayJoin(review_level,",")
-	rs("REVIEWER_MASTER_LEVEL").Value=ArrayJoin(reviewer_master_level,",")
-	rs("REVIEWER_EVAL"&(opr+1)).Value=eval_text
-	rs("REVIEW_FILE").Value=ArrayJoin(review_file,",")
-	rs("REVIEWER_EVAL_TIME").Value=ArrayJoin(review_time,",")
-	'rs("TUTOR_REVIEW_EVAL").Value=Null
-	rs("REVIEW_STATUS").Value=rsMatchExpert
+	rs("REVIEW_RESULT")=ArrayJoin(review_result,",")
+	rs("REVIEW_LEVEL")=ArrayJoin(review_level,",")
+	rs("REVIEWER_MASTER_LEVEL")=ArrayJoin(reviewer_master_level,",")
+	rs("REVIEWER_EVAL"&(opr+1))=eval_text
+	rs("REVIEW_FILE")=ArrayJoin(review_file,",")
+	rs("REVIEWER_EVAL_TIME")=ArrayJoin(review_time,",")
+	'rs("TUTOR_REVIEW_EVAL")=Null
+	rs("REVIEW_STATUS")=rsMatchedReviewer
 	
 Case 2	' 撤销导师审核操作
 	Select Case opr
 	Case 0
-		rs("TASK_EVAL").Value=Null
-		Select Case rs("TASK_PROGRESS").Value
+		rs("TASK_EVAL")=Null
+		Select Case rs("TASK_PROGRESS")
 		Case tpTbl1Unpassed,tpTbl1Passed
-			rs("TASK_PROGRESS").Value=tpTbl1Uploaded
-			rs("REVIEW_STATUS").Value=0
+			rs("TASK_PROGRESS")=tpTbl1Uploaded
+			rs("REVIEW_STATUS")=0
 		Case tpTbl2Unpassed,tpTbl2Passed
-			rs("TASK_PROGRESS").Value=tpTbl2Uploaded
-			rs("REVIEW_STATUS").Value=0
+			rs("TASK_PROGRESS")=tpTbl2Uploaded
+			rs("REVIEW_STATUS")=0
 		Case tpTbl3Unpassed,tpTbl3Passed
-			rs("TASK_PROGRESS").Value=tpTbl3Uploaded
-			rs("REVIEW_STATUS").Value=0
+			rs("TASK_PROGRESS")=tpTbl3Uploaded
+			rs("REVIEW_STATUS")=0
 		Case tpTbl4Unpassed,tpTbl4Passed
-			rs("TASK_PROGRESS").Value=tpTbl4Uploaded
+			rs("TASK_PROGRESS")=tpTbl4Uploaded
 		End Select
 	Case 1
-		rs("DETECT_APP_EVAL").Value=Null
-		rs("REVIEW_STATUS").Value=rsDetectThesisUploaded
+		rs("DETECT_APP_EVAL")=Null
+		rs("REVIEW_STATUS")=rsDetectPaperUploaded
 	Case 2
-		rs("REVIEW_APP").Value=Null
-		rs("REVIEW_APP_EVAL").Value=Null
-		rs("SUBMIT_REVIEW_TIME").Value=Null
+		rs("REVIEW_APP")=Null
+		rs("REVIEW_APP_EVAL")=Null
+		rs("SUBMIT_REVIEW_TIME")=Null
 		If detect_count>1 Then	' 检测次数超过一次，回退到二次检测通过状态
-			rs("REVIEW_STATUS").Value=rsRedetectPassed
+			rs("REVIEW_STATUS")=rsRedetectPassed
 		Else	' 一次检测通过，回退到待同意检测状态
-			rs("DETECT_APP_EVAL").Value=Null
-			rs("REVIEW_STATUS").Value=rsDetectThesisUploaded
+			rs("DETECT_APP_EVAL")=Null
+			rs("REVIEW_STATUS")=rsDetectPaperUploaded
 		End If
 	Case 3
-		rs("TUTOR_MODIFY_EVAL").Value=Null
-		rs("REVIEW_STATUS").Value=rsModifyThesisUploaded
+		rs("TUTOR_MODIFY_EVAL")=Null
+		rs("REVIEW_STATUS")=rsDefencePaperUploaded
 	End Select
 Case 3	' 撤销教务员操作
 	Select Case opr
 	Case 0	' 撤销送检操作
 		sqlDetect="EXEC spDeleteDetectResult "&thesisID&";"
-		If Not IsNull(rs("THESIS_FILE").Value) Then
-			sqlDetect=sqlDetect&"EXEC spAddDetectResult "&thesisID&","&rs("THESIS_FILE").Value&",NULL,NULL,NULL;"
+		If Not IsNull(rs("THESIS_FILE")) Then
+			sqlDetect=sqlDetect&"EXEC spAddDetectResult "&thesisID&","&rs("THESIS_FILE")&",NULL,NULL,NULL,1;"
 		End If
-		rs("REVIEW_STATUS").Value=rsAgreeDetect
+		rs("REVIEW_STATUS")=rsAgreedDetect
 	Case 1	' 撤销匹配专家操作
-		rs("REVIEW_STATUS").Value=rsAgreeReview
+		rs("REVIEW_STATUS")=rsAgreedReview
 	Case 2	' 撤销导入答辩安排操作
 		sql="DELETE FROM DefenceInfo WHERE THESIS_ID="&thesisID
 		conn.Execute sql
 	Case 3	' 撤销导入答辩委员会修改意见操作
 		sql="UPDATE DefenceInfo SET DEFENCE_EVAL=NULL WHERE THESIS_ID="&thesisID
 		conn.Execute sql
-		rs("DEFENCE_MODIFY_EVAL").Value=Null	' 旧字段
-		rs("REVIEW_STATUS").Value=rsModifyPassed
+		rs("DEFENCE_MODIFY_EVAL")=Null	' 旧字段
+		rs("REVIEW_STATUS")=rsAgreedDefence
 	Case 4	' 撤销导入教指会分会修改意见操作
-		rs("INSTRUCT_MODIFY_EVAL").Value=Null
-		rs("REVIEW_STATUS").Value=rsDefenceEval
+		rs("INSTRUCT_MODIFY_EVAL")=Null
+		rs("REVIEW_STATUS")=rsDefenceEval
 	End Select
 End Select
 
-If rs("REVIEW_STATUS").Value<rsMatchExpert Then
-	rs("REVIEWER1").Value=Null
-	rs("REVIEWER2").Value=Null
-	rs("REVIEW_RESULT").Value="5,5,6"
-	rs("REVIEW_LEVEL").Value="0,0"
-	rs("REVIEWER_EVAL1").Value=Null
-	rs("REVIEWER_EVAL2").Value=Null
-	rs("REVIEWER_MASTER_LEVEL").Value=Null
-	rs("REVIEW_FILE").Value=Null
-	rs("REVIEW_FILE_STATUS").Value=0
-	rs("REVIEWER_EVAL_TIME").Value=Null
+If rs("REVIEW_STATUS")<rsMatchedReviewer Then
+	rs("REVIEWER1")=Null
+	rs("REVIEWER2")=Null
+	rs("REVIEW_RESULT")="5,5,6"
+	rs("REVIEW_LEVEL")="0,0"
+	rs("REVIEWER_EVAL1")=Null
+	rs("REVIEWER_EVAL2")=Null
+	rs("REVIEWER_MASTER_LEVEL")=Null
+	rs("REVIEW_FILE")=Null
+	rs("REVIEW_FILE_STATUS")=0
+	rs("REVIEWER_EVAL_TIME")=Null
 End If
 rs.Update()
 If Len(sqlDetect) Then

@@ -118,6 +118,25 @@ Function setNoticeText(stuType,noticeName,noticeContent)
 	CloseConn conn
 End Function
 
+Function addAuditRecord(dissertation_id,filename,audit_type,audit_time,auditor_id,is_passed,eval_text)
+	If Len(eval_text)=0 Then
+		If is_passed Then eval_text="审核通过" Else eval_text="审核不通过"
+	End If
+	Dim conn,sql
+	Connect conn
+	sql="EXEC spAddAuditRecord ?,?,?,?,?,?,?,?"
+	ExecNonQuery conn,sql,_
+		CmdParam("dissertation_id",adInteger,4,dissertation_id),_
+		CmdParam("audit_file",adVarWChar,50,filename),_
+		CmdParam("audit_type",adInteger,4,audit_type),_
+		CmdParam("audit_time",adDate,4,audit_time),_
+		CmdParam("auditor_id",adInteger,4,auditor_id),_
+		CmdParam("is_passed",adVarWChar,500,is_passed),_
+		CmdParam("comment",adLongVarWChar,5000,eval_text),_
+		CmdParam("creator",adInteger,4,Session("TId"))
+	CloseConn conn
+End Function
+
 Function sendEmailToStudent(dissertation_id,file_type_name,is_pass,ByVal eval_text)
 	If Len(eval_text)=0 Then eval_text="无"
 	Dim conn:Connect conn
@@ -168,5 +187,5 @@ End If
 
 Dim arrTable,reportBaseDir
 arrTable=Array("","开题报告表","中期检查表","预答辩申请表","答辩审批材料")
-reportBaseDir="/ThesisReview/admin/upload/report/"
+reportBaseDir="/PaperReview/admin/upload/report/"
 %>

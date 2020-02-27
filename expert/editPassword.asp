@@ -36,7 +36,7 @@ function chkInput(){
 <form action="setPassword.asp" method="post" onsubmit="return chkInput()">
 <input type="hidden" name="teacherid" value="<%=TeacherId%>">
 <h2><b><font class="title">登录密码修改</font></b></h2>
-<table class="tblform" width="750" cellspacing="1" cellpadding="3">
+<table class="form" width="750" cellspacing="1" cellpadding="3">
 <tr>
 <td colspan="3" align="center">
 您当前的密码强度：<span class="pwd-security-level-<%=Session("PasswordSecurityLevel")%>">【<%=arrSecurityLevelName(Session("PasswordSecurityLevel"))%>】</span>

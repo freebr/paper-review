@@ -4,7 +4,7 @@
 Dim arrFileListName,arrFileListNamePostfix,arrFileListPath,arrFileListField
 arrFileListName=Array("","送审论文","论文评阅书 1","论文评阅书 2")
 arrFileListNamePostfix=Array("","","论文评阅书(1)","论文评阅书(2)")
-arrFileListPath=Array("","/ThesisReview/student/upload","/ThesisReview/expert/export","/ThesisReview/expert/export")
+arrFileListPath=Array("","/PaperReview/student/upload","/PaperReview/expert/export","/PaperReview/expert/export")
 arrFileListField=Array("","THESIS_FILE2","REVIEW_FILE1","REVIEW_FILE2")
 thesisID=Request.QueryString("tid")
 filetype=Request.QueryString("type")

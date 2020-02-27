@@ -75,7 +75,7 @@ CloseRs rs
 CloseConn conn
 
 If InStr(thesisID,",") Then
-	returl="thesisList.asp"
+	returl="paperList.asp"
 Else
 	returl="thesisDetail.asp?tid="&thesisID
 End If

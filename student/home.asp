@@ -3,14 +3,11 @@
 <%If IsEmpty(Session("StuId")) Then Response.Redirect("../error.asp?timeout")
 Dim bTableFilledIn:bTableFilledIn=Array(0,False,False,False,False)
 Dim bTblThesisUploaded:bTblThesisUploaded=Array(0,False,False,False)
-Dim arrTableStat(4),arrFileListName,arrFileListPath,arrFileListField
+Dim arrTableStat(4)
 Dim review_result(2),bReviewFileVisible(1)
 Dim defence_member,defence_members,defence_memo
 Dim defence_result,grant_degree_result
 
-arrFileListName=Array("","开题报告表","开题论文","中期检查表","中期论文","预答辩申请表","预答辩论文","答辩及授予学位审批材料","一次送检论文","二次送检论文","送审论文","答辩论文","定稿论文","一次送检论文检测报告","二次送检论文检测报告","论文评阅书 1","论文评阅书 2")
-arrFileListPath=Array("","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/student/upload","/ThesisReview/admin/upload/report","/ThesisReview/admin/upload/report","/ThesisReview/expert/export","/ThesisReview/expert/export")
-arrFileListField=Array("","TABLE_FILE1","TBL_THESIS_FILE1","TABLE_FILE2","TBL_THESIS_FILE2","TABLE_FILE3","TBL_THESIS_FILE3","TABLE_FILE4","DETECT_THESIS1","DETECT_THESIS2","THESIS_FILE2","THESIS_FILE3","THESIS_FILE4","DETECT_REPORT1","DETECT_REPORT2","ReviewFile1","ReviewFile2")
 sem_info=getCurrentSemester()
 task_progress=0
 stu_type=Session("StuType")
@@ -25,6 +22,7 @@ Else
 	thesisID=rs("ID")
 	task_progress=rs("TASK_PROGRESS")
 	reproduct_ratio=toNumericString(rs("REPRODUCTION_RATIO"))
+	Instruct_review_reproduct_ratio=toNumericString(rs("INSTRUCT_REVIEW_REPRODUCTION_RATIO"))
 	detect_count=rs("DETECT_COUNT")
 	bReviewFileVisible(0)=(rs("ReviewFileDisplayStatus1") And 2)<>0
 	bReviewFileVisible(1)=(rs("ReviewFileDisplayStatus2") And 2)<>0
@@ -62,9 +60,9 @@ Else
 	End If
 End If
 Function showStepInfo(stepDisplay,stepCounter,bHidden)
-	If stepDisplay=rsRedetectPassed And detect_count>1 And (review_status=rsAgreeReview Or review_status=rsNotAgreeReview) Then
+	If stepDisplay=rsRedetectPassed And detect_count>1 And (review_status=rsAgreedReview Or review_status=rsRefusedReview) Then
 		showStepInfo=True
-	ElseIf review_status<>stepDisplay And (stepDisplay=rsNotAgreeDetect Or stepDisplay=rsDetectUnpassed Or stepDisplay=rsRedetectUnpassed Or stepDisplay=rsRedetectPassed Or stepDisplay=rsNotAgreeReview Or stepDisplay=rsModifyUnpassed) Then
+	ElseIf review_status<>stepDisplay And (stepDisplay=rsRefusedDetect Or stepDisplay=rsDetectUnpassed Or stepDisplay=rsRedetectUnpassed Or stepDisplay=rsRedetectPassed Or stepDisplay=rsRefusedReview Or stepDisplay=rsRefusedDefence) Then
 		showStepInfo=False
 		Exit Function
 	Else
@@ -81,11 +79,11 @@ Function showStepInfo(stepDisplay,stepCounter,bHidden)
 %><tr <%=className%> id="step<%=stepDisplay%>"><td class="stepicon"></td><td class="steptext"><p class="stepname"><%=arrStep(stepDisplay)%></p></td></tr>
 <tr <%=className%>><td <%=className_seqline%>></td><td class="steptext"><p class="stepcontent"><%
 	Select Case stepDisplay
-	Case rsDetectThesisUploaded
+	Case rsDetectPaperUploaded
 %><span style="color:dimgray">在导师同意检测前，您可以重复上传送检论文文件；导师仅能看到您最新上传的论文。</span><%
-	Case rsNotAgreeDetect
+	Case rsRefusedDetect
 %><span style="color:dimgray">导师不同意您的论文进行检测，请修改论文后重新上传。<br/>送检意见：<%=toPlainString(rs("DETECT_APP_EVAL"))%></span><%
-	Case rsAgreeDetect
+	Case rsAgreedDetect
 %><span style="color:dimgray">导师已同意您的论文进行检测。</span><%
 	Case rsDetectUnpassed,rsRedetectUnpassed,rsRedetectPassed
 %><span style="color:dimgray"><%
@@ -98,12 +96,12 @@ Function showStepInfo(stepDisplay,stepCounter,bHidden)
 %>经过二次检测，您的送检论文文字复制比为&nbsp;<%=reproduct_ratio%>%，不符合学院送检论文重复率低于10%的要求。<%
 		Case Else
 			filetype=14
-%>您的论文已通过二次查重检测，请等待导师同意送审。<br/>检测结果摘要：经图书馆检测，学位论文文字复制比为&nbsp;<%=reproduct_ratio%>%。<%
+%>您的论文已通过二次查重检测，请等候导师同意送审。<br/>检测结果摘要：经图书馆检测，学位论文文字复制比为&nbsp;<%=reproduct_ratio%>%。<%
 		End Select
 %><br/><a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=<%=filetype%>" target="_blank">点此下载检测报告</a></span><%
-	Case rsNotAgreeReview
+	Case rsRefusedReview
 %><span style="color:dimgray">导师不同意您的论文送审，请对照导师意见修改送审论文后重新上传。<br/>送审意见：<%=toPlainString(rs("REVIEW_APP_EVAL"))%></span><%
-	Case rsAgreeReview
+	Case rsAgreedReview
 %><span style="color:dimgray"><%
 		If detect_count>1 Then
 %>导师已于&nbsp;<%=toDateTime(rs("SUBMIT_REVIEW_TIME"),1)&" "&toDateTime(rs("SUBMIT_REVIEW_TIME"),4)%>&nbsp;同意您的论文送审申请，教务员将匹配专家对您的论文进行评阅。<%
@@ -111,7 +109,7 @@ Function showStepInfo(stepDisplay,stepCounter,bHidden)
 %>您的论文已通过查重检测，教务员将匹配专家对您的论文进行评阅。<br/>检测结果摘要：经图书馆检测，学位论文文字复制比为&nbsp;<%=reproduct_ratio%>%。<%
 		End If
 %><br/>送审意见：<%=toPlainString(rs("REVIEW_APP_EVAL"))%></span><%
-	Case rsMatchExpert
+	Case rsMatchedReviewer
 %><span style="color:dimgray">教务员已为您的论文匹配了评阅专家，正在对您的论文进行评阅，请耐心等候评阅结果。</span><%
 	Case rsReviewed
 %><span style="color:dimgray">专家已完成论文评阅，请等候导师进行确认。</span><%
@@ -132,21 +130,31 @@ Function showStepInfo(stepDisplay,stepCounter,bHidden)
 %><a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=<%=15+i%>" target="_blank">点击下载第<%=i+1%>份评阅书</a></span><%
 			End If
 		Next
-	Case rsModifyThesisUploaded
+	Case rsDefencePaperUploaded
 %><span style="color:dimgray">您已上传答辩论文，请等候导师审核。<%
 		If task_progress<tpTbl4Uploaded Then
 %>待导师审核后，将同意答辩的意见嵌入《学位论文答辩及授予学位审批材料》中打印并找导师签字。<%
 		End If
 %></span><%
-	Case rsModifyUnpassed
+	Case rsRefusedDefence
 %><span style="color:dimgray">您的答辩论文未获导师<%=rs("TUTOR_NAME")%>审核通过，请修改论文后重新上传。审核意见如下：<br/>&emsp;&emsp;<%=toPlainString(rs("TUTOR_MODIFY_EVAL"))%></span><%
-	Case rsModifyPassed
+	Case rsAgreedDefence
 %><span style="color:dimgray">导师<%=rs("TUTOR_NAME")%>已同意通过您的答辩论文。审核意见如下：<br/>&emsp;&emsp;<%=toPlainString(rs("TUTOR_MODIFY_EVAL"))%></span><%
 	Case rsDefenceEval
-%><span style="color:dimgray">答辩委员会已对您的论文提出了如下修改意见：<br/><%=toPlainString(rs("DEFENCE_EVAL"))%></span><%
+%><span style="color:dimgray">答辩委员会已对您的论文提出了如下修改意见，请根据意见修改并上传教指委盲评论文。<br/><%=toPlainString(rs("DEFENCE_EVAL"))%></span><%
+	Case rsInstructReviewPaperUploaded
+%><span style="color:dimgray">您已上传教指委盲评论文，请等候导师审核。</span><%
+	Case rsRefusedInstructReview
+%><span style="color:dimgray">导师不同意您的教指委盲评论文进行检测，请修改论文后重新上传。<br/>送检意见：<%=toPlainString(rs("DETECT_APP_EVAL"))%></span><%
+	Case rsAgreedInstructReview
+%><span style="color:dimgray">导师已同意您的教指委盲评论文进行检测。</span><%
+	Case rsInstructReviewDetected
+%>您的教指委盲评论文已完成查重，请等候教务员为您的论文匹配教指委委员。<br/>检测结果摘要：经图书馆检测，学位论文文字复制比为&nbsp;<%=Instruct_review_reproduct_ratio%>%。<%
+	Case rsMatchedInstructMember
+%><span style="color:dimgray">教务员已为您的论文匹配教指委委员，请等候委员审核。</span><%
 	Case rsInstructEval
 %><span style="color:dimgray">学院学位评定分委员会已对您的论文提出了如下修改意见：<br/><%=toPlainString(rs("INSTRUCT_MODIFY_EVAL"))%></span><%
-	Case rsFinalThesisUploaded
+	Case rsFinalPaperUploaded
 %><span style="color:dimgray">您已上传定稿论文。<%
 	End Select
 %></p></td></tr><%
@@ -157,7 +165,7 @@ End Function
 <meta name="theme-color" content="#2D79B2" />
 <title>系统首页</title>
 <% useStylesheet "student" %>
-<% useScript "jquery", "common", "thesis" %>
+<% useScript "jquery", "common", "paper" %>
 <style type="text/css">
 	td.modtitle { height:20;border:1px solid gainsboro }
 	td.modcontent { padding-left:20px;padding-top:10px;background:url(../images/student/modback.png) repeat }
@@ -219,7 +227,7 @@ End Function
 		If review_status<>rsNone And (review_type=0 Or review_type=1) Then
 			sql="SELECT * FROM ReviewTypes WHERE LEN(THESIS_FORM)>0 AND TEACHTYPE_ID="&stu_type
 			GetRecordSetNoLock conn,rs2,sql,count
-%><form method="post" action="setThesisForm.asp">
+%><form method="post" action="setPaperForm.asp">
 <input type="hidden" name="tid" value="<%=thesisID%>" />
 <p><span class="tip">您还没有选择所撰写的论文形式，请在此选择并提交：</span>
 <select id="thesisform" name="thesis_form" style="width:350px"><option value="0">请选择……</option><%
@@ -281,7 +289,7 @@ End Function
 			If i<=3 Then
 				' 若最新环节未上传附加论文，则显示上传按钮，否则显示状态
 				If Not bTblThesisUploaded(i) And (arrTableStat(i)=1 Or arrTableStat(i)=2) Then %>
-<br/><input type="button" name="btnUploadTableThesis" value="上传<%=arrTblThesis(i)%>..." onclick="location.href='uploadTableThesis.asp'" /><%
+<br/><input type="button" name="btnUploadTableThesis" value="上传<%=arrTblThesis(i)%>..." onclick="location.href='uploadTablePaper.asp'" /><%
 				Else %>
 <br/><%=arrTblThesis(i)%>：<%=arrUploadText(Abs(Int(bTblThesisUploaded(i))))%><%
 				End If

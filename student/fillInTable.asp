@@ -3,13 +3,13 @@
 <!--#include file="common.asp"-->
 <%If IsEmpty(Session("StuId")) Then Response.Redirect("../error.asp?timeout")
 Dim is_new_dissertation:is_new_dissertation=False
-Dim activity_id,section_id,time_flag,allow_upload,is_generated,filetype
+Dim activity_id,section_id,time_flag,uploadable,is_generated,filetype
 Dim researchway_list
 Dim conn,rs,sql,count
 
 activity_id=0
 section_id=0
-allow_upload=False
+uploadable=False
 stu_type=Session("StuType")
 researchway_list=loadResearchwayList(stu_type)
 
@@ -86,13 +86,13 @@ If section_id<>0 Then
 	' 开题报告（EMBA为预答辩申请表），录入论文基本信息
 	is_new_dissertation=section_id=sectionUploadKtbg Or stu_type=7 And section_id=sectionUploadYdbyjs
 	If rs.EOF Then
-		allow_upload=True
+		uploadable=True
 	ElseIf Not isActivityOpen(rs("ActivityId")) Then
 		time_flag=-3
 	Else
 		Set current_section=getSectionInfo(rs("ActivityId"), stu_type, section_id)
 		time_flag=compareNowWithSectionTime(current_section)
-		allow_upload=time_flag=0
+		uploadable=time_flag=0
 		If section_id<=sectionUploadYdbyjs Then
 			is_tbl_thesis_uploaded=Not IsNull(rs("TBL_THESIS_FILE"&section_id))
 		End If
@@ -140,8 +140,8 @@ Case vbNullstring ' 填写信息页面
 <body bgcolor="ghostwhite">
 <center><font size=4><b>在线填写表格</b></font>
 <form id="fmTable" action="?step=1" method="post">
-<table class="tblform" width="1000"><tr><td class="summary"><%
-	If Not allow_upload Then
+<table class="form" width="1000"><tr><td class="summary"><%
+	If Not uploadable Then
 		If time_flag=-3 Then
 %><p><span class="tip">当前评阅活动【<%=rs("ActivityName")%>】已关闭，不能提交表格！</span></p><%
 		ElseIf time_flag=-2 Then
@@ -171,10 +171,10 @@ Case vbNullstring ' 填写信息页面
 <p>请填写以下信息，确认无误后点击&quot;提交&quot;按钮生成表格：</p><%
 	End If %></td></tr>
 <tr><td align="center">
-<table class="tblform">
+<table class="form">
 <!--<tr><td><span class="tip">以下信息均为必填项</span></td></tr>-->
 <tr><td align="center"><%
-	If allow_upload Then
+	If uploadable Then
 		Select Case section_id
 		Case sectionUploadKtbg
 %><!--#include file="template/form_ktbg.html"--><%
@@ -191,11 +191,11 @@ Case vbNullstring ' 填写信息页面
 		End Select
 	End If %>
 </td></tr><%
-	If section_id>0 And section_id<=sectionUploadYdbyjs And allow_upload And Not is_tbl_thesis_uploaded Then %>
-<tr><td align="center"><span class="tip">提示：您目前尚未上传<%=arrTblThesis(section_id)%>，<a href="uploadTableThesis.asp">点击这里上传。</a></span></td></tr><%
+	If section_id>0 And section_id<=sectionUploadYdbyjs And uploadable And Not is_tbl_thesis_uploaded Then %>
+<tr><td align="center"><span class="tip">提示：您目前尚未上传<%=arrTblThesis(section_id)%>，<a href="uploadTablePaper.asp">点击这里上传。</a></span></td></tr><%
 	End If %>
 <tr><td align="center"><p><%
-	If allow_upload Then
+	If uploadable Then
 %><input type="button" id="btnsavedraft" value="保存草稿" />&nbsp;
 <input type="button" id="btnloaddraft" value="读取草稿" />&nbsp;
 <input type="submit" id="btnsubmit" value="提 交" />&nbsp;<%
@@ -230,7 +230,7 @@ Case vbNullstring ' 填写信息页面
 			setKeywords(keywords_ch, keywords_en);
 		});
 	}<%
-	If section_id=sectionUploadKtbg And allow_upload Then %>
+	If section_id=sectionUploadKtbg And uploadable Then %>
 	$('select[name="sub_research_field_select"]').change(function(){
 		$('input[name="sub_research_field"]').val(!this.value.length?'':$(this).find('option:selected').text());
 		var $custom_field=$('input[name="custom_sub_research_field"]');
@@ -256,7 +256,7 @@ Case vbNullstring ' 填写信息页面
 		initCurrentViewState();<%
 	End If %>
 	$('form').submit(function(event) {<%
-	If section_id=sectionUploadKtbg And allow_upload Then %>
+	If section_id=sectionUploadKtbg And uploadable Then %>
 		if(!checkKeywords()) {
 			event.preventDefault();
 			return false;
@@ -266,7 +266,7 @@ Case vbNullstring ' 填写信息页面
 	});
 	$(':button#btnuploadtblthesis').click(
 		function() {
-			window.location.href='uploadTableThesis.asp';
+			window.location.href='uploadTablePaper.asp';
 		}
 	);
 	$(':button#btndownload').click(
@@ -289,7 +289,7 @@ Case 1	' 上传进程
 			current_section("Name"),_
 			toDateTime(current_section("StartTime"),1),_
 			toDateTime(current_section("EndTime"),1))
-	ElseIf Not allow_upload Then
+	ElseIf Not uploadable Then
 		bError=True
 		errdesc="当前状态为【"&rs("STAT_TEXT")&"】，不能提交表格！"
 	End If

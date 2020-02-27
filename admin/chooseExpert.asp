@@ -31,7 +31,7 @@ Case vbNullString	' 选择页面
 	expert_id2=rs("REVIEWER2")
 	expert_name1=rs("EXPERT_NAME1")
 	expert_name2=rs("EXPERT_NAME2")
-	If rs("REVIEW_STATUS")<rsMatchExpert Then nFirstMatch=1 Else nFirstMatch=0
+	If rs("REVIEW_STATUS")<rsMatchedReviewer Then nFirstMatch=1 Else nFirstMatch=0
 	If IsNull(expert_name1) Then expert_name1="单击选择..."
 	If IsNull(expert_name2) Then expert_name2="单击选择..."
 %><html>
@@ -62,7 +62,7 @@ Case vbNullString	' 选择页面
 <input type="hidden" name="pageSize2" value="<%=pageSize%>" />
 <input type="hidden" name="pageNo2" value="<%=pageNo%>" />
 <input type="hidden" name="firstMatch" value="<%=nFirstMatch%>" />
-<table class="tblform" width="800" cellspacing="1" cellpadding="3">
+<table class="form" width="800" cellspacing="1" cellpadding="3">
 <tr><td>论文题目：&emsp;&emsp;&emsp;<input type="text" class="txt" name="subject" size="95%" value="<%=rs("THESIS_SUBJECT")%>" readonly /></td></tr>
 <tr><td>作者姓名：&emsp;&emsp;&emsp;<input type="text" class="txt" name="author" size="40" value="<%=rs("STU_NAME")%>" readonly />&nbsp;
 学号：<input type="text" class="txt" name="stuno" size="15" value="<%=rs("STU_NO")%>" readonly />&nbsp;
@@ -77,7 +77,7 @@ Case vbNullString	' 选择页面
 <tr><td>论文形式：&emsp;&emsp;&emsp;<input type="text" class="txt" name="thesisform" size="95%" value="<%=rs("THESIS_FORM")%>" readonly /></td></tr><%
 	End If %></table>
 <p><font size=4><b>请选择要匹配的评阅专家（单击方框选择）</b></font></p>
-<table class="tblform" width="800" cellpadding="2" cellspacing="1" bgcolor="dimgray">
+<table class="form" width="800" cellpadding="2" cellspacing="1" bgcolor="dimgray">
 <tr bgcolor="gainsboro" align="center" height="25">
 <td width="100" align="center">专家一：</td>
 <td width="200" align="center"><input type="text" class="selectbox" name="expertname" size=20 value="<%=expert_name1%>" onclick="window.open('selectExpert.asp?ctrl1=expertname&ctrl2=expertid&item=0','','width=1000,height=500,location=no,scrollbars=yes')"/><input type="hidden" name="expertid" value="<%=expert_id1%>" /></td></tr>
@@ -181,7 +181,7 @@ Case 2	' 后台处理
 
 	msg="操作完成，是否立即向专家发送评阅通知短信及邮件？"
 	If InStr(thesis_ids,",") Then
-		returl="thesisList.asp"
+		returl="paperList.asp"
 	Else
 		returl="thesisDetail.asp?tid="&thesis_ids
 	End If

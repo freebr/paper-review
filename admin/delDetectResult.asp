@@ -24,8 +24,8 @@ sql="SELECT THESIS_FILE,REPRODUCTION_RATIO,DETECT_REPORT FROM Dissertations WHER
 GetRecordSet conn,rs,sql,count
 If rs.EOF Then
 %><body bgcolor="ghostwhite"><center><font color=red size="4">数据库没有该论文记录！</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
-  CloseRs rs
-  CloseConn conn
+	CloseRs rs
+	CloseConn conn
 	Response.End()
 End If
 
