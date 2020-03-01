@@ -1,6 +1,6 @@
 ﻿<!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"-->
-<%If IsEmpty(Session("Tid")) Then Response.Redirect("../error.asp?timeout")%>
+<%If IsEmpty(Session("TId")) Then Response.Redirect("../error.asp?timeout")%>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />

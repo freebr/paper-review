@@ -12,17 +12,17 @@ Case vbNullstring ' 文件选择页面
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="theme-color" content="#2D79B2" />
-<title>导入论文查重信息</title>
+<title>导入送检论文查重信息</title>
 <% useStylesheet "admin" %>
 <% useScript "jquery", "upload" %>
 </head>
-<body bgcolor="ghostwhite">
-<center><font size=4><b>导入论文查重信息</b><br>
+<body>
+<center><font size=4><b>导入送检论文查重信息</b><br>
 <form id="fmUpload" action="?step=2" method="POST" enctype="multipart/form-data">
-<p>请选择要导入的 Excel 文件：<input type="file" name="excelFile" size="100" title="论文查重信息表" /><br />
+<p>请选择要导入的 Excel 文件：<input type="file" name="excelFile" size="100" title="送检论文查重信息表" /><br />
 请选择检测报告 RAR 文件：<input type="file" name="rarFile" size="100" title="检测报告压缩文件" /><br />
 检测报告文件名格式（不建议更改）：<input type="text" name="reportNameFmt" size="100" value="<%=reportNameFmt%>" /><br />
-<a href="upload/paperinf_template.xlsx" target="_blank">点击下载论文查重信息表格模板</a><br />
+<a href="upload/paperinf_template.xlsx" target="_blank">点击下载送检论文查重信息表格模板</a><br />
 <input type="submit" name="btnsubmit" value="提 交" />&nbsp;
 <input type="button" name="btnret" value="返 回" onclick="history.go(-1)" /></p></form></center></body>
 <script type="text/javascript">
@@ -58,7 +58,7 @@ Case 2	' 上传进程
 	rarFileExt=LCase(rarfile.FileExt)
 	If tableFileExt <> "xls" And tableFileExt <> "xlsx" Then	' 不被允许的文件类型
 		bError = True
-		errstring = "论文查重信息表不是 Excel 文件！"
+		errstring = "送检论文查重信息表不是 Excel 文件！"
 	ElseIf rarFileExt <> "rar" Then
 		bError = True
 		errstring = "打包的检测报告不是 RAR 压缩文件！"
@@ -85,12 +85,12 @@ Case 2	' 上传进程
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="theme-color" content="#2D79B2" />
-<title>导入论文查重信息</title>
+<title>导入送检论文查重信息</title>
 <% useStylesheet "admin" %>
 <% useScript "jquery" %>
 </head>
-<body bgcolor="ghostwhite">
-<center><br /><b>导入论文查重信息</b><br /><br /><%
+<body>
+<center><br /><b>导入送检论文查重信息</b><br /><br /><%
 	If Not bError Then %>
 <form id="fmUploadFinish" action="?step=3" method="POST">
 <input type="hidden" name="tableFilepath" value="<%=strDestTablePath%>" />

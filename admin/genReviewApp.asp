@@ -14,7 +14,7 @@ finalFilter=Request.Form("finalFilter2")
 pageSize=Request.Form("pageSize2")
 pageNo=Request.Form("pageNo2")
 If Len(thesisID)=0 Or Not IsNumeric(thesisID) Then
-%><body bgcolor="ghostwhite"><center><font color="red" size="4">参数无效。</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
+%><body><center><font color="red" size="4">参数无效。</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 	Response.End()
 End If
 sql="SELECT * FROM ViewDissertations WHERE ID="&thesisID
@@ -43,7 +43,7 @@ rs("REVIEW_APP")=filename
 rs.Update()
 CloseRs rs
 CloseConn conn
-%><form id="ret" action="thesisDetail.asp?tid=<%=thesisID%>" method="post">
+%><form id="ret" action="paperDetail.asp?tid=<%=thesisID%>" method="post">
 <input type="hidden" name="In_ActivityId2" value="<%=activity_id%>">
 <input type="hidden" name="In_TEACHTYPE_ID2" value="<%=teachtype_id%>" />
 <input type="hidden" name="In_CLASS_ID2" value="<%=class_id%>" />

@@ -13,27 +13,25 @@ query_review_status=Request.Form("In_REVIEW_STATUS2")
 finalFilter=Request.Form("finalFilter2")
 pageSize=Request.Form("pageSize2")
 pageNo=Request.Form("pageNo2")
-If Len(thesisID)=0 Or Not IsNumeric(thesisID) Or Len(hash)=0 Or Len(delete_type)=0 Or Not IsNumeric(delete_type) Or Not (delete_type=0 Or delete_type=1) Then
-%><body bgcolor="ghostwhite"><center><font color=red size="4">参数无效。</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
-	Response.End()
+If IsEmpty(thesisID) Or Not IsNumeric(thesisID) Or IsEmpty(hash) Or IsEmpty(delete_type) Or Not IsNumeric(delete_type) Or Not (delete_type=0 Or delete_type=1) Then
+	showErrorPage "参数无效。", "提示"
 End If
 
 Dim conn,rs,sql,count
 Connect conn
-sql="SELECT THESIS_FILE,REPRODUCTION_RATIO,DETECT_REPORT FROM Dissertations WHERE ID="&thesisID
+sql="SELECT THESIS_FILE,THESIS_FILE4,REPRODUCTION_RATIO,INSTRUCT_REVIEW_REPRODUCTION_RATIO,DETECT_REPORT,INSTRUCT_REVIEW_DETECT_REPORT FROM Dissertations WHERE ID="&thesisID
 GetRecordSet conn,rs,sql,count
 If rs.EOF Then
-%><body bgcolor="ghostwhite"><center><font color=red size="4">数据库没有该论文记录！</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 	CloseRs rs
 	CloseConn conn
-	Response.End()
+	showErrorPage "数据库没有该论文记录！", "提示"
 End If
 
-Dim bLatest
-sql="SELECT THESIS_FILE,RESULT,DETECT_TIME,DETECT_REPORT FROM ViewDetectResult WHERE THESIS_ID="&thesisID&" AND HASH="&toSqlString(hash)
+sql=Format("SELECT DETECT_TYPE,dbo.isLatestDetectResult('{0}') FROM ViewDetectResults WHERE HASH='{0}'",hash)
 GetRecordSet conn,rsDetect,sql,count
+detect_type=rsDetect(0)
+is_latest=rsDetect(1)
 
-bLatest=rs("THESIS_FILE").Value=rsDetect("THESIS_FILE").Value
 If delete_type=0 Then	' 删除送检报告
 	rsDetect("RESULT")=Null
 	rsDetect("DETECT_TIME")=Null
@@ -44,23 +42,27 @@ ElseIf delete_type=1 Then	' 删除送检记录
 End If
 CloseRs rsDetect
 
-If bLatest Then	' 更新论文评阅信息表中的检测数据
-	sql="SELECT THESIS_FILE,RESULT,DETECT_TIME,DETECT_REPORT FROM DetectResults WHERE THESIS_ID="&thesisID&" ORDER BY DETECT_TIME DESC"
-	GetRecordSetNoLock conn,rsDetect,sql,count
-	If count>0 Then	' 取上次的送检结果
-		If delete_type=1 Then rs("THESIS_FILE").Value=rsDetect("THESIS_FILE").Value
-		rs("REPRODUCTION_RATIO").Value=rsDetect("RESULT").Value
-		rs("DETECT_REPORT").Value=rsDetect("DETECT_REPORT").Value
+If is_latest Then	' 更新论文评阅信息表中的检测数据
+	Dim arrDetectFileFieldNames:arrDetectFileFieldNames=Array("","THESIS_FILE","THESIS_FILE4")
+	Dim arrDetectResultFieldNames:arrDetectResultFieldNames=Array("","REPRODUCTION_RATIO","INSTRUCT_REVIEW_REPRODUCTION_RATIO")
+	Dim arrDetectReportFieldNames:arrDetectReportFieldNames=Array("","DETECT_REPORT","INSTRUCT_REVIEW_DETECT_REPORT")
+	sql="SELECT THESIS_FILE,RESULT,DETECT_REPORT FROM DetectResults WHERE THESIS_ID=? AND DETECT_TYPE=? ORDER BY DETECT_TIME DESC"
+	Set ret=ExecQuery(conn,sql,CmdParam("THESIS_ID",adInteger,4,thesisID),CmdParam("DETECT_TYPE",adInteger,4,detect_type))
+	If ret("count")>0 Then	' 取上次的送检结果
+		If delete_type=1 Then rs(arrDetectFileFieldNames(detect_type))=ret("rs")("THESIS_FILE")
+		rs(arrDetectResultFieldNames(detect_type))=ret("rs")("RESULT")
+		rs(arrDetectReportFieldNames(detect_type))=ret("rs")("DETECT_REPORT")
 	Else
-		If delete_type=1 Then rs("THESIS_FILE").Value=Null
-		rs("REPRODUCTION_RATIO").Value=Null
-		rs("DETECT_REPORT").Value=Null
+		If delete_type=1 Then rs(arrDetectFileFieldNames(detect_type))=Null
+		rs(arrDetectResultFieldNames(detect_type))=Null
+		rs(arrDetectReportFieldNames(detect_type))=Null
 	End If
 	rs.Update()
+	CloseRs ret("rs")
 End If
 CloseRs rs
 CloseConn conn
-%><form id="ret" action="thesisDetail.asp?tid=<%=thesisID%>" method="post">
+%><form id="ret" action="paperDetail.asp?tid=<%=thesisID%>" method="post">
 <input type="hidden" name="In_TEACHTYPE_ID2" value="<%=teachtype_id%>" />
 <input type="hidden" name="In_CLASS_ID2" value="<%=class_id%>" />
 <input type="hidden" name="In_ENTER_YEAR2" value="<%=enter_year%>" />

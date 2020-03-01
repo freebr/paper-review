@@ -8,7 +8,7 @@ Const wdStatisticPages=2
 Class TableGen
 	Dim m_info,m_err_desc
 	Private Sub Class_Initialize()
-		Set m_info=Server.CreateObject("Scripting.Dictionary")
+		Set m_info=CreateDictionary()
 	End Sub
 	Private Sub Class_Terminate()
 		Set m_info=Nothing

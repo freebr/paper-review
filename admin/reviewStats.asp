@@ -24,7 +24,7 @@ Dim rs:Set rs=ret("rs")
 <% useStylesheet "admin" %>
 <% useScript "jquery", "common" %>
 </head>
-<body bgcolor="ghostwhite">
+<body>
 <center>
 <font size=4><b>送审结果统计表</b></font>
 <table cellspacing=4 cellpadding=0>

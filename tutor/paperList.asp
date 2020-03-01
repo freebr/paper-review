@@ -1,6 +1,6 @@
 ﻿<!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"--><%
-If IsEmpty(Session("Tid")) Then Response.Redirect("../error.asp?timeout")
+If IsEmpty(Session("TId")) Then Response.Redirect("../error.asp?timeout")
 
 Dim PubTerm,PageNo,PageSize
 activity_id=toUnsignedInt(Request.Form("In_ActivityId"))
@@ -9,7 +9,8 @@ spec_id=toUnsignedInt(Request.Form("In_SPECIALITY_ID"))
 enter_year=toUnsignedInt(Request.Form("In_ENTER_YEAR"))
 query_task_progress=toUnsignedInt(Request.Form("In_TASK_PROGRESS"))
 query_review_status=toUnsignedInt(Request.Form("In_REVIEW_STATUS"))
-Tid=Session("Tid")
+is_instruct_review=Request.QueryString()="instruct"
+teacher_id=Session("TId")
 finalFilter=Request.Form("finalFilter")
 If Len(finalFilter) Then PubTerm="AND ("&finalFilter&")"
 If activity_id=-1 Then
@@ -23,8 +24,20 @@ If spec_id>0 Then PubTerm=PubTerm&" AND SPECIALITY_ID="&spec_id
 If enter_year>0 Then PubTerm=PubTerm&" AND ENTER_YEAR="&enter_year
 If query_task_progress>-1 Then PubTerm=PubTerm&" AND TASK_PROGRESS="&query_task_progress
 If query_review_status>-1 Then PubTerm=PubTerm&" AND REVIEW_STATUS="&query_review_status
+If is_instruct_review Then
+	PubTerm=PubTerm&teacher_id&" IN (INSTRUCT_MEMBER1,INSTRUCT_MEMBER2)"
+	is_reviewed=toUnsignedInt(Request.Form("In_IS_REVIEWED"))
+	If is_reviewed>-1 Then
+		PubTerm=PubTerm&" AND (INSTRUCT_MEMBER1="&teacher_id&" AND IS_COMMENT1="&is_reviewed&_
+			" OR INSTRUCT_MEMBER2="&teacher_id&" AND IS_COMMENT2="&is_reviewed&")"
+	End If
+	table_name="ViewDissertations_instruct"
+	arrStatText=Array("未审核","已审核")
+Else
+	PubTerm=PubTerm&" TUTOR_ID="&teacher_id&" ORDER BY ISTABLE DESC,ISINSTRUCTREVIEW DESC,ISMODIFY DESC,ISEVAL DESC,ISREVIEW DESC,ISDETECT DESC,ActivityId DESC"
+	table_name="ViewDissertations_tutor"
+End If
 
-PubTerm=PubTerm&" ORDER BY ISTABLE DESC,ISMODIFY DESC,ISEVAL DESC,ISREVIEW DESC,ISDETECT DESC,ActivityId DESC"
 '----------------------PAGE-------------------------
 PageNo=""
 PageSize=""
@@ -37,7 +50,7 @@ Else
 End If
 '------------------------------------------------------
 Connect conn
-sql="SELECT * FROM ViewDissertations_tutor WHERE TUTOR_ID="&Tid&PubTerm
+sql="SELECT * FROM "&table_name&" WHERE "&PubTerm
 GetRecordSetNoLock conn,rs,sql,count
 If IsEmpty(pageSize) Or Not IsNumeric(pageSize) Then
 	pageSize=-1
@@ -65,7 +78,7 @@ If rs.RecordCount>0 Then rs.AbsolutePage=pageNo
 <meta name="theme-color" content="#2D79B2" />
 <title>查看论文列表</title>
 <% useStylesheet "tutor" %>
-<% useScript "jquery", "common", "paper" %>
+<% useScript "jquery", "common", "*paper" %>
 </head>
 <body bgcolor="ghostwhite" onload="return On_Load()">
 <center>
@@ -109,6 +122,11 @@ GetMenuListPubTerm "ReviewStatuses","STATUS_ID1","STATUS_NAME",query_task_progre
 GetMenuListPubTerm "ReviewStatuses","STATUS_ID2","STATUS_NAME",query_review_status,"AND STATUS_ID2 IS NOT NULL"
 %></select></td></tr></table></td></tr><tr><td>
 <!--查找-->
+<select id="is_reviewed" name="In_IS_REVIEWED">
+<option value="-1">所有</option>
+<option value="0">未审核</option>
+<option value="1">已审核</option>
+</select>
 <select name="field" onchange="ReloadOperator()">
 <option value="s_THESIS_SUBJECT">论文题目</option>
 <option value="s_STU_NO">学号</option>
@@ -169,10 +187,10 @@ Next
 		<td width="80" align="center">处理意见</td>
 		<td width="180" align="center">状态</td>
 	</tr><%
-	Dim bIsReviewVisible
+	Dim bIsReviewVisible,auditor_type,audit_flag,audit_time
 	For i=1 to rs.PageSize
 		If rs.EOF Then Exit For
-		bIsReviewVisible=rs("REVIEW_FILE_STATUS")<>0
+		bIsReviewVisible=Array(rs("ReviewFileDisplayStatus1")>0,rs("ReviewFileDisplayStatus2")>0)
 		substat=vbNullString
 		If rs("TASK_PROGRESS")>=tpTbl4Uploaded Then
 			stat=rs("STAT_TEXT1")&"，"&rs("STAT_TEXT2")
@@ -181,36 +199,54 @@ Next
 		Else
 			stat=rs("STAT_TEXT2")
 		End If
-		If Not bIsReviewVisible And rs("REVIEW_STATUS")>=rsReviewed Then
-			substat="[评阅结果未开放]"
-		End If
-		Select Case Tid
-		Case rs("REVIEWER1")
-			reviewer=0
-		Case rs("REVIEWER2")
-			reviewer=1
-		Case Else
-			reviewer=-1
-		End Select
-		reviewer_eval_time=rs("REVIEWER_EVAL_TIME")
-		If rs("ISTABLE") Or rs("ISMODIFY") Or rs("ISEVAL") Or rs("ISREVIEW") Or rs("ISDETECT") Then
-			cssclass="thesisstat_unhandled"
-		ElseIf rs("REVIEW_STATUS")=rsAgreedReview And reviewer<>-1 Then
-			If IsNull(reviewer_eval_time) Then
-				cssclass="thesisstat_unhandled"
+		If is_instruct_review Then
+			If rs("INSTRUCT_MEMBER1")=teacher_id Then
+				auditor_type=1
 			Else
-			review_time=Split(reviewer_eval_time,",")
-			If Len(review_time(reviewer))=0 Then
-				cssclass="thesisstat_unhandled"
+				auditor_type=2
+			End If
+			audit_flag=rs("IsComment"&auditor_type)
+			audit_time=rs("AuditTime"&auditor_type)
+			If audit_flag Then
+				cssclass="paper-status"
+				stat=arrStatText(1)
 			Else
-				cssclass="thesisstat"
+				audit_time=vbNullString
+				cssclass="paper-status-unhandled"
+				stat=arrStatText(0)
+			End If
+		Else
+			If rs("REVIEW_STATUS")>=rsReviewed And Not bIsReviewVisible(0) And Not bIsReviewVisible(1) Then
+				substat="[评阅结果未开放]"
+			End If
+			Select Case teacher_id
+			Case rs("REVIEWER1")
+				auditor_type=0
+			Case rs("REVIEWER2")
+				auditor_type=1
+			Case Else
+				auditor_type=-1
+			End Select
+			reviewer_eval_time=rs("REVIEWER_EVAL_TIME")
+			If rs("ISTABLE") Or rs("ISINSTRUCTREVIEW") Or rs("ISMODIFY") Or rs("ISEVAL") Or rs("ISREVIEW") Or rs("ISDETECT") Then
+				cssclass="paper-status-unhandled"
+			ElseIf rs("REVIEW_STATUS")=rsAgreedReview And auditor_type<>-1 Then
+				If IsNull(reviewer_eval_time) Then
+					cssclass="paper-status-unhandled"
+				Else
+					audit_time=Split(reviewer_eval_time,",")
+					If Len(audit_time(auditor_type))=0 Then
+						cssclass="paper-status-unhandled"
+					Else
+						cssclass="paper-status"
+					End If
+				End If
+			Else
+				cssclass="paper-status"
 			End If
 		End If
-	Else
-			cssclass="thesisstat"
-		End If
 	%><tr bgcolor="ghostwhite" height="30">
-		<td align="center"><a href="#" onclick="return showThesisDetail(<%=rs("ID")%>,2)"><%=HtmlEncode(rs("THESIS_SUBJECT"))%></a></td>
+		<td align="center"><a href="#" onclick="return showPaperDetail(<%=rs("ID")%>,2)"><%=HtmlEncode(rs("THESIS_SUBJECT"))%></a></td>
 		<td align="center"><a href="#" onclick="return showStudentProfile(<%=rs("STU_ID")%>,2)"><%=HtmlEncode(rs("STU_NAME"))%></a></td>
 		<td align="center"><%=rs("STU_NO")%></td>
 		<td align="center"><%=HtmlEncode(rs("SPECIALITY_NAME"))%></td>
@@ -218,13 +254,17 @@ Next
 		<td align="center"><%=rs("REVIEW_RESULT_TEXT1_tutor")%></td>
 		<td align="center"><%=rs("REVIEW_RESULT_TEXT2_tutor")%></td>
 		<td align="center"><%=rs("FINAL_RESULT_TEXT_tutor")%>
-		<td align="center"><a href="#" onclick="return showThesisDetail(<%=rs("ID")%>,2)"><span class="<%=cssclass%>"><%=stat%></span></a><%
+		<td align="center"><a href="#" onclick="return showPaperDetail(<%=rs("ID")%>,2)"><span class="<%=cssclass%>"><%=stat%></span></a><%
 		If Len(substat) Then
 		%><br/><span class="thesissubstat"><%=substat%></span><%
 		End If %></a></td></tr><%
 		rs.MoveNext()
 	Next
-%></table></form></center></body></html><%
+%></table></form></center>
+<script type="text/javascript">
+	$("#is_reviewed").val("<%=is_reviewed%>");
+</script>
+</body></html><%
 	CloseRs rs
 	CloseConn conn
 %>

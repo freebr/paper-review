@@ -2,7 +2,7 @@
 	background:url('icons/blank.gif') no-repeat center center;
 }
 .icon-add{
-	background:url('icons/edit_add.png') no-repeat center center;
+	background:url('icons/add.png') no-repeat center center;
 }
 .icon-edit{
 	background:url('icons/pencil.png') no-repeat center center;
@@ -11,7 +11,7 @@
 	background:url('icons/clear.png') no-repeat center center;
 }
 .icon-remove{
-	background:url('icons/edit_remove.png') no-repeat center center;
+	background:url('icons/remove.png') no-repeat center center;
 }
 .icon-save{
 	background:url('icons/filesave.png') no-repeat center center;
@@ -78,6 +78,18 @@
 }
 .icon-schedule{
 	background:url('icons/schedule.png') no-repeat center center;
+}
+.icon-upload{
+	background:url('icons/upload.svg') no-repeat center center;
+}
+.icon-file-export{
+	background:url('icons/file-export.svg') no-repeat center center;
+}
+.icon-mails{
+	background:url('icons/mails.svg') no-repeat center center;
+}
+.icon-batch-download{
+	background:url('icons/batch-download.svg') no-repeat center center;
 }
 
 .icon-mini-add{

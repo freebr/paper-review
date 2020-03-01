@@ -2,6 +2,10 @@
 <%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 Dim ids
 ids=Request.Form("sel")
+If Len(ids)=0 Then
+	showErrorPage "请选择要删除的论文记录！", "提示"
+End If
+
 FormGetToSafeRequest(ids)
 Connect conn
 sql="DELETE FROM Dissertations WHERE ID IN ("&ids&")"

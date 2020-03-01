@@ -65,7 +65,7 @@ Function getNoticeText(stuType,noticeName)
 	CloseConn conn
 End Function
 
-Function addAuditRecord(dissertation_id,filename,audit_type,audit_time,is_passed,eval_text)
+Function addAuditRecord(dissertation_id,audit_file,audit_type,audit_time,is_passed,eval_text)
 	If Len(eval_text)=0 Then
 		If is_passed Then eval_text="审核通过" Else eval_text="审核不通过"
 	End If
@@ -74,11 +74,11 @@ Function addAuditRecord(dissertation_id,filename,audit_type,audit_time,is_passed
 	sql="EXEC spAddAuditRecord ?,?,?,?,?,?,?,NULL"
 	ExecNonQuery conn,sql,_
 		CmdParam("dissertation_id",adInteger,4,dissertation_id),_
-		CmdParam("audit_file",adVarWChar,50,filename),_
+		CmdParam("audit_file",adVarWChar,50,audit_file),_
 		CmdParam("audit_type",adInteger,4,audit_type),_
 		CmdParam("audit_time",adDate,4,audit_time),_
 		CmdParam("auditor_id",adInteger,4,Session("TId")),_
-		CmdParam("is_passed",adVarWChar,500,is_passed),_
+		CmdParam("is_passed",adBoolean,1,is_passed),_
 		CmdParam("comment",adLongVarWChar,5000,eval_text)
 	CloseConn conn
 End Function
@@ -165,5 +165,5 @@ If Not hasPrivilege(Session("Twriteprivileges"),"I11") And Not hasPrivilege(Sess
 	showErrorPage "您没有访问本系统的权限！", "提示"
 End If
 
-Dim arrTable:arrTable=Array("","开题报告表","中期检查表","预答辩申请表","答辩审批材料")
+Dim arrTable:arrTable=Array("","开题报告表","中期检查表","预答辩意见书","答辩审批材料")
 %>

@@ -42,7 +42,7 @@ If rs.RecordCount>0 Then rs.AbsolutePage=pageNo
 <% useStylesheet "admin" %>
 <% useScript "jquery", "common", "upload", "*expertList" %>
 </head>
-<body bgcolor="ghostwhite">
+<body>
 <center>
 <font size=4><b>专业硕士论文评阅专家名单</b></font>
 <form id="fmUpload" action="importExpertInfo.asp?step=2" method="POST" enctype="multipart/form-data">

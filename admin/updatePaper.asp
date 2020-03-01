@@ -7,7 +7,7 @@
 If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 Dim Upload:Set Upload=New ExtendedRequest
 step=Request.QueryString("step")
-thesisID=Request.QueryString("tid")
+dissertation_id=Request.QueryString("tid")
 new_activity_id=Upload.Form("new_activity_id")
 new_subject_ch=Upload.Form("new_subject_ch")
 new_subject_en=Upload.Form("new_subject_en")
@@ -24,7 +24,7 @@ new_defence_result=Upload.Form("new_defence_result")
 new_grant_degree_result=Upload.Form("new_grant_degree_result")
 opr=Int(Upload.Form("opr"))
 submittype=Upload.Form("submittype")
-is_passed=submittype="pass"
+is_pass=submittype="pass"
 eval_text=Upload.Form("eval_text")
 Set detect_report=Upload.File("detect_report")
 Set instruct_review_detect_report=Upload.File("instruct_review_detect_report")
@@ -37,13 +37,13 @@ query_review_status=Upload.Form("In_REVIEW_STATUS2")
 finalFilter=Upload.Form("finalFilter2")
 pageSize=Upload.Form("pageSize2")
 pageNo=Upload.Form("pageNo2")
-If Len(thesisID)=0 Or Not IsNumeric(thesisID) Or Not IsNumeric(opr) Then
+If Len(dissertation_id)=0 Or Not IsNumeric(dissertation_id) Or Not IsNumeric(opr) Then
 	bError=True
 	errdesc="参数无效。"
-ElseIf submittype<>vbNullString And Not isMatched("[0-8]",opr,True) Then
+ElseIf submittype<>vbNullString And Not isMatched("[0-9]",opr,True) Then
 	bError=True
 	errdesc="操作无效。"
-ElseIf submittype="unpass" And opr<=3 Or submittype<>vbNullString And (opr=4 Or opr=5 Or opr=6) Then
+ElseIf Not is_pass And Len(submittype) And isMatched("[12345689]",opr,True) Then
 	If Len(eval_text)=0 Then
 		bError=True
 		errdesc="请填写意见（200-2000字）！"
@@ -74,7 +74,7 @@ ElseIf instruct_review_detect_report.FileName<>vbNullString And new_instruct_rev
 	errdesc="请填写教指委盲评论文复制比！"
 End If
 If bError Then
-%><body bgcolor="ghostwhite"><center><font color=red size="4"><%=errdesc%></font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
+%><body><center><font color=red size="4"><%=errdesc%></font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 	CloseRs rs
 	CloseConn conn
 	Response.End()
@@ -88,24 +88,31 @@ End If
 
 Dim conn,rs,sql,sqlDetect,count
 Connect conn
-sql="SELECT * FROM Dissertations WHERE ID="&thesisID
+sql="SELECT * FROM Dissertations WHERE ID="&dissertation_id
 GetRecordSet conn,rs,sql,count
 If rs.EOF Then
-%><body bgcolor="ghostwhite"><center><font color=red size="4">数据库没有该论文记录！</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
-  CloseRs rs
-  CloseConn conn
+%><body><center><font color=red size="4">数据库没有该论文记录！</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
+	CloseRs rs
+	CloseConn conn
 	Response.End()
 End If
 
 If submittype=vbNullString Then
 	opr=0
 End If
+sql="SELECT TUTOR_ID FROM ViewDissertations WHERE ID="&dissertation_id
+Set rsTutor=ExecQuery(conn, sql)
+tutor_id=rsTutor("TUTOR_ID")
+CloseRs rsTutor
+
+audit_time=Now
 review_status=rs("REVIEW_STATUS")
 will_add_audit=False
 Select Case opr
 Case 1	'	 审核开题报告表
-	filetypename="开题报告表/开题论文"
-	If is_passed Then
+	file_type_name="开题报告表/开题论文"
+	audit_file=rs("TABLE_FILE1")
+	If is_pass Then
 		rs("TASK_PROGRESS")=tpTbl1Passed
 	Else
 		rs("TASK_PROGRESS")=tpTbl1Unpassed
@@ -113,18 +120,19 @@ Case 1	'	 审核开题报告表
 	will_add_audit=True
 	audit_type=auditTypeKtbg
 Case 2	'  审核中期检查表
-	filetypename="中期检查表/中期论文"
-	If is_passed Then
+	file_type_name="中期检查表/中期论文"
+	audit_file=rs("TABLE_FILE2")
+	If is_pass Then
 		rs("TASK_PROGRESS")=tpTbl2Passed
 	Else
 		rs("TASK_PROGRESS")=tpTbl2Unpassed
 	End If
 	will_add_audit=True
 	audit_type=auditTypeZqjcb
-Case 3	'  审核预答辩申请
-	filetypename="预答辩申请表/预答辩论文"
-	If is_passed Then
-		' 更新记录
+Case 3	'  审核预答辩意见书
+	file_type_name="预答辩意见书/预答辩论文"
+	audit_file=rs("TABLE_FILE3")
+	If is_pass Then
 		rs("TASK_PROGRESS")=tpTbl3Passed
 	Else
 		rs("TASK_PROGRESS")=tpTbl3Unpassed
@@ -132,8 +140,9 @@ Case 3	'  审核预答辩申请
 	will_add_audit=True
 	audit_type=auditTypeYdbyjs
 Case 4	'  审核答辩材料
-	filetypename="答辩审批材料"
-	If is_passed Then
+	file_type_name="答辩审批材料"
+	audit_file=rs("TABLE_FILE4")
+	If is_pass Then
 		rs("TASK_PROGRESS")=tpTbl4Passed
 	Else
 		rs("TASK_PROGRESS")=tpTbl4Unpassed
@@ -141,14 +150,15 @@ Case 4	'  审核答辩材料
 	will_add_audit=True
 	audit_type=auditTypeSpcl
 Case 5	'  同意/不同意送检送审操作
-	filetypename="送检论文"
+	file_type_name="送检论文"
+	audit_file=rs("THESIS_FILE")
 	author=Upload.Form("author")
 	stuno=Upload.Form("stuno")
 	tutorinfo=Upload.Form("tutorinfo")
 	speciality=Upload.Form("speciality")
 	faculty=Upload.Form("faculty")
 	subject=Upload.Form("subject")
-	If Not is_passed And (Len(author)=0 Or Len(stuno)=0 Or Len(tutorinfo)=0 Or Len(speciality)=0 Or Len(faculty)=0 _
+	If Not is_pass And (Len(author)=0 Or Len(stuno)=0 Or Len(tutorinfo)=0 Or Len(speciality)=0 Or Len(faculty)=0 _
 	Or Len(subject)=0) Then
 		bError=True
 		errdesc="缺少必要的字段信息！"
@@ -157,14 +167,13 @@ Case 5	'  同意/不同意送检送审操作
 		errdesc="本论文当前状态下不能执行此操作！"
 	End If
 	If bError Then
-		%><body bgcolor="ghostwhite"><center><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
+		%><body><center><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 		CloseRs rs
 		CloseConn conn
 		Response.End()
 	End If
-	' 更新记录
-	If is_passed Then
-		sql="SELECT dbo.getDetectResultCount("&thesisID&")"
+	If is_pass Then
+		sql="SELECT dbo.getDetectResultCount("&dissertation_id&")"
 		GetRecordSet conn,rsDetect,sql,count
 		detect_count=rsDetect(0)
 		CloseRs rsDetect
@@ -182,7 +191,8 @@ Case 5	'  同意/不同意送检送审操作
 	will_add_audit=True
 	audit_type=auditTypeDetectReview
 Case 6	'  同意/不同意送审操作
-	filetypename="送审论文"
+	file_type_name="送审论文"
+	audit_file=rs("THESIS_FILE2")
 	author=Upload.Form("author")
 	stuno=Upload.Form("stuno")
 	tutorinfo=Upload.Form("tutorinfo")
@@ -191,7 +201,7 @@ Case 6	'  同意/不同意送审操作
 	subject=Upload.Form("new_subject")
 	reproduct_ratio=Upload.Form("reproduct_ratio")
 	If Len(author)=0 Or Len(stuno)=0 Or Len(tutorinfo)=0 Or Len(speciality)=0 Or Len(faculty)=0 _
-	Or Len(subject)=0 Or is_passed And Len(reproduct_ratio)=0 Then
+	Or Len(subject)=0 Or is_pass And Len(reproduct_ratio)=0 Then
 		bError=True
 		errdesc="缺少必要的字段信息！"
 	ElseIf review_status>=rsRefusedReview Then
@@ -199,15 +209,14 @@ Case 6	'  同意/不同意送审操作
 		errdesc="本论文当前状态下不能执行此操作！"
 	End If
 	If bError Then
-		%><body bgcolor="ghostwhite"><center><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
+		%><body><center><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 		CloseRs rs
 		CloseConn conn
 		Response.End()
 	End If
-	If is_passed Then
+	If is_pass Then
 		' 生成送审申请表
-		Dim rag,audit_time
-		audit_time=Now
+		Dim rag
 		Randomize()
 		filename=FormatDateTime(audit_time,1)&Int(Timer)&Int(Rnd()*999)&".docx"
 		filepath=Server.MapPath("/PaperReview/tutor/export")&"\"&filename
@@ -230,32 +239,33 @@ Case 6	'  同意/不同意送审操作
 	will_add_audit=True
 	audit_type=auditTypeReviewApp
 Case 7	' 评阅书审阅确认操作
+	audit_file=rs("REVIEW_FILE")
 	If review_status>=rsReviewEval Then
 		bError=True
 		errdesc="本论文当前状态下不能执行此操作！"
 	End If
 	If bError Then
-		%><body bgcolor="ghostwhite"><center><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
+		%><body><center><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 		CloseRs rs
 		CloseConn conn
 		Response.End()
 	End If
-	' 更新记录
 	rs("REVIEW_STATUS")=rsReviewEval
 Case 8	'  提交答辩论文审核意见操作
-	filetypename="答辩论文"
+	file_type_name="答辩论文"
+	audit_file=rs("THESIS_FILE3")
 	If review_status>=rsRefusedDefence Then
 		bError=True
 		errdesc="本论文当前状态下不能执行此操作！"
 	End If
 	If bError Then
-		%><body bgcolor="ghostwhite"><center><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
+		%><body><center><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 		CloseRs rs
 		CloseConn conn
 		Response.End()
 	End If
 	' 更新记录
-	If is_passed Then
+	If is_pass Then
 		eval_text="已审阅，同意答辩"
 		rs("REVIEW_STATUS")=rsAgreedDefence
 	Else
@@ -264,6 +274,29 @@ Case 8	'  提交答辩论文审核意见操作
 	End If
 	will_add_audit=True
 	audit_type=auditTypeDefence
+Case 9	'  提交教指委盲评论文审核意见操作
+	file_type_name="教指委盲评论文"
+	audit_file=rs("THESIS_FILE4")
+	If review_status>=rsRefusedInstructReview Then
+		bError=True
+		errdesc="本论文当前状态下不能执行此操作！"
+	End If
+	If bError Then
+		%><body><center><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
+		CloseRs rs
+		CloseConn conn
+		Response.End()
+	End If
+	' 更新记录
+	If is_pass Then
+		'eval_text="已审阅，同意答辩"
+		rs("REVIEW_STATUS")=rsAgreedInstructReview
+	Else
+		'eval_text="不同意答辩，请继续修改论文"
+		rs("REVIEW_STATUS")=rsRefusedInstructReview
+	End If
+	will_add_audit=True
+	audit_type=auditTypeInstructReviewDetect
 End Select
 If submittype=vbNullString Then
 	' 更新表单信息
@@ -280,15 +313,19 @@ If submittype=vbNullString Then
 			ensurePathExists uploadPath
 			destFile=generateDateTimeFilename(LCase(arrReportFiles(i).FileExt))
 			arrReportFiles(i).SaveAs uploadPath&"\"&destFile
-			sqlDetect="EXEC spSetDetectResultReport "&thesisID&","&toSqlString(detectThesis)&","&toSqlString(reportDir&"/"&destFile)&";"
+			sqlDetect="EXEC spSetDetectResultReport "&dissertation_id&","&toSqlString(detectThesis)&","&toSqlString(reportDir&"/"&destFile)&";"
 		End If
 		If Not IsNull(detectThesis) Then
 			ratio=rs(arrDetectResultFieldNames(i))
 			new_ratio=arrNewDetectResults(i)
-			If Not IsNull(ratio) And new_ratio=vbNullString Then
-				sqlDetect=sqlDetect&"EXEC spDeleteDetectResult "&thesisID&","&toSqlString(detectThesis)&";"
-			ElseIf new_ratio <> vbNullString Then
-				sqlDetect=sqlDetect&"EXEC spSetDetectResultRatio "&thesisID&","&toSqlString(detectThesis)&","&toSqlNumber(new_ratio)&";"
+			If new_ratio=vbNullString Then
+				new_ratio=ratio
+				If IsNull(new_ratio) Then new_ratio=0
+			End If
+			If IsNull(ratio) Then
+				sqlDetect=sqlDetect&"EXEC spSetDetectResultRatio "&dissertation_id&","&toSqlString(detectThesis)&","&toSqlNumber(new_ratio)&";"
+			ElseIf CDbl(ratio)<>CDbl(new_ratio) Then
+				sqlDetect=sqlDetect&"EXEC spSetDetectResultRatio "&dissertation_id&","&toSqlString(detectThesis)&","&toSqlNumber(new_ratio)&";"
 			End If
 		End If
 	Next
@@ -299,7 +336,7 @@ If submittype=vbNullString Then
 		rs("ActivityId")=new_activity_id
 	End If
 	If Len(new_defence_result)<>0 Then
-		sql="UPDATE DefenceInfo SET DEFENCE_RESULT="&new_defence_result&" WHERE THESIS_ID="&thesisID
+		sql="UPDATE DefenceInfo SET DEFENCE_RESULT="&new_defence_result&" WHERE THESIS_ID="&dissertation_id
 		conn.Execute sql
 	End If
 	If Len(new_grant_degree_result)<>0 Then
@@ -356,16 +393,16 @@ CloseConn conn
 
 If will_add_audit Then
 	' 插入审核记录
-	addAuditRecord dissertation_id, filename, audit_type, audit_time, Session("TId"), is_passed, eval_text
+	addAuditRecord dissertation_id, audit_file, audit_type, audit_time, tutor_id, is_pass, eval_text
 End If
 If opr=7 Then
 	' 向学生发送修改论文通知邮件
-	sendEmailToStudent thesisID,"",True,""
+	sendEmailToStudent dissertation_id, "", True, ""
 ElseIf opr<>0 Then
 	' 向学生发送审核结果通知邮件
-	sendEmailToStudent thesisID,filetypename,is_passed,eval_text
+	sendEmailToStudent dissertation_id, file_type_name, is_pass, eval_text
 End If
-%><form id="ret" action="thesisDetail.asp?tid=<%=thesisID%>" method="post">
+%><form id="ret" action="paperDetail.asp?tid=<%=dissertation_id%>" method="post">
 <input type="hidden" name="In_ActivityId2" value="<%=activity_id%>">
 <input type="hidden" name="In_TEACHTYPE_ID2" value="<%=teachtype_id%>" />
 <input type="hidden" name="In_CLASS_ID2" value="<%=class_id%>" />

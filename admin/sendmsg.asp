@@ -13,7 +13,7 @@ finalFilter=Request.Form("finalFilter2")
 pageSize=Request.Form("pageSize2")
 pageNo=Request.Form("pageNo2")
 If Len(sendtype)=0 Or Not IsNumeric(sendtype) Then
-%><body bgcolor="ghostwhite"><center><font color=red size="4">参数错误！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
+%><body><center><font color=red size="4">参数错误！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 	Response.End()
 End If
 If IsEmpty(batch) Then batch=0
@@ -23,7 +23,7 @@ Case vbNullString
 	tid=Request("tid")
 	If IsEmpty(tid) Then tid=Request("sel")
 	If IsEmpty(tid) Then
-%><body bgcolor="ghostwhite"><center><font color=red size="4">请选择要通知的专家！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
+%><body><center><font color=red size="4">请选择要通知的专家！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 		Response.End()
 	End If
 	Connect conn
@@ -61,7 +61,7 @@ Case vbNullString
 <% useStylesheet "admin" %>
 <% useScript "jquery", "common" %>
 </head>
-<body bgcolor="ghostwhite">
+<body>
 <center>
 <font size=4><b><%=title%></b></font>
 <form id="fmSend" action="?step=2" method="post">
@@ -98,17 +98,17 @@ Case 2
 	content=Request.Form("content")
 	rcpt=Request.Form("rcpt")
 	If Len(content)=0 Then
-%><body bgcolor="ghostwhite"><center><font color=red size="4">请填写内容！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
+%><body><center><font color=red size="4">请填写内容！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 		Response.End()
 	ElseIf sendtype=1 Then
 		content=toPlainText(content)
 		If Len(content)>MAX_SMSCONTENT_LENGTH Then
-			%><body bgcolor="ghostwhite"><center><font color=red size="4">短信内容不能超过<%=MAX_SMSCONTENT_LENGTH%>字，请缩减后再发送或分段发送！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
+			%><body><center><font color=red size="4">短信内容不能超过<%=MAX_SMSCONTENT_LENGTH%>字，请缩减后再发送或分段发送！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 			Response.End()
 		End If
 	ElseIf sendtype=2 Then
 		If Len(subject)=0 Then
-%><body bgcolor="ghostwhite"><center><font color=red size="4">请填写邮件标题！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
+%><body><center><font color=red size="4">请填写邮件标题！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 			Response.End()
 		End If
 	End If

@@ -26,7 +26,7 @@ If rs.EOF Then
 	showErrorPage "数据库没有该论文记录！", "提示"
 End If
 
-Dim source_file,fileExt,newfilename
+Dim source_file,file_ext,newfilename
 Dim bReviewFileVisible(1)
 Dim fso,file,stream
 Set fso=Server.CreateObject("Scripting.FileSystemObject")
@@ -36,19 +36,18 @@ bReviewFileVisible(1)=(rs("ReviewFileDisplayStatus2") And 2)<>0
 If IsNull(source_file) Then
 	source_file=""
 Else
-	fileExt=LCase(fso.GetExtensionName(source_file))
-	If filetype=16 Or filetype=17 Then ' 评阅书则提供无专家信息版本
+	file_ext=LCase(fso.GetExtensionName(source_file))
+	If filetype=17 Or filetype=18 Then ' 评阅书则提供无专家信息版本
 		' 根据评阅书显示设置决定是否显示文件
-		If Not bReviewFileVisible(filetype-16) Then
-			source_file=arrFileListPath(filetype)
+		If Not bReviewFileVisible(filetype-17) Then
+			source_file=""
 		Else
-			fileExt="pdf"
-			source_file=arrFileListPath(filetype)&"/"&fso.GetBaseName(source_file)&"_noexp."&fileExt
+			source_file=arrFileListPath(filetype)&"/"&fso.GetBaseName(source_file)&"_noexp."&file_ext
 		End If
 	Else
 		source_file=arrFileListPath(filetype)&"/"&source_file
 	End If
-	source_file=Server.MapPath(source_file)
+	source_file=Server.MapPath(baseUrl()&source_file)
 End If
 If Not fso.FileExists(source_file) Then
 	Set fso=Nothing
@@ -69,7 +68,7 @@ Else
 	subject=Replace(subject,"*","_")
 	newfilename=rs("SPECIALITY_NAME")&"-"&subject
 End If
-newfilename=newfilename&"."&fileExt
+newfilename=newfilename&"."&file_ext
 Set stream=Server.CreateObject("ADODB.Stream")
 stream.Mode=3
 stream.Type=1

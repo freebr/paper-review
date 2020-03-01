@@ -1,9 +1,9 @@
 ﻿<!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"-->
-<%If IsEmpty(Session("Tid")) Then Response.Redirect("../error.asp?timeout")
+<%If IsEmpty(Session("TId")) Then Response.Redirect("../error.asp?timeout")
 
 Dim PubTerm,PageNo,PageSize
-tid=Session("Tid")
+teacher_id=Session("TId")
 activity_id=toUnsignedInt(Request.Form("In_ActivityId"))
 teachtype_id=toUnsignedInt(Request.Form("In_TEACHTYPE_ID"))
 spec_id=toUnsignedInt(Request.Form("In_SPECIALITY_ID"))
@@ -18,8 +18,8 @@ End If
 If teachtype_id>0 Then PubTerm=PubTerm&" AND TEACHTYPE_ID="&teachtype_id
 If spec_id>0 Then PubTerm=PubTerm&" AND SPECIALITY_ID="&spec_id
 If is_reviewed>-1 Then
-	PubTerm=PubTerm&" AND (REVIEWER1="&tid&" AND IS_REVIEWER_EVAL1="&is_reviewed&_
-		" OR REVIEWER2="&tid&" AND IS_REVIEWER_EVAL2="&is_reviewed&")"
+	PubTerm=PubTerm&" AND (REVIEWER1="&teacher_id&" AND IS_REVIEWER_EVAL1="&is_reviewed&_
+		" OR REVIEWER2="&teacher_id&" AND IS_REVIEWER_EVAL2="&is_reviewed&")"
 End If
 '----------------------PAGE-------------------------
 PageNo=""
@@ -34,7 +34,7 @@ End If
 '------------------------------------------------------
 arrStatText=Array("未评阅","已评阅")
 Connect conn
-sql="SELECT * FROM ViewDissertations_expert WHERE "&tid&" IN (REVIEWER1,REVIEWER2) "&PubTerm
+sql="SELECT * FROM ViewDissertations_expert WHERE "&teacher_id&" IN (REVIEWER1,REVIEWER2) "&PubTerm
 GetRecordSetNoLock conn,rs,sql,count
 If IsEmpty(pageSize) Or Not IsNumeric(pageSize) Then
 	pageSize=-1
@@ -155,10 +155,10 @@ Next
 		<td align="center">状态</td>
 		<td width="150" align="center">评阅时间</td>
 	</tr><%
-	Dim arr,review_time,review_result
+	Dim arr,review_flag,review_time,review_result
 	For i=1 to rs.PageSize
 		If rs.EOF Then Exit For
-		If rs("REVIEWER1")=tid Then
+		If rs("REVIEWER1")=teacher_id Then
 			reviewer_type=0
 		Else
 			reviewer_type=1
@@ -172,18 +172,18 @@ Next
 		If review_flag Then
 			arr=Split(rs("REVIEWER_EVAL_TIME"),",")
 			review_time=toDateTime(arr(reviewer_type),1)&" "&toDateTime(arr(reviewer_type),4)
-			cssclass="thesisstat"
+			cssclass="paper-status"
 			stat=arrStatText(1)
 		Else
 			review_time=vbNullString
-			cssclass="thesisstat_unhandled"
+			cssclass="paper-status-unhandled"
 			stat=arrStatText(0)
 		End If
 %><tr bgcolor="ghostwhite" height="30">
-		<td align="center"><a href="#" onclick="return showThesisDetail(<%=rs("ID")%>,3)"><%=HtmlEncode(rs("THESIS_SUBJECT"))%></a></td>
+		<td align="center"><a href="#" onclick="return showPaperDetail(<%=rs("ID")%>,3)"><%=HtmlEncode(rs("THESIS_SUBJECT"))%></a></td>
 		<td align="center"><%=HtmlEncode(rs("SPECIALITY_NAME"))%></td>
 		<td align="center"><%=rs("TEACHTYPE_NAME")%></td>
-		<td align="center"><a href="#" onclick="return showThesisDetail(<%=rs("ID")%>,3)"><span class="<%=cssclass%>"><%=stat%></span></a></td>
+		<td align="center"><a href="#" onclick="return showPaperDetail(<%=rs("ID")%>,3)"><span class="<%=cssclass%>"><%=stat%></span></a></td>
 		<td align="center"><%=review_time%></td></tr><%
 		rs.MoveNext()
 	Next

@@ -179,15 +179,15 @@ Case 2	' 评阅须知
 	Select Case author_stu_type
 	Case 5
 		noticeName="华南理工大学工程硕士学位论文撰写要求（试行）"
-		arrNoticeFile=Array("","me1.png","me2.png","me3.png","me4.png")
+		arrNoticeFile=Array(0,"me1.png","me2.png","me3.png","me4.png")
 	Case 6
 		noticeName="华南理工大学工商管理硕士学位论文撰写要求（试行）"
-		arrNoticeFile=Array("","mba1.png","mba2.png","mba3.png")
+		arrNoticeFile=Array(0,"mba1.png","mba2.png","mba3.png")
 	Case 9
 		noticeName="华南理工大学会计硕士学位论文撰写要求（试行）"
-		arrNoticeFile=Array("","mpacc1.png","mpacc2.png")
+		arrNoticeFile=Array(0,"mpacc1.png","mpacc2.png")
 	Case Else
-		arrNoticeFile=Array("")
+		arrNoticeFile=Array(0)
 	End Select
 	pageCount=UBound(arrNoticeFile)
 %><html>
@@ -206,8 +206,8 @@ Case 2	' 评阅须知
 <span class="tip">共&nbsp;<%=pageCount%>&nbsp;页，当前是第&nbsp;<span id="numPage"></span>&nbsp;页</span></p></td></tr>
 <tr><td><div id="noticeContent"><p align="center">
 <%
-	For i=1 To UBound(arrNoticeFile)
-%><img id="page<%=i%>" src="images/<%=arrNoticeFile(i)%>" style="display:none" /><%
+	For i=0 To UBound(arrNoticeFile)
+%><img id="page<%=i+1%>" src="images/<%=arrNoticeFile(i)%>" style="display:none" /><%
 	Next
 %></p></div>
 <p align="center"><button id="btnPrev">&lt;&lt;上一页</button>
@@ -271,7 +271,7 @@ Case 2	' 评阅须知
 	});
 </script></html><%
 Case 3	' 评阅页面
-	view_name = "thesisDetail_review_"&dissertation_id
+	view_name = "paperDetail_review_"&dissertation_id
 	' 获取视图状态
 	view_state = getViewState(Session("TId"),usertypeExpert,view_name)
 

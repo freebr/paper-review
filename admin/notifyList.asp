@@ -52,7 +52,7 @@ If rs.RecordCount>0 Then rs.AbsolutePage=pageNo
 <% useStylesheet "admin" %>
 <% useScript "jquery", "common", "notifyList" %>
 </head>
-<body bgcolor="ghostwhite">
+<body>
 <center>
 <font size=4><b>邮件/短信通知列表</b></font>
 <table cellspacing=4 cellpadding=0>

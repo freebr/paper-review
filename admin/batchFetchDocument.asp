@@ -16,13 +16,16 @@ Case vbNullString	' 选择页面
 <% useStylesheet "admin" %>
 <% useScript "jquery" %>
 </head>
-<body bgcolor="ghostwhite">
+<body>
 <center><font size=4><b>批量下载表格/论文</b><br />
 <form action="?step=2" method="POST">
 <p>您选择了&nbsp;<%=numRecord%>&nbsp;条论文记录</p>
 <p>请选择要下载的文件：<select name="filetype"><option value="0">请选择</option><%
-For i=1 To UBound(arrDefaultFileListName) %>
+For i=1 To UBound(arrDefaultFileListName)
+	If i<>18 Then
+%>
 <option value="<%=i%>"><%=arrDefaultFileListName(i)%></option><%
+	End If
 Next
 %></select></p>
 <p>打包压缩文件名：<input type="text" name="rarfilename" size="40" />.rar&nbsp;</p>
@@ -32,24 +35,24 @@ Next
 <p align="left"><span id="output" style="color:#000099;font-size:9pt"></span></p></center></body>
 <script type="text/javascript">
 $(document).ready(function(){
-	var progfile="http://www.cnsba.com/PaperReview/admin/rar/tmp/prog_<%=Session("id")%>.txt";
-	$('select').change(function() {
+	var progfile=location.origin+"<%=baseUrl()%>admin/rar/tmp/prog_<%=Session("id")%>.txt";
+	$("select").change(function() {
 		if(!this.selectedIndex)return;
-		$(':text').val(this.options[this.selectedIndex].innerText+"<%=rarFilenamePostfix%>");
+		$(":text").val(this.options[this.selectedIndex].innerText+"<%=rarFilenamePostfix%>");
 	});
-	$('form').submit(function() {
-		$(':submit').val("正在处理，请稍候...")
-			.attr('disabled',true);
-		$('#output').html('');
+	$("form").submit(function() {
+		$(":submit").val("正在处理，请稍候...")
+			.attr("disabled",true);
+		$("#output").html("");
 		setTimeout(refreshProgress,500);
 	});
-	$(':submit').attr('disabled',false);
+	$(":submit").attr("disabled",false);
 	function refreshProgress() {
 		$.get(progfile,(data,status)=>{
-			if(status=='success') {
-				$('#output').html(data);
+			if(status=="success") {
+				$("#output").html(data);
 				if(/<ok\/>/.test(data)) {
-					$(':submit').val('批量下载').attr('disabled',false);
+					$(":submit").val("批量下载").attr("disabled",false);
 				} else {
 					setTimeout(refreshProgress,500);
 				}
@@ -77,8 +80,7 @@ Case 2	' 下载页面
 		End If
 	End If
 	If bError Then
-	%><body bgcolor="ghostwhite"><center><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
-		Response.End()
+		showErrorPage errdesc,"提示"
 	End If
 	
 	rarFilename=Trim(Request.Form("rarfilename"))
@@ -88,14 +90,13 @@ Case 2	' 下载页面
 	End If
 	rarFilename=rarFilename&".rar"
 	Connect conn
-	sql="SELECT *,LEFT(REVIEW_FILE,CHARINDEX(',',REVIEW_FILE)-1) AS REVIEW_FILE1,RIGHT(REVIEW_FILE,LEN(REVIEW_FILE)-CHARINDEX(',',REVIEW_FILE)) AS REVIEW_FILE2 FROM ViewDissertations WHERE ID IN ("&ids&") AND Valid=1"
+	sql="SELECT * FROM ViewDissertations_admin WHERE ID IN ("&ids&")"
 	GetRecordSet conn,rs,sql,count
 	If rs.EOF Then
-	%><body bgcolor="ghostwhite"><center><font color=red size="4">所选记录不存在！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
-		Response.End()
+		showErrorPage "所选论文记录不存在！","提示"
 	End If
 	' 打包文件
-	Dim source_file,fileExt,oldfilename,newfilename
+	Dim source_file,file_ext,oldfilename,newfilename
 	Dim rarExe,rarFile,tmpDir,rarDir,sourcefilelist,renamefilelist,commentfile,progfile
 	Dim comment,cmd
 	Dim fso,streamLog,wsh
@@ -128,9 +129,9 @@ Case 2	' 下载页面
 		If IsNull(source_file) Then
 			source_file=""
 		Else
-			fileExt=LCase(fso.GetExtensionName(source_file))
+			file_ext=LCase(fso.GetExtensionName(source_file))
 			oldfilename=source_file
-			source_file=Server.MapPath(arrDefaultFileListPath(filetype)&"/"&source_file)
+			source_file=Server.MapPath(baseUrl()&arrDefaultFileListPath(filetype)&"/"&source_file)
 		End If
 		If Not fso.FileExists(source_file) Then
 			numFailed=numFailed+1
@@ -149,10 +150,9 @@ Case 2	' 下载页面
 				subject=Replace(subject,"/","_")
 				subject=Replace(subject,"|","_")
 				subject=Replace(subject,"*","_")
-				'newfilename=rs("SPECIALITY_NAME")&"-"&subject
 				newfilename=rs("STU_NAME")&"_"&rs("STU_NO")&"_"&subject
 			End If
-			newfilename=newfilename&"."&fileExt
+			newfilename=newfilename&"."&file_ext
 			sourcefilelist=sourcefilelist&" """&source_file&""""
 			renamefilelist=renamefilelist&" """&oldfilename&""" """&newfilename&""""
 			numSucceeded=numSucceeded+1
@@ -181,8 +181,7 @@ Case 2	' 下载页面
 	exec.StdOut.ReadAll()
 	fso.DeleteFolder rarDir
 	If numSucceeded=0 Then
-%><body bgcolor="ghostwhite"><center><font color=red size="4">所选论文没有<%=arrDefaultFileListName(filetype)%>！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
-		Response.End()
+		showErrorPage "所选论文没有"&arrDefaultFileListName(filetype)&"！","提示"
 	End If
 	' 添加压缩文件注释
 	comment="打包报告："&vbNewLine&numSucceeded&" 个成功，"&numFailed&" 个失败。"&errMsg
@@ -202,10 +201,13 @@ Case 2	' 下载页面
 	Set exec=Nothing
 	Set streamLog=Nothing
 	Set fso=Nothing
-	url="/PaperReview/admin/rar/"&rarFilename
+	url=baseUrl()&"admin/rar/"&rarFilename
 %><script type="text/javascript">
 	alert("文件已打包完毕，点击“确定”按钮开始下载。");
-	location.href='<%=url%>';
+	setTimeout(function() {
+		location.href = "<%=url%>";
+		setTimeout(function(){history.go(-1)}, 5000);
+	});
 </script><%
 End Select
 %>

@@ -271,7 +271,7 @@ End If
 rs.Update()
 CloseRs rs
 CloseConn conn
-%><form id="ret" action="../thesisDetail.asp?tid=<%=dissertation_id%>" method="post">
+%><form id="ret" action="../paperDetail.asp?tid=<%=dissertation_id%>" method="post">
 <input type="hidden" name="In_TEACHTYPE_ID2" value="<%=teachtype_id%>" />
 <input type="hidden" name="In_CLASS_ID2" value="<%=class_id%>" />
 <input type="hidden" name="In_ENTER_YEAR2" value="<%=enter_year%>" />

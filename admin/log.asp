@@ -25,7 +25,7 @@ End If
 <% useStylesheet "admin" %>
 <% useScript "jquery" %>
 </head>
-<body bgcolor="ghostwhite">
+<body>
 <center><br>
 <font size="3"><b>用户操作日志(<%=filename%>)</b></font>
 <form name="fmViewlog" method="post">

@@ -33,7 +33,7 @@ Else
 		section_id=sectionUploadZqjcb
 		is_generated=Not IsNull(rs("TABLE_FILE2"))
 		filetype=3
-	Case tpTbl2Passed,tpTbl3Uploaded,tpTbl3Unpassed	' 预答辩申请表
+	Case tpTbl2Passed,tpTbl3Uploaded,tpTbl3Unpassed	' 预答辩意见书
 		section_id=sectionUploadYdbyjs
 		is_generated=Not IsNull(rs("TABLE_FILE3"))
 		filetype=5
@@ -80,7 +80,7 @@ Case vbNullstring ' 填写信息页面
 <% useStylesheet "student", "jeasyui" %>
 <% useScript "jquery", "jeasyui", "common", "upload", "fillInTable", "keywordList" %>
 </head>
-<body bgcolor="ghostwhite">
+<body>
 <center><font size=4><b>上传表格文件</b></font>
 <form id="fmDissertation" action="?step=1" method="post" enctype="multipart/form-data">
 <table class="form" width="1000" align="center"><tr><td class="summary"><%
@@ -312,7 +312,7 @@ Case 1	' 上传进程
 <% useStylesheet "student" %>
 <% useScript "jquery" %>
 </head>
-<body bgcolor="ghostwhite"><%
+<body><%
 	If Not bError Then %>
 <form id="fmFinish" action="home.asp" method="post">
 <input type="hidden" name="filename" value="<%=strDestTableFile%>" />

@@ -2,12 +2,12 @@
 <!--#include file="../inc/global.inc"-->
 <!--#include file="appgen.inc"-->
 <!--#include file="common.asp"--><%
-If IsEmpty(Session("Tid")) Then Response.Redirect("../error.asp?timeout")
+If IsEmpty(Session("TId")) Then Response.Redirect("../error.asp?timeout")
 step=Request.QueryString("step")
-thesisID=Request.QueryString("tid")
+dissertation_id=Request.QueryString("tid")
 opr=Request.Form("opr")
 submittype=Request.Form("submittype")
-is_pass=submittype="pass"
+is_pass=submittype="agree"
 eval_text=Request.Form("eval_text")
 teachtype_id=Request.Form("In_TEACHTYPE_ID2")
 spec_id=Request.Form("In_SPECIALITY_ID2")
@@ -17,13 +17,13 @@ query_review_status=Request.Form("In_REVIEW_STATUS2")
 finalFilter=Request.Form("finalFilter2")
 pageSize=Request.Form("pageSize2")
 pageNo=Request.Form("pageNo2")
-If Len(thesisID)=0 Or Not IsNumeric(thesisID) Then
+If Len(dissertation_id)=0 Or Not IsNumeric(dissertation_id) Then
 	bError=True
 	errdesc="参数无效。"
-ElseIf Not isMatched("[1-8]",opr,True) Then
+ElseIf Not isMatched("[1-9]",opr,True) Then
 	bError=True
 	errdesc="操作无效。"
-ElseIf submittype="unpass" And opr<=3 Or opr=4 Or opr=5 Or opr=6 Or opr=8 Or opr=9 Then
+ElseIf Not is_pass And isMatched("[12345689]",opr,True) Then
 	If Len(eval_text)=0 Then
 		bError=True
 		errdesc="请填写意见（200-2000字）！"
@@ -40,8 +40,8 @@ End If
 
 Dim conn,sql,ret,rs,count
 Connect conn
-sql="SELECT * FROM ViewDissertations WHERE ID=?"
-Set ret=ExecQuery(conn,sql,CmdParam("ID",adInteger,4,thesisID))
+sql="SELECT * FROM ViewDissertations_instruct WHERE ID=?"
+Set ret=ExecQuery(conn,sql,CmdParam("ID",adInteger,4,dissertation_id))
 Set rs=ret("rs")
 If rs.EOF Then
   	CloseRs rs
@@ -49,8 +49,22 @@ If rs.EOF Then
 	showErrorPage "数据库没有该论文记录！", "提示"
 End If
 
+Dim section_id,is_comment,instruct_member
+teacher_id=Session("TId")
+If opr=11 Then
+	section_id=sectionInstructReview
+	is_comment=Array(rs("IsComment1"),rs("IsComment2"))
+	If rs("INSTRUCT_MEMBER1")=teacher_id Then
+		instruct_member=0
+	ElseIf rs("INSTRUCT_MEMBER2")=teacher_id Then
+		instruct_member=1
+	End If
+Else
+	section_id=sectionAudit
+End If
+
 Dim section_access_info
-Set section_access_info=getSectionAccessibilityInfo(rs("ActivityId"),rs("TEACHTYPE_ID"),sectionAudit)
+Set section_access_info=getSectionAccessibilityInfo(rs("ActivityId"),rs("TEACHTYPE_ID"),section_id)
 If Not section_access_info("accessible") Then
 	CloseRs rs
   	CloseConn conn
@@ -58,12 +72,16 @@ If Not section_access_info("accessible") Then
 End If
 
 CloseRs rs
-sql="SELECT * FROM Dissertations WHERE ID="&thesisID
+sql="SELECT * FROM Dissertations WHERE ID="&dissertation_id
 GetRecordSet conn,rs,sql,count
+audit_time=Now
 review_status=rs("REVIEW_STATUS")
+will_add_audit=False
+will_notify=True
 Select Case opr
 Case 1	'	 审核开题报告表
 	file_type_name="开题报告表/开题论文"
+	audit_file=rs("TABLE_FILE1")
 	If is_pass Then
 		rs("TASK_PROGRESS")=tpTbl1Passed
 		rs("TASK_EVAL")=Null
@@ -71,11 +89,11 @@ Case 1	'	 审核开题报告表
 		rs("TASK_PROGRESS")=tpTbl1Unpassed
 		rs("TASK_EVAL")=eval_text
 	End If
-	rs.Update()
-	CloseRs rs
-	CloseConn conn
+	will_add_audit=True
+	audit_type=auditTypeKtbg
 Case 2	'  审核中期检查表
 	file_type_name="中期检查表/中期论文"
+	audit_file=rs("TABLE_FILE2")
 	If is_pass Then
 		rs("TASK_PROGRESS")=tpTbl2Passed
 		rs("TASK_EVAL")=Null
@@ -83,35 +101,34 @@ Case 2	'  审核中期检查表
 		rs("TASK_PROGRESS")=tpTbl2Unpassed
 		rs("TASK_EVAL")=eval_text
 	End If
-	rs.Update()
-	CloseRs rs
-	CloseConn conn
-Case 3	'  审核预答辩申请
-	file_type_name="预答辩申请表/预答辩论文"
+	will_add_audit=True
+	audit_type=auditTypeZqjcb
+Case 3	'  审核预答辩意见书
+	file_type_name="预答辩意见书/预答辩论文"
+	audit_file=rs("TABLE_FILE3")
 	If is_pass Then
-		' 更新记录
 		rs("TASK_PROGRESS")=tpTbl3Passed
 		rs("TASK_EVAL")=Null
 	Else
 		rs("TASK_PROGRESS")=tpTbl3Unpassed
 		rs("TASK_EVAL")=eval_text
 	End If
-	rs.Update()
-	CloseRs rs
-	CloseConn conn
+	will_add_audit=True
+	audit_type=auditTypeYdbyjs
 Case 4	'  审核答辩材料
 	file_type_name="答辩审批材料"
+	audit_file=rs("TABLE_FILE4")
 	If is_pass Then
 		rs("TASK_PROGRESS")=tpTbl4Passed
 	Else
 		rs("TASK_PROGRESS")=tpTbl4Unpassed
 	End If
 	rs("TASK_EVAL")=eval_text
-	rs.Update()
-	CloseRs rs
-	CloseConn conn
+	will_add_audit=True
+	audit_type=auditTypeSpcl
 Case 5	'  同意/不同意送检送审操作
 	file_type_name="送检论文和送审论文"
+	audit_file=rs("THESIS_FILE")
 	author=Request.Form("author")
 	stuno=Request.Form("stuno")
 	tutorinfo=Request.Form("tutorinfo")
@@ -131,31 +148,27 @@ Case 5	'  同意/不同意送检送审操作
   		CloseConn conn
 		showErrorPage errdesc, "提示"
 	End If
-	' 更新记录
 	If is_pass Then
-		sql="SELECT dbo.getDetectResultCount("&thesisID&")"
+		sql="SELECT dbo.getDetectResultCount("&dissertation_id&")"
 		GetRecordSet conn,rsDetect,sql,count
-		detect_count=rsDetect(0).Value
-		If detect_count>=1 Then
-			rs("DETECT_APP_EVAL")="该生已对论文进行修改，并已经导师检查，同意二次检测。"
-		Else
-			rs("DETECT_APP_EVAL")="论文已检查，同意检测。"
-		End If
+		detect_count=rsDetect(0)
+		CloseRs rsDetect
 		rs("REVIEW_APP_EVAL")=eval_text
 		rs("SUBMIT_REVIEW_TIME")=Now
 		rs("REVIEW_STATUS")=rsAgreedDetect
-		CloseRs rsDetect
+		If detect_count>=1 Then
+			eval_text="该生已对论文进行修改，并已经导师检查，同意二次检测。"
+		Else
+			eval_text="论文已检查，同意检测。"
+		End If
 	Else
-		rs("DETECT_APP_EVAL")=eval_text
-		rs("REVIEW_APP_EVAL")=Null
-		rs("SUBMIT_REVIEW_TIME")=Now
 		rs("REVIEW_STATUS")=rsRefusedDetect
 	End If
-	rs.Update()
-	CloseRs rs
-	CloseConn conn
+	will_add_audit=True
+	audit_type=auditTypeDetectReview
 Case 6	'  同意/不同意送审操作
 	file_type_name="送审论文"
+	audit_file=rs("THESIS_FILE2")
 	author=Request.Form("author")
 	stuno=Request.Form("stuno")
 	tutorinfo=Request.Form("tutorinfo")
@@ -178,34 +191,30 @@ Case 6	'  同意/不同意送审操作
 	End If
 	If is_pass Then
 		' 生成送审申请表
-		Dim rag,review_time
-		review_time=Now
+		Dim rag
 		Randomize()
-		filename=toDateTime(review_time,1)&Int(Timer)&Int(Rnd()*999)&".doc"
+		filename=toDateTime(audit_time,1)&Int(Timer)&Int(Rnd()*999)&".doc"
 		filepath=Server.MapPath("export")&"\"&filename
 		Set rag=New ReviewAppGen
 		rag.Author=author
 		rag.StuNo=stuno
 		rag.TutorInfo=tutorinfo
 		rag.Spec=speciality
-		rag.Date=toDateTime(review_time,1)
+		rag.Date=toDateTime(audit_time,1)
 		rag.Subject=subject
 		rag.EvalText=eval_text
 		rag.ReproductRatio=reproduct_ratio
 		bError=rag.generateApp(filepath)=0
 		Set rag=Nothing
 		rs("REVIEW_APP")=filename
-		rs("SUBMIT_REVIEW_TIME")=review_time
 		rs("REVIEW_STATUS")=rsAgreedReview
 	Else
 		rs("REVIEW_STATUS")=rsRefusedReview
 	End If
-	' 更新记录
-	rs("REVIEW_APP_EVAL")=eval_text
-	rs.Update()
-	CloseRs rs
-	CloseConn conn
+	will_add_audit=True
+	audit_type=auditTypeReviewApp
 Case 7	' 评阅书审阅确认操作
+	audit_file=rs("REVIEW_FILE")
 	If review_status>=rsReviewEval Then
 		bError=True
 		errdesc="本论文当前状态下不能执行此操作！"
@@ -215,14 +224,10 @@ Case 7	' 评阅书审阅确认操作
   		CloseConn conn
 		showErrorPage errdesc, "提示"
 	End If
-	' 更新记录
-	rs("TUTOR_REVIEW_EVAL_TIME")=Now
 	rs("REVIEW_STATUS")=rsReviewEval
-	rs.Update()
-	CloseRs rs
-	CloseConn conn
 Case 8	'  提交答辩论文审核意见操作
 	file_type_name="答辩论文"
+	audit_file=rs("THESIS_FILE3")
 	If review_status>=rsRefusedDefence Then
 		bError=True
 		errdesc="本论文当前状态下不能执行此操作！"
@@ -232,7 +237,6 @@ Case 8	'  提交答辩论文审核意见操作
   		CloseConn conn
 		showErrorPage errdesc, "提示"
 	End If
-	' 更新记录
 	If is_pass Then
 		'eval_text="已审阅，同意答辩"
 		rs("REVIEW_STATUS")=rsAgreedDefence
@@ -240,22 +244,65 @@ Case 8	'  提交答辩论文审核意见操作
 		'eval_text="不同意答辩，请继续修改论文"
 		rs("REVIEW_STATUS")=rsRefusedDefence
 	End If
-	rs("TUTOR_MODIFY_EVAL")=eval_text
-	rs("TUTOR_MODIFY_EVAL_TIME")=Now
-	rs.Update()
-	CloseRs rs
-	CloseConn conn
+	will_add_audit=True
+	audit_type=auditTypeDefence
+Case 9	'  提交教指委盲评论文审核意见操作
+	file_type_name="教指委盲评论文"
+	audit_file=rs("THESIS_FILE4")
+	If review_status>=rsRefusedInstructReview Then
+		bError=True
+		errdesc="本论文当前状态下不能执行此操作！"
+	End If
+	If bError Then
+		CloseRs rs
+		CloseConn conn
+		showErrorPage errdesc, "提示"
+	End If
+	If is_pass Then
+		rs("REVIEW_STATUS")=rsAgreedInstructReview
+	Else
+		rs("REVIEW_STATUS")=rsRefusedInstructReview
+	End If
+	will_add_audit=True
+	audit_type=auditTypeInstructReviewDetect
+Case 11	'  提交教指委盲评论文修改意见操作
+	file_type_name="教指委盲评论文"
+	audit_file=rs("THESIS_FILE4")
+	If review_status>=rsInstructEval Then
+		bError=True
+		errdesc="本论文当前状态下不能执行此操作！"
+	End If
+	If bError Then
+		CloseRs rs
+		CloseConn conn
+		showErrorPage errdesc, "提示"
+	End If
+	
+	If is_comment(1-instruct_member) Then
+		rs("REVIEW_STATUS")=rsInstructEval
+	Else
+		will_notify=False
+	End If
+	will_add_audit=True
+	audit_type=auditTypeInstructReview
 End Select
+rs.Update()
+CloseRs rs
+CloseConn conn
+
+If will_add_audit Then
+	' 插入审核记录
+	addAuditRecord dissertation_id, audit_file, audit_type, audit_time, is_pass, eval_text
+End If
 If opr=7 Then
 	' 向学生发送评阅意见确认通知邮件
-	sendEmailToStudent thesisID,"",True,""
-Else
+	sendEmailToStudent dissertation_id, "", True, ""
+ElseIf will_notify Then
 	' 向学生发送审核结果通知邮件
-	sendEmailToStudent thesisID,file_type_name,is_pass,eval_text
+	sendEmailToStudent dissertation_id, file_type_name, is_pass, eval_text
 End If
-updateActiveTime Session("Tid")
-
-%><form id="ret" action="thesisDetail.asp?tid=<%=thesisID%>" method="post">
+updateActiveTime teacher_id
+%><form id="ret" action="paperDetail.asp?tid=<%=dissertation_id%>" method="post">
 <input type="hidden" name="In_TEACHTYPE_ID2" value="<%=teachtype_id%>" />
 <input type="hidden" name="In_SPECIALITY_ID2" value="<%=spec_id%>" />
 <input type="hidden" name="In_ENTER_YEAR2" value="<%=enter_year%>" />

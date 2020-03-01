@@ -13,7 +13,7 @@ finalFilter=Request.Form("finalFilter2")
 pageSize=Request.Form("pageSize2")
 pageNo=Request.Form("pageNo2")
 If Len(thesisID)=0 Or Not IsNumeric(thesisID) Or Len(usertype)=0 Or Not IsNumeric(usertype) Or Len(opr)=0 Or Not IsNumeric(opr) Then
-%><body bgcolor="ghostwhite"><center><font color=red size="4">参数无效。</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
+%><body><center><font color=red size="4">参数无效。</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 	Response.End()
 End If
 
@@ -22,7 +22,7 @@ Connect conn
 sql="SELECT * FROM Dissertations WHERE ID="&thesisID
 GetRecordSet conn,rs,sql,count
 If rs.EOF Then
-%><body bgcolor="ghostwhite"><center><font color=red size="4">数据库没有该论文记录！</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
+%><body><center><font color=red size="4">数据库没有该论文记录！</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 	CloseRs rs
 	CloseConn conn
 	Response.End()
@@ -202,7 +202,7 @@ Case 3	' 撤销教务员操作
 			sqlDetect=sqlDetect&"EXEC spAddDetectResult "&thesisID&","&rs("THESIS_FILE")&",NULL,NULL,NULL,1;"
 		End If
 		rs("REVIEW_STATUS")=rsAgreedDetect
-	Case 1	' 撤销匹配专家操作
+	Case 1	' 撤销匹配评阅专家操作
 		rs("REVIEW_STATUS")=rsAgreedReview
 	Case 2	' 撤销导入答辩安排操作
 		sql="DELETE FROM DefenceInfo WHERE THESIS_ID="&thesisID
@@ -212,9 +212,22 @@ Case 3	' 撤销教务员操作
 		conn.Execute sql
 		rs("DEFENCE_MODIFY_EVAL")=Null	' 旧字段
 		rs("REVIEW_STATUS")=rsAgreedDefence
-	Case 4	' 撤销导入教指会分会修改意见操作
-		rs("INSTRUCT_MODIFY_EVAL")=Null
-		rs("REVIEW_STATUS")=rsDefenceEval
+	Case 4	' 撤销匹配教指委委员操作
+		rs("REVIEW_STATUS")=rsInstructReviewPaperDetected
+	Case 5	' 撤销第一位教指委委员的修改意见
+		audit_info=getAuditInfo(thesisID,rs("THESIS_FILE4"), auditTypeInstructReview)
+		If Not IsEmpty(audit_info(0)("AuditorName")) Then
+			addAuditRecord thesisID, rs("THESIS_FILE4"), auditTypeInstructReview, audit_info(0)("AuditTime"), rs("INSTRUCT_MEMBER1"), True, Null
+		End If
+		rs("REVIEW_STATUS")=rsMatchedInstructMember
+	Case 6	' 撤销第二位教指委委员的修改意见
+		audit_info=getAuditInfo(thesisID,rs("THESIS_FILE4"), auditTypeInstructReview)
+		If UBound(audit_info)>=1 Then
+			addAuditRecord thesisID, rs("THESIS_FILE4"), auditTypeInstructReview, audit_info(1)("AuditTime"), rs("INSTRUCT_MEMBER2"), True, Null
+		End If
+		rs("REVIEW_STATUS")=rsMatchedInstructMember
+	Case 7	' 撤销导入学院学位评定分会修改意见操作
+		rs("DEGREE_MODIFY_EVAL")=Null	' 旧字段
 	End Select
 End Select
 
@@ -230,13 +243,17 @@ If rs("REVIEW_STATUS")<rsMatchedReviewer Then
 	rs("REVIEW_FILE_STATUS")=0
 	rs("REVIEWER_EVAL_TIME")=Null
 End If
+If rs("REVIEW_STATUS")<rsMatchedInstructMember Then
+	rs("INSTRUCT_MEMBER1")=Null
+	rs("INSTRUCT_MEMBER2")=Null
+End If
 rs.Update()
 If Len(sqlDetect) Then
 	conn.Execute sqlDetect
 End If
 CloseRs rs
 CloseConn conn
-%><form id="ret" action="thesisDetail.asp?tid=<%=thesisID%>" method="post">
+%><form id="ret" action="paperDetail.asp?tid=<%=thesisID%>" method="post">
 <input type="hidden" name="In_TEACHTYPE_ID2" value="<%=teachtype_id%>" />
 <input type="hidden" name="In_CLASS_ID2" value="<%=class_id%>" />
 <input type="hidden" name="In_ENTER_YEAR2" value="<%=enter_year%>" />

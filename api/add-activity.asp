@@ -60,8 +60,12 @@ Function main(args)
     With mail_templates
         .Add "lwsstzyj(xs)", "论文送审通知邮件（学生）"
         .Add "lwsstzyj(ds)", "论文送审通知邮件（导师）"
+        .Add "lwppjzwwytzyj(xs)", "论文匹配教指委委员通知邮件（学生）"
+        .Add "lwppjzwwytzyj(ds)", "论文匹配教指委委员通知邮件（导师）"
         .Add "lwdpytzyj", "论文待评阅通知邮件"
         .Add "lwdpytzdx", "论文待评阅通知短信"
+        .Add "jzwmplwshtzyj", "教指委盲评论文待审核通知邮件"
+        .Add "jzwmplwshtzdx", "教指委盲评论文待审核通知短信"
         .Add "lwshtzyj", "论文审核通知邮件"
         .Add "lwshwtgtzyj", "论文审核未通过通知邮件"
         .Add "lwshtgtzyj", "论文审核通过通知邮件"

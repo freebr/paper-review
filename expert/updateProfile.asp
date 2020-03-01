@@ -1,8 +1,8 @@
 ﻿<!--#include file="../inc/global.inc"-->
 <!--#include file="../inc/ExtendedRequest.inc"-->
 <!--#include file="common.asp"-->
-<%If IsEmpty(Session("Tid")) Then Response.Redirect("../error.asp?timeout")
-TeacherId=Session("Tid")
+<%If IsEmpty(Session("TId")) Then Response.Redirect("../error.asp?timeout")
+TeacherId=Session("TId")
 If Len(TeacherId)=0 Or Not IsNumeric(TeacherId) Then
 %><html><head><% useStylesheet "tutor" %></head>
 <body class="exp"><center><div class="content"><font color=red size="4">参数错误。</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></div></body></html><%

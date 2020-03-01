@@ -66,14 +66,14 @@ End If
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="theme-color" content="#2D79B2" />
 <title>专业论文列表</title>
-<% useStylesheet "admin" %>
-<% useScript "jquery", "common", "paper" %>
+<% useStylesheet "admin", "jeasyui" %>
+<% useScript "jquery", "jeasyui", "common", "paper" %>
 </head>
 <body bgcolor="ghostwhite" onload="return On_Load()">
 <center>
 <font size=4><b>专业硕士论文列表</b></font>
-<table cellspacing="4" cellpadding="0">
 <form id="query_nocheck" method="post" onsubmit="if(Chk_Select())return chkField();else return false">
+<table cellspacing="4" cellpadding="0">
 <tr><td>评阅活动&nbsp;<%=activityList("In_ActivityId", Session("AdminType")("ManageStuTypes"), activity_id, True)%></td>
 <td><table width="100%" cellspacing="4" cellpadding="0"><%
 Dim ArrayList(2,5),k
@@ -154,21 +154,30 @@ Next
 End If %>
 <input type="button" value="显示全部" onclick="showAllRecords(this.form)">
 &nbsp;全选<input type="checkbox" onclick="checkAll()" id="chk" /></td></tr>
-<tr><td colspan=2><input type="button" value="导入新增论文信息" onclick="submitForm($('#paperList'),'importNewPaper.asp')" />
-<input type="button" value="导入送检论文查重信息" onclick="submitForm($('#paperList'),'importDetectResult.asp')" />
-<input type="button" value="导入教指委盲评论文查重信息" onclick="submitForm($('#paperList'),'importInstructReviewDetectResult.asp')" />
-<input type="button" value="导入答辩安排信息" onclick="submitForm($('#paperList'),'importDefencePlan.asp')" />
-<input type="button" value="导入答辩委员会修改意见" onclick="submitForm($('#paperList'),'importDefenceEval.asp')" />
-<input type="button" value="导入学院学位评定分委员会修改意见" onclick="submitForm($('#paperList'),'importDegreeEval.asp')" /></td></tr>
-<tr><td colspan=2>评阅结果&nbsp;<select name="selreviewfilestat"><%
-			For i=0 To UBound(arrReviewFileStat)
+<tr><td>
+评阅结果&nbsp;<select name="selreviewfilestat"><%
+For i=0 To UBound(arrReviewFileStat)
 %><option value="<%=i%>"><%=arrReviewFileStat(i)%></option><%
-			Next %></select><input type="button" value="设置" onclick="batchUpdatePaper($('#paperList'))" />&emsp;
-<input type="button" value="导入专家匹配结果" onclick="submitForm($('#paperList'),'importMatchResult.asp')" />
-<input type="button" value="批量通知专家评阅" onclick="submitForm($('#paperList'),'notifyExpert.asp')" />
-<input type="button" value="批量下载表格/论文" onclick="batchFetchDocument($('#paperList'))" />
-<input type="button" id="btnexport" value="导出到Excel文件" />
-<input type="button" value="删 除" onclick="if(confirm('是否删除这'+countClk()+'条记录？'))submitForm($('#paperList'),'deletePaper.asp')" /></td></tr></form></table>
+Next %></select><input type="button" value="设置" onclick="batchUpdatePaper($('#paperList'))" />
+</td>
+<td>
+<a href="javascript:void(0)" id="menuImport">导入数据</a>
+<div id="popupImport">
+<div data-options="name: 'importNewPaper'">导入新增论文信息</div>
+<div data-options="name: 'importDetectResult'">导入送检论文查重信息</div>
+<div data-options="name: 'importInstructReviewDetectResult'">导入教指委盲评论文查重信息</div>
+<div data-options="name: 'importDefencePlan'">导入答辩安排信息</div>
+<div data-options="name: 'importDefenceEval'">导入答辩委员会修改意见</div>
+<div data-options="name: 'importDegreeEval'">导入学院学位评定分会修改意见</div>
+<div class="menu-sep"></div>
+<div data-options="name: 'importReviewerMatchResult'">导入评阅专家匹配结果</div>
+<div data-options="name: 'importInstructMemberMatchResult'">导入教指委委员匹配结果</div>
+</div>
+<a href="javascript:void(0)" id="btnBatchNotifyExpert">批量通知专家评阅</a>
+<a href="javascript:void(0)" id="btnBatchFetchDocument">批量下载表格/论文</a>
+<a href="javascript:void(0)" id="btnExport">导出到Excel文件</a>
+<a href="javascript:void(0)" id="btnDelete">删 除</a>
+</td></tr></table></form>
 <form id="paperList" method="post">
 <input type="hidden" name="In_ActivityId2" value="<%=activity_id%>">
 <input type="hidden" name="In_TEACHTYPE_ID2" value="<%=teachtype_id%>">
@@ -196,8 +205,7 @@ End If %>
 		<td width="50" align="center">操作</td>
 	</tr><%
 If bQuery Then
-	Dim review_result
-	Dim review_result_text(1)
+	Dim bIsReviewVisible,review_result,review_result_text(1)
 	For i=1 to rs.PageSize
 		If rs.EOF Then Exit For
 		If Not IsNull(rs("REVIEW_RESULT")) Then
@@ -205,6 +213,7 @@ If bQuery Then
 			review_result_text(0)=HtmlEncode(rs("EXPERT_NAME1"))&"<br/>"&rs("REVIEW_RESULT_TEXT1")
 			review_result_text(1)=HtmlEncode(rs("EXPERT_NAME2"))&"<br/>"&rs("REVIEW_RESULT_TEXT2")
 		End If
+		bIsReviewVisible=Array(rs("ReviewFileDisplayStatus1")>0,rs("ReviewFileDisplayStatus2")>0)
 		substat=vbNullString
 		If rs("TASK_PROGRESS")>=tpTbl4Uploaded Then
 			stat=rs("STAT_TEXT1")&"，"&rs("STAT_TEXT2")
@@ -212,17 +221,17 @@ If bQuery Then
 			stat=rs("STAT_TEXT1")
 		Else
 			stat=rs("STAT_TEXT2")
-			If rs("REVIEW_STATUS")>=rsReviewed And rs("REVIEW_FILE_STATUS")<>2 Then
+			If rs("REVIEW_STATUS")>=rsReviewed And Not bIsReviewVisible(0) And Not bIsReviewVisible(1) Then
 				substat="评阅结果["&arrReviewFileStat(rs("REVIEW_FILE_STATUS"))&"]"
 			End If
 		End If
 		If rs("UNHANDLED") Then
-			cssclass="thesisstat_unhandled"
+			cssclass="paper-status-unhandled"
 		Else
-			cssclass="thesisstat"
+			cssclass="paper-status"
 		End If
 	%><tr bgcolor="ghostwhite">
-		<td align="center"><a href="#" onclick="return showThesisDetail(<%=rs("ID")%>,0)"><%=HtmlEncode(rs("THESIS_SUBJECT"))%></a></td>
+		<td align="center"><a href="#" onclick="return showPaperDetail(<%=rs("ID")%>,0)"><%=HtmlEncode(rs("THESIS_SUBJECT"))%></a></td>
 		<td align="center"><a href="#" onclick="return showStudentProfile(<%=rs("STU_ID")%>,0)"><%=HtmlEncode(rs("STU_NAME"))%></a></td>
 		<td align="center"><%=rs("STU_NO")%></td>
 		<td align="center"><%=HtmlEncode(rs("SPECIALITY_NAME"))%></td>
@@ -231,7 +240,7 @@ If bQuery Then
 	<td align="center"><%=review_result_text(0)%></td>
 		<td align="center"><%=review_result_text(1)%></td>
 		<td align="center"><%=rs("FINAL_RESULT_TEXT")%></td>
-		<td align="center"><a href="#" onclick="return showThesisDetail(<%=rs("ID")%>,0)"><span class="<%=cssclass%>"><%=stat%></span></a><%
+		<td align="center"><a href="#" onclick="return showPaperDetail(<%=rs("ID")%>,0)"><span class="<%=cssclass%>"><%=stat%></span></a><%
 		If Len(substat) Then
 		%><br/><span class="thesissubstat"><%=substat%></span><%
 		End If %></td>
@@ -239,23 +248,44 @@ If bQuery Then
 		<td align="center"><%
 		If rs("REVIEW_STATUS")=rsAgreedReview Then
 			If IsNull(rs("REVIEWER1")) And IsNull(rs("REVIEWER2")) Then
-%><input type="button" value="匹配专家" onclick="chooseExpert(this.form,<%=rs("ID")%>)" /><%
+%><input type="button" value="匹配专家" onclick="matchReviewer(this.form,<%=rs("ID")%>)" /><%
 			Else
-%><input type="button" value="通知专家评阅" onclick="notifyExpert(this.form,<%=rs("ID")%>)" /><%
+%><input type="button" value="通知专家评阅" onclick="notifyReviewer(this.form,<%=rs("ID")%>)" /><%
 			End If
 		End If
 		%></td></tr><%
 		rs.MoveNext()
 	Next
 End If
-%></table></form></center></body>
+%></table></form></center>
 <script type="text/javascript">
-	$("#btnexport").click(function() {
+	$("#menuImport").menubutton({
+		iconCls: "icon-upload",
+		menu: "#popupImport",
+		plain: false
+	});
+	$("#popupImport").menu({
+		onClick: function(item) {
+			submitForm($("#paperList"),	item.name + ".asp");
+		}
+	});
+	$("#btnExport").linkbutton({ iconCls: "icon-file-export" }).click(function() {
 		this.value="正在导出，请稍候……";
-		this.disabled=true;
+		$(this).linkbutton("disable");
 		submitForm($("#paperList"),"exportReviewStats.asp");
-	}).attr("disabled", false);
-</script></html><%
+	}).linkbutton("enable");
+	$("#btnBatchNotifyExpert").linkbutton({ iconCls: "icon-mails" }).click(function() {
+		submitForm($("#paperList"),"notifyReviewer.asp");
+	});
+	$("#btnBatchFetchDocument").linkbutton({ iconCls: "icon-batch-download" }).click(function() {
+		batchFetchDocument($("#paperList"));
+	});
+	$("#btnDelete").linkbutton({ iconCls: "icon-cancel" }).click(function() {
+		if(confirm("是否删除这 "+countClk()+" 条记录？")) {
+			submitForm($("#paperList"),"deletePaper.asp");
+		}
+	});
+</script></body></html><%
 	CloseRs rs
 	CloseConn conn
 %>

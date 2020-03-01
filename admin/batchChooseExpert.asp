@@ -23,10 +23,10 @@ GetRecordSetNoLock conn,rs,sql,count
 <% useStylesheet "admin" %>
 <% useScript "jquery", "common" %>
 </head>
-<body bgcolor="ghostwhite">
+<body>
 <center>
 <font size=4><b>为<%=count%>篇送审论文匹配评阅专家（单击方框选择）</b></font>
-<form id="fmChooseExp" method="post" action="chooseExpert.asp?step=2">
+<form id="fmChooseExp" method="post" action="matchReviewer.asp?step=2">
 <input type="hidden" name="ids" value="<%=ids%>" />
 <input type="hidden" name="In_TEACHTYPE_ID" value="<%=teachtype_id%>" />
 <input type="hidden" name="In_CLASS_ID" value="<%=class_id%>" />
@@ -75,7 +75,7 @@ GetRecordSetNoLock conn,rs,sql,count
 		<td align="center"><%=HtmlEncode(rs("SPECIALITY_NAME"))%></td>
 		<td align="center"><%=rs("TEACHTYPE_NAME")%></td>
 		<td align="center"><%=HtmlEncode(rs("TUTOR_NAME"))%></td>
-		<td align="center"><span class="thesisstat"><%=stat%></span><%
+		<td align="center"><span class="paper-status"><%=stat%></span><%
 		If Len(substat) Then
 		%><br/><span class="thesissubstat"><%=substat%></span><%
 		End If %></td></tr><%

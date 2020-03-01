@@ -16,7 +16,7 @@ ElseIf filetype<1 Or filetype>3 Then
 	errdesc="参数无效。"
 End If
 If bError Then
-%><body bgcolor="ghostwhite"><center><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="关 闭" onclick="window.close()" /></center></body><%
+%><body><center><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="关 闭" onclick="window.close()" /></center></body><%
 	Response.End()
 End If
 
@@ -24,27 +24,27 @@ Connect conn
 sql="SELECT *,LEFT(REVIEW_FILE,CHARINDEX(',',REVIEW_FILE)-1) AS REVIEW_FILE1,RIGHT(REVIEW_FILE,LEN(REVIEW_FILE)-CHARINDEX(',',REVIEW_FILE)) AS REVIEW_FILE2 FROM ViewDissertations WHERE ID="&thesisID&" AND Valid=1"
 GetRecordSetNoLock conn,rs,sql,count
 If count<>1 Then
-%><body bgcolor="ghostwhite"><center><font color=red size="4">数据库没有该论文记录！</font><br /><input type="button" value="关 闭" onclick="window.close()" /></center></body><%
+%><body><center><font color=red size="4">数据库没有该论文记录！</font><br /><input type="button" value="关 闭" onclick="window.close()" /></center></body><%
 	Response.End()
 End If
 
-Dim source_file,fileExt,newfilename
+Dim source_file,file_ext,newfilename
 Dim fso,file,stream
 Set fso=Server.CreateObject("Scripting.FileSystemObject")
 source_file=rs(arrFileListField(filetype))
 If IsNull(source_file) Then
 	source_file=""
 Else
-	fileExt=LCase(fso.GetExtensionName(source_file))
+	file_ext=LCase(fso.GetExtensionName(source_file))
 	If filetype=2 Or filetype=3 Then ' 评阅书则提供无学生信息版本
-		source_file=arrFileListPath(filetype)&"/"&fso.GetBaseName(source_file)&"_nostu."&fileExt
+		source_file=arrFileListPath(filetype)&"/"&fso.GetBaseName(source_file)&"_nostu."&file_ext
 	Else
 		source_file=arrFileListPath(filetype)&"/"&source_file
 	End If
 	source_file=Server.MapPath(source_file)
 End If
 If Not fso.FileExists(source_file) Then
-%><body bgcolor="ghostwhite"><center><font color=red size="4">该论文暂无<%=arrFileListName(filetype)%>或已被删除！</font><br /><input type="button" value="关 闭" onclick="window.close()" /></center></body><%
+%><body><center><font color=red size="4">该论文暂无<%=arrFileListName(filetype)%>或已被删除！</font><br /><input type="button" value="关 闭" onclick="window.close()" /></center></body><%
 	Set fso=Nothing
 	Response.End()
 End If
@@ -63,7 +63,7 @@ Else
 	subject=Replace(subject,"*","_")
 	newfilename=rs("SPECIALITY_NAME")&"-"&subject
 End If
-newfilename=newfilename&"."&fileExt
+newfilename=newfilename&"."&file_ext
 Set stream=Server.CreateObject("ADODB.Stream")
 stream.Mode=3
 stream.Type=1

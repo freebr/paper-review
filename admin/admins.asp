@@ -17,6 +17,7 @@ If json="1" Then
 %>{"status": "empty"}<%
 	Else
 		ret="{""status"": ""ok"", ""admin_type"": "&dict.Items()(0)&"}"
+		Response.Clear()
 		Response.Write ret
 	End If
 	CloseRs rs
@@ -38,7 +39,7 @@ Case "1"
 <% useStylesheet "admin" %>
 <% useScript "jquery" %>
 </head>
-<body bgcolor="ghostwhite">
+<body>
 <center><font size=4><b>教务员类型设置</b></font>
 <form id="fmSettings" method="post" action="?step=2">
 <table width="900" cellpadding="2" cellspacing="1" bgcolor="dimgray">

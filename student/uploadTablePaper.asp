@@ -28,7 +28,7 @@ Else
 		section_id=sectionUploadKtbg
 	Case tpTbl1Passed,tpTbl2Uploaded,tpTbl2Unpassed	' 中期检查表
 		section_id=sectionUploadZqjcb
-	Case tpTbl2Passed,tpTbl3Uploaded,tpTbl3Unpassed	' 预答辩申请表
+	Case tpTbl2Passed,tpTbl3Uploaded,tpTbl3Unpassed	' 预答辩意见书
 		section_id=sectionUploadYdbyjs
 	End Select
 End If
@@ -55,7 +55,7 @@ Case vbNullstring ' 填写信息页面
 <% useStylesheet "student", "jeasyui" %>
 <% useScript "jquery", "jeasyui", "common", "upload", "uploadPaper" %>
 </head>
-<body bgcolor="ghostwhite">
+<body>
 <center><font size=4><b>上传表格附加论文</b></font>
 <form id="fmDissertation" action="?step=1" method="post" enctype="multipart/form-data">
 <table class="form" width="1000" align="center"><tr><td class="summary"><%
@@ -66,7 +66,7 @@ Case vbNullstring ' 填写信息页面
 	ElseIf time_flag<>0 Then
 %><p><span class="tip">【<%=current_section("Name")%>】环节开放时间为<%=toDateTime(current_section("StartTime"),1)%>至<%=toDateTime(current_section("EndTime"),1)%>，当前不在开放时间内，不能上传附加论文！</span></p><%
 	Else
-%><p>当前上传的是：<span style="color:#ff0000;font-weight:bold"><%=arrTblThesisDetail(section_id)%></span></p><%
+%><p>当前上传的是：<span style="color:#ff0000;font-weight:bold"><%=arrTblpaperDetail(section_id)%></span></p><%
 		If is_new_dissertation Then %>
 <p>请选择您要参加的评阅活动：
 <input id="activity_id" class="easyui-combobox" name="activity_id"
@@ -210,7 +210,7 @@ Case 1	' 上传进程
 <% useStylesheet "student" %>
 <% useScript "jquery" %>
 </head>
-<body bgcolor="ghostwhite"><%
+<body><%
 	If Not bError Then %>
 <form id="fmFinish" action="home.asp" method="post">
 <input type="hidden" name="filename" value="<%=strDestTableFile%>" />

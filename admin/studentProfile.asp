@@ -33,7 +33,7 @@
 <% useStyleSheet "global" %>
 <% useScript "common" %>
 </head>
-<body bgcolor="ghostwhite">
+<body>
 <center>
 <table width="800" cellspacing=1 cellpadding="3" bgcolor="#999999" style="color:#000000">
   <caption><font size=3><b>学生基本资料</b></font></caption>

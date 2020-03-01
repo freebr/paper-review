@@ -1,14 +1,14 @@
 ﻿<%Response.Expires=-1%>
 <!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"-->
-<%If IsEmpty(Session("Tid")) Then Response.Redirect("../error.asp?timeout")
+<%If IsEmpty(Session("TId")) Then Response.Redirect("../error.asp?timeout")
 
 new_password=Request.Form("newPwd")
 repeat_password=Request.Form("repeatPwd")
 new_security_level=verifyPasswordSecurityLevel(new_password)
 
 ConnectOriginDb conn
-sql="SELECT * FROM TEACHER_INFO WHERE TEACHERID="&Session("Tid")
+sql="SELECT * FROM TEACHER_INFO WHERE TEACHERID="&Session("TId")
 GetRecordSet conn,rs,sql,count
 If Len(new_password)=0 Then
 	bError=True
@@ -30,7 +30,7 @@ If bError Then
 	CloseConn conn
 	Response.End()
 End If
-sql="UPDATE TEACHER_INFO SET USER_PASSWORD="&toSqlString(new_password)&" WHERE TEACHERID="&Session("Tid")&" AND VALID=0"
+sql="UPDATE TEACHER_INFO SET USER_PASSWORD="&toSqlString(new_password)&" WHERE TEACHERID="&Session("TId")&" AND VALID=0"
 conn.Execute sql
 CloseConn conn
 CloseRs rs

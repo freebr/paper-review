@@ -14,7 +14,7 @@ Case vbNullstring ' 文件选择页面
 <% useStylesheet "admin" %>
 <% useScript "jquery", "upload" %>
 </head>
-<body bgcolor="ghostwhite">
+<body>
 <center><font size=4><b>导入新增论文信息</b><br />
 <form id="fmUpload" action="?step=2" method="POST" enctype="multipart/form-data">
 <p>评阅活动：<%=activityList("In_ActivityId", Session("AdminType")("ManageStuTypes"), activity_id, False)%></p>
@@ -57,17 +57,17 @@ Case 2	' 上传进程
 	strUploadPath = Server.MapPath("upload\xls")
 	If Not fso.FolderExists(strUploadPath) Then fso.CreateFolder(strUploadPath)
 
-	fileExt=LCase(file.FileExt)
+	file_ext=LCase(file.FileExt)
 	If activity_id="0" Then
 		bError = True
 		errstring = "请选择评阅活动！"
-	ElseIf fileExt <> "xls" And fileExt <> "xlsx" Then	' 不被允许的文件类型
+	ElseIf file_ext <> "xls" And file_ext <> "xlsx" Then	' 不被允许的文件类型
 		bError = True
 		errstring = "所选择的不是 Excel 文件！"
 	Else
 		' 生成日期格式文件名
 		fileid = FormatDateTime(Now(),1)&Int(Timer)
-		strDestFile = fileid&"."&fileExt
+		strDestFile = fileid&"."&file_ext
 		strDestPath = Server.MapPath("upload")&"\xls\"&strDestFile
 		byteFileSize = file.FileSize
 		' 保存
@@ -83,7 +83,7 @@ Case 2	' 上传进程
 <% useStylesheet "admin" %>
 <% useScript "jquery" %>
 </head>
-<body bgcolor="ghostwhite">
+<body>
 <center><br /><b>导入新增论文信息</b><br /><br /><%
 	If Not bError Then %>
 <form id="fmUploadFinish" action="?step=3" method="POST">

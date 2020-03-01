@@ -1,6 +1,6 @@
 ﻿<!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"--><%
-If IsEmpty(Session("Tid")) Then Response.Redirect("../error.asp?timeout")
+If IsEmpty(Session("TId")) Then Response.Redirect("../error.asp?timeout")
 If Not hasPrivilege(Session("Treadprivileges"),"I11") Then Response.Redirect("../error.asp?no-privilege")
 step=Request.QueryString("step")
 thesisID=Request.QueryString("tid")
@@ -12,9 +12,9 @@ query_review_status=Request.Form("In_REVIEW_STATUS2")
 finalFilter=Request.Form("finalFilter2")
 pageSize=Request.Form("pageSize2")
 pageNo=Request.Form("pageNo2")
-tid=Session("Tid")
+teacher_id=Session("TId")
 If Len(thesisID)=0 Or Not IsNumeric(thesisID) Then
-%><body bgcolor="ghostwhite"><center><font color=red size="4">参数无效。</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
+%><body><center><font color=red size="4">参数无效。</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 	Response.End()
 End If
 
@@ -22,7 +22,7 @@ Connect conn
 sql="SELECT * FROM ViewDissertations_tutor WHERE ID="&thesisID
 GetRecordSet conn,rs,sql,count
 If count=0 Then
-%><body bgcolor="ghostwhite"><center><font color=red size="4">数据库没有该论文记录！</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
+%><body><center><font color=red size="4">数据库没有该论文记录！</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 	CloseRs rs
 	CloseConn conn
 	Response.End()
@@ -30,16 +30,21 @@ End If
 
 Dim section_access_info
 Set section_access_info=getSectionAccessibilityInfo(rs("ActivityId"),rs("TEACHTYPE_ID"),sectionAudit)
-Dim arrCaptionAgreed:arrCaptionAgreed=Array("","审核通过开题报告表，同意参加开题报告","审核通过中期检查表","审核通过预答辩申请表，同意参加预答辩","审核通过审批材料，同意参加答辩")
-Dim arrCaptionRefused:arrCaptionRefused=Array("","审核不通过，不同意参加开题报告（延期3-6个月重新做开题报告）","审核不通过中期检查表","审核不通过预答辩申请表，不同意参加预答辩","审核不通过审批材料，不同意参加答辩")
+Dim arrCaptionAgreed:arrCaptionAgreed=Array("","审核通过开题报告表，同意参加开题报告","审核通过中期检查表","审核通过预答辩意见书，同意参加预答辩","审核通过审批材料，同意参加答辩")
+Dim arrCaptionRefused:arrCaptionRefused=Array("","审核不通过，不同意参加开题报告（延期3-6个月重新做开题报告）","审核不通过中期检查表","审核不通过预答辩意见书，不同意参加预答辩","审核不通过审批材料，不同意参加答辩")
 Dim review_status,numReviewed,review_result(2),reviewer_master_level(1),review_file(1),review_time(1),review_level(1)
 
-sql="SELECT * FROM ViewDetectResult WHERE THESIS_ID="&thesisID
+sql="SELECT * FROM ViewDetectResults WHERE THESIS_ID="&thesisID
 GetRecordSet conn,rsDetect,sql,count
-If rs("REVIEWER1")=tid Then
+If rs("REVIEWER1")=teacher_id Then
 	reviewer=0
-ElseIf rs("REVIEWER2")=tid Then
+ElseIf rs("REVIEWER2")=teacher_id Then
 	reviewer=1
+End If
+If rs("INSTRUCT_MEMBER1")=teacher_id Then
+	instruct_member=0
+ElseIf rs("INSTRUCT_MEMBER2")=teacher_id Then
+	instruct_member=1
 End If
 If rs("TEACHTYPE_ID")=5 Then
 	reviewfile_type=2
@@ -55,6 +60,7 @@ stat_text2=rs("STAT_TEXT2")
 bIsReviewVisible=rs("REVIEW_FILE_STATUS")<>0
 reproduct_ratio=rs("REPRODUCTION_RATIO")
 instruct_review_reproduct_ratio=rs("INSTRUCT_REVIEW_REPRODUCTION_RATIO")
+has_defence_plan=Not IsNull(rs("DEFENCE_MEMBER"))
 defence_result=rs("DEFENCE_RESULT")
 grant_degree_result=rs("GRANT_DEGREE_RESULT")
 opr=0
@@ -68,9 +74,11 @@ End Select
 Select Case review_status
 Case rsDetectPaperUploaded:opr=5
 Case rsRedetectPassed:opr=6
-Case rsMatchedReviewer:opr=9
+Case rsMatchedReviewer:opr=10
 Case rsReviewed:opr=7
 Case rsDefencePaperUploaded:opr=8
+Case rsInstructReviewPaperUploaded:opr=9
+Case rsMatchedInstructMember:opr=11
 End Select
 If review_status=0 Then
 	stat=stat_text1
@@ -121,21 +129,21 @@ End If
 Select Case step
 Case vbNullString	' 论文详情页面
 
-	updateActiveTime Session("Tid")
+	updateActiveTime teacher_id
 	
 	Dim tutor_modify_eval_title
-	arrActionUrlList=Array("?tid="&thesisID&"&step=2","updatePaper.asp?tid="&thesisID,"../expert/thesisDetail.asp?tid="&thesisID&"&step=2")
+	arrActionUrlList=Array("?tid="&thesisID&"&step=2","updatePaper.asp?tid="&thesisID,"../expert/paperDetail.asp?tid="&thesisID&"&step=2")
 	Select Case opr
 	Case 1,2,3
 		actionUrl1=arrActionUrlList(0)
 		actionUrl2=arrActionUrlList(1)
-	Case 4,5,6,8
+	Case 4,5,6,8,9,11
 		actionUrl1=arrActionUrlList(0)
 		actionUrl2=actionUrl1
 	Case 7
 		actionUrl1=arrActionUrlList(1)
 		actionUrl2=actionUrl1
-	Case 9
+	Case 10
 		actionUrl1=arrActionUrlList(2)
 		actionUrl2=vbNullString
 	End Select
@@ -146,229 +154,252 @@ Case vbNullString	' 论文详情页面
 	Else
 		tutor_modify_eval_title="导师对答辩论文的意见"
 	End If
+
+	notice_text = getNoticeText(rs("TEACHTYPE_ID"), "review_result_desc")
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="theme-color" content="#2D79B2" />
 <title>查看论文信息</title>
-<% useStylesheet "tutor" %>
-<% useScript "jquery", "common", "paper" %>
+<% useStylesheet "tutor", "jeasyui" %>
+<% useScript "jquery", "jeasyui", "common", "paper" %>
 </head>
-<body bgcolor="ghostwhite">
-<center><font size=4><b>专业硕士论文详情<br/>论文当前状态：【<%=stat%>】</b></font><%
+<body>
+<h1>专业硕士论文详情<h2>论文当前状态：【<%=stat%>】</h2></h1><%
 	If opr<>0 And Not section_access_info("accessible") Then
-%><p><span class="tip"><%=section_access_info("tip")%></span></p><%
+%><p align="center"><span class="tip"><%=section_access_info("tip")%></span></p><%
 	End If %>
-<form id="fmDetail" action="<%=actionUrl%>" method="post">
-<table class="form" width="800" cellspacing="1" cellpadding="3">
-<tr><td>评阅活动：&emsp;&emsp;&emsp;<input type="text" class="txt" size="95%" value="<%=rs("ActivityName")%>" readonly /></td></tr>
-<tr><td>论文题目：&emsp;&emsp;&emsp;<input type="text" class="txt" name="subject" size="95%" value="<%=rs("THESIS_SUBJECT")%>" readonly /></td></tr>
-<tr><td>（英文）：&emsp;&emsp;&emsp;<input type="text" class="txt" name="subject_en" size="85%" value="<%=rs("THESIS_SUBJECT_EN")%>" readonly /></td></tr>
-<tr><td>作者姓名：&emsp;&emsp;&emsp;<input type="text" class="txt" name="author" size="18" value="<%=rs("STU_NAME")%>" readonly />&nbsp;
-学号：<input type="text" class="txt" name="stuno" size="15" value="<%=rs("STU_NO")%>" readonly />&nbsp;
-学位类别：<input type="text" class="txt" name="degreename" size="10" value="<%=rs("TEACHTYPE_NAME")%>" readonly /></td></tr>
-<tr><td>指导教师：&emsp;&emsp;&emsp;<input type="text" class="txt" name="tutorname" size="95%" value="<%=rs("TUTOR_NAME")%>" readonly /></td></tr><%
+<div class="box">
+	<form id="fmDetail" action="<%=actionUrl%>" method="post">
+		<fieldset>
+			<legend>论文基本情况</legend>
+			<table class="form">
+			<tr><td class="field-name">评阅活动：</td><td><input type="text" class="txt" size="95%" value="<%=rs("ActivityName")%>" readonly /></td></tr>
+			<tr><td class="field-name">论文题目：</td><td><input type="text" class="txt" name="subject" size="95%" value="<%=rs("THESIS_SUBJECT")%>" readonly /></td></tr>
+			<tr><td class="field-name">（英文）：</td><td><input type="text" class="txt" name="subject_en" size="85%" value="<%=rs("THESIS_SUBJECT_EN")%>" readonly /></td></tr>
+			<tr><td class="field-name">作者姓名：</td><td><input type="text" class="txt" name="author" size="18" value="<%=rs("STU_NAME")%>" readonly />&nbsp;
+			学号：<input type="text" class="txt" name="stuno" size="15" value="<%=rs("STU_NO")%>" readonly />&nbsp;
+			学位类别：<input type="text" class="txt" name="degreename" size="10" value="<%=rs("TEACHTYPE_NAME")%>" readonly /></td></tr>
+			<tr><td class="field-name">指导教师：</td><td><input type="text" class="txt" name="tutorname" size="95%" value="<%=rs("TUTOR_NAME")%>" readonly /></td></tr><%
 	If reviewfile_type=2 Then %>
-<tr><td>领域名称：&emsp;&emsp;&emsp;<input type="text" class="txt" name="speciality" size="95%" value="<%=rs("SPECIALITY_NAME")%>" readonly /></td></tr><%
+			<tr><td class="field-name">领域名称：</td><td><input type="text" class="txt" name="speciality" size="95%" value="<%=rs("SPECIALITY_NAME")%>" readonly /></td></tr><%
 	End If %>
-<tr><td>研究方向：&emsp;&emsp;&emsp;<input type="text" class="txt" name="researchway_name" size="95%" value="<%=rs("RESEARCHWAY_NAME")%>" readonly /></td></tr>
-<tr><td>论文关键词：&emsp;&emsp;<input type="text" class="txt" name="keywords_ch" size="85%" value="<%=rs("KEYWORDS")%>" readonly /></td></tr>
-<tr><td>（英文）：&emsp;&emsp;&emsp;<input type="text" class="txt" name="keywords_en" size="85%" value="<%=rs("KEYWORDS_EN")%>" readonly /></td></tr>
-<tr><td>院系名称：&emsp;&emsp;&emsp;<input type="text" class="txt" name="faculty" size="30%" value="工商管理学院" readonly />&nbsp;
-班级：<input type="text" class="txt" name="class" size="51%" value="<%=rs("CLASS_NAME")%>" readonly /></td></tr><%
+			<tr><td class="field-name">研究方向：</td><td><input type="text" class="txt" name="researchway_name" size="95%" value="<%=rs("RESEARCHWAY_NAME")%>" readonly /></td></tr>
+			<tr><td class="field-name">论文关键词：</td><td><input type="text" class="txt" name="keywords_ch" size="85%" value="<%=rs("KEYWORDS")%>" readonly /></td></tr>
+			<tr><td class="field-name">（英文）：</td><td><input type="text" class="txt" name="keywords_en" size="85%" value="<%=rs("KEYWORDS_EN")%>" readonly /></td></tr>
+			<tr><td class="field-name">院系名称：</td><td><input type="text" class="txt" name="faculty" size="30%" value="工商管理学院" readonly />&nbsp;
+			班级：<input type="text" class="txt" name="class" size="51%" value="<%=rs("CLASS_NAME")%>" readonly /></td></tr><%
 	If Not IsNull(rs("THESIS_FORM")) And Len(rs("THESIS_FORM")) Then %>
-<tr><td>论文形式：&emsp;&emsp;&emsp;<input type="text" class="txt" name="thesisform" size="95%" value="<%=rs("THESIS_FORM")%>" readonly /></td></tr><%
+			<tr><td class="field-name">论文形式：</td><td><input type="text" class="txt" name="thesisform" size="95%" value="<%=rs("THESIS_FORM")%>" readonly /></td></tr><%
 	End If
 	If review_status>=rsDetectUnpassed Then %>
-<tr><td>送检论文文字复制比：<input type="text" class="txt" name="reproduct_ratio" size="10px" value="<%=toNumericString(reproduct_ratio)%>%" readonly /></td></tr><%
+			<tr><td class="field-name">送检论文文字复制比：</td><td><input type="text" class="txt" name="reproduct_ratio" size="10px" value="<%=toNumericString(reproduct_ratio)%>%" readonly /></td></tr><%
 	End If
-	If review_status>=rsInstructReviewDetected Then %>
-<tr><td>教指委盲评论文文字复制比：<input type="text" class="txt" name="instruct_review_reproduct_ratio" size="10px" value="<%=toNumericString(instruct_review_reproduct_ratio)%>%" readonly /></td></tr><%
+	If review_status>=rsInstructReviewPaperDetected Then %>
+			<tr><td class="field-name">教指委盲评论文文字复制比：</td><td><input type="text" class="txt" name="instruct_review_reproduct_ratio" size="10px" value="<%=toNumericString(instruct_review_reproduct_ratio)%>%" readonly /></td></tr><%
 	End If
 	If task_progress>=tpTbl1Uploaded Then
 		If Len(table_file(1)) Then %>
-<tr><td>开题报告表：&emsp;&emsp;<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=1" target="_blank">点击下载</a></td></tr><%
+			<tr><td class="field-name">开题报告表：</td><td><a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=1" target="_blank">点击下载</a></td></tr><%
 		End If
 		If Not IsNull(rs("TBL_THESIS_FILE1")) Then %>
-<tr><td>开题论文：&emsp;&emsp;&emsp;<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=2" target="_blank">点击下载</a></td></tr><%
+			<tr><td class="field-name">开题论文：</td><td><a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=2" target="_blank">点击下载</a></td></tr><%
 		End If
 	End If
 	If task_progress>=tpTbl2Uploaded Then
 		If Len(table_file(2)) Then %>
-<tr><td>中期检查表：&emsp;&emsp;<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=3" target="_blank">点击下载</a></td></tr><%
+			<tr><td class="field-name">中期检查表：</td><td><a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=3" target="_blank">点击下载</a></td></tr><%
 		End If
 		If Not IsNull(rs("TBL_THESIS_FILE2")) Then %>
-<tr><td>中期论文：&emsp;&emsp;&emsp;<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=4" target="_blank">点击下载</a></td></tr><%
+			<tr><td class="field-name">中期论文：</td><td><a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=4" target="_blank">点击下载</a></td></tr><%
 		End If
 	End If
 	If task_progress>=tpTbl3Uploaded Then
 		If Len(table_file(3)) Then %>
-<tr><td>预答辩申请表：&emsp;<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=5" target="_blank">点击下载</a></td></tr><%
+			<tr><td class="field-name">预答辩意见书：</td><td><a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=5" target="_blank">点击下载</a></td></tr><%
 		End If
 		If Not IsNull(rs("TBL_THESIS_FILE3")) Then %>
-<tr><td>预答辩论文：&emsp;&emsp;<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=6" target="_blank">点击下载</a></td></tr><%
+			<tr><td class="field-name">预答辩论文：</td><td><a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=6" target="_blank">点击下载</a></td></tr><%
 		End If
 	End If
 	If review_status>=rsDetectPaperUploaded And Len(thesis_file) Then %>
-<tr><td>送检论文：&emsp;&emsp;&emsp;<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=8" target="_blank">点击下载</a></td></tr><%
+			<tr><td class="field-name">送检论文：</td><td><a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=8" target="_blank">点击下载</a></td></tr><%
 	End If
 	If review_status>=rsDetectPaperUploaded Then %>
-<tr><td>检测报告：&emsp;&emsp;&emsp;<%
+			<tr><td class="field-name">送检论文检测报告：</td><td><%
 		If IsNull(rs("DETECT_REPORT")) Then
-%>未上传<%
+			%>未上传<%
 		Else
-%><a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=13" target="_blank">点击下载</a><%
+			%><a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=13" target="_blank">点击下载</a><%
 		End If
-%></td></tr>
-<tr><td>论文检测记录（按检测先后顺序）：<%
-		If rsDetect.EOF Then
-%>无<%
+			%>&emsp;<input type="file" name="detect_report" size="30" /></td></tr><%
+	End If
+	If review_status>=rsInstructReviewPaperUploaded Then %>
+			<tr><td class="field-name">教指委盲评论文检测报告：</td><td><%
+		If IsNull(rs("INSTRUCT_REVIEW_DETECT_REPORT")) Then
+			%>未上传<%
 		Else
-%><ul><%
-			Dim index:index=1
-			Dim hash,detect_time,detect_result
-			Do While Not rsDetect.EOF
-				hash=rsDetect("HASH").Value
-				detect_time=rsDetect("DETECT_TIME").Value
-				If IsNull(detect_time) Then detect_time="无"
-				detect_result=rsDetect("RESULT").Value
-				If IsNull(detect_result) Then detect_result="无" Else detect_result=toNumericString(detect_result)&"%"
-				detect_report=rsDetect("DETECT_REPORT").Value
-%><li><%=index%>.检测时间：<%=detect_time%>，查重结果：<%=detect_result%>
-<br/><a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=8&hash=<%=hash%>" target="_blank">送检论文</a><%
-				If Not IsNull(detect_report) Then %>
-&emsp;<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=13&hash=<%=hash%>" target="_blank">检测报告</a><%
-				End If
-%></li><%
-				index=index+1
-				rsDetect.MoveNext()
-			Loop
-%></ul><%
+			%><a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=14" target="_blank">点击下载</a><%
 		End If
-%></td></tr><%
+			%>&emsp;<input type="file" name="instruct_review_detect_report" size="30" /></td></tr><%
 	End If
 	If review_status>=rsDetectPaperUploaded And Len(thesis_file_review) Then %>
-<tr><td>送审论文：&emsp;&emsp;&emsp;<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=9" target="_blank">点击下载</a></td></tr><%
+			<tr><td class="field-name">送审论文：</td><td><a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=9" target="_blank">点击下载</a></td></tr><%
 	End If
 	If review_status>=rsAgreedReview Then
 		If Not IsNull(review_app) Then %>
-<tr><td>送审申请表：&emsp;&emsp;<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=14" target="_blank" >点击下载</a></td></tr><%
+			<tr><td class="field-name">送审申请表：</td><td><a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=15" target="_blank" >点击下载</a></td></tr><%
 		End If
 		' 根据评阅书显示设置决定是否显示文件
 		If numReviewed And bIsReviewVisible Then %>
-<tr><td>论文评阅书：<div class="inline-list-container"><div class="inline-list"><%
+			<tr><td class="field-name">论文评阅书：</td>
+			<td><div class="inline-list-container"><div class="inline-list"><%
 			If Len(review_file(0)) Then
-%><div class="inline-list-item">1.<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=15" target="_blank">点击下载</a>（返回于&nbsp;<%=review_time(0)%>）</div><%
+			%><div class="inline-list-item">1.<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=16" target="_blank">点击下载</a>（返回于&nbsp;<%=review_time(0)%>）</div><%
 			End If
 			If Len(review_file(1)) Then
-%><div class="inline-list-item">2.<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=16" target="_blank">点击下载</a>（返回于&nbsp;<%=review_time(1)%>）</div><%
+			%><div class="inline-list-item">2.<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=17" target="_blank">点击下载</a>（返回于&nbsp;<%=review_time(1)%>）</div><%
 			End If
-%></div></div></td></tr><%
+		%></div></div></td></tr><%
 		End If
 	End If
 	If review_status>=rsDefencePaperUploaded And Len(thesis_file_modified) Then %>
-<tr><td>答辩论文：&emsp;&emsp;&emsp;<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=10" target="_blank">点击下载</a></td></tr><%
+			<tr><td class="field-name">答辩论文：</td><td><a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=10" target="_blank">点击下载</a></td></tr><%
 	End If
 	If review_status>=rsInstructReviewPaperUploaded And Len(thesis_file_instruct_review) Then %>
-<tr><td>教指委盲评论文：&emsp;&emsp;&emsp;<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=11" target="_blank">点击下载</a></td></tr><%
+			<tr><td class="field-name">教指委盲评论文：</td><td><a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=11" target="_blank">点击下载</a></td></tr><%
 	End If
 	If review_status>=rsFinalPaperUploaded And Len(thesis_file_final) Then %>
-<tr><td>定稿论文：&emsp;&emsp;&emsp;<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=12" target="_blank">点击下载</a></td></tr><%
+			<tr><td class="field-name">定稿论文：</td><td><a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=12" target="_blank">点击下载</a></td></tr><%
 	End If
 	If task_progress>=tpTbl4Uploaded And Len(table_file(4)) Then %>
-<tr><td>答辩审批材料：&emsp;<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=7" target="_blank">点击下载</a></td></tr><%
+			<tr><td class="field-name">答辩审批材料：</td><td><a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=7" target="_blank">点击下载</a></td></tr><%
 	End If
-%><tr><td height="10"></td></tr><%
+			%><tr><td height="10"></td></tr><%
 	If numReviewed And bIsReviewVisible Then %>
-<tr><td>对学位论文的总体评价&nbsp;1：<%=reviewLevelRadios("reviewlevel1",reviewfile_type,review_level(0))%></td></tr>
-<tr><td>对学位论文的总体评价&nbsp;2：<%=reviewLevelRadios("reviewlevel2",reviewfile_type,review_level(1))%></td></tr>
-<tr><td>评审结果&nbsp;1：&emsp;&emsp;<%=reviewResultList("review_result",review_result(0),false)%>&emsp;<span class="tip">(A→同意答辩；B→需做适当修改；C→需做重大修改；D→不同意答辩；E→尚未返回)</span></td></tr>
-<tr><td>评审结果&nbsp;2：&emsp;&emsp;<%=reviewResultList("review_result",review_result(1),false)%></td></tr>
-<tr><td>处理意见：&emsp;&emsp;&emsp;<%=finalResultList("review_result",review_result(2),false)%></td></tr><%
+			<tr><td class="field-name">对学位论文的总体评价&nbsp;1：</td><td><%=reviewLevelRadios("reviewlevel1",reviewfile_type,review_level(0))%></td></tr>
+			<tr><td class="field-name">对学位论文的总体评价&nbsp;2：</td><td><%=reviewLevelRadios("reviewlevel2",reviewfile_type,review_level(1))%></td></tr>
+			<tr><td class="field-name">评审结果&nbsp;1：</td><td><%=reviewResultList("review_result",review_result(0),false)%>&emsp;<span class="tip">(A→同意答辩；B→需做适当修改；C→需做重大修改；D→不同意答辩；E→尚未返回)</span></td></tr>
+			<tr><td class="field-name">评审结果&nbsp;2：</td><td><%=reviewResultList("review_result",review_result(1),false)%></td></tr>
+			<tr><td class="field-name">处理意见：</td><td><%=finalResultList("review_result",review_result(2),false)%></td></tr><%
+	End If %>
+			</table>
+		</fieldset>
+		<fieldset>
+		<legend>查重检测记录（按时间先后顺序）</legend><%
+	If rsDetect.EOF Then
+		%>无<%
+	Else
+		%><ul><%
+		Dim index:index=1
+		Dim hash,detect_time,detect_result
+		Do While Not rsDetect.EOF
+			hash=rsDetect("HASH").Value
+			detect_time=rsDetect("DETECT_TIME").Value
+			If IsNull(detect_time) Then detect_time="无"
+			detect_result=rsDetect("RESULT").Value
+			If IsNull(detect_result) Then detect_result="无" Else detect_result=toNumericString(detect_result)&"%"
+			detect_report=rsDetect("DETECT_REPORT").Value
+		%><li><%=index%>.检测时间：<%=detect_time%>，查重结果：<%=detect_result%>
+		<br/><a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=8&hash=<%=hash%>" target="_blank">送检论文</a><%
+			If Not IsNull(detect_report) Then %>
+		&emsp;<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=13&hash=<%=hash%>" target="_blank">检测报告</a><%
+			End If
+		%></li><%
+			index=index+1
+			rsDetect.MoveNext()
+		Loop
+		%></ul><%
 	End If
+		%></fieldset>
+		<fieldset>
+		<legend>审核意见</legend>
+			<table class="form"><%
 	If Not IsNull(rs("TASK_EVAL")) Then %>
-<tr><td>导师对表格的审核意见：&emsp;<%=toPlainString(isNullString(rs("TASK_EVAL"),"未填写"))%></td></tr><%
+				<tr><td class="field-name">导师对表格的审核意见：</td><td><%=toPlainString(isNullString(rs("TASK_EVAL"),"未填写"))%></td></tr><%
 	End If
 	If review_status>=rsRefusedDetect Then %>
-<tr><td>导师送检意见：&emsp;<%=toPlainString(isNullString(rs("DETECT_APP_EVAL"),"未填写"))%></td></tr><%
+				<tr><td class="field-name">导师送检意见：</td><td><%=toPlainString(isNullString(rs("DETECT_APP_EVAL"),"未填写"))%></td></tr><%
 	End If
 	If review_status=rsAgreedDetect Or review_status>=rsRefusedReview Then
 		submit_review_time=rs("SUBMIT_REVIEW_TIME")
 		If Not IsNull(submit_review_time) Then submit_review_time="("&submit_review_time&")"
-	%>
-<tr><td>导师送审意见<%=submit_review_time%>：&emsp;<%=toPlainString(isNullString(rs("REVIEW_APP_EVAL"),"未填写"))%></td></tr><%
+			%>
+				<tr><td class="field-name">导师送审意见：<br /><%=submit_review_time%></td><td><%=toPlainString(isNullString(rs("REVIEW_APP_EVAL"),"未填写"))%></td></tr><%
 	End If
 	If review_status>=rsRefusedDefence Then %>
-<tr><td><%=tutor_modify_eval_title%>：<%=toPlainString(isNullString(rs("TUTOR_MODIFY_EVAL"),"未填写"))%></td></tr><%
+				<tr><td class="field-name"><%=tutor_modify_eval_title%>：</td><td><%=toPlainString(isNullString(rs("TUTOR_MODIFY_EVAL"),"未填写"))%></td></tr><%
 	End If
 	If review_status>=rsDefenceEval Then %>
-<tr><td>答辩委员会修改意见：<br/><%=toPlainString(isNullString(rs("DEFENCE_EVAL"),"未填写"))%></td></tr><%
+				<tr><td class="field-name">答辩委员会修改意见：</td><td><%=toPlainString(isNullString(rs("DEFENCE_EVAL"),"未填写"))%></td></tr><%
 	End If
-	If review_status>=rsInstructEval Then %>
-<tr><td>学院学位评定分委员会修改意见：<br/><%=toPlainString(isNullString(rs("INSTRUCT_MODIFY_EVAL"),"未填写"))%></td></tr><%
-	End If
-	If Not IsNull(rs("DEFENCE_MEMBER")) Then
-		Dim defence_members,defence_memo
-		defence_members=Split(rs("DEFENCE_MEMBER"),"|")
-		defence_memo=rs("MEMO")
-		If IsNull(defence_memo) Then defence_memo="-" %>
-<tr><td>答辩安排：
-<div id="defenceplan"><table cellspacing="0" cellpadding="1">
-<thead><tr style="font-weight:bold"><td width="100"><p>答辩时间</p></td><td width="100"><p>答辩地点</p></td>
-<td width="60"><p>答辩主席</p></td><td width="100"><p>答辩委员</p></td><td width="60"><p>答辩秘书</p></td><td><p>答辩委员工作单位</p></td></tr></thead>
-<tbody><tr><td><p><%=rs("DEFENCE_TIME")%></p></td><td><p><%=rs("DEFENCE_PLACE")%></p></td>
-<td><p><%=defence_members(0)%></p></td><td><p><%=defence_members(1)%></p></td><td><p><%=defence_members(2)%></p></td>
-<td><p><%=toPlainString(defence_memo)%></p></td></tbody></table></div></td></tr><%
-	End If
-	If defence_result<>0 Then %>
-<tr><td>答辩成绩：&emsp;&emsp;&emsp;&emsp;&emsp;<%=defenceResultList("defenceresult",defence_result)%></td></tr><%
-	End If
-	If Not IsNull(grant_degree_result) Then %>
-<tr><td>答辩表决结果：&emsp;&emsp;&emsp;<%=grantDegreeList("grantdegree",grant_degree_result)%></td></tr><%
+	If Not IsNull(rs("DEGREE_MODIFY_EVAL")) Then %>
+				<tr><td class="field-name">学院学位评定分会修改意见：</td><td><%=toPlainString(isNullString(rs("DEGREE_MODIFY_EVAL"),"未填写"))%></td></tr><%
 	End If %>
-<tr class="trbuttons">
-<td colspan="3"><p align="center"><%
+			</table>
+		</fieldset>
+		<fieldset>
+		<legend>答辩信息</legend>
+			<table class="form"><%
+			If has_defence_plan Then %>
+				<tr><td colspan="2"><table id="datagrid_defence_plan"></table></td></tr><%
+			End If %>
+				<tr><td class="field-name">答辩成绩：</td><td><%=defenceResultList("new_defence_result",defence_result)%></td></tr>
+				<tr><td class="field-name">答辩表决结果：</td><td><%=grantDegreeList("new_grant_degree_result",grant_degree_result)%></td></tr>
+			</table>
+		</fieldset>
+		<table class="form buttons"><tr><td><%
 	If section_access_info("accessible") Then
 		Select Case opr
 		Case 1,2,3,4 %>
-<input type="button" id="unpass" name="btnsubmit" value="<%=arrCaptionRefused(opr)%>" />&emsp;
-<input type="button" id="pass" name="btnsubmit" value="<%=arrCaptionAgreed(opr)%>" />&emsp;<%
+		<input type="button" id="reject" name="btnsubmit" value="<%=arrCaptionRefused(opr)%>" />&emsp;
+		<input type="button" id="agree" name="btnsubmit" value="<%=arrCaptionAgreed(opr)%>" />&emsp;<%
 		Case 5 %>
-<input type="button" id="unpass" name="btnsubmit" value="不同意该生论文查重、送审" />&emsp;
-<input type="button" id="pass" name="btnsubmit" value="同意该生论文查重、查重结果低于10%系统自动匹配送审" />&emsp;<%
+		<input type="button" id="reject" name="btnsubmit" value="不同意该生论文查重、送审" />&emsp;
+		<input type="button" id="agree" name="btnsubmit" value="同意该生论文查重、查重结果低于10%系统自动匹配送审" />&emsp;<%
 		Case 6 %>
-<input type="button" id="unpass" name="btnsubmit" value="不同意送审" />&emsp;
-<input type="button" id="pass" name="btnsubmit" value="同意送审" />&emsp;<%
+		<input type="button" id="reject" name="btnsubmit" value="不同意送审" />&emsp;
+		<input type="button" id="agree" name="btnsubmit" value="同意送审" />&emsp;<%
 		Case 7
 			If bIsReviewVisible Then %>
-<input type="button" id="btnsubmit" name="btnsubmit" value="确认评阅结果" />&emsp;<%
+		<input type="button" name="btnsubmit" value="确认评阅结果" />&emsp;<%
 			End If
 		Case 8 %>
-<input type="button" id="unpass" name="btnsubmit" value="不同意论文修改" />&emsp;
-<input type="button" id="pass" name="btnsubmit" value="确认修改，同意答辩" />&emsp;<%
-		Case 9
+		<input type="button" id="reject" name="btnsubmit" value="不同意论文修改" />&emsp;
+		<input type="button" id="agree" name="btnsubmit" value="确认修改，同意答辩" />&emsp;<%
+		Case 9 %>
+		<input type="button" id="reject" name="btnsubmit" value="不同意查重" />&emsp;
+		<input type="button" id="agree" name="btnsubmit" value="审核通过，同意查重" />&emsp;<%
+		Case 10
 			If Not IsEmpty(reviewer) Then %>
-<input type="button" id="btnsubmit" name="btnsubmit" value="评阅该论文" />&emsp;<%
+		<input type="button" name="btnsubmit" value="评阅该论文" />&emsp;<%
+			End If
+		Case 11
+			If Not IsEmpty(instruct_member) Then %>
+		<input type="button" id="agree" name="btnsubmit" value="审核该论文" />&emsp;<%
 			End If
 		End Select
 	End If
-%><input type="button" value="关 闭" onclick="closeWindow()" />
-</p></td></tr></table>
-<input type="hidden" name="stuid" value="<%=rs("STU_ID")%>" />
-<input type="hidden" name="opr" value="<%=opr%>" />
-<input type="hidden" id="submittype" name="submittype" />
-<input type="hidden" name="In_TEACHTYPE_ID2" value="<%=teachtype_id%>" />
-<input type="hidden" name="In_SPECIALITY_ID2" value="<%=spec_id%>" />
-<input type="hidden" name="In_ENTER_YEAR2" value="<%=enter_year%>" />
-<input type="hidden" name="In_TASK_PROGRESS2" value="<%=query_task_progress%>" />
-<input type="hidden" name="In_REVIEW_STATUS2" value="<%=query_review_status%>" />
-<input type="hidden" name="finalFilter2" value="<%=toPlainString(finalFilter)%>" />
-<input type="hidden" name="pageSize2" value="<%=pageSize%>" />
-<input type="hidden" name="pageNo2" value="<%=pageNo%>" /></form>
-<table class="form" width="800" cellspacing=1 cellpadding=3>
-<tr style="background-color: #cccccc"><td><p>论文检测结果及论文评审结果说明：</p>
-<%=getNoticeText(rs("TEACHTYPE_ID"),"review_result_desc")%>
-</td></tr></table></center>
+		%><input type="button" value="关 闭" onclick="closeWindow()" />
+		</td></tr></table>
+		<input type="hidden" name="stuid" value="<%=rs("STU_ID")%>" />
+		<input type="hidden" name="opr" value="<%=opr%>" />
+		<input type="hidden" id="submittype" name="submittype" />
+		<input type="hidden" name="In_TEACHTYPE_ID2" value="<%=teachtype_id%>" />
+		<input type="hidden" name="In_SPECIALITY_ID2" value="<%=spec_id%>" />
+		<input type="hidden" name="In_ENTER_YEAR2" value="<%=enter_year%>" />
+		<input type="hidden" name="In_TASK_PROGRESS2" value="<%=query_task_progress%>" />
+		<input type="hidden" name="In_REVIEW_STATUS2" value="<%=query_review_status%>" />
+		<input type="hidden" name="finalFilter2" value="<%=toPlainString(finalFilter)%>" />
+		<input type="hidden" name="pageSize2" value="<%=pageSize%>" />
+		<input type="hidden" name="pageNo2" value="<%=pageNo%>" />
+	</form>
+	<% If Len(notice_text) Then %>
+	<table class="form notice-text"><tr><td><p>论文检测结果及论文评审结果说明：</p>
+	<%=notice_text%>
+	</td></tr></table>
+	<% End If %>
+</div>
 <form id="ret" name="ret" action="paperList.asp" method="post">
 <input type="hidden" name="In_TEACHTYPE_ID" value="<%=teachtype_id%>" />
 <input type="hidden" name="In_SPECIALITY_ID" value="<%=spec_id%>" />
@@ -378,7 +409,39 @@ Case vbNullString	' 论文详情页面
 <input type="hidden" name="finalFilter" value="<%=toPlainString(finalFilter)%>" />
 <input type="hidden" name="pageSize" value="<%=pageSize%>" />
 <input type="hidden" name="pageNo" value="<%=pageNo%>" /></form>
-</body><script type="text/javascript">
+</body><script type="text/javascript"><%
+	If has_defence_plan Then
+		Dim defence_time,defence_place,defence_members,defence_memo
+		defence_time=toJsString(toPlainString(rs("DEFENCE_TIME")))
+		defence_place=toJsString(toPlainString(rs("DEFENCE_PLACE")))
+		defence_members=Split(toJsString(toPlainString(rs("DEFENCE_MEMBER"))),"|")
+		defence_memo=toJsString(toPlainString(rs("MEMO")))
+		If IsNull(defence_memo) Then defence_memo="-" %>
+	$("#datagrid_defence_plan").datagrid({
+		title: "答辩安排",
+		iconCls: "icon-schedule",
+		columns: [[
+			{ field: 'defence_time', title: '答辩时间', width: 160, align: 'center' },
+			{ field: 'defence_place', title: '答辩地点', width: 120, align: 'center' },
+			{ field: 'defence_chairman', title: '答辩主席', width: 80, align: 'center' },
+			{ field: 'defence_members', title: '答辩委员', width: 130, align: 'center' },
+			{ field: 'defence_secretary', title: '答辩秘书', width: 80, align: 'center' },
+			{ field: 'defence_memo', title: '答辩委员工作单位', width: 250, align: 'center' }
+		]],
+		data: [{
+			defence_time: "<%=defence_time%>",
+			defence_place: "<%=defence_place%>",
+			defence_chairman: "<%=defence_members(0)%>",
+			defence_members: "<%=defence_members(1)%>",
+			defence_secretary: "<%=defence_members(2)%>",
+			defence_memo: "<%=defence_memo%>"
+		}],
+		height: 150,
+		autoRowHeight: true,
+		collapsible: true,
+		singleSelect: true
+	}).datagrid("autoSizeColumn", "defence_memo");<%
+	End If %>
 	var btnsubmit=document.getElementsByName("btnsubmit");
 	var arrActionUrl=["<%=actionUrl1%>","<%=actionUrl2%>"];
 	if(btnsubmit) {
@@ -398,32 +461,36 @@ Case vbNullString	' 论文详情页面
 Case 2	' 填写评语页面
 	opr=Request.Form("opr")
 	submittype=Request.Form("submittype")
-	isunpass=submittype="unpass"
+	is_reject=submittype="reject"
 	Select Case opr
 	Case 1,2,3,4
-		If isunpass Then
+		If is_reject Then
 			operation_name="您审核不通过"&arrTable(opr)&"，请填写审核意见"
 		ElseIf opr=4 Then
 			operation_name="您审核通过了"&arrTable(opr)&"，请填写指导意见"
 		End If
 	Case 5
-		If isunpass Then
+		If is_reject Then
 			operation_name="您不同意论文检测和送审，请填写审核意见"
 		Else
 			operation_name="您同意了论文检测和送审，请填写送审评语"
 		End If
 	Case 6
-		If isunpass Then
+		If is_reject Then
 			operation_name="您不同意论文送审，请填写审核意见"
 		Else
 			operation_name="您同意了论文送审，请填写送审评语"
 		End If
 	Case 8
-		If isunpass Then
+		If is_reject Then
 			operation_name="您不同意论文修改，请填写意见"
 		Else
 			operation_name="您同意该生参加论文答辩，请填写意见"
 		End If
+	Case 9
+		operation_name="填写教指委盲评论文审核意见"
+	Case 11
+		operation_name="填写教指委盲评论文修改意见"
 	End Select
 	tutor_duty_name=getProDutyNameOf(tutor_id)
 	eval_text=rs("TUTOR_MODIFY_EVAL")
@@ -456,7 +523,7 @@ Case 2	' 填写评语页面
 	input[type="text"] { background:none;border-top:0;border-left:0;border-right:0;border-bottom:1px solid dimgray }
 </style>
 </head>
-<body bgcolor="ghostwhite">
+<body>
 <center><font size=4><b><%=operation_name%></b></font>
 <form id="fmOper" action="updatePaper.asp?tid=<%=thesisID%>" method="post" style="margin-top:0;padding-top:10px">
 <table class="form" width="800" cellspacing="1" cellpadding="3">
@@ -485,7 +552,7 @@ Case 2	' 填写评语页面
 			End If
 		Case 3
 			If Not IsNull(rs("TABLE_FILE3")) Then %>
-<tr><td colspan=3>预答辩申请表：&emsp;<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=5" target="_blank">点击下载</a></td></tr><%
+<tr><td colspan=3>预答辩意见书：&emsp;<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=5" target="_blank">点击下载</a></td></tr><%
 			End If
 			If Not IsNull(rs("TBL_THESIS_FILE3")) Then %>
 <tr><td colspan=3>预答辩论文：&emsp;&emsp;<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=6" target="_blank">点击下载</a></td></tr><%
@@ -493,7 +560,7 @@ Case 2	' 填写评语页面
 		Case 4 %>
 <tr><td colspan=3>答辩审批材料：&emsp;<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=7" target="_blank">点击下载</a></td></tr><%
 		End Select
-		If isunpass Then
+		If is_reject Then
 			eval_text_name=arrTable(opr)&"审核意见（200-2000字）："
 		ElseIf opr=4 Then
 			eval_text_name="校内指导教师意见（包括对申请人的学习情况、思想表现及论文的学术评语，科研工作能力和完成科研工作情况，以及是否同意申请学位论文答辩的意见，200-2000字）"
@@ -527,7 +594,7 @@ Case 2	' 填写评语页面
 <tr><td colspan=3>导师对学位论文的评语<span class="eval_notice">（请阅读论文后填写，200-2000字）</span>：<span id="eval_text_tip"></span><br/>
 送审评语的基本内容参考：<br/><%=getNoticeText(rs("TEACHTYPE_ID"),"review_eval_reference")%></td></tr>
 <tr><td colspan=3><textarea name="eval_text" rows="10" style="width:100%"></textarea><br/></td></tr><%
-		If Not isunpass Then %>
+		If Not is_reject Then %>
 <tr><td colspan=3 style="padding:0"><table class="form" width="100%" cellspacing="1" cellpadding="3">
 <tr><td width="100" align="center">作者承诺</td>
 <td><p>&emsp;&emsp;1．该学位论文为公开学位论文，其中不涉及国家秘密项目和其它不宜公开的内容，否则将由本人承担因学位论文涉密造成的损失和相关的法律责任；<br/>
@@ -545,6 +612,14 @@ Case 2	' 填写评语页面
 	Case 8 ' 填写修改意见页面 %>
 <tr><td colspan=3>答辩论文：<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=10" target="_blank">点击下载</a></td></tr>
 <tr><td colspan=3>导师对学位论文的评语<span class="eval_notice">（此意见将嵌入学生《学位论文答辩及授予学位审批材料》中，并进入学籍档案，意见需包含对学生的业务学习、思想表现及学位论文的学术评语，科研工作能力和完成科研工作情况，以及是否同意申请学位论文答辩的意见，200-2000字）</span>：<span id="eval_text_tip"></span></td></tr>
+<tr><td colspan=3><textarea name="eval_text" rows="10" style="width:100%"></textarea><br/></td></tr><%
+	Case 9 ' 填写教指委盲评论文审核意见页面 %>
+<tr><td colspan=3>教指委盲评论文：<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=11" target="_blank">点击下载</a></td></tr>
+<tr><td colspan=3>导师对学位论文的评语：<span id="eval_text_tip"></span></td></tr>
+<tr><td colspan=3><textarea name="eval_text" rows="10" style="width:100%"></textarea><br/></td></tr><%
+	Case 11 ' 填写教指委盲评论文修改意见页面 %>
+<tr><td colspan=3>教指委盲评论文：<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=11" target="_blank">点击下载</a></td></tr>
+<tr><td colspan=3>对学位论文的修改意见：<span id="eval_text_tip"></span></td></tr>
 <tr><td colspan=3><textarea name="eval_text" rows="10" style="width:100%"></textarea><br/></td></tr><%
 	End Select
 	If Not IsNull(eval_text) Then %>
@@ -581,7 +656,7 @@ Case 2	' 填写评语页面
 		$('[name="eval_text"]').keyup(function(){checkLength(this,2000)});
 		if($('#btnsubmit').size()>0) {
 			$('#btnsubmit').click(function() {
-				if(confirm("提交后将不能再更改信息，确定要提交吗？")) {
+				if(confirm("确定要提交吗？")) {
 					$(this).val("正在提交，请稍候……")
 								 .attr('disabled',true);
 					this.form.submit();

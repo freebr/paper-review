@@ -16,8 +16,8 @@ Case vbNullstring ' 文件选择页面
 <% useStylesheet "admin" %>
 <% useScript "jquery", "upload" %>
 </head>
-<body bgcolor="ghostwhite">
-<center><font size=4><b>导入教指会盲评论文查重信息</b><br>
+<body>
+<center><font size=4><b>导入教指委盲评论文查重信息</b><br>
 <form id="fmUpload" action="?step=2" method="POST" enctype="multipart/form-data">
 <p>请选择要导入的 Excel 文件：<input type="file" name="excelFile" size="100" title="论文查重信息表" /><br />
 请选择检测报告 RAR 文件：<input type="file" name="rarFile" size="100" title="检测报告压缩文件" /><br />
@@ -89,7 +89,7 @@ Case 2	' 上传进程
 <% useStylesheet "admin" %>
 <% useScript "jquery" %>
 </head>
-<body bgcolor="ghostwhite">
+<body>
 <center><br /><b>导入教指委盲评论文查重信息</b><br /><br /><%
 	If Not bError Then %>
 <form id="fmUploadFinish" action="?step=3" method="POST">
@@ -163,7 +163,7 @@ Case 3	' 数据读取，导入到数据库
 					stu_id=rsReview("STU_ID")
 					stu_name=rsReview("STU_NAME")
 					thesis_file=rsReview("THESIS_FILE4")
-					sql2=sql2&"UPDATE Dissertations SET INSTRUCT_REVIEW_REPRODUCTION_RATIO="&reproduct_ratio&",INSTRUCT_REVIEW_DETECT_REPORT="&toSqlString(reportFilePath)&",REVIEW_STATUS="&rsInstructReviewDetected&" WHERE STU_ID="&stu_id&";"
+					sql2=sql2&"UPDATE Dissertations SET INSTRUCT_REVIEW_REPRODUCTION_RATIO="&reproduct_ratio&",INSTRUCT_REVIEW_DETECT_REPORT="&toSqlString(reportFilePath)&",REVIEW_STATUS="&rsInstructReviewPaperDetected&" WHERE STU_ID="&stu_id&";"
 					sql2=sql2&"EXEC spAddDetectResult "&dissertation_id&","&toSqlString(thesis_file)&","&toSqlString(Now)&","&toSqlString(reportFilePath)&","&reproduct_ratio&",2;"
 					numThesis=numThesis+1
 				End If

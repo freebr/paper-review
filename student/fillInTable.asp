@@ -49,7 +49,7 @@ Else
 		section_id=sectionUploadZqjcb
 		is_generated=Not IsNull(rs("TABLE_FILE2"))
 		filetype=3
-	Case tpTbl2Passed,tpTbl3Uploaded,tpTbl3Unpassed	' 预答辩申请表
+	Case tpTbl2Passed,tpTbl3Uploaded,tpTbl3Unpassed	' 预答辩意见书
 		section_id=sectionUploadYdbyjs
 		is_generated=Not IsNull(rs("TABLE_FILE3"))
 		filetype=5
@@ -83,7 +83,7 @@ Else
 	tutor_modify_eval=rs("TUTOR_MODIFY_EVAL")
 End If
 If section_id<>0 Then
-	' 开题报告（EMBA为预答辩申请表），录入论文基本信息
+	' 开题报告（EMBA为预答辩意见书），录入论文基本信息
 	is_new_dissertation=section_id=sectionUploadKtbg Or stu_type=7 And section_id=sectionUploadYdbyjs
 	If rs.EOF Then
 		uploadable=True
@@ -137,7 +137,7 @@ Case vbNullstring ' 填写信息页面
 <% useStylesheet "student", "jeasyui" %>
 <% useScript "jquery", "jeasyui", "common", "upload", "fillInTable", "keywordList", "*viewState" %>
 </head>
-<body bgcolor="ghostwhite">
+<body>
 <center><font size=4><b>在线填写表格</b></font>
 <form id="fmTable" action="?step=1" method="post">
 <table class="form" width="1000"><tr><td class="summary"><%
@@ -545,7 +545,7 @@ Case 1	' 上传进程
 <% useStylesheet "student" %>
 <% useScript "jquery" %>
 </head>
-<body bgcolor="ghostwhite"><%
+<body><%
 	If Not bError Then %>
 <form id="fmFinish" action="home.asp" method="post">
 <input type="hidden" name="filename" value="<%=export_file_name%>" />

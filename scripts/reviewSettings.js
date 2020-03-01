@@ -51,8 +51,8 @@ function refreshIdentifiers() {
 }
 function checkIfPdf(f) {
 	var fileName = f.value;
-	var fileExt = fileName.substring(fileName.lastIndexOf('.')).toLowerCase();
-	if(fileExt.length>0 && fileExt != ".pdf") {
+	var file_ext = fileName.substring(fileName.lastIndexOf('.')).toLowerCase();
+	if(file_ext.length>0 && file_ext != ".pdf") {
 		f.focus();
 		alert("所选文件不是 PDF 文件！");
 		return false;

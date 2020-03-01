@@ -289,14 +289,14 @@ CloseRs rs
 CloseConn conn
 
 ' 保存视图状态
-view_name = "thesisDetail_review_"&dissertation_id
+view_name = "paperDetail_review_"&dissertation_id
 setViewState Session("TId"),usertypeExpert,view_name,view_state
 updateActiveTime Session("TId")
 
 logtxt=Format("专家[{0}]提交评阅意见，论文：《{1}》，作者：{2}，评阅书：{3}。",_
 	expert_name,subject,author,full_filename)
 writeLog logtxt
-%><form id="ret" action="thesisDetail.asp?tid=<%=dissertation_id%>" method="post">
+%><form id="ret" action="paperDetail.asp?tid=<%=dissertation_id%>" method="post">
 <input type="hidden" name="In_TEACHTYPE_ID2" value="<%=teachtype_id%>" />
 <input type="hidden" name="In_SPECIALITY_ID2" value="<%=spec_id%>" />
 <input type="hidden" name="finalFilter2" value="<%=toPlainString(finalFilter)%>" />

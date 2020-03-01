@@ -10,8 +10,8 @@ function checkIfPdfRar($ctlupload) {
 		alert("请为"+ctl.title+"选择要上传的 PDF 文件或 RAR 压缩文件！");
 		return false;
 	}
-	var fileExt=getFileExt(fileName);
-	if (fileExt!=".pdf"&&fileExt!=".rar") {
+	var file_ext=getFileExt(fileName);
+	if (file_ext!=".pdf"&&file_ext!=".rar") {
 		alert("所选"+ctl.title+"不是 PDF 文件或 RAR 压缩文件！");
 		return false;
 	}
@@ -26,8 +26,8 @@ function checkIfWord($ctlupload) {
 		alert("请为"+ctl.title+"选择要上传的 Word 文件！");
 		return false;
 	}
-	var fileExt=getFileExt(fileName);
-	if (fileExt!=".doc"&&fileExt!=".docx") {
+	var file_ext=getFileExt(fileName);
+	if (file_ext!=".doc"&&file_ext!=".docx") {
 		alert("所选"+ctl.title+"不是 Word 文件！");
 		return false;
 	}
@@ -42,8 +42,8 @@ function checkIfRar($ctlupload) {
 		alert("请为"+ctl.title+"选择要上传的 RAR 压缩文件！");
 		return false;
 	}
-	var fileExt=getFileExt(fileName);
-	if (fileExt!=".rar") {
+	var file_ext=getFileExt(fileName);
+	if (file_ext!=".rar") {
 		alert("所选"+ctl.title+"不是 RAR 压缩文件！");
 		return false;
 	}
@@ -58,8 +58,8 @@ function checkIfWordRar($ctlupload) {
 		alert("请为"+ctl.title+"选择要上传的 Word 文件或 RAR 压缩文件！");
 		return false;
 	}
-	var fileExt=getFileExt(fileName);
-	if (fileExt!=".doc"&&fileExt!=".docx"&&fileExt!=".rar") {
+	var file_ext=getFileExt(fileName);
+	if (file_ext!=".doc"&&file_ext!=".docx"&&file_ext!=".rar") {
 		alert("所选"+ctl.title+"不是 Word 文件或 RAR 压缩文件！");
 		return false;
 	}

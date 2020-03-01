@@ -1,6 +1,6 @@
 ﻿<!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"-->
-<%'If IsEmpty(Session("Tid")) Then Response.Redirect("../error.asp?timeout")
+<%'If IsEmpty(Session("TId")) Then Response.Redirect("../error.asp?timeout")
 Dim arrFileListName,arrFileListNamePostfix,arrFileListPath,arrFileListField
 arrFileListName=Array("","送审论文","论文评阅书 1","论文评阅书 2")
 arrFileListNamePostfix=Array("","","论文评阅书(1)","论文评阅书(2)")
@@ -28,20 +28,20 @@ If rs.EOF Then
 	showErrorPage "数据库没有该论文记录！", "提示"
 End If
 
-Dim source_file,fileExt,newfilename
+Dim source_file,file_ext,newfilename
 Dim fso,file,stream
 Set fso=Server.CreateObject("Scripting.FileSystemObject")
 source_file=rs(arrFileListField(filetype))
 If IsNull(source_file) Then
 	source_file=""
 Else
-	fileExt=LCase(fso.GetExtensionName(source_file))
 	If filetype=2 Or filetype=3 Then ' 评阅书则提供无学生信息版本
-		source_file=arrFileListPath(filetype)&"/"&fso.GetBaseName(source_file)&"_nostu."&fileExt
+		source_file=arrFileListPath(filetype)&"/"&fso.GetBaseName(source_file)&"_nostu.pdf"
 	Else
 		source_file=arrFileListPath(filetype)&"/"&source_file
 	End If
-	source_file=Server.MapPath(source_file)
+	source_file=Server.MapPath(baseUrl()&source_file)
+	file_ext=LCase(fso.GetExtensionName(source_file))
 End If
 If Not fso.FileExists(source_file) Then
 	Set fso=Nothing
@@ -62,7 +62,7 @@ Else
 	subject=Replace(subject,"*","_")
 	newfilename=rs("SPECIALITY_NAME")&"-"&subject
 End If
-newfilename=newfilename&"."&fileExt
+newfilename=newfilename&"."&file_ext
 Set stream=Server.CreateObject("ADODB.Stream")
 stream.Mode=3
 stream.Type=1

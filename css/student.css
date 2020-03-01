@@ -4,6 +4,7 @@ p { font-size:12pt }
 table.form { margin:0 auto;padding:0 30px;background-color:#ffffff;border:1px solid #cccccc }
 .section { height:30px; background:url(../images/student/section.png) left center no-repeat;
 	line-height:60px; padding-left:30px; font-size:14pt; font-weight:bold }
+.section-detail { color: dimgray }
 .sub-section {
 	margin: 10px 0;
 	border-bottom: 1px dashed #666666;

@@ -2,11 +2,20 @@
 <!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"-->
 <%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
-teachertype=Request.QueryString("type")
-If IsEmpty(teachertype) Then teachertype=2
 ctrlname1=Request.QueryString("ctrl1")
 ctrlname2=Request.QueryString("ctrl2")
 itemid=Request.QueryString("item")
+match_type=Request.QueryString("match_type")
+If match_type=1 Then
+	is_school_only=Request.QueryString("source")
+	If IsEmpty(is_school_only) Then
+		is_school_only=2
+	Else
+		is_school_only=is_school_only=1
+	End If
+Else
+	is_school_only=1
+End If
 
 Dim PubTerm,PageNo,PageSize
 finalFilter=Request.Form("finalFilter")
@@ -27,11 +36,11 @@ If bShowAll Then PageSize=-1
 '------------------------------------------------------
 
 Connect conn
-If teachertype=1 Then	' 校内导师
-	sql="SELECT * FROM ViewTutorListByTeacher A WHERE 1=1 "&PubTerm&" ORDER BY TEACHER_NAME"
+If is_school_only Then	' 校内导师
+	sql="SELECT * FROM ViewTeacherInfo WHERE PRO_DUTYID IS NOT NULL AND PRO_DUTYID NOT IN (0,18) "&PubTerm&" ORDER BY TEACHERNAME"
 	title="校内导师名单"
 Else	' 校外专家
-	sql="SELECT * FROM ViewExpertInfo WHERE INSCHOOL=0 AND VALID=1 "&PubTerm&" ORDER BY EXPERT_NAME"
+	sql="SELECT * FROM ViewExpertInfo WHERE INSCHOOL=0 "&PubTerm&" ORDER BY EXPERT_NAME"
 	title="校外专家名单"
 End If
 GetRecordSetNoLock conn,rs,sql,count
@@ -65,16 +74,25 @@ If rs.RecordCount>0 Then rs.AbsolutePage=pageNo
 <body bgcolor="ghostwhite" onload="return On_Load()">
 <center>
 <font size=4><b><%=title%></b></font>
-<p align="center"><input type="button" id="btnlist1" value="校内导师" />&emsp;<input type="button" id="btnlist2" value="校外专家" /></p>
+<% If match_type=1 Then %>
+<p align="center"><input type="button" id="btnlist1" value="校内导师" />
+<input type="button" id="btnlist2" value="校外专家" /></p><%
+End If %>
 <table width="800" cellpadding="2" cellspacing="1" bgcolor="dimgray">
 	<form id="query" method="post" onsubmit="return chkField()">
 	<tr bgcolor="ghostwhite"><td colspan=7>
 	<!--查找-->
-	<select name="field" onchange="ReloadOperator()">
+	<select name="field" onchange="ReloadOperator()"><%
+	If is_school_only Then %>
+	<option value="s_TEACHERNAME">教师姓名</option>
+	<option value="s_PRO_DUTYNAME">职称</option>
+	<option value="s_SPECIALITY_NAME">专业</option><%
+	Else %>
 	<option value="s_EXPERT_NAME">专家姓名</option>
 	<option value="s_PRO_DUTY_NAME">职称</option>
 	<option value="s_EXPERTISE">学科专长</option>
-	<option value="s_WORKPLACE">单位（住址）</option>
+	<option value="s_WORKPLACE">单位（住址）</option><%
+	End If %>
 	</select>
 	<select name="operator">
 	<script>ReloadOperator()</script>
@@ -108,36 +126,34 @@ If rs.RecordCount>0 Then rs.AbsolutePage=pageNo
 	共<%=rs.RecordCount%>条
 	<input type="button" value="显示全部" onclick="showAllRecords(this.form)"></td></tr>
   <tr bgcolor="gainsboro" align="center" height="25"><%
-If teachertype=1 Then
-%><td width="100" align="center">姓名</td>
-  <td width="80" align="center">职称</td>
-  <td align="center">所在院系</td>
-	<td width="140" align="center">单位（住址）</td>
+If is_school_only Then %>
+	<td width="100" align="center">姓名</td>
+	<td width="80" align="center">职称</td>
+	<td align="center">所在院系</td>
 	<td width="100" align="center">联系电话</td>
 	<td width="120" align="center">邮箱</td>
 	<td width="80" align="center">选择</td><%
-Else
-%><td width="100" align="center">姓名</td>
-  <td width="80" align="center">职称</td>
-  <td align="center">学科专长</td>
+Else %>
+	<td width="100" align="center">姓名</td>
+	<td width="80" align="center">职称</td>
+	<td align="center">学科专长</td>
 	<td width="140" align="center">单位（住址）</td>
 	<td width="100" align="center">联系电话</td>
 	<td width="120" align="center">邮箱</td>
 	<td width="80" align="center">选择</td><%
 End If
 %></tr><%
-If teachertype=1 Then
+If is_school_only Then
   For i=1 To pageSize
   	If rs.EOF Then Exit For
 %>
 <tr bgcolor="ghostwhite">
-  <td align="center"><%=HtmlEncode(rs("TEACHER_NAME"))%></td>
+  <td align="center"><%=HtmlEncode(rs("TEACHERNAME"))%></td>
   <td align="center"><%=HtmlEncode(rs("PRO_DUTYNAME"))%></td>
   <td align="center"><%=HtmlEncode(rs("DEPT_NAME"))%></td>
-  <td align="center"><%=HtmlEncode(rs("Office_Address"))%></td>
   <td align="center"><%=HtmlEncode(rs("MOBILE"))%></td>
   <td align="center"><%=HtmlEncode(rs("EMAIL"))%></td>
-  <td align="center"><a href="#" onclick="selectItem('<%=toJsString(rs("TEACHER_NAME"))%>',<%=rs("TEACHER_ID")%>)">选择</a></td>
+  <td align="center"><a href="#" onclick="selectItem('<%=toJsString(rs("TEACHERNAME"))%>',<%=rs("TEACHERID")%>)">选择</a></td>
 </td></tr><%
   	rs.MoveNext()
   Next
@@ -160,7 +176,7 @@ End If
 <script type="text/javascript"><%
 	For i=1 To 2 %>
 	$('#btnlist<%=i%>').click(function() {
-		location.href="?type=<%=i%>&ctrl1=<%=ctrlname1%>&ctrl2=<%=ctrlname2%>&item=<%=itemid%>";
+		location.href="?source=<%=i%>&match_type=<%=match_type%>&ctrl1=<%=ctrlname1%>&ctrl2=<%=ctrlname2%>&item=<%=itemid%>";
 	});<%
 	Next %>
 	function selectItem(val1,val2) {

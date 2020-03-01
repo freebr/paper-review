@@ -28,7 +28,7 @@ Dim arrSpecMatFiles:arrSpecMatFiles=Array("lwzxgf.doc",prefix0&"mba_lwzxsc201707
 <% useStylesheet "student" %>
 <% useScript "jquery", "common" %>
 </head>
-<body bgcolor="ghostwhite">
+<body>
 <center><font size=4><b>查看论文阶段相关资料</b></font>
 <table class="form" width="800"><tr><td align="left"><%
 For i=0 To UBound(arrTemplateNames)

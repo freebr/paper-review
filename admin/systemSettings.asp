@@ -51,7 +51,7 @@ Dim status:status=configs("Status")
 	$subject - 论文题目,$tutorname - 导师姓名,$tutormail - 导师邮箱,$expertname - 专家姓名,<br/>$filename - 审核文件名称/意见类型,$uploadtime - 审核文件上传时间,$evaltext - 导师意见,$postscript - 附注
 			</p></div>
 			<div style="display: flex; flex-direction: row">
-				<div style="flex-basis: 300px; height: 425px; overflow-y: scroll">
+				<div style="flex-basis: 390px; height: 425px; overflow-y: scroll">
 					<ul id="tree_mail_template_list"></ul>
 				</div>
 				<div>

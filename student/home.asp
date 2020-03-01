@@ -5,7 +5,7 @@ Dim bTableFilledIn:bTableFilledIn=Array(0,False,False,False,False)
 Dim bTblThesisUploaded:bTblThesisUploaded=Array(0,False,False,False)
 Dim arrTableStat(4)
 Dim review_result(2),bReviewFileVisible(1)
-Dim defence_member,defence_members,defence_memo
+Dim defence_member,defence_members,defence_memo,defence_eval
 Dim defence_result,grant_degree_result
 
 sem_info=getCurrentSemester()
@@ -21,14 +21,16 @@ If rs.EOF Then
 Else
 	thesisID=rs("ID")
 	task_progress=rs("TASK_PROGRESS")
+	thesis_files=Array(rs("THESIS_FILE").Value,rs("THESIS_FILE2").Value,rs("THESIS_FILE3").Value,rs("THESIS_FILE4").Value)
 	reproduct_ratio=toNumericString(rs("REPRODUCTION_RATIO"))
-	Instruct_review_reproduct_ratio=toNumericString(rs("INSTRUCT_REVIEW_REPRODUCTION_RATIO"))
+	instruct_review_reproduct_ratio=toNumericString(rs("INSTRUCT_REVIEW_REPRODUCTION_RATIO"))
 	detect_count=rs("DETECT_COUNT")
 	bReviewFileVisible(0)=(rs("ReviewFileDisplayStatus1") And 2)<>0
 	bReviewFileVisible(1)=(rs("ReviewFileDisplayStatus2") And 2)<>0
 	bAllReviewFileVisible=bReviewFileVisible(0) And bReviewFileVisible(1)
 	defence_member=rs("DEFENCE_MEMBER")
 	defence_result=rs("DEFENCE_RESULT")
+	defence_eval=rs("DEFENCE_EVAL")
 	grant_degree_result=rs("GRANT_DEGREE_RESULT")
 	For i=1 To UBound(arrTableStat)
 		j=(i-1)*3+1
@@ -59,17 +61,25 @@ Else
 		Next
 	End If
 End If
-Function showStepInfo(stepDisplay,stepCounter,bHidden)
+Function showStepInfo(stepDisplay,stepCounter,is_hidden)
 	If stepDisplay=rsRedetectPassed And detect_count>1 And (review_status=rsAgreedReview Or review_status=rsRefusedReview) Then
 		showStepInfo=True
-	ElseIf review_status<>stepDisplay And (stepDisplay=rsRefusedDetect Or stepDisplay=rsDetectUnpassed Or stepDisplay=rsRedetectUnpassed Or stepDisplay=rsRedetectPassed Or stepDisplay=rsRefusedReview Or stepDisplay=rsRefusedDefence) Then
+	ElseIf review_status<>stepDisplay And _
+		(stepDisplay=rsRefusedDetect Or _
+		stepDisplay=rsDetectUnpassed Or _
+		stepDisplay=rsRedetectUnpassed Or _
+		stepDisplay=rsRedetectPassed Or _
+		stepDisplay=rsRefusedReview Or _
+		stepDisplay=rsRefusedDefence Or _
+		stepDisplay=rsRefusedInstructReview) Then
 		showStepInfo=False
 		Exit Function
 	Else
 		showStepInfo=True
 	End If
 	Dim i,className,className_seqline
-	If bHidden Then
+	Dim audit_info
+	If is_hidden Then
 		className="hidden"
 	ElseIf review_status=stepDisplay Then
 		className="current"
@@ -80,41 +90,49 @@ Function showStepInfo(stepDisplay,stepCounter,bHidden)
 <tr <%=className%>><td <%=className_seqline%>></td><td class="steptext"><p class="stepcontent"><%
 	Select Case stepDisplay
 	Case rsDetectPaperUploaded
-%><span style="color:dimgray">在导师同意检测前，您可以重复上传送检论文文件；导师仅能看到您最新上传的论文。</span><%
+%><span class="section-detail">在导师同意检测前，您可以重复上传送检论文文件；导师仅能看到您最新上传的论文。</span><%
 	Case rsRefusedDetect
-%><span style="color:dimgray">导师不同意您的论文进行检测，请修改论文后重新上传。<br/>送检意见：<%=toPlainString(rs("DETECT_APP_EVAL"))%></span><%
+		audit_info=getAuditInfo(thesisID,thesis_files(0),auditTypeDetectReview)
+%><span class="section-detail">导师不同意您的论文进行查重，请修改论文后重新上传。
+<br/>送检意见：<%=toPlainString(audit_info(0)("Comment"))%></span><%
 	Case rsAgreedDetect
-%><span style="color:dimgray">导师已同意您的论文进行检测。</span><%
+%><span class="section-detail">导师已同意您的论文进行查重。</span><%
 	Case rsDetectUnpassed,rsRedetectUnpassed,rsRedetectPassed
-%><span style="color:dimgray"><%
-		Dim filetype:filetype=13
+%><span class="section-detail"><%
+		Dim filetype
 		Select Case stepDisplay
 		Case rsDetectUnpassed
+			filetype=14
 %>经过检测，您的送检论文文字复制比为&nbsp;<%=reproduct_ratio%>%，不符合学院送检论文重复率低于10%的要求，请对论文修改后重新上传进行二次检测。<%
 		Case rsRedetectUnpassed
-			filetype=14
+			filetype=15
 %>经过二次检测，您的送检论文文字复制比为&nbsp;<%=reproduct_ratio%>%，不符合学院送检论文重复率低于10%的要求。<%
 		Case Else
-			filetype=14
+			filetype=15
 %>您的论文已通过二次查重检测，请等候导师同意送审。<br/>检测结果摘要：经图书馆检测，学位论文文字复制比为&nbsp;<%=reproduct_ratio%>%。<%
 		End Select
 %><br/><a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=<%=filetype%>" target="_blank">点此下载检测报告</a></span><%
 	Case rsRefusedReview
-%><span style="color:dimgray">导师不同意您的论文送审，请对照导师意见修改送审论文后重新上传。<br/>送审意见：<%=toPlainString(rs("REVIEW_APP_EVAL"))%></span><%
+		audit_info=getAuditInfo(thesisID,thesis_files(1),auditTypeReviewApp)
+%><span class="section-detail">导师不同意您的论文送审，请对照导师意见修改送审论文后重新上传。<br/>送审意见：<%=toPlainString(audit_info(0)("Comment"))%></span><%
 	Case rsAgreedReview
-%><span style="color:dimgray"><%
+%><span class="section-detail"><%
+		audit_info=getAuditInfo(thesisID,thesis_files(1),auditTypeReviewApp)
 		If detect_count>1 Then
+			filetype=15
 %>导师已于&nbsp;<%=toDateTime(rs("SUBMIT_REVIEW_TIME"),1)&" "&toDateTime(rs("SUBMIT_REVIEW_TIME"),4)%>&nbsp;同意您的论文送审申请，教务员将匹配专家对您的论文进行评阅。<%
 		Else
+			filetype=14
 %>您的论文已通过查重检测，教务员将匹配专家对您的论文进行评阅。<br/>检测结果摘要：经图书馆检测，学位论文文字复制比为&nbsp;<%=reproduct_ratio%>%。<%
 		End If
-%><br/>送审意见：<%=toPlainString(rs("REVIEW_APP_EVAL"))%></span><%
+%><br/>送审意见：<%=toPlainString(audit_info(0)("Comment"))%>
+<br/><a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=<%=filetype%>" target="_blank">点此下载检测报告</a></span><%
 	Case rsMatchedReviewer
-%><span style="color:dimgray">教务员已为您的论文匹配了评阅专家，正在对您的论文进行评阅，请耐心等候评阅结果。</span><%
+%><span class="section-detail">教务员已为您的论文匹配了评阅专家，正在对您的论文进行评阅，请耐心等候评阅结果。</span><%
 	Case rsReviewed
-%><span style="color:dimgray">专家已完成论文评阅，请等候导师进行确认。</span><%
+%><span class="section-detail">专家已完成论文评阅，请等候导师进行确认。</span><%
 	Case rsReviewEval
-%><span style="color:dimgray">专家已完成论文评阅，请按照评阅书意见对论文进行修改，然后上传答辩论文。</span><br/><%
+%><span class="section-detail">专家已完成论文评阅，请按照评阅书意见对论文进行修改，然后上传答辩论文。</span><br/><%
 		If bReviewFileVisible(0) Then
 %>评阅意见&nbsp;1：【<%=getReviewResultText(review_result(0))%>】&nbsp;<%
 		End If
@@ -127,35 +145,45 @@ Function showStepInfo(stepDisplay,stepCounter,bHidden)
 		For i=0 To 1
 			If arrRevRet(i)<>5 And bReviewFileVisible(i) Then	' 该专家已评阅且评阅书开放显示
 				If i=1 Then Response.Write "&emsp;"
-%><a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=<%=15+i%>" target="_blank">点击下载第<%=i+1%>份评阅书</a></span><%
+%><a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=<%=17+i%>" target="_blank">点击下载第<%=i+1%>份评阅书</a></span><%
 			End If
 		Next
 	Case rsDefencePaperUploaded
-%><span style="color:dimgray">您已上传答辩论文，请等候导师审核。<%
+%><span class="section-detail">您已上传答辩论文，请等候导师审核。<%
 		If task_progress<tpTbl4Uploaded Then
 %>待导师审核后，将同意答辩的意见嵌入《学位论文答辩及授予学位审批材料》中打印并找导师签字。<%
 		End If
 %></span><%
 	Case rsRefusedDefence
-%><span style="color:dimgray">您的答辩论文未获导师<%=rs("TUTOR_NAME")%>审核通过，请修改论文后重新上传。审核意见如下：<br/>&emsp;&emsp;<%=toPlainString(rs("TUTOR_MODIFY_EVAL"))%></span><%
+		audit_info=getAuditInfo(thesisID,thesis_files(2),auditTypeDefence)
+%><span class="section-detail">您的答辩论文未获导师<%=rs("TUTOR_NAME")%>审核通过，请修改论文后重新上传。审核意见如下：<br/>&emsp;&emsp;<%=toPlainString(audit_info(0)("Comment"))%></span><%
 	Case rsAgreedDefence
-%><span style="color:dimgray">导师<%=rs("TUTOR_NAME")%>已同意通过您的答辩论文。审核意见如下：<br/>&emsp;&emsp;<%=toPlainString(rs("TUTOR_MODIFY_EVAL"))%></span><%
+		audit_info=getAuditInfo(thesisID,thesis_files(2),auditTypeDefence)
+%><span class="section-detail">导师<%=rs("TUTOR_NAME")%>已审核通过您的答辩论文。审核意见如下：<br/>&emsp;&emsp;<%=toPlainString(audit_info(0)("Comment"))%></span><%
 	Case rsDefenceEval
-%><span style="color:dimgray">答辩委员会已对您的论文提出了如下修改意见，请根据意见修改并上传教指委盲评论文。<br/><%=toPlainString(rs("DEFENCE_EVAL"))%></span><%
+%><span class="section-detail">答辩委员会已对您的论文提出了如下修改意见，请根据意见修改并上传教指委盲评论文。<br/><%=toPlainString(defence_eval)%></span><%
 	Case rsInstructReviewPaperUploaded
-%><span style="color:dimgray">您已上传教指委盲评论文，请等候导师审核。</span><%
+%><span class="section-detail">您已上传教指委盲评论文，请等候导师审核。</span><%
 	Case rsRefusedInstructReview
-%><span style="color:dimgray">导师不同意您的教指委盲评论文进行检测，请修改论文后重新上传。<br/>送检意见：<%=toPlainString(rs("DETECT_APP_EVAL"))%></span><%
+		audit_info=getAuditInfo(thesisID,thesis_files(3),auditTypeInstructReviewDetect)
+%><span class="section-detail">导师不同意您的教指委盲评论文进行查重，请修改论文后重新上传。<br/>审核意见：<%=toPlainString(audit_info(0)("Comment"))%></span><%
 	Case rsAgreedInstructReview
-%><span style="color:dimgray">导师已同意您的教指委盲评论文进行检测。</span><%
-	Case rsInstructReviewDetected
-%>您的教指委盲评论文已完成查重，请等候教务员为您的论文匹配教指委委员。<br/>检测结果摘要：经图书馆检测，学位论文文字复制比为&nbsp;<%=Instruct_review_reproduct_ratio%>%。<%
+%><span class="section-detail">导师已同意您的教指委盲评论文进行查重。</span><%
+	Case rsInstructReviewPaperDetected
+%><span class="section-detail">您的教指委盲评论文已完成查重，请等候教务员为您的论文匹配教指委委员。<br/>检测结果摘要：经图书馆检测，学位论文文字复制比为&nbsp;<%=instruct_review_reproduct_ratio%>%。
+<br/><a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=16" target="_blank">点此下载检测报告</a></span><%
 	Case rsMatchedInstructMember
-%><span style="color:dimgray">教务员已为您的论文匹配教指委委员，请等候委员审核。</span><%
+%><span class="section-detail">教务员已为您的论文匹配教指委委员，请等候委员审核。</span><%
 	Case rsInstructEval
-%><span style="color:dimgray">学院学位评定分委员会已对您的论文提出了如下修改意见：<br/><%=toPlainString(rs("INSTRUCT_MODIFY_EVAL"))%></span><%
+		audit_info=getAuditInfo(thesisID,thesis_files(3),auditTypeInstructReview)
+%><span class="section-detail">教指委已对您的论文提出了如下修改意见：
+<br/>第一位委员的意见：<br/><%=toPlainString(audit_info(0)("Comment"))%>
+<br/>第二位委员的意见：<br/><%=toPlainString(audit_info(1)("Comment"))%><%
+		If Not IsNull(rs("DEGREE_MODIFY_EVAL")) Then %>
+<br/>学院学位评定分会修改意见：<br/><%=toPlainString(rs("DEGREE_MODIFY_EVAL"))%></span><%
+		End If
 	Case rsFinalPaperUploaded
-%><span style="color:dimgray">您已上传定稿论文。<%
+%><span class="section-detail">您已上传定稿论文。<%
 	End Select
 %></p></td></tr><%
 End Function
@@ -220,7 +248,7 @@ End Function
 	a.fileitem:hover { background-color:#BFF5FF;color:0;text-decoration:none }
 </style>
 </head>
-<body bgcolor="ghostwhite">
+<body>
 <center><font size=4><b>欢迎使用工商管理学院专业学位论文评阅系统</b></font>
 <%
 	If stu_type=6 Then
@@ -246,14 +274,14 @@ End Function
 <tr bgcolor="#E4E8EF"><td class="modtitle"><img src="../images/student/bullet.gif">&nbsp;<b>当前评阅进度&nbsp;—【<%=review_stat_text%>】</b></td></tr>
 <tr><td class="modcontent" width="100%" valign="top">
 <table class="seqchart"><%
-		Dim bHidden,maxVisibleSteps:maxVisibleSteps=3
+		Dim is_hidden,maxVisibleSteps:maxVisibleSteps=3
 		j=1
 		' 显示最新步骤
 		For i=review_status To 1 Step -1
-			bHidden=review_status-i>=maxVisibleSteps
-			If showStepInfo(i,j,bHidden) Then j=j+1
+			is_hidden=review_status-i>=maxVisibleSteps
+			If showStepInfo(i,j,is_hidden) Then j=j+1
 		Next
-		If bHidden Then
+		If is_hidden Then
 %><tr><td class="seqmore" colspan="2" title="点击显示早前已完成的评阅流程"></td></tr><%
 		End If %>
 </table><%
@@ -313,16 +341,16 @@ End Function
 		For i=1 To UBound(arrFileListName)
 			filename=rs(arrFileListField(i))
 			If Not IsNull(filename) Then
-				If i=15 Or i=16 Then
+				If i=17 Or i=18 Then
 					' 根据评阅书显示设置决定是否显示文件
-					If Not bReviewFileVisible(i-15) Then filename=""
+					If Not bReviewFileVisible(i-17) Then filename=""
 				End If
 				filepath=arrFileListPath(i)&"/"&filename
 				fullfilepath=Server.MapPath(arrFileListPath(i))&"\"&filename
 				If fso.FileExists(fullfilepath) Then
 					Set file=fso.GetFile(fullfilepath)
-					fileExt=fso.GetExtensionName(filename) %>
-<li><a class="fileitem" href="fetchDocument.asp?tid=<%=thesisID%>&type=<%=i%>" target="_blank" title="大小：<%=toDataSizeString(file.Size)%>&#10;创建时间：<%=FormatDateTime(file.DateCreated,2)&" "&FormatDateTime(file.DateCreated,4)%>&#10;点击下载此文件"><img src="../images/student/<%=fileExt%>.png" title="<%=UCase(fileExt)%>格式" /><div><%=arrFileListName(i)%></div></a></li><%
+					file_ext=fso.GetExtensionName(filename) %>
+<li><a class="fileitem" href="fetchDocument.asp?tid=<%=thesisID%>&type=<%=i%>" target="_blank" title="大小：<%=toDataSizeString(file.Size)%>&#10;创建时间：<%=FormatDateTime(file.DateCreated,2)&" "&FormatDateTime(file.DateCreated,4)%>&#10;点击下载此文件"><img src="../images/student/<%=file_ext%>.png" title="<%=UCase(file_ext)%>格式" /><div><%=arrFileListName(i)%></div></a></li><%
 					Set file=Nothing
 				End If
 			End If

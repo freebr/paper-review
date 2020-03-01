@@ -55,7 +55,7 @@ Const rsDefenceEval=15
 Const rsInstructReviewPaperUploaded=16
 Const rsRefusedInstructReview=17
 Const rsAgreedInstructReview=18
-Const rsInstructReviewDetected=19
+Const rsInstructReviewPaperDetected=19
 Const rsMatchedInstructMember=20
 Const rsInstructEval=21
 Const rsFinalPaperUploaded=22
@@ -71,7 +71,8 @@ Const sectionUploadDefence = 7
 Const sectionUploadInstructReview = 8
 Const sectionUploadFinal = 9
 Const sectionAudit = 10
-Const sectionReview = 11
+Const sectionInstructReview = 11
+Const sectionReview = 12
 
 ' 审核意见类型
 Const auditTypeKtbg = 1
@@ -82,7 +83,8 @@ Const auditTypeDetectReview = 5
 Const auditTypeReviewApp = 6
 Const auditTypeReviewResult = 7
 Const auditTypeDefence = 8
-Const auditTypeInstructReview = 9
+Const auditTypeInstructReviewDetect = 9
+Const auditTypeInstructReview = 10
 
 %>
 <script language="jscript" runat="server">
@@ -357,6 +359,43 @@ Function compareNowWithSectionTime(section)
 	compareNowWithSectionTime=compareNowWithTimeRange(section("StartTime"), section("EndTime"))
 End Function
 
+' 获取审核记录信息
+Function getAuditInfo(dissertation_id,audit_file,audit_type)
+	Dim sql:sql="SELECT * FROM ViewAuditRecords WHERE DissertationId=? AND AuditFile=? And AuditType=? ORDER BY AuditTime DESC"
+	Dim ret:Set ret=ExecQuery(conn,sql,_
+		CmdParam("dissertation_id",adInteger,4,dissertation_id),_
+		CmdParam("audit_file",adVarWChar,50,audit_file),_
+		CmdParam("audit_type",adInteger,4,audit_type))
+    Dim rs:Set rs=ret("rs")
+    Dim count:count=ret("count")
+	Dim result:ReDim result(count-1)
+	If count=0 Then
+		Set dict = CreateDictionary()
+		dict.Add "DissertationId",dissertation_id
+		dict.Add "AuditFile",audit_file
+		dict.Add "Comment","（无）"
+		ReDim result(0):Set result(0) = dict
+		getAuditInfo = result
+		CloseRs rs
+		Exit Function
+	End If
+	Dim dict,i
+	For i=0 To UBound(result)
+		Set dict = CreateDictionary()
+		dict.Add "DissertationId",rs("DissertationId").Value
+		dict.Add "AuditFile",rs("AuditFile").Value
+		dict.Add "AuditTypeName",rs("AuditTypeName").Value
+		dict.Add "AuditTime",rs("AuditTime").Value
+		dict.Add "AuditorName",rs("AuditorName").Value
+		dict.Add "IsPassed",rs("IsPassed").Value
+		dict.Add "Comment",rs("Comment").Value
+		Set result(i) = dict
+		rs.MoveNext()
+	Next
+	getAuditInfo = result
+	CloseRs rs
+End Function
+
 Function ensureSystemOpen()
 	Dim configs:Set configs=getSystemConfigs()
 	If configs("Status")="closed" Then
@@ -387,7 +426,7 @@ End Function
 Dim arrSecurityLevelName:arrSecurityLevelName=Array("低强度","中等强度","高强度")
 
 // 注册系统选项
-Dim dictSystemOptions:Set dictSystemOptions = Server.CreateObject("Scripting.Dictionary")
+Dim dictSystemOptions:Set dictSystemOptions = CreateDictionary()
 'dictSystemOptions.Add "send_accept_email",			Array("导师确认填报时，向学生发送通知邮件", 0)
 
 // 获取系统选项值（没有则使用默认值）
@@ -533,7 +572,7 @@ Function showErrorPage(content, title)
 	Else
 		class_prop="bgcolor=""ghostwhite"""
 	End If
-	If isMatched("(expertProfile|fetchDocument|thesisDetail)\.asp",currentPage(),True) Then
+	If isMatched("(expertProfile|fetchDocument|paperDetail)\.asp",currentPage(),True) Then
 		statement="closeWindow();"
 	Else
 		statement="history.go(-1);"
@@ -581,13 +620,14 @@ Dim arrDiplomaName:arrDiplomaName=Array("","专科","本科","硕士研究生","
 Dim arrDefenceResult:arrDefenceResult=Array("未录入","优秀","良好","一般","较差")
 Dim arrGrantDegreeResult:arrGrantDegreeResult=Array("未录入","同意毕业及授予学位","同意毕业，但不同意授予学位","不同意毕业")
 Dim arrReviewFileStat:arrReviewFileStat=Array("不开放显示","仅向导师显示","完全开放显示")
-Dim arrDefaultFileListName:arrDefaultFileListName=Array("","开题报告表","开题论文","中期检查表","中期论文","预答辩申请表","预答辩论文","答辩及授予学位审批材料","送检论文","送审论文","答辩论文","教指委盲评论文","定稿论文","送检论文检测报告","硕士学位论文送审申请表","论文评阅书 1","论文评阅书 2")
-Dim arrDefaultFileListNamePostfix:arrDefaultFileListNamePostfix=Array("","开题报告表","开题论文","中期检查表","中期论文","预答辩申请表","预答辩论文","答辩审批材料","","","","","","检测报告","送审审核表","论文评阅书(1)","论文评阅书(2)")
-Dim arrDefaultFileListPath:arrDefaultFileListPath=Array("","/PaperReview/student/upload","/PaperReview/student/upload","/PaperReview/student/upload","/PaperReview/student/upload","/PaperReview/student/upload","/PaperReview/student/upload","/PaperReview/student/upload","/PaperReview/student/upload","/PaperReview/student/upload","/PaperReview/student/upload","/PaperReview/student/upload","/PaperReview/student/upload","/PaperReview/admin/upload/report","/PaperReview/tutor/export","/PaperReview/expert/export","/PaperReview/expert/export")
-Dim arrDefaultFileListField:arrDefaultFileListField=Array("","TABLE_FILE1","TBL_THESIS_FILE1","TABLE_FILE2","TBL_THESIS_FILE2","TABLE_FILE3","TBL_THESIS_FILE3","TABLE_FILE4","THESIS_FILE","THESIS_FILE2","THESIS_FILE3","THESIS_FILE4","THESIS_FILE5","DETECT_REPORT","REVIEW_APP","REVIEW_FILE1","REVIEW_FILE2")
+Dim arrDefaultFileListName:arrDefaultFileListName=Array("","开题报告表","开题论文","中期检查表","中期论文","预答辩意见书","预答辩论文","答辩及授予学位审批材料","送检论文","送审论文","答辩论文","教指委盲评论文","定稿论文","送检论文检测报告","教指委盲评论文检测报告","硕士学位论文送审申请表","论文评阅书 1","论文评阅书 2","论文评阅书")
+Dim arrDefaultFileListNamePostfix:arrDefaultFileListNamePostfix=Array("","开题报告表","开题论文","中期检查表","中期论文","预答辩意见书","预答辩论文","答辩审批材料","","","","","","送检论文检测报告","教指委盲评论文检测报告","送审申请表","论文评阅书(1)","论文评阅书(2)","论文评阅书")
+Dim arrDefaultFileListPath:arrDefaultFileListPath=Array("","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","admin/upload/report","admin/upload/report","tutor/export","expert/export","expert/export","expert/export")
+Dim arrDefaultFileListField:arrDefaultFileListField=Array("","TABLE_FILE1","TBL_THESIS_FILE1","TABLE_FILE2","TBL_THESIS_FILE2","TABLE_FILE3","TBL_THESIS_FILE3","TABLE_FILE4","THESIS_FILE","THESIS_FILE2","THESIS_FILE3","THESIS_FILE4","THESIS_FILE5","DETECT_REPORT","INSTRUCT_REVIEW_DETECT_REPORT","REVIEW_APP","ReviewFile1","ReviewFile2","")
 ' 禁止缓存，仅在需要客户端重新请求 JS/CSS/HTML 等静态文件时使用
 Response.CacheControl="no-cache"
 Response.Charset="utf-8"
+Response.Buffer = True
 %>
 <!--#include file="JSONWriter.inc"-->
 <!--#include file="PinyinQuery.inc"-->

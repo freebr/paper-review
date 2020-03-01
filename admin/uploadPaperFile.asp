@@ -17,14 +17,14 @@ Case vbNullString	' 论文详情页面
 	pageSize=Request.Form("pageSize2")
 	pageNo=Request.Form("pageNo2")
 	If Len(thesisID)=0 Or Not IsNumeric(thesisID) Then
-	%><body bgcolor="ghostwhite"><center><font color=red size="4">参数无效。</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
+	%><body><center><font color=red size="4">参数无效。</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 		Response.End()
 	End If
 	Connect conn
 	sql="SELECT *,dbo.getThesisStatusText(1,TASK_PROGRESS,1) AS STAT_TEXT1,dbo.getThesisStatusText(2,REVIEW_STATUS,1) AS STAT_TEXT2 FROM ViewDissertations WHERE ID="&thesisID
 	GetRecordSet conn,rs,sql,count
 	If count=0 Then
-	%><body bgcolor="ghostwhite"><center><font color=red size="4">数据库没有该论文记录！</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
+	%><body><center><font color=red size="4">数据库没有该论文记录！</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 		CloseRs rs
 		CloseConn conn
 		Response.End()
@@ -39,7 +39,7 @@ Case vbNullString	' 论文详情页面
 <% useStylesheet "admin" %>
 <% useScript "jquery", "common", "paper" %>
 </head>
-<body bgcolor="ghostwhite">
+<body>
 <center><font size=4><b>上传表格/论文文件</font>
 <form id="fmDetail" action="?step=2&tid=<%=thesisID%>" enctype="multipart/form-data" method="post">
 <table class="form" width="800" cellspacing="1" cellpadding="3">
@@ -61,7 +61,7 @@ Case vbNullString	' 论文详情页面
 <tr><td>开题论文：&emsp;&emsp;&emsp;&emsp;&emsp;<input type="file" name="uploadfile2" size="100" /></td></tr>
 <tr><td>中期检查表：&emsp;&emsp;&emsp;&emsp;<input type="file" name="uploadfile3" size="100" /></td></tr>
 <tr><td>中期论文：&emsp;&emsp;&emsp;&emsp;&emsp;<input type="file" name="uploadfile4" size="100" /></td></tr>
-<tr><td>预答辩申请表：&emsp;&emsp;&emsp;<input type="file" name="uploadfile5" size="100" /></td></tr>
+<tr><td>预答辩意见书：&emsp;&emsp;&emsp;<input type="file" name="uploadfile5" size="100" /></td></tr>
 <tr><td>预答辩论文：&emsp;&emsp;&emsp;&emsp;<input type="file" name="uploadfile6" size="100" /></td></tr>
 <tr><td>送检论文：&emsp;&emsp;&emsp;&emsp;&emsp;<input type="file" name="uploadfile8" size="100" /></td></tr>
 <tr><td>送检论文检测报告：&emsp;<input type="file" name="uploadfile13" size="100" /></td></tr>
@@ -131,7 +131,7 @@ Case 2	' 文件上传页面
 	sql="SELECT * FROM Dissertations WHERE ID="&thesisID
 	GetRecordSet conn,rs,sql,count
 	If rs.EOF Then
-	%><body bgcolor="ghostwhite"><center><font color=red size="4">数据库没有该论文记录！</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
+	%><body><center><font color=red size="4">数据库没有该论文记录！</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 	  CloseRs rs
 	  CloseConn conn
 		Response.End()
@@ -148,10 +148,10 @@ Case 2	' 文件上传页面
 			' 检查上传目录是否存在
 			uploadPath=Server.MapPath(arrDefaultFileListPath(i))
 			If Not fso.FolderExists(uploadPath) Then fso.CreateFolder(uploadPath)
-			fileExt=LCase(upFile.FileExt)
+			file_ext=LCase(upFile.FileExt)
 			' 生成日期格式文件名
 			fileid=FormatDateTime(Now(),1)&Int(Timer)
-			destFile=fileid&"."&fileExt
+			destFile=fileid&"."&file_ext
 			destPath=uploadPath&"\"&destFile
 			' 保存
 			upFile.SaveAs destPath
@@ -188,7 +188,7 @@ Case 2	' 文件上传页面
 	If Len(sqlDetect) Then
 		conn.Execute sqlDetect
 	End If
-%><form id="ret" action="thesisDetail.asp?tid=<%=thesisID%>" method="post">
+%><form id="ret" action="paperDetail.asp?tid=<%=thesisID%>" method="post">
 <input type="hidden" name="In_ActivityId2" value="<%=activity_id%>">
 <input type="hidden" name="In_TEACHTYPE_ID2" value="<%=teachtype_id%>" />
 <input type="hidden" name="In_CLASS_ID2" value="<%=class_id%>" />

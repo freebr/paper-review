@@ -1,13 +1,13 @@
 ﻿<!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"-->
-<%If IsEmpty(Session("Tid")) Then Response.Redirect("../error.asp?timeout")
-TeacherId=Session("Tid")
+<%If IsEmpty(Session("TId")) Then Response.Redirect("../error.asp?timeout")
+TeacherId=Session("TId")
 If Len(TeacherId)=0 Or Not IsNumeric(TeacherId) Then
 	bError=True
 	errdesc="参数无效。"
 End If
 If bError Then
-%><body bgcolor="ghostwhite"><center><font color=red size="4"><%=errdesc%></font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
+%><body><center><font color=red size="4"><%=errdesc%></font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 	CloseRs rs
 	CloseConn conn
 	Response.End()
@@ -17,7 +17,7 @@ Connect conn
 sql="SELECT * FROM ViewExpertInfo WHERE TEACHER_ID="&TeacherId
 GetRecordSetNoLock conn,rs,sql,count
 If rs.EOF Then
-%><body bgcolor="ghostwhite"><center><font color=red size="4">数据库没有记录！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
+%><body><center><font color=red size="4">数据库没有记录！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 	CloseRs rs
   CloseConn conn
 	Response.End()

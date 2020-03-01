@@ -8,15 +8,3 @@ div.content { display:inline-block;background-color:#ffffff;filter:alpha(opacity
 							padding:20px;text-align:center }
 div.content .maintitle { font-family:楷体;font-size:20pt;font-weight:bold;color:#0000aa }
 span.title { font-size:12pt;font-weight:bold;color:#0000aa }
-
-div.inline-list-container {
-	display: inline-block;
-}
-div.inline-list {
-	display: flex;
-	flex-direction: column;
-	text-indent: 2em;
-}
-div.inline-list-item {
-	flex-basis: 1.5em;
-}

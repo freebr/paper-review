@@ -7,7 +7,7 @@ If IsEmpty(stuType) Or Not IsNumeric(stuType) Then
 	stuType=0
 End If
 
-Dim dict:Set dict=Server.CreateObject("Scripting.Dictionary")
+Dim dict:Set dict=CreateDictionary()
 Dim conn,rs,sql,count
 json=Request.Form("json")
 If json="1" Then
@@ -31,6 +31,7 @@ If json="1" Then
 			ret=ret&"{""name"": """&toJsString(keys(i))&""", ""content"": """&toJsString(items(i))&"""}"
 		Next
 		ret=ret&"]}"
+		Response.Clear()
 		Response.Write ret
 	End If
 	CloseRs rs
@@ -52,7 +53,7 @@ Case "1"
 <% useStylesheet "admin" %>
 <% useScript "jquery", "common" %>
 </head>
-<body bgcolor="ghostwhite">
+<body>
 <center><font size=4><b>提示文本设置</b></font>
 <form id="fmSettings" method="post" action="?step=2">
 <table width="900" cellpadding="2" cellspacing="1" bgcolor="dimgray">
@@ -76,7 +77,7 @@ Case "1"
 <td><table class="notice-list" width="100%" cellpadding="0" cellspacing="0" bgcolor="ghostwhite"><%
 	For i=0 To dict.Count-1
 %><tr bgcolor="ghostwhite"><td align="right"><%=dict.Items()(i)%>：</td><td align="center">
-	<textarea class="notice-text" name="<%=dict.Keys()(i)%>"></textarea>
+	<textarea class="edit-notice-text" name="<%=dict.Keys()(i)%>"></textarea>
 </td></tr><%
 	Next %>
 </table></td></tr>

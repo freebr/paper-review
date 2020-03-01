@@ -6,7 +6,7 @@ Set upload=New ExtendedRequest
 TeacherId=upload.Form("teacherid")
 FormGetToSafeRequest(TeacherId)
 If Len(TeacherId)=0 Or Not IsNumeric(TeacherId) Then
-%><body bgcolor="ghostwhite"><center><font color=red size="4">参数无效。</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
+%><body><center><font color=red size="4">参数无效。</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 	Response.End()
 End If
 
@@ -88,7 +88,7 @@ ElseIf rs.EOF Then
 	errdesc="数据库没有记录！"
 End If
 If bError Then
-%><body bgcolor="ghostwhite"><center><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
+%><body><center><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 	CloseRs rs
   CloseConn connOrigin
   CloseConn conn

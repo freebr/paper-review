@@ -38,8 +38,8 @@ Class ExtendedRequest
 		End If
 		iBlockSize=32000	'32kB
 		iBytesUploaded=0
-		Set objForm=Server.CreateObject("Scripting.Dictionary")
-		Set objFile=Server.CreateObject("Scripting.Dictionary")
+		Set objForm=CreateDictionary()
+		Set objFile=CreateDictionary()
 		If Request.TotalBytes<1 Then Exit Sub
 		Set tStream = Server.CreateObject("ADODB.Stream")
 		Set streamReq = Server.CreateObject("ADODB.Stream")

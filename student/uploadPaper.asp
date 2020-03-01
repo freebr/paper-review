@@ -22,13 +22,11 @@ If rs.EOF Then
 	table_ready=False
 	section_id=sectionUploadDetectReview
 	review_status=rsNone
-	uploadable=False
 	redirect_to_tbl_upload=True
 ElseIf rs("TASK_PROGRESS")<tpTbl3Passed Then
 	table_ready=False
 	section_id=sectionUploadDetectReview
 	review_status=rsNone
-	uploadable=False
 	redirect_to_tbl_upload=True
 Else
 	' 评阅状态
@@ -43,20 +41,12 @@ Else
 	Case rsReviewEval,rsDefencePaperUploaded,rsRefusedDefence
 		' 上传答辩论文
 		section_id=sectionUploadDefence
-	Case rsAgreedDefence
-		section_id=sectionUploadDefence
-		uploadable=False
 	Case rsDefenceEval,rsInstructReviewPaperUploaded,rsRefusedInstructReview
 		' 上传教指委论文
 		section_id=sectionUploadInstructReview
-	Case rsAgreedInstructReview,rsInstructReviewDetected,rsMatchedInstructMember
-		section_id=sectionUploadInstructReview
-		uploadable=False
 	Case rsInstructEval,rsFinalPaperUploaded
 		' 上传定稿论文
 		section_id=sectionUploadFinal
-	Case Else
-		uploadable=False
 	End Select
 	subject_ch=rs("THESIS_SUBJECT")
 	subject_en=rs("THESIS_SUBJECT_EN")
@@ -104,7 +94,7 @@ Case vbNullstring ' 填写信息页面
 <% useStylesheet "student" %>
 <% useScript "jquery", "upload", "uploadPaper" %>
 </head>
-<body bgcolor="ghostwhite">
+<body>
 <table class="form" width="1000" align="center"><tr><td class="summary"><p><%
 	If Not uploadable Then
 		If time_flag=-3 Then
@@ -192,6 +182,9 @@ PDF&nbsp;格式<%
 			Case sectionUploadDefence
 				callbackValidate="checkIfWordRar" %>
 Word&nbsp;格式<%
+			Case sectionUploadInstructReview
+				callbackValidate="checkIfWordRar" %>
+Word&nbsp;格式<%
 			Case sectionUploadFinal
 				callbackValidate="checkIfPdfRar" %>
 PDF&nbsp;格式<%
@@ -226,6 +219,12 @@ PDF&nbsp;格式<%
 <h1>评审结果处理：</h1><p>评审结果分为同意答辩、适当修改后可答辩、须做重大修改后方可答辩、不同意答辩四种情况。具体的参照《论文撰写规范及流程》执行</p><%
 	Case sectionUploadReview
 %><p>送审论文提交要求：</p><p>提交PDF版本，请按照研究生院论文撰写要求排版，只需删除个人及导师信息。</p><%
+	Case sectionUploadInstructReview
+%><p>教指委盲评论文提交要求：</p><ol><li>必须与所提交的纸质版论文完全一致；</li>
+<li>按研究生院论文撰写规范排版；</li>
+<li>学位论文中涉及个人学号、姓名及导师姓名的部分全部留空；</li>
+<li>在读期间所取得的学术成果列表中只列刊物名称和卷、期号，如无此表格留空；</li>
+<li>致谢部分不出现任何人的姓名。</li></ol><%
 	Case sectionUploadFinal
 %><p>定稿论文提交要求：</p><p>提交PDF版本，提交前需检查：</p>
 <p>1.MBA/ME论文分类号C93、MPAcc论文分类号F23、学校代码10561、学号、论文提交日期、论文答辩日期、学位授予日期、答辩委员会成员是否填写完整（如忘记请查看学位评定意见）；</p>
@@ -269,10 +268,10 @@ PDF&nbsp;格式<%
 		$(':submit').attr('disabled',true);<%
 		Else %>
 		$(':submit').removeAttr('disabled');<%
-		End If
-		If section_id<>sectionUploadDefence Then %>
-		$('#claim').show();<%
-		End If %>
+			If section_id<>sectionUploadDefence Then %>
+			$('#claim').show();<%
+			End If
+		End If%>
 	});
 </script></body></html><%
 	CloseRs rs3
@@ -359,9 +358,9 @@ Case 1	' 上传进程
 	Case sectionUploadDetectReview
 		Set file=Upload.File("detectFile")
 		Set file2=Upload.File("reviewFile")
-		fileExt=LCase(file.FileExt)
+		file_ext=LCase(file.FileExt)
 		fileExt2=LCase(file2.FileExt)
-		If fileExt<>"doc" And fileExt<>"docx" And fileExt<>"rar" Then
+		If file_ext<>"doc" And file_ext<>"docx" And file_ext<>"rar" Then
 			bError=True
 			errdesc="所选择的不是 Word 文件或 RAR 压缩文件！"
 		End If
@@ -371,15 +370,15 @@ Case 1	' 上传进程
 		End If
 	Case sectionUploadReview,sectionUploadFinal
 		Set file=Upload.File("upFile")
-		fileExt=LCase(file.FileExt)
-		If fileExt<>"pdf" And fileExt<>"rar" Then
+		file_ext=LCase(file.FileExt)
+		If file_ext<>"pdf" And file_ext<>"rar" Then
 			bError=True
 			errdesc="所选择的不是 PDF 文件或 RAR 压缩文件！"
 		End If
 	Case Else
 		Set file=Upload.File("upFile")
-		fileExt=LCase(file.FileExt)
-		If fileExt<>"doc" And fileExt<>"docx" And fileExt<>"rar" Then
+		file_ext=LCase(file.FileExt)
+		If file_ext<>"doc" And file_ext<>"docx" And file_ext<>"rar" Then
 			bError=True
 			errdesc="所选择的不是 Word 文件或 RAR 压缩文件！"
 		End If
@@ -387,7 +386,7 @@ Case 1	' 上传进程
 	If Not bError Then
 		' 生成日期格式文件名
 		fileid=FormatDateTime(Now(),1)&Int(Timer)
-		destFile=fileid&"."&fileExt
+		destFile=fileid&"."&file_ext
 		destPath=uploadPath&"\"&destFile
 		fileSize=file.FileSize
 		' 保存
@@ -432,7 +431,7 @@ Case 1	' 上传进程
 			rs3("THESIS_FILE3")=destFile
 			rs3("REVIEW_STATUS")=rsDefencePaperUploaded
 			rs3("TUTOR_MODIFY_EVAL")=Null
-		Case sectionUploadInstructReview ' 教指会盲评论文
+		Case sectionUploadInstructReview ' 教指委盲评论文
 			If review_status=rsInstructReviewPaperUploaded Then
 				sqlDetect="EXEC spDeleteDetectResult "&rs("ID")&","&toSqlString(rs3("THESIS_FILE4"))&";"
 			End If
@@ -463,7 +462,7 @@ Case 1	' 上传进程
 <% useStylesheet "student" %>
 <% useScript "jquery" %>
 </head>
-<body bgcolor="ghostwhite">
+<body>
 <center><br/><b>上传专业硕士论文</b><br/><br/><%
 	If Not bError Then %>
 <form id="fmFinish" action="home.asp" method="post">

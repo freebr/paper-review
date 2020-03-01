@@ -1,6 +1,6 @@
 ﻿<!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"--><%
-If IsEmpty(Session("Tid")) Then Response.Redirect("../error.asp?timeout")
+If IsEmpty(Session("TId")) Then Response.Redirect("../error.asp?timeout")
 thesisID=Request.QueryString("tid")
 filetype=Request.QueryString("type")
 hash=Request.QueryString("hash")
@@ -19,7 +19,7 @@ If bError Then
 End If
 
 Connect conn
-sql="SELECT *,LEFT(REVIEW_FILE,CHARINDEX(',',REVIEW_FILE)-1) AS REVIEW_FILE1,RIGHT(REVIEW_FILE,LEN(REVIEW_FILE)-CHARINDEX(',',REVIEW_FILE)) AS REVIEW_FILE2 FROM ViewDissertations WHERE ID="&thesisID&" AND Valid=1"
+sql="SELECT * FROM ViewDissertations_tutor WHERE ID="&thesisID&" AND Valid=1"
 GetRecordSetNoLock conn,rs,sql,count
 If rs.EOF Then
 	CloseRs rs
@@ -27,37 +27,40 @@ If rs.EOF Then
 	showErrorPage "数据库没有该论文记录！", "提示"
 End If
 
-Dim source_file,fileExt,newfilename
+Dim source_file,file_ext,newfilename
+Dim bReviewFileVisible(1)
 Dim fso,file,stream
 Set fso=Server.CreateObject("Scripting.FileSystemObject")
 
 If (filetype=8 Or filetype=13) And Len(hash) Then
-	sql="SELECT * FROM ViewDetectResult WHERE THESIS_ID="&thesisID&" AND HASH="&toSqlString(hash)
+	sql="SELECT * FROM ViewDetectResults WHERE THESIS_ID="&thesisID&" AND HASH="&toSqlString(hash)
 	GetRecordSet conn,rsDetect,sql,count
 	If filetype=8 Then
-		source_file=rsDetect("THESIS_FILE").Value
+		source_file=rsDetect("THESIS_FILE")
 	Else
-		source_file=rsDetect("DETECT_REPORT").Value
+		source_file=rsDetect("DETECT_REPORT")
 	End If
 	CloseRs rsDetect
 Else
-	source_file=rs(arrDefaultFileListField(filetype)).Value
+	source_file=rs(arrDefaultFileListField(filetype))
 End If
+bReviewFileVisible(0)=rs("ReviewFileDisplayStatus1") > 0
+bReviewFileVisible(1)=rs("ReviewFileDisplayStatus2") > 0
 If IsNull(source_file) Then
 	source_file=""
 Else
-	fileExt=LCase(fso.GetExtensionName(source_file))
-	If filetype=15 Or filetype=16 Then ' 评阅书则提供无专家信息版本
+	If filetype=16 Or filetype=17 Then ' 评阅书则提供无专家信息版本
 		' 根据评阅书显示设置决定是否显示文件
-		If (rs("REVIEW_FILE_STATUS") And 1)=0 Then
-			source_file=arrDefaultFileListPath(filetype)
+		If Not bReviewFileVisible(filetype-16) Then
+			source_file=""
 		Else
-			source_file=arrDefaultFileListPath(filetype)&"/"&fso.GetBaseName(source_file)&"_noexp."&fileExt
+			source_file=arrDefaultFileListPath(filetype)&"/"&fso.GetBaseName(source_file)&"_noexp.pdf"
 		End If
 	Else
 		source_file=arrDefaultFileListPath(filetype)&"/"&source_file
 	End If
-	source_file=Server.MapPath(source_file)
+	source_file=Server.MapPath(baseUrl()&source_file)
+	file_ext=LCase(fso.GetExtensionName(source_file))
 End If
 If Not fso.FileExists(source_file) Then
 	Set fso=Nothing
@@ -78,7 +81,7 @@ Else
 	subject=Replace(subject,"*","_")
 	newfilename=rs("SPECIALITY_NAME")&"-"&subject
 End If
-newfilename=newfilename&"."&fileExt
+newfilename=newfilename&"."&file_ext
 Set stream=Server.CreateObject("ADODB.Stream")
 stream.Mode=3
 stream.Type=1

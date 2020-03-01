@@ -17,7 +17,7 @@ Case vbNullstring ' 设置页面
 <% useStylesheet "admin" %>
 <% useScript "jquery", "common", "reviewSettings" %>
 </head>
-<body bgcolor="ghostwhite">
+<body>
 <center><font size=4><b>评阅书类型设置</b></font>
 <form id="fmReview" action="?step=1" method="POST" enctype="multipart/form-data">
 <table width="900" cellpadding="2" cellspacing="1" bgcolor="dimgray"><tbody id="tbItems">
@@ -62,15 +62,15 @@ Case 1	' 后台进程
 				Exit For
 			End If
 		Else
-			fileExt=LCase(file.FileExt)
-			'If fileExt<>"pdf" Then
+			file_ext=LCase(file.FileExt)
+			'If file_ext<>"pdf" Then
 				'bError=True
 				'errdesc="请为第&nbsp;"&i&"&nbsp;个条目上传PDF格式文件！"
 				'Exit For
 			'End If
 			' 生成日期格式文件名
 			fileid = FormatDateTime(Now(),1)&Int(Timer)&Int(Rnd()*999)
-			strDestFile = fileid&"."&fileExt
+			strDestFile = fileid&"."&file_ext
 			strDestPath = strUploadPath&"\"&strDestFile
 			byteFileSize = byteFileSize+file.FileSize
 			' 保存
@@ -82,7 +82,7 @@ Case 1	' 后台进程
 	Set fso=Nothing
 	
 	If bError Then
-%><body bgcolor="ghostwhite"><center><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
+%><body><center><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 		Response.End()
 	End If
 	
@@ -130,7 +130,7 @@ Case 1	' 后台进程
 <% useStylesheet "admin" %>
 <% useScript "jquery" %>
 </head>
-<body bgcolor="ghostwhite">
+<body>
 <script type="text/javascript">
 	alert("操作完成。");
 	location.href="reviewSettings.asp";
