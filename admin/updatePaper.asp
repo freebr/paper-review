@@ -7,7 +7,7 @@
 If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 Dim Upload:Set Upload=New ExtendedRequest
 step=Request.QueryString("step")
-dissertation_id=Request.QueryString("tid")
+paper_id=Request.QueryString("tid")
 new_activity_id=Upload.Form("new_activity_id")
 new_subject_ch=Upload.Form("new_subject_ch")
 new_subject_en=Upload.Form("new_subject_en")
@@ -37,7 +37,7 @@ query_review_status=Upload.Form("In_REVIEW_STATUS2")
 finalFilter=Upload.Form("finalFilter2")
 pageSize=Upload.Form("pageSize2")
 pageNo=Upload.Form("pageNo2")
-If Len(dissertation_id)=0 Or Not IsNumeric(dissertation_id) Or Not IsNumeric(opr) Then
+If Len(paper_id)=0 Or Not IsNumeric(paper_id) Or Not IsNumeric(opr) Then
 	bError=True
 	errdesc="参数无效。"
 ElseIf submittype<>vbNullString And Not isMatched("[0-9]",opr,True) Then
@@ -88,7 +88,7 @@ End If
 
 Dim conn,rs,sql,sqlDetect,count
 Connect conn
-sql="SELECT * FROM Dissertations WHERE ID="&dissertation_id
+sql="SELECT * FROM Dissertations WHERE ID="&paper_id
 GetRecordSet conn,rs,sql,count
 If rs.EOF Then
 %><body><center><font color=red size="4">数据库没有该论文记录！</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
@@ -100,7 +100,7 @@ End If
 If submittype=vbNullString Then
 	opr=0
 End If
-sql="SELECT TUTOR_ID FROM ViewDissertations WHERE ID="&dissertation_id
+sql="SELECT TUTOR_ID FROM ViewDissertations WHERE ID="&paper_id
 Set rsTutor=ExecQuery(conn, sql)
 tutor_id=rsTutor("TUTOR_ID")
 CloseRs rsTutor
@@ -173,7 +173,7 @@ Case 5	'  同意/不同意送检送审操作
 		Response.End()
 	End If
 	If is_pass Then
-		sql="SELECT dbo.getDetectResultCount("&dissertation_id&")"
+		sql="SELECT dbo.getDetectResultCount("&paper_id&")"
 		GetRecordSet conn,rsDetect,sql,count
 		detect_count=rsDetect(0)
 		CloseRs rsDetect
@@ -313,19 +313,17 @@ If submittype=vbNullString Then
 			ensurePathExists uploadPath
 			destFile=generateDateTimeFilename(LCase(arrReportFiles(i).FileExt))
 			arrReportFiles(i).SaveAs uploadPath&"\"&destFile
-			sqlDetect="EXEC spSetDetectResultReport "&dissertation_id&","&toSqlString(detectThesis)&","&toSqlString(reportDir&"/"&destFile)&";"
+			sqlDetect="EXEC spSetDetectResultReport "&paper_id&","&toSqlString(detectThesis)&","&toSqlString(reportDir&"/"&destFile)&";"
 		End If
 		If Not IsNull(detectThesis) Then
 			ratio=rs(arrDetectResultFieldNames(i))
 			new_ratio=arrNewDetectResults(i)
-			If new_ratio=vbNullString Then
-				new_ratio=ratio
-				If IsNull(new_ratio) Then new_ratio=0
-			End If
+			If new_ratio=vbNullString Then new_ratio=ratio
+			If IsNull(new_ratio) Then new_ratio=0
 			If IsNull(ratio) Then
-				sqlDetect=sqlDetect&"EXEC spSetDetectResultRatio "&dissertation_id&","&toSqlString(detectThesis)&","&toSqlNumber(new_ratio)&";"
+				sqlDetect=sqlDetect&"EXEC spSetDetectResultRatio "&paper_id&","&toSqlString(detectThesis)&","&toSqlNumber(new_ratio)&";"
 			ElseIf CDbl(ratio)<>CDbl(new_ratio) Then
-				sqlDetect=sqlDetect&"EXEC spSetDetectResultRatio "&dissertation_id&","&toSqlString(detectThesis)&","&toSqlNumber(new_ratio)&";"
+				sqlDetect=sqlDetect&"EXEC spSetDetectResultRatio "&paper_id&","&toSqlString(detectThesis)&","&toSqlNumber(new_ratio)&";"
 			End If
 		End If
 	Next
@@ -336,7 +334,7 @@ If submittype=vbNullString Then
 		rs("ActivityId")=new_activity_id
 	End If
 	If Len(new_defence_result)<>0 Then
-		sql="UPDATE DefenceInfo SET DEFENCE_RESULT="&new_defence_result&" WHERE THESIS_ID="&dissertation_id
+		sql="UPDATE DefenceInfo SET DEFENCE_RESULT="&new_defence_result&" WHERE THESIS_ID="&paper_id
 		conn.Execute sql
 	End If
 	If Len(new_grant_degree_result)<>0 Then
@@ -393,16 +391,16 @@ CloseConn conn
 
 If will_add_audit Then
 	' 插入审核记录
-	addAuditRecord dissertation_id, audit_file, audit_type, audit_time, tutor_id, is_pass, eval_text
+	addAuditRecord paper_id, audit_file, audit_type, audit_time, tutor_id, is_pass, eval_text
 End If
 If opr=7 Then
 	' 向学生发送修改论文通知邮件
-	sendEmailToStudent dissertation_id, "", True, ""
+	sendEmailToStudent paper_id, "", True, ""
 ElseIf opr<>0 Then
 	' 向学生发送审核结果通知邮件
-	sendEmailToStudent dissertation_id, file_type_name, is_pass, eval_text
+	sendEmailToStudent paper_id, file_type_name, is_pass, eval_text
 End If
-%><form id="ret" action="paperDetail.asp?tid=<%=dissertation_id%>" method="post">
+%><form id="ret" action="paperDetail.asp?tid=<%=paper_id%>" method="post">
 <input type="hidden" name="In_ActivityId2" value="<%=activity_id%>">
 <input type="hidden" name="In_TEACHTYPE_ID2" value="<%=teachtype_id%>" />
 <input type="hidden" name="In_CLASS_ID2" value="<%=class_id%>" />

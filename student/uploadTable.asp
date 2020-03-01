@@ -20,7 +20,7 @@ If rs.EOF Then
 	str_keywords_ch="''"
 	str_keywords_en="''"
 Else
-	thesisID=rs("ID")
+	paper_id=rs("ID")
 	activity_id=rs("ActivityId")
 	' 表格审核进度
 	task_progress=rs("TASK_PROGRESS")
@@ -178,7 +178,7 @@ Case vbNullstring ' 填写信息页面
 	End If %>
 	$(':button#btndownload').click(
 		function() {
-			window.location.href='fetchDocument.asp?tid=<%=thesisID%>&type=<%=filetype%>';
+			window.location.href='fetchDocument.asp?tid=<%=paper_id%>&type=<%=filetype%>';
 		}
 	);
 </script></body></html><%

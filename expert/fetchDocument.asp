@@ -4,9 +4,9 @@
 Dim arrFileListName,arrFileListNamePostfix,arrFileListPath,arrFileListField
 arrFileListName=Array("","送审论文","论文评阅书 1","论文评阅书 2")
 arrFileListNamePostfix=Array("","","论文评阅书(1)","论文评阅书(2)")
-arrFileListPath=Array("","/PaperReview/student/upload","/PaperReview/expert/export","/PaperReview/expert/export")
-arrFileListField=Array("","THESIS_FILE2","REVIEW_FILE1","REVIEW_FILE2")
-thesisID=Request.QueryString("tid")
+arrFileListPath=Array("","student/upload","expert/export","expert/export")
+arrFileListField=Array("","THESIS_FILE2","ReviewFile1","ReviewFile2")
+paper_id=Request.QueryString("tid")
 filetype=Request.QueryString("type")
 If Not IsNumeric(filetype) Then
 	bError=True
@@ -20,7 +20,7 @@ If bError Then
 End If
 
 Connect conn
-sql="SELECT *,LEFT(REVIEW_FILE,CHARINDEX(',',REVIEW_FILE)-1) AS REVIEW_FILE1,RIGHT(REVIEW_FILE,LEN(REVIEW_FILE)-CHARINDEX(',',REVIEW_FILE)) AS REVIEW_FILE2 FROM ViewDissertations WHERE ID="&thesisID&" AND Valid=1"
+sql=Format("SELECT * FROM ViewDissertations_expert WHERE ID={0}",paper_id)
 GetRecordSetNoLock conn,rs,sql,count
 If rs.EOF Then
 	CloseRs rs

@@ -2,7 +2,7 @@
 <!--#include file="../inc/ExtendedRequest.inc"-->
 <!--#include file="common.asp"--><%
 If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
-thesisID=Request.QueryString("tid")
+paper_id=Request.QueryString("tid")
 step=Request.QueryString("step")
 
 Select Case step
@@ -16,12 +16,12 @@ Case vbNullString	' 论文详情页面
 	finalFilter=Request.Form("finalFilter2")
 	pageSize=Request.Form("pageSize2")
 	pageNo=Request.Form("pageNo2")
-	If Len(thesisID)=0 Or Not IsNumeric(thesisID) Then
+	If Len(paper_id)=0 Or Not IsNumeric(paper_id) Then
 	%><body><center><font color=red size="4">参数无效。</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 		Response.End()
 	End If
 	Connect conn
-	sql="SELECT *,dbo.getThesisStatusText(1,TASK_PROGRESS,1) AS STAT_TEXT1,dbo.getThesisStatusText(2,REVIEW_STATUS,1) AS STAT_TEXT2 FROM ViewDissertations WHERE ID="&thesisID
+	sql="SELECT *,dbo.getThesisStatusText(1,TASK_PROGRESS,1) AS STAT_TEXT1,dbo.getThesisStatusText(2,REVIEW_STATUS,1) AS STAT_TEXT2 FROM ViewDissertations WHERE ID="&paper_id
 	GetRecordSet conn,rs,sql,count
 	If count=0 Then
 	%><body><center><font color=red size="4">数据库没有该论文记录！</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
@@ -41,7 +41,7 @@ Case vbNullString	' 论文详情页面
 </head>
 <body>
 <center><font size=4><b>上传表格/论文文件</font>
-<form id="fmDetail" action="?step=2&tid=<%=thesisID%>" enctype="multipart/form-data" method="post">
+<form id="fmDetail" action="?step=2&tid=<%=paper_id%>" enctype="multipart/form-data" method="post">
 <table class="form" width="800" cellspacing="1" cellpadding="3">
 <tr><td>论文题目：&emsp;&emsp;&emsp;<input type="text" class="txt" name="new_subject" size="95%" value="<%=rs("THESIS_SUBJECT")%>" readonly /></td></tr>
 <tr><td>作者姓名：&emsp;&emsp;&emsp;<input type="text" class="txt" name="author" size="18" value="<%=rs("STU_NAME")%>" readonly />&nbsp;
@@ -76,7 +76,7 @@ GetMenuListPubTerm "ReviewStatuses","STATUS_ID1","STATUS_NAME",task_progress,"AN
 <tr><td>更改论文审核状态：&emsp;<select name="new_review_status"><%
 GetMenuListPubTerm "ReviewStatuses","STATUS_ID2","STATUS_NAME",review_status,"AND STATUS_ID2 IS NOT NULL"
 %></select></td></tr>
-<tr class="trbuttons">
+<tr class="buttons">
 <td><p align="center"><input type="button" id="btnsubmit" name="btnsubmit" value="提 交" />&emsp;
 <input type="button" value="返 回" onclick="history.go(-1)" />&emsp;
 <input type="button" value="返回论文列表" onclick="document.all.ret.submit()" />
@@ -128,7 +128,7 @@ Case 2	' 文件上传页面
 	Dim conn,rs,sql,sqlDetect,count
 	sqlDetect=""
 	Connect conn
-	sql="SELECT * FROM Dissertations WHERE ID="&thesisID
+	sql="SELECT * FROM Dissertations WHERE ID="&paper_id
 	GetRecordSet conn,rs,sql,count
 	If rs.EOF Then
 	%><body><center><font color=red size="4">数据库没有该论文记录！</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
@@ -160,16 +160,16 @@ Case 2	' 文件上传页面
 				If rs("REVIEW_STATUS")=rsDetectPaperUploaded Then
 					sqlDetect=sqlDetect&"EXEC spDeleteDetectResult "&rs("ID")&","&toSqlString(rs("THESIS_FILE"))&";"
 				End If
-				sqlDetect=sqlDetect&"EXEC spAddDetectResult "&thesisID&","&toSqlString(destFile)&",NULL,NULL,NULL,1;"
+				sqlDetect=sqlDetect&"EXEC spAddDetectResult "&paper_id&","&toSqlString(destFile)&",NULL,NULL,NULL,1;"
 				rs("THESIS_FILE")=destFile
 			Case 11	' 教指委盲评论文
 				If rs("REVIEW_STATUS")=rsInstructReviewPaperUploaded Then
 					sqlDetect=sqlDetect&"EXEC spDeleteDetectResult "&rs("ID")&","&toSqlString(rs("THESIS_FILE4"))&";"
 				End If
-				sqlDetect=sqlDetect&"EXEC spAddDetectResult "&thesisID&","&toSqlString(destFile)&",NULL,NULL,NULL,2;"
+				sqlDetect=sqlDetect&"EXEC spAddDetectResult "&paper_id&","&toSqlString(destFile)&",NULL,NULL,NULL,2;"
 				rs("THESIS_FILE4")=destFile
 			Case 13	' 送检论文检测报告
-				sqlDetect=sqlDetect&"EXEC spSetDetectResultReport "&thesisID&","&toSqlString(rs("THESIS_FILE"))&","&toSqlString(destFile)&";"
+				sqlDetect=sqlDetect&"EXEC spSetDetectResultReport "&paper_id&","&toSqlString(rs("THESIS_FILE"))&","&toSqlString(destFile)&";"
 			Case Else
 				rs(arrDefaultFileListField(i))=destFile
 			End Select
@@ -188,7 +188,7 @@ Case 2	' 文件上传页面
 	If Len(sqlDetect) Then
 		conn.Execute sqlDetect
 	End If
-%><form id="ret" action="paperDetail.asp?tid=<%=thesisID%>" method="post">
+%><form id="ret" action="paperDetail.asp?tid=<%=paper_id%>" method="post">
 <input type="hidden" name="In_ActivityId2" value="<%=activity_id%>">
 <input type="hidden" name="In_TEACHTYPE_ID2" value="<%=teachtype_id%>" />
 <input type="hidden" name="In_CLASS_ID2" value="<%=class_id%>" />

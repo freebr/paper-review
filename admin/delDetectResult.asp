@@ -2,7 +2,7 @@
 <!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"--><%
 If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
-thesisID=Request.Form("tid")
+paper_id=Request.Form("tid")
 hash=Request.Form("hash")
 delete_type=Request.Form("delete_type")
 teachtype_id=Request.Form("In_TEACHTYPE_ID2")
@@ -13,13 +13,13 @@ query_review_status=Request.Form("In_REVIEW_STATUS2")
 finalFilter=Request.Form("finalFilter2")
 pageSize=Request.Form("pageSize2")
 pageNo=Request.Form("pageNo2")
-If IsEmpty(thesisID) Or Not IsNumeric(thesisID) Or IsEmpty(hash) Or IsEmpty(delete_type) Or Not IsNumeric(delete_type) Or Not (delete_type=0 Or delete_type=1) Then
+If IsEmpty(paper_id) Or Not IsNumeric(paper_id) Or IsEmpty(hash) Or IsEmpty(delete_type) Or Not IsNumeric(delete_type) Or Not (delete_type=0 Or delete_type=1) Then
 	showErrorPage "参数无效。", "提示"
 End If
 
 Dim conn,rs,sql,count
 Connect conn
-sql="SELECT THESIS_FILE,THESIS_FILE4,REPRODUCTION_RATIO,INSTRUCT_REVIEW_REPRODUCTION_RATIO,DETECT_REPORT,INSTRUCT_REVIEW_DETECT_REPORT FROM Dissertations WHERE ID="&thesisID
+sql="SELECT THESIS_FILE,THESIS_FILE4,REPRODUCTION_RATIO,INSTRUCT_REVIEW_REPRODUCTION_RATIO,DETECT_REPORT,INSTRUCT_REVIEW_DETECT_REPORT FROM Dissertations WHERE ID="&paper_id
 GetRecordSet conn,rs,sql,count
 If rs.EOF Then
 	CloseRs rs
@@ -47,7 +47,7 @@ If is_latest Then	' 更新论文评阅信息表中的检测数据
 	Dim arrDetectResultFieldNames:arrDetectResultFieldNames=Array("","REPRODUCTION_RATIO","INSTRUCT_REVIEW_REPRODUCTION_RATIO")
 	Dim arrDetectReportFieldNames:arrDetectReportFieldNames=Array("","DETECT_REPORT","INSTRUCT_REVIEW_DETECT_REPORT")
 	sql="SELECT THESIS_FILE,RESULT,DETECT_REPORT FROM DetectResults WHERE THESIS_ID=? AND DETECT_TYPE=? ORDER BY DETECT_TIME DESC"
-	Set ret=ExecQuery(conn,sql,CmdParam("THESIS_ID",adInteger,4,thesisID),CmdParam("DETECT_TYPE",adInteger,4,detect_type))
+	Set ret=ExecQuery(conn,sql,CmdParam("THESIS_ID",adInteger,4,paper_id),CmdParam("DETECT_TYPE",adInteger,4,detect_type))
 	If ret("count")>0 Then	' 取上次的送检结果
 		If delete_type=1 Then rs(arrDetectFileFieldNames(detect_type))=ret("rs")("THESIS_FILE")
 		rs(arrDetectResultFieldNames(detect_type))=ret("rs")("RESULT")
@@ -62,7 +62,7 @@ If is_latest Then	' 更新论文评阅信息表中的检测数据
 End If
 CloseRs rs
 CloseConn conn
-%><form id="ret" action="paperDetail.asp?tid=<%=thesisID%>" method="post">
+%><form id="ret" action="paperDetail.asp?tid=<%=paper_id%>" method="post">
 <input type="hidden" name="In_TEACHTYPE_ID2" value="<%=teachtype_id%>" />
 <input type="hidden" name="In_CLASS_ID2" value="<%=class_id%>" />
 <input type="hidden" name="In_ENTER_YEAR2" value="<%=enter_year%>" />

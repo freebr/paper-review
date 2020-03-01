@@ -1,7 +1,7 @@
 ﻿<!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"--><%
 If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
-thesisID=Request.QueryString("tid")
+paper_id=Request.QueryString("tid")
 filetype=Request.QueryString("type")
 hash=Request.QueryString("hash")
 If Not IsNumeric(filetype) Then
@@ -19,7 +19,7 @@ If bError Then
 End If
 
 Connect conn
-sql="SELECT * FROM ViewDissertations_admin WHERE ID="&thesisID&" AND Valid=1"
+sql=Format("SELECT * FROM ViewDissertations_admin WHERE ID={0}",paper_id)
 GetRecordSet conn,rs,sql,count
 If rs.EOF Then
 	CloseRs rs
@@ -34,7 +34,7 @@ Set fso=Server.CreateObject("Scripting.FileSystemObject")
 If (filetype=8 Or filetype=13) And Len(hash) Then
 	sql="SELECT * FROM ViewDetectResults WHERE THESIS_ID=? AND HASH=?"
 	Set ret=ExecQuery(conn,sql,_
-		CmdParam("THESIS_ID",adInteger,4,thesisID),CmdParam("HASH",adVarWChar,100,hash))
+		CmdParam("THESIS_ID",adInteger,4,paper_id),CmdParam("HASH",adVarWChar,100,hash))
 	Set rsDetect=ret("rs")
 	If filetype=8 Then
 		source_file=rsDetect("THESIS_FILE")
@@ -49,7 +49,7 @@ ElseIf filetype=18 Then
 	If review_order=-1 Then review_order=0
 	sql="SELECT * FROM ViewReviewRecords WHERE DissertationId=? AND ReviewOrder=?"
 	Set ret=ExecQuery(conn,sql,_
-		CmdParam("DissertationId",adInteger,4,thesisID),_
+		CmdParam("DissertationId",adInteger,4,paper_id),_
 		CmdParam("ReviewOrder",adInteger,4,review_order))
 	Set rsReview=ret("rs")
 	If rsReview.EOF Then

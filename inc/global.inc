@@ -271,7 +271,7 @@ Function getSectionInfo(activity_id, stu_type_id, section_id)
 	count=ret("count")
 
 	If rs.EOF Then
-		getSectionInfo=Null
+		Set getSectionInfo=Nothing
 		CloseRs rs
 		CloseConn conn
 		Exit Function
@@ -360,10 +360,10 @@ Function compareNowWithSectionTime(section)
 End Function
 
 ' 获取审核记录信息
-Function getAuditInfo(dissertation_id,audit_file,audit_type)
+Function getAuditInfo(paper_id,audit_file,audit_type)
 	Dim sql:sql="SELECT * FROM ViewAuditRecords WHERE DissertationId=? AND AuditFile=? And AuditType=? ORDER BY AuditTime DESC"
 	Dim ret:Set ret=ExecQuery(conn,sql,_
-		CmdParam("dissertation_id",adInteger,4,dissertation_id),_
+		CmdParam("paper_id",adInteger,4,paper_id),_
 		CmdParam("audit_file",adVarWChar,50,audit_file),_
 		CmdParam("audit_type",adInteger,4,audit_type))
     Dim rs:Set rs=ret("rs")
@@ -371,7 +371,7 @@ Function getAuditInfo(dissertation_id,audit_file,audit_type)
 	Dim result:ReDim result(count-1)
 	If count=0 Then
 		Set dict = CreateDictionary()
-		dict.Add "DissertationId",dissertation_id
+		dict.Add "DissertationId",paper_id
 		dict.Add "AuditFile",audit_file
 		dict.Add "Comment","（无）"
 		ReDim result(0):Set result(0) = dict

@@ -19,7 +19,7 @@ If rs.EOF Then
 	task_prog_text="未上传开题报告"
 	review_stat_text="未上传送检论文"
 Else
-	thesisID=rs("ID")
+	paper_id=rs("ID")
 	task_progress=rs("TASK_PROGRESS")
 	thesis_files=Array(rs("THESIS_FILE").Value,rs("THESIS_FILE2").Value,rs("THESIS_FILE3").Value,rs("THESIS_FILE4").Value)
 	reproduct_ratio=toNumericString(rs("REPRODUCTION_RATIO"))
@@ -92,7 +92,7 @@ Function showStepInfo(stepDisplay,stepCounter,is_hidden)
 	Case rsDetectPaperUploaded
 %><span class="section-detail">在导师同意检测前，您可以重复上传送检论文文件；导师仅能看到您最新上传的论文。</span><%
 	Case rsRefusedDetect
-		audit_info=getAuditInfo(thesisID,thesis_files(0),auditTypeDetectReview)
+		audit_info=getAuditInfo(paper_id,thesis_files(0),auditTypeDetectReview)
 %><span class="section-detail">导师不同意您的论文进行查重，请修改论文后重新上传。
 <br/>送检意见：<%=toPlainString(audit_info(0)("Comment"))%></span><%
 	Case rsAgreedDetect
@@ -111,13 +111,13 @@ Function showStepInfo(stepDisplay,stepCounter,is_hidden)
 			filetype=15
 %>您的论文已通过二次查重检测，请等候导师同意送审。<br/>检测结果摘要：经图书馆检测，学位论文文字复制比为&nbsp;<%=reproduct_ratio%>%。<%
 		End Select
-%><br/><a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=<%=filetype%>" target="_blank">点此下载检测报告</a></span><%
+%><br/><a class="resc" href="fetchDocument.asp?tid=<%=paper_id%>&type=<%=filetype%>" target="_blank">点此下载检测报告</a></span><%
 	Case rsRefusedReview
-		audit_info=getAuditInfo(thesisID,thesis_files(1),auditTypeReviewApp)
+		audit_info=getAuditInfo(paper_id,thesis_files(1),auditTypeReviewApp)
 %><span class="section-detail">导师不同意您的论文送审，请对照导师意见修改送审论文后重新上传。<br/>送审意见：<%=toPlainString(audit_info(0)("Comment"))%></span><%
 	Case rsAgreedReview
 %><span class="section-detail"><%
-		audit_info=getAuditInfo(thesisID,thesis_files(1),auditTypeReviewApp)
+		audit_info=getAuditInfo(paper_id,thesis_files(1),auditTypeReviewApp)
 		If detect_count>1 Then
 			filetype=15
 %>导师已于&nbsp;<%=toDateTime(rs("SUBMIT_REVIEW_TIME"),1)&" "&toDateTime(rs("SUBMIT_REVIEW_TIME"),4)%>&nbsp;同意您的论文送审申请，教务员将匹配专家对您的论文进行评阅。<%
@@ -126,7 +126,7 @@ Function showStepInfo(stepDisplay,stepCounter,is_hidden)
 %>您的论文已通过查重检测，教务员将匹配专家对您的论文进行评阅。<br/>检测结果摘要：经图书馆检测，学位论文文字复制比为&nbsp;<%=reproduct_ratio%>%。<%
 		End If
 %><br/>送审意见：<%=toPlainString(audit_info(0)("Comment"))%>
-<br/><a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=<%=filetype%>" target="_blank">点此下载检测报告</a></span><%
+<br/><a class="resc" href="fetchDocument.asp?tid=<%=paper_id%>&type=<%=filetype%>" target="_blank">点此下载检测报告</a></span><%
 	Case rsMatchedReviewer
 %><span class="section-detail">教务员已为您的论文匹配了评阅专家，正在对您的论文进行评阅，请耐心等候评阅结果。</span><%
 	Case rsReviewed
@@ -145,7 +145,7 @@ Function showStepInfo(stepDisplay,stepCounter,is_hidden)
 		For i=0 To 1
 			If arrRevRet(i)<>5 And bReviewFileVisible(i) Then	' 该专家已评阅且评阅书开放显示
 				If i=1 Then Response.Write "&emsp;"
-%><a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=<%=17+i%>" target="_blank">点击下载第<%=i+1%>份评阅书</a></span><%
+%><a class="resc" href="fetchDocument.asp?tid=<%=paper_id%>&type=<%=17+i%>" target="_blank">点击下载第<%=i+1%>份评阅书</a></span><%
 			End If
 		Next
 	Case rsDefencePaperUploaded
@@ -155,27 +155,27 @@ Function showStepInfo(stepDisplay,stepCounter,is_hidden)
 		End If
 %></span><%
 	Case rsRefusedDefence
-		audit_info=getAuditInfo(thesisID,thesis_files(2),auditTypeDefence)
+		audit_info=getAuditInfo(paper_id,thesis_files(2),auditTypeDefence)
 %><span class="section-detail">您的答辩论文未获导师<%=rs("TUTOR_NAME")%>审核通过，请修改论文后重新上传。审核意见如下：<br/>&emsp;&emsp;<%=toPlainString(audit_info(0)("Comment"))%></span><%
 	Case rsAgreedDefence
-		audit_info=getAuditInfo(thesisID,thesis_files(2),auditTypeDefence)
+		audit_info=getAuditInfo(paper_id,thesis_files(2),auditTypeDefence)
 %><span class="section-detail">导师<%=rs("TUTOR_NAME")%>已审核通过您的答辩论文。审核意见如下：<br/>&emsp;&emsp;<%=toPlainString(audit_info(0)("Comment"))%></span><%
 	Case rsDefenceEval
 %><span class="section-detail">答辩委员会已对您的论文提出了如下修改意见，请根据意见修改并上传教指委盲评论文。<br/><%=toPlainString(defence_eval)%></span><%
 	Case rsInstructReviewPaperUploaded
 %><span class="section-detail">您已上传教指委盲评论文，请等候导师审核。</span><%
 	Case rsRefusedInstructReview
-		audit_info=getAuditInfo(thesisID,thesis_files(3),auditTypeInstructReviewDetect)
+		audit_info=getAuditInfo(paper_id,thesis_files(3),auditTypeInstructReviewDetect)
 %><span class="section-detail">导师不同意您的教指委盲评论文进行查重，请修改论文后重新上传。<br/>审核意见：<%=toPlainString(audit_info(0)("Comment"))%></span><%
 	Case rsAgreedInstructReview
 %><span class="section-detail">导师已同意您的教指委盲评论文进行查重。</span><%
 	Case rsInstructReviewPaperDetected
 %><span class="section-detail">您的教指委盲评论文已完成查重，请等候教务员为您的论文匹配教指委委员。<br/>检测结果摘要：经图书馆检测，学位论文文字复制比为&nbsp;<%=instruct_review_reproduct_ratio%>%。
-<br/><a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=16" target="_blank">点此下载检测报告</a></span><%
+<br/><a class="resc" href="fetchDocument.asp?tid=<%=paper_id%>&type=16" target="_blank">点此下载检测报告</a></span><%
 	Case rsMatchedInstructMember
 %><span class="section-detail">教务员已为您的论文匹配教指委委员，请等候委员审核。</span><%
 	Case rsInstructEval
-		audit_info=getAuditInfo(thesisID,thesis_files(3),auditTypeInstructReview)
+		audit_info=getAuditInfo(paper_id,thesis_files(3),auditTypeInstructReview)
 %><span class="section-detail">教指委已对您的论文提出了如下修改意见：
 <br/>第一位委员的意见：<br/><%=toPlainString(audit_info(0)("Comment"))%>
 <br/>第二位委员的意见：<br/><%=toPlainString(audit_info(1)("Comment"))%><%
@@ -256,7 +256,7 @@ End Function
 			sql="SELECT * FROM ReviewTypes WHERE LEN(THESIS_FORM)>0 AND TEACHTYPE_ID="&stu_type
 			GetRecordSetNoLock conn,rs2,sql,count
 %><form method="post" action="setPaperForm.asp">
-<input type="hidden" name="tid" value="<%=thesisID%>" />
+<input type="hidden" name="tid" value="<%=paper_id%>" />
 <p><span class="tip">您还没有选择所撰写的论文形式，请在此选择并提交：</span>
 <select id="thesisform" name="thesis_form" style="width:350px"><option value="0">请选择……</option><%
 			Do While Not rs2.EOF
@@ -350,7 +350,7 @@ End Function
 				If fso.FileExists(fullfilepath) Then
 					Set file=fso.GetFile(fullfilepath)
 					file_ext=fso.GetExtensionName(filename) %>
-<li><a class="fileitem" href="fetchDocument.asp?tid=<%=thesisID%>&type=<%=i%>" target="_blank" title="大小：<%=toDataSizeString(file.Size)%>&#10;创建时间：<%=FormatDateTime(file.DateCreated,2)&" "&FormatDateTime(file.DateCreated,4)%>&#10;点击下载此文件"><img src="../images/student/<%=file_ext%>.png" title="<%=UCase(file_ext)%>格式" /><div><%=arrFileListName(i)%></div></a></li><%
+<li><a class="fileitem" href="fetchDocument.asp?tid=<%=paper_id%>&type=<%=i%>" target="_blank" title="大小：<%=toDataSizeString(file.Size)%>&#10;创建时间：<%=FormatDateTime(file.DateCreated,2)&" "&FormatDateTime(file.DateCreated,4)%>&#10;点击下载此文件"><img src="../images/student/<%=file_ext%>.png" title="<%=UCase(file_ext)%>格式" /><div><%=arrFileListName(i)%></div></a></li><%
 					Set file=Nothing
 				End If
 			End If

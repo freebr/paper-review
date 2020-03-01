@@ -109,7 +109,7 @@ Case 3	' 数据读取，导入到数据库
 	Function addData()
 		' 添加数据
 		Dim sql,sql2,conn,count,rsReview
-		Dim detect_count,new_status,reproduct_ratio,review_status,stu_id,stu_name,stu_no,thesis_file,dissertation_id
+		Dim detect_count,new_status,reproduct_ratio,review_status,stu_id,stu_name,stu_no,thesis_file,paper_id
 		Dim numThesis
 		Dim will_make_app:will_make_app=False
 		Dim reportFilePath,reportFilename,bFileExists
@@ -159,7 +159,7 @@ Case 3	' 数据读取，导入到数据库
 					bError=True
 					errMsg=errMsg&"学号不存在:"""&stu_no&"""。"&vbNewLine
 				Else
-					dissertation_id=rsReview("ID")
+					paper_id=rsReview("ID")
 					stu_id=rsReview("STU_ID")
 					stu_name=rsReview("STU_NAME")
 					review_status=rsReview("REVIEW_STATUS")
@@ -224,8 +224,8 @@ Case 3	' 数据读取，导入到数据库
 						End If
 					End If
 					sql2=sql2&"UPDATE Dissertations SET REPRODUCTION_RATIO="&reproduct_ratio&",DETECT_REPORT="&toSqlString(reportFilePath)&",REVIEW_STATUS="&new_status&" WHERE STU_ID="&stu_id&";"
-					sql2=sql2&"EXEC spAddDetectResult "&dissertation_id&","&toSqlString(thesis_file)&","&toSqlString(Now)&","&toSqlString(reportFilePath)&","&reproduct_ratio&",1;"
-					sql3=sql3&Format("EXEC spAddAuditRecord {0},{1},{2},{3},{4},1,{5};",dissertation_id,_
+					sql2=sql2&"EXEC spAddDetectResult "&paper_id&","&toSqlString(thesis_file)&","&toSqlString(Now)&","&toSqlString(reportFilePath)&","&reproduct_ratio&",1;"
+					sql3=sql3&Format("EXEC spAddAuditRecord {0},{1},{2},{3},{4},1,{5};",paper_id,_
 						toSqlString(filename),auditTypeReviewApp,toSqlString(audit_time),tutor_id,toSqlString(eval_text))
 					numThesis=numThesis+1
 				End If

@@ -45,7 +45,7 @@ Case vbNullString	' 选择页面
 <center>
 <font size=4><b>为送审论文匹配评阅专家</b></font>
 <form id="fmChooseExp" method="post" action="?step=2">
-<input type="hidden" name="thesisID" value="<%=thesis_ids%>" />
+<input type="hidden" name="paper_id" value="<%=thesis_ids%>" />
 <input type="hidden" name="In_TEACHTYPE_ID" value="<%=teachtype_id%>" />
 <input type="hidden" name="In_CLASS_ID" value="<%=class_id%>" />
 <input type="hidden" name="In_ENTER_YEAR" value="<%=enter_year%>" />
@@ -96,7 +96,7 @@ Case vbNullString	' 选择页面
   CloseRs rs
   CloseConn conn
 Case 2	' 后台处理
-	thesis_ids=Request.Form("thesisID")
+	thesis_ids=Request.Form("paper_id")
 	If Len(thesis_ids)=0 Then
 		thesis_ids=Request.Form("ids")
 	End If
@@ -191,7 +191,7 @@ Case 2	' 后台处理
 <input type="hidden" name="finalFilter" value="<%=toPlainString(finalFilter)%>" />
 <input type="hidden" name="pageSize" value="<%=pageSize%>" />
 <input type="hidden" name="pageNo" value="<%=pageNo%>" />
-<input type="hidden" name="thesisID" value="<%=thesis_ids%>" />
+<input type="hidden" name="paper_id" value="<%=thesis_ids%>" />
 <input type="hidden" name="In_TEACHTYPE_ID2" value="<%=teachtype_id%>" />
 <input type="hidden" name="In_CLASS_ID2" value="<%=class_id%>" />
 <input type="hidden" name="In_ENTER_YEAR2" value="<%=enter_year%>" />

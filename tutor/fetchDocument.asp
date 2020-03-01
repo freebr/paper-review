@@ -1,7 +1,7 @@
 ﻿<!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"--><%
 If IsEmpty(Session("TId")) Then Response.Redirect("../error.asp?timeout")
-thesisID=Request.QueryString("tid")
+paper_id=Request.QueryString("tid")
 filetype=Request.QueryString("type")
 hash=Request.QueryString("hash")
 If Not IsNumeric(filetype) Then
@@ -19,7 +19,7 @@ If bError Then
 End If
 
 Connect conn
-sql="SELECT * FROM ViewDissertations_tutor WHERE ID="&thesisID&" AND Valid=1"
+sql=Format("SELECT * FROM ViewDissertations_tutor WHERE ID={0}",paper_id)
 GetRecordSetNoLock conn,rs,sql,count
 If rs.EOF Then
 	CloseRs rs
@@ -33,7 +33,7 @@ Dim fso,file,stream
 Set fso=Server.CreateObject("Scripting.FileSystemObject")
 
 If (filetype=8 Or filetype=13) And Len(hash) Then
-	sql="SELECT * FROM ViewDetectResults WHERE THESIS_ID="&thesisID&" AND HASH="&toSqlString(hash)
+	sql="SELECT * FROM ViewDetectResults WHERE THESIS_ID="&paper_id&" AND HASH="&toSqlString(hash)
 	GetRecordSet conn,rsDetect,sql,count
 	If filetype=8 Then
 		source_file=rsDetect("THESIS_FILE")

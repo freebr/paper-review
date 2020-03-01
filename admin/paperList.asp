@@ -205,7 +205,7 @@ Next %></select><input type="button" value="设置" onclick="batchUpdatePaper($(
 		<td width="50" align="center">操作</td>
 	</tr><%
 If bQuery Then
-	Dim bIsReviewVisible,review_result,review_result_text(1)
+	Dim is_review_visible,review_result,review_result_text(1)
 	For i=1 to rs.PageSize
 		If rs.EOF Then Exit For
 		If Not IsNull(rs("REVIEW_RESULT")) Then
@@ -213,7 +213,7 @@ If bQuery Then
 			review_result_text(0)=HtmlEncode(rs("EXPERT_NAME1"))&"<br/>"&rs("REVIEW_RESULT_TEXT1")
 			review_result_text(1)=HtmlEncode(rs("EXPERT_NAME2"))&"<br/>"&rs("REVIEW_RESULT_TEXT2")
 		End If
-		bIsReviewVisible=Array(rs("ReviewFileDisplayStatus1")>0,rs("ReviewFileDisplayStatus2")>0)
+		is_review_visible=Array(rs("ReviewFileDisplayStatus1")>0,rs("ReviewFileDisplayStatus2")>0)
 		substat=vbNullString
 		If rs("TASK_PROGRESS")>=tpTbl4Uploaded Then
 			stat=rs("STAT_TEXT1")&"，"&rs("STAT_TEXT2")
@@ -221,7 +221,7 @@ If bQuery Then
 			stat=rs("STAT_TEXT1")
 		Else
 			stat=rs("STAT_TEXT2")
-			If rs("REVIEW_STATUS")>=rsReviewed And Not bIsReviewVisible(0) And Not bIsReviewVisible(1) Then
+			If rs("REVIEW_STATUS")>=rsReviewed And Not is_review_visible(0) And Not is_review_visible(1) Then
 				substat="评阅结果["&arrReviewFileStat(rs("REVIEW_FILE_STATUS"))&"]"
 			End If
 		End If

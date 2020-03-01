@@ -2,9 +2,9 @@
 <!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"-->
 <%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
-thesisID=Request.QueryString("tid")
+paper_id=Request.QueryString("tid")
 If IsEmpty(thesisId) Then
-	thesisID=Request.Form("sel")
+	paper_id=Request.Form("sel")
 End If
 teachtype_id=Request.Form("In_TEACHTYPE_ID2")
 class_id=Request.Form("In_CLASS_ID2")
@@ -14,8 +14,8 @@ query_review_status=Request.Form("In_REVIEW_STATUS2")
 finalFilter=Request.Form("finalFilter2")
 pageSize=Request.Form("pageSize2")
 pageNo=Request.Form("pageNo2")
-If Len(thesisID)=0 Then thesisID=Request.Form("thesisID")
-If Len(thesisID)=0 Then
+If Len(paper_id)=0 Then paper_id=Request.Form("paper_id")
+If Len(paper_id)=0 Then
 	bError=True
 	errdesc="您未选择论文！"
 End If
@@ -32,8 +32,8 @@ Dim activity_id,stu_type,is_mail_sent,is_sms_sent
 Dim errMsg
 Connect conn
 sql="DECLARE @tmptbl TABLE(TEACHER_ID int,ActivityId int,StuType int,THESIS_SUBJECT nvarchar(200),REVNUM int);"&_
-	"INSERT INTO @tmptbl SELECT INSTRUCT_MEMBER1,MAX(ActivityId),MIN(TEACHTYPE_ID),MIN(THESIS_SUBJECT),COUNT(ID) FROM ViewDissertations WHERE ID IN ("&thesisID&") GROUP BY INSTRUCT_MEMBER1 "&_
-	"UNION ALL SELECT INSTRUCT_MEMBER2,MAX(ActivityId),MIN(TEACHTYPE_ID),MIN(THESIS_SUBJECT),COUNT(ID) FROM ViewDissertations WHERE ID IN ("&thesisID&") GROUP BY INSTRUCT_MEMBER2;"&_
+	"INSERT INTO @tmptbl SELECT INSTRUCT_MEMBER1,MAX(ActivityId),MIN(TEACHTYPE_ID),MIN(THESIS_SUBJECT),COUNT(ID) FROM ViewDissertations WHERE ID IN ("&paper_id&") GROUP BY INSTRUCT_MEMBER1 "&_
+	"UNION ALL SELECT INSTRUCT_MEMBER2,MAX(ActivityId),MIN(TEACHTYPE_ID),MIN(THESIS_SUBJECT),COUNT(ID) FROM ViewDissertations WHERE ID IN ("&paper_id&") GROUP BY INSTRUCT_MEMBER2;"&_
 	"SELECT TEACHER_ID,TEACHERNAME,MOBILE,EMAIL,MAX(ActivityId) ActivityId,MIN(StuType) StuType,MIN(THESIS_SUBJECT) THESIS_SUBJECT,SUM(REVNUM) REVIEW_NUM FROM @tmptbl LEFT JOIN ViewTeacherInfo ON TEACHER_ID=TEACHERID GROUP BY TEACHER_ID,TEACHERNAME,MOBILE,EMAIL;"
 Set rs=conn.Execute(sql)
 Set rs=rs.NextRecordSet()
@@ -73,10 +73,10 @@ Loop
 CloseRs rs
 CloseConn conn
 
-If InStr(thesisID,",") Then
+If InStr(paper_id,",") Then
 	returl="paperList.asp"
 Else
-	returl="paperDetail.asp?tid="&thesisID
+	returl="paperDetail.asp?tid="&paper_id
 End If
 %><form id="ret" action="<%=returl%>" method="post">
 <input type="hidden" name="In_TEACHTYPE_ID" value="<%=teachtype_id%>" />

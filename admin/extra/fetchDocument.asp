@@ -6,7 +6,7 @@ arrFileListName=Array("","送审论文","论文评阅书 1","论文评阅书 2")
 arrFileListNamePostfix=Array("","","论文评阅书(1)","论文评阅书(2)")
 arrFileListPath=Array("","/PaperReview/student/upload","/PaperReview/expert/export","/PaperReview/expert/export")
 arrFileListField=Array("","THESIS_FILE2","REVIEW_FILE1","REVIEW_FILE2")
-thesisID=Request.QueryString("tid")
+paper_id=Request.QueryString("tid")
 filetype=Request.QueryString("type")
 If Not IsNumeric(filetype) Then
 	bError=True
@@ -21,7 +21,7 @@ If bError Then
 End If
 
 Connect conn
-sql="SELECT *,LEFT(REVIEW_FILE,CHARINDEX(',',REVIEW_FILE)-1) AS REVIEW_FILE1,RIGHT(REVIEW_FILE,LEN(REVIEW_FILE)-CHARINDEX(',',REVIEW_FILE)) AS REVIEW_FILE2 FROM ViewDissertations WHERE ID="&thesisID&" AND Valid=1"
+sql="SELECT *,LEFT(REVIEW_FILE,CHARINDEX(',',REVIEW_FILE)-1) AS REVIEW_FILE1,RIGHT(REVIEW_FILE,LEN(REVIEW_FILE)-CHARINDEX(',',REVIEW_FILE)) AS REVIEW_FILE2 FROM ViewDissertations WHERE ID="&paper_id&" AND Valid=1"
 GetRecordSetNoLock conn,rs,sql,count
 If count<>1 Then
 %><body><center><font color=red size="4">数据库没有该论文记录！</font><br /><input type="button" value="关 闭" onclick="window.close()" /></center></body><%

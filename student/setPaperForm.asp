@@ -2,9 +2,9 @@
 <!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"--><%
 If IsEmpty(Session("user")) Then Response.Redirect("../error.asp?timeout")
-thesisID=Request.Form("tid")
+paper_id=Request.Form("tid")
 new_thesis_form=Request.Form("thesis_form")
-If IsEmpty(thesisID) Then
+If IsEmpty(paper_id) Then
 	bError=True
 	errdesc="参数无效。"
 ElseIf new_thesis_form=0 Then
@@ -18,7 +18,7 @@ End If
 
 Dim conn,sql
 Connect conn
-sql="UPDATE Dissertations SET REVIEW_TYPE="&new_thesis_form&" WHERE ID="&thesisID
+sql="UPDATE Dissertations SET REVIEW_TYPE="&new_thesis_form&" WHERE ID="&paper_id
 conn.Execute sql
 CloseConn conn
 %><script type="text/javascript">

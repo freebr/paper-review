@@ -1,7 +1,7 @@
 ﻿<!--#include file="../../inc/global.inc"-->
 <!--#include file="common.asp"--><%
 If IsEmpty(Session("Id")) Then Response.Redirect("../../error.asp?timeout")
-thesisID=Request.Form("tid")
+paper_id=Request.Form("tid")
 teachtype_id=Request.Form("In_TEACHTYPE_ID2")
 class_id=Request.Form("In_CLASS_ID2")
 reviewer=Request.Form("rev")
@@ -9,13 +9,13 @@ finalFilter=Request.Form("finalFilter2")
 pageSize=Request.Form("pageSize2")
 pageNo=Request.Form("pageNo2")
 
-If Len(thesisID)=0 And Len(stuname)=0 Then
+If Len(paper_id)=0 And Len(stuname)=0 Then
 	bError=True
 	errdesc="参数无效。"
 Else
 	Connect conn
-	If Len(thesisID) Then
-		sql="SELECT * FROM ViewDissertations WHERE ID="&thesisID
+	If Len(paper_id) Then
+		sql="SELECT * FROM ViewDissertations WHERE ID="&paper_id
 	Else
 		sql="SELECT * FROM ViewDissertations WHERE STU_NAME="&toSqlString(stuname)
 	End If
@@ -35,7 +35,7 @@ End If
 
 Dim review_status
 Dim review_result(2),reviewer_master_level(1),review_file(1),review_time(1),review_level(1)
-thesisID=rs("ID")
+paper_id=rs("ID")
 author_stu_type=rs("TEACHTYPE_ID")
 If author_stu_type=5 Or author_stu_type=6 Then
 	reviewfile_type=2
@@ -91,14 +91,14 @@ End If
 </head>
 <body>
 <center><div><font size=4><b>以【<%=rs("EXPERT_NAME"&(reviewer+1))%>】的身份评阅论文</b></font>
-<form id="fmReview" action="doReview.asp?tid=<%=thesisID%>&rev=<%=reviewer%>" method="post" style="margin-top:0;padding-top:10px">
+<form id="fmReview" action="doReview.asp?tid=<%=paper_id%>&rev=<%=reviewer%>" method="post" style="margin-top:0;padding-top:10px">
 <table class="form" width="800" cellspacing="1" cellpadding="3">
 <tr><td colspan=3>作者姓名；&emsp;&emsp;&emsp;<input type="text" class="txt" name="author" size="95%" value="<%=rs("STU_NAME")%>" readonly /></td></tr>
 <tr><td>申请学位专业名称：<input type="text" class="txt" name="speciality" size="25" value="<%=rs("SPECIALITY_NAME")%>" readonly /></td>
 <td>研究方向：<input type="text" class="txt" name="researchway" size="25" value="<%=rs("RESEARCHWAY_NAME")%>" readonly /></td>
 <td>学院名称：<input type="text" class="txt" name="faculty" value="工商管理学院" readonly /></td></tr>
 <tr><td colspan=3>学位论文题目：<input type="text" class="txt" name="subject" size="70" value="<%=rs("THESIS_SUBJECT")%>" readonly />
-&emsp;送审论文：<a class="resc" href="fetchDocument.asp?tid=<%=thesisID%>&type=1" target="_blank">点击下载</a></td></tr>
+&emsp;送审论文：<a class="resc" href="fetchDocument.asp?tid=<%=paper_id%>&type=1" target="_blank">点击下载</a></td></tr>
 <tr><td colspan=3>对本论文涉及内容的熟悉程度：<%=masterLevelRadios("master_level",reviewer_master_level(reviewer))%></td></tr>
 <tr><td colspan=3>评阅专家对论文的学术评语<span class="eval_notice">（包括选题意义；文献资料的掌握；数据、材料的收集、论证、结论是否合理；基本论点、结论和建议有无理论意义和实践价值；论文的不足之处和建议等，200-2000字）</span>：<span id="eval_text_tip"></span></td></tr>
 <tr><td colspan=3><textarea name="eval_text" rows="10" style="width:100%">
@@ -129,7 +129,7 @@ Case Else %>
 End Select %>
 <tr><td align="center"><%=correlation_level_name%></td><td align="center" colspan=2><%=correlationLevelRadios("correlation_level",1)%></td></tr>
 <tr><td align="center">是否同意举行论文答辩</td><td align="center" colspan=2><%=reviewResultRadios("review_result",review_result(reviewer))%></td></tr>
-<tr class="trbuttons">
+<tr class="buttons">
 <td colspan=3><p align="center"><input type="button" id="btnsubmit" name="btnsubmit" value="提 交" />&emsp;
 <input type="button" value="返 回" onclick="history.go(-1)" />&emsp;
 <input type="button" value="关 闭" onclick="closeWindow()" />
@@ -177,11 +177,11 @@ End Select %>
 			}).attr('disabled',false);
 		}
 		$('#btnsavedraft').click(function() {
-			saveAsDraft(<%=thesisID%>);
+			saveAsDraft(<%=paper_id%>);
 		});
-		verifyDraft(<%=thesisID%>);
+		verifyDraft(<%=paper_id%>);
 		// 每30秒对草稿进行自动保存
-		setInterval('saveAsDraft(<%=thesisID%>,true)',30000);
+		setInterval('saveAsDraft(<%=paper_id%>,true)',30000);
 	});
 </script></html><%
 CloseRs rs

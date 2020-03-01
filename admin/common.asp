@@ -118,7 +118,7 @@ Function setNoticeText(stuType,noticeName,noticeContent)
 	CloseConn conn
 End Function
 
-Function addAuditRecord(dissertation_id,audit_file,audit_type,audit_time,auditor_id,is_passed,eval_text)
+Function addAuditRecord(paper_id,audit_file,audit_type,audit_time,auditor_id,is_passed,eval_text)
 	If Len(eval_text)=0 Then
 		If is_passed Then eval_text="审核通过" Else eval_text="审核不通过"
 	End If
@@ -126,7 +126,7 @@ Function addAuditRecord(dissertation_id,audit_file,audit_type,audit_time,auditor
 	Connect conn
 	sql="EXEC spAddAuditRecord ?,?,?,?,?,?,?,?"
 	ExecNonQuery conn,sql,_
-		CmdParam("dissertation_id",adInteger,4,dissertation_id),_
+		CmdParam("paper_id",adInteger,4,paper_id),_
 		CmdParam("audit_file",adVarWChar,50,audit_file),_
 		CmdParam("audit_type",adInteger,4,audit_type),_
 		CmdParam("audit_time",adDate,4,audit_time),_
@@ -137,11 +137,11 @@ Function addAuditRecord(dissertation_id,audit_file,audit_type,audit_time,auditor
 	CloseConn conn
 End Function
 
-Function sendEmailToStudent(dissertation_id,file_type_name,is_pass,ByVal eval_text)
+Function sendEmailToStudent(paper_id,file_type_name,is_pass,ByVal eval_text)
 	If Len(eval_text)=0 Then eval_text="无"
 	Dim conn:Connect conn
 	Dim sql:sql="SELECT ActivityId,TEACHTYPE_ID,STU_NAME,STU_NO,CLASS_NAME,SPECIALITY_NAME,EMAIL,THESIS_SUBJECT,TUTOR_NAME,TUTOR_EMAIL FROM ViewDissertations WHERE ID=?"
-	Dim ret:Set ret=ExecQuery(conn,sql,CmdParam("ID",adInteger,4,dissertation_id))
+	Dim ret:Set ret=ExecQuery(conn,sql,CmdParam("ID",adInteger,4,paper_id))
 	Dim rs:Set rs=ret("rs")
 	Dim activity_id:activity_id=rs("ActivityId")
 	Dim stu_type:stu_type=rs("TEACHTYPE_ID")

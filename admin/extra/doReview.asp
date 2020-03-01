@@ -3,7 +3,7 @@
 <!--#include file="../../inc/global.inc"-->
 <!--#include file="common.asp"--><%
 If IsEmpty(Session("Id")) Then Response.Redirect("../../error.asp?timeout")
-dissertation_id=Request.QueryString("tid")
+paper_id=Request.QueryString("tid")
 teachtype_id=Request.Form("In_TEACHTYPE_ID2")
 class_id=Request.Form("In_CLASS_ID2")
 reviewer_type=Request.QueryString("rev")
@@ -13,7 +13,7 @@ query_review_status=Request.Form("In_REVIEW_STATUS2")
 finalFilter=Request.Form("finalFilter2")
 pageSize=Request.Form("pageSize2")
 pageNo=Request.Form("pageNo2")
-If Len(dissertation_id)=0 Or Not IsNumeric(dissertation_id) Then
+If Len(paper_id)=0 Or Not IsNumeric(paper_id) Then
 	bError=True
 	errdesc="参数无效。"
 End If
@@ -27,7 +27,7 @@ review_result=Request.Form("review_result")
 review_level=Request.Form("review_level")
 eval_text=Request.Form("eval_text")
 Connect conn
-sql="SELECT * FROM ViewDissertations WHERE ID="&dissertation_id
+sql="SELECT * FROM ViewDissertations WHERE ID="&paper_id
 GetRecordSetNoLock conn,rs,sql,count
 If Len(master_level)=0 Then
 	bError=True
@@ -243,7 +243,7 @@ arr_review_result(2)=finalresult
 ' 插入评阅记录
 sql="EXEC spAddReviewRecord ?,?,?,?,?,?,?,?,?,?,?,?"
 ExecNonQuery conn,sql,_
-	CmdParam("dissertation_id",adInteger,4,dissertation_id),_
+	CmdParam("paper_id",adInteger,4,paper_id),_
 	CmdParam("reviewer_id",adInteger,4,reviewer_id),_
 	CmdParam("reviewer_master_level",adInteger,4,master_level),_
 	CmdParam("score_data",adVarWChar,500,score_data),_
@@ -257,7 +257,7 @@ ExecNonQuery conn,sql,_
 	CmdParam("creator",adInteger,4,Session("Id"))
 
 ' 更新记录
-sql="SELECT * FROM Dissertations WHERE ID="&dissertation_id
+sql="SELECT * FROM Dissertations WHERE ID="&paper_id
 GetRecordSet conn,rs,sql,count
 rs("REVIEW_RESULT")=ArrayJoin(arr_review_result,",")
 rs("REVIEW_LEVEL")=ArrayJoin(arr_review_level,",")
@@ -271,7 +271,7 @@ End If
 rs.Update()
 CloseRs rs
 CloseConn conn
-%><form id="ret" action="../paperDetail.asp?tid=<%=dissertation_id%>" method="post">
+%><form id="ret" action="../paperDetail.asp?tid=<%=paper_id%>" method="post">
 <input type="hidden" name="In_TEACHTYPE_ID2" value="<%=teachtype_id%>" />
 <input type="hidden" name="In_CLASS_ID2" value="<%=class_id%>" />
 <input type="hidden" name="In_ENTER_YEAR2" value="<%=enter_year%>" />

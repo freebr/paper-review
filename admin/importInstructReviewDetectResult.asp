@@ -109,7 +109,7 @@ Case 3	' 数据读取，导入到数据库
 	Function addData()
 		' 添加数据
 		Dim sql,sql2,conn,count,rsReview
-		Dim detect_count,new_status,reproduct_ratio,stu_id,stu_name,stu_no,thesis_file,dissertation_id
+		Dim detect_count,new_status,reproduct_ratio,stu_id,stu_name,stu_no,thesis_file,paper_id
 		Dim numThesis
 		Dim will_make_app:will_make_app=False
 		Dim reportFilePath,reportFilename,bFileExists
@@ -159,12 +159,12 @@ Case 3	' 数据读取，导入到数据库
 					bError=True
 					errMsg=errMsg&"学号不存在:"""&stu_no&"""。"&vbNewLine
 				Else
-					dissertation_id=rsReview("ID")
+					paper_id=rsReview("ID")
 					stu_id=rsReview("STU_ID")
 					stu_name=rsReview("STU_NAME")
 					thesis_file=rsReview("THESIS_FILE4")
 					sql2=sql2&"UPDATE Dissertations SET INSTRUCT_REVIEW_REPRODUCTION_RATIO="&reproduct_ratio&",INSTRUCT_REVIEW_DETECT_REPORT="&toSqlString(reportFilePath)&",REVIEW_STATUS="&rsInstructReviewPaperDetected&" WHERE STU_ID="&stu_id&";"
-					sql2=sql2&"EXEC spAddDetectResult "&dissertation_id&","&toSqlString(thesis_file)&","&toSqlString(Now)&","&toSqlString(reportFilePath)&","&reproduct_ratio&",2;"
+					sql2=sql2&"EXEC spAddDetectResult "&paper_id&","&toSqlString(thesis_file)&","&toSqlString(Now)&","&toSqlString(reportFilePath)&","&reproduct_ratio&",2;"
 					numThesis=numThesis+1
 				End If
 				CloseRs rsReview

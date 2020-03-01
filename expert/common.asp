@@ -157,7 +157,12 @@ Function getSectionAccessibilityInfo(activity_id, stu_type_id, section_id)
 		time_flag=-3
 	Else
 		Set section=getSectionInfo(activity_id, stu_type_id, section_id)
-		time_flag=compareNowWithSectionTime(section)
+		If section Is Nothing Then
+			Set section=getSectionInfo(Null, Null, section_id)
+			time_flag=-2
+		Else
+			time_flag=compareNowWithSectionTime(section)
+		End If
 		accessible=time_flag=0
 	End If
 	If Not accessible Then

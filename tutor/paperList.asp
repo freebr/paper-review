@@ -187,10 +187,10 @@ Next
 		<td width="80" align="center">处理意见</td>
 		<td width="180" align="center">状态</td>
 	</tr><%
-	Dim bIsReviewVisible,auditor_type,audit_flag,audit_time
+	Dim is_review_visible,auditor_type,audit_flag,audit_time
 	For i=1 to rs.PageSize
 		If rs.EOF Then Exit For
-		bIsReviewVisible=Array(rs("ReviewFileDisplayStatus1")>0,rs("ReviewFileDisplayStatus2")>0)
+		is_review_visible=Array(rs("ReviewFileDisplayStatus1")>0,rs("ReviewFileDisplayStatus2")>0)
 		substat=vbNullString
 		If rs("TASK_PROGRESS")>=tpTbl4Uploaded Then
 			stat=rs("STAT_TEXT1")&"，"&rs("STAT_TEXT2")
@@ -216,7 +216,7 @@ Next
 				stat=arrStatText(0)
 			End If
 		Else
-			If rs("REVIEW_STATUS")>=rsReviewed And Not bIsReviewVisible(0) And Not bIsReviewVisible(1) Then
+			If rs("REVIEW_STATUS")>=rsReviewed And Not is_review_visible(0) And Not is_review_visible(1) Then
 				substat="[评阅结果未开放]"
 			End If
 			Select Case teacher_id

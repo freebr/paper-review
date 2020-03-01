@@ -1,7 +1,7 @@
 ﻿<!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"--><%
 If IsEmpty(Session("StuId")) Then Response.Redirect("../error.asp?timeout")
-thesisID=Request.QueryString("tid")
+paper_id=Request.QueryString("tid")
 filetype=Request.QueryString("type")
 If Not IsNumeric(filetype) Then
 	bError=True
@@ -18,7 +18,7 @@ If bError Then
 End If
 
 Connect conn
-sql="SELECT * FROM ViewDissertations_student WHERE ID="&thesisID
+sql=Format("SELECT * FROM ViewDissertations_student WHERE ID={0}",paper_id)
 GetRecordSetNoLock conn,rs,sql,count
 If rs.EOF Then
 	CloseRs rs

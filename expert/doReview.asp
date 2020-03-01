@@ -3,7 +3,7 @@
 <!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"--><%
 If IsEmpty(Session("TId")) Then Response.Redirect("../error.asp?timeout")
-dissertation_id=Request.QueryString("tid")
+paper_id=Request.QueryString("tid")
 teachtype_id=Request.Form("In_TEACHTYPE_ID2")
 spec_id=Request.Form("In_SPECIALITY_ID2")
 enter_year=Request.Form("In_ENTER_YEAR2")
@@ -13,7 +13,7 @@ finalFilter=Request.Form("finalFilter2")
 pageSize=Request.Form("pageSize2")
 pageNo=Request.Form("pageNo2")
 view_state=Request.Form("view_state")
-If Len(dissertation_id)=0 Or Not IsNumeric(dissertation_id) Then
+If Len(paper_id)=0 Or Not IsNumeric(paper_id) Then
 	bError=True
 	errdesc="参数无效。"
 ElseIf Not checkIfProfileFilledIn() Then
@@ -33,7 +33,7 @@ Dim conn,sql,ret,rs,count
 Connect conn
 sql="SELECT * FROM ViewDissertations WHERE ID=? AND ? IN (REVIEWER1,REVIEWER2)"
 Set ret=ExecQuery(conn,sql,_
-	CmdParam("ID",adInteger,4,dissertation_id),_
+	CmdParam("ID",adInteger,4,paper_id),_
 	CmdParam("TId",adInteger,4,Session("TId")))
 Set rs=ret("rs")
 count=ret("count")
@@ -260,7 +260,7 @@ arr_review_result(2)=finalresult
 ' 插入评阅记录
 sql="EXEC spAddReviewRecord ?,?,?,?,?,?,?,?,?,?,?,NULL"
 ExecNonQuery conn,sql,_
-	CmdParam("dissertation_id",adInteger,4,dissertation_id),_
+	CmdParam("paper_id",adInteger,4,paper_id),_
 	CmdParam("reviewer_id",adInteger,4,Session("TId")),_
 	CmdParam("reviewer_master_level",adInteger,4,master_level),_
 	CmdParam("score_data",adVarWChar,500,score_data),_
@@ -273,7 +273,7 @@ ExecNonQuery conn,sql,_
 	CmdParam("display_status",adInteger,4,display_status)
 
 ' 更新记录
-sql="SELECT * FROM Dissertations WHERE ID="&dissertation_id
+sql="SELECT * FROM Dissertations WHERE ID="&paper_id
 GetRecordSet conn,rs,sql,count
 rs("REVIEW_RESULT")=ArrayJoin(arr_review_result,",")
 rs("REVIEW_LEVEL")=ArrayJoin(arr_review_level,",")
@@ -289,14 +289,14 @@ CloseRs rs
 CloseConn conn
 
 ' 保存视图状态
-view_name = "paperDetail_review_"&dissertation_id
+view_name = "paperDetail_review_"&paper_id
 setViewState Session("TId"),usertypeExpert,view_name,view_state
 updateActiveTime Session("TId")
 
 logtxt=Format("专家[{0}]提交评阅意见，论文：《{1}》，作者：{2}，评阅书：{3}。",_
 	expert_name,subject,author,full_filename)
 writeLog logtxt
-%><form id="ret" action="paperDetail.asp?tid=<%=dissertation_id%>" method="post">
+%><form id="ret" action="paperDetail.asp?tid=<%=paper_id%>" method="post">
 <input type="hidden" name="In_TEACHTYPE_ID2" value="<%=teachtype_id%>" />
 <input type="hidden" name="In_SPECIALITY_ID2" value="<%=spec_id%>" />
 <input type="hidden" name="finalFilter2" value="<%=toPlainString(finalFilter)%>" />

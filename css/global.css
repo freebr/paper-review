@@ -34,8 +34,8 @@
 
 table {
 	font-size: 12px;
-	color:#000034;
-	word-break:break-all;
+	color: #000034;
+	word-break: break-all;
 }
 
 h1 {
@@ -52,17 +52,17 @@ h2 {
 .template { width: 100%; border: 1px solid #999999 }
 .field-name { text-align: right }
 .field-name ~ td { width: 810px; height: 22px }
-.buttons { padding: 10px 0; background-color:#8ec8ff; text-align: center }
+.buttons { padding: 10px 0; background-color: #8ec8ff; text-align: center }
 .buttons input { margin: 0 10px; min-width: 100px }
 .notice-text { background-color: #cccccc }
 fieldset { width: 100%; margin-bottom: 10px; border-radius: 5px; border: 1px solid #003cff }
 legend { font: bold 16px caption; color: #003cff }
 legend a { font: normal 12px caption; margin: 0 10px }
 
-div#defenceplan { width:100%;border:1px solid #3399dd }
-div#defenceplan table { table-layout:fixed;width:100%;text-align:center }
-div#defenceplan table thead tr { background-color:#3399dd;color:white }
-div#defenceplan table td { padding:5px }
+div#defenceplan { width: 100%; border: 1px solid #3399dd }
+div#defenceplan table { table-layout: fixed; width: 100%; text-align: center }
+div#defenceplan table thead tr { background-color: #3399dd; color: white }
+div#defenceplan table td { padding: 5px }
 
 form {
 	font-size: 12px;
@@ -76,14 +76,19 @@ input.date {
 }
 input.txt:not(:read-only) {
 	background: url(../images/edit.svg) no-repeat left;
-	padding-left: 20px;
+	text-indent: 20px;
 }
-input.txt { background:none;border-top:0;border-left:0;border-right:0;border-bottom:1px solid dimgray }
+input.txt {
+	background: none;
+	border: 0;
+	border-bottom: 1px solid dimgray;
+	width: 100%;
+}
 input.score { text-align: center }
 input.scorep { text-align: center; border: 0 }
-span.loading { display:inline-block;width:100px;background:url(../images/loading.gif) center no-repeat }
-span.tip { background:url(../images/bulb_yellow.png) left center no-repeat #ffface;padding-left:20px;padding-right:5px;
-					 border:1px solid #cccccc;color:#00aa00;font-size:10pt }
+span.loading { display: inline-block; width: 100px; background: url(../images/loading.gif) center no-repeat }
+span.tip { background: url(../images/bulb_yellow.png) left center no-repeat #ffface; padding-left: 20px; padding-right: 5px;
+					 border: 1px solid #cccccc; color: #00aa00; font-size: 10pt }
 span.paper-status { color: #0000ff }
 span.paper-status-unhandled { color: #ff0000; font-weight: bold }
 span.thesissubstat { color: #cc00ee }
@@ -92,19 +97,19 @@ hr { border: 1px solid #cccccc }
 img { border: 0 }
 
 a:visited {
-	color:black;
-	text-decoration:underline;
+	color: black;
+	text-decoration: underline;
 }
 a:link {
-	color:black;
-	text-decoration:underline;
+	color: black;
+	text-decoration: underline;
 }
 a:hover {
-	color:red;
-	text-decoration:none;
+	color: red;
+	text-decoration: none;
 }
-a.resc { background:url(../images/down.png) left center no-repeat;padding-left:20px;padding-right:5px; }
-a.fileitem { text-decoration:none; }
+a.resc { background: url(../images/down.png) left center no-repeat; padding-left: 20px; padding-right: 5px; }
+a.fileitem { text-decoration: none; }
 
 ol, ul {
 	padding: 10px;

@@ -1,7 +1,7 @@
 ﻿<!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"--><%
 If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
-thesisID=Request.Form("tid")
+paper_id=Request.Form("tid")
 usertype=Request.Form("user")
 opr=Request.Form("rollback_opr")
 teachtype_id=Request.Form("In_TEACHTYPE_ID2")
@@ -12,14 +12,14 @@ query_review_status=Request.Form("In_REVIEW_STATUS2")
 finalFilter=Request.Form("finalFilter2")
 pageSize=Request.Form("pageSize2")
 pageNo=Request.Form("pageNo2")
-If Len(thesisID)=0 Or Not IsNumeric(thesisID) Or Len(usertype)=0 Or Not IsNumeric(usertype) Or Len(opr)=0 Or Not IsNumeric(opr) Then
+If Len(paper_id)=0 Or Not IsNumeric(paper_id) Or Len(usertype)=0 Or Not IsNumeric(usertype) Or Len(opr)=0 Or Not IsNumeric(opr) Then
 %><body><center><font color=red size="4">参数无效。</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 	Response.End()
 End If
 
 Dim conn,rs,sql,sqlDetect,count
 Connect conn
-sql="SELECT * FROM Dissertations WHERE ID="&thesisID
+sql="SELECT * FROM Dissertations WHERE ID="&paper_id
 GetRecordSet conn,rs,sql,count
 If rs.EOF Then
 %><body><center><font color=red size="4">数据库没有该论文记录！</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
@@ -29,7 +29,7 @@ If rs.EOF Then
 End If
 
 Dim detect_count
-sql="SELECT DETECT_COUNT FROM ViewDissertations WHERE ID="&thesisID
+sql="SELECT DETECT_COUNT FROM ViewDissertations WHERE ID="&paper_id
 GetRecordSet conn,rsDetect,sql,count
 detect_count=rsDetect(0)
 CloseRs rsDetect
@@ -197,33 +197,33 @@ Case 2	' 撤销导师审核操作
 Case 3	' 撤销教务员操作
 	Select Case opr
 	Case 0	' 撤销送检操作
-		sqlDetect="EXEC spDeleteDetectResult "&thesisID&";"
+		sqlDetect="EXEC spDeleteDetectResult "&paper_id&";"
 		If Not IsNull(rs("THESIS_FILE")) Then
-			sqlDetect=sqlDetect&"EXEC spAddDetectResult "&thesisID&","&rs("THESIS_FILE")&",NULL,NULL,NULL,1;"
+			sqlDetect=sqlDetect&"EXEC spAddDetectResult "&paper_id&","&rs("THESIS_FILE")&",NULL,NULL,NULL,1;"
 		End If
 		rs("REVIEW_STATUS")=rsAgreedDetect
 	Case 1	' 撤销匹配评阅专家操作
 		rs("REVIEW_STATUS")=rsAgreedReview
 	Case 2	' 撤销导入答辩安排操作
-		sql="DELETE FROM DefenceInfo WHERE THESIS_ID="&thesisID
+		sql="DELETE FROM DefenceInfo WHERE THESIS_ID="&paper_id
 		conn.Execute sql
 	Case 3	' 撤销导入答辩委员会修改意见操作
-		sql="UPDATE DefenceInfo SET DEFENCE_EVAL=NULL WHERE THESIS_ID="&thesisID
+		sql="UPDATE DefenceInfo SET DEFENCE_EVAL=NULL WHERE THESIS_ID="&paper_id
 		conn.Execute sql
 		rs("DEFENCE_MODIFY_EVAL")=Null	' 旧字段
 		rs("REVIEW_STATUS")=rsAgreedDefence
 	Case 4	' 撤销匹配教指委委员操作
 		rs("REVIEW_STATUS")=rsInstructReviewPaperDetected
 	Case 5	' 撤销第一位教指委委员的修改意见
-		audit_info=getAuditInfo(thesisID,rs("THESIS_FILE4"), auditTypeInstructReview)
+		audit_info=getAuditInfo(paper_id,rs("THESIS_FILE4"), auditTypeInstructReview)
 		If Not IsEmpty(audit_info(0)("AuditorName")) Then
-			addAuditRecord thesisID, rs("THESIS_FILE4"), auditTypeInstructReview, audit_info(0)("AuditTime"), rs("INSTRUCT_MEMBER1"), True, Null
+			addAuditRecord paper_id, rs("THESIS_FILE4"), auditTypeInstructReview, audit_info(0)("AuditTime"), rs("INSTRUCT_MEMBER1"), True, Null
 		End If
 		rs("REVIEW_STATUS")=rsMatchedInstructMember
 	Case 6	' 撤销第二位教指委委员的修改意见
-		audit_info=getAuditInfo(thesisID,rs("THESIS_FILE4"), auditTypeInstructReview)
+		audit_info=getAuditInfo(paper_id,rs("THESIS_FILE4"), auditTypeInstructReview)
 		If UBound(audit_info)>=1 Then
-			addAuditRecord thesisID, rs("THESIS_FILE4"), auditTypeInstructReview, audit_info(1)("AuditTime"), rs("INSTRUCT_MEMBER2"), True, Null
+			addAuditRecord paper_id, rs("THESIS_FILE4"), auditTypeInstructReview, audit_info(1)("AuditTime"), rs("INSTRUCT_MEMBER2"), True, Null
 		End If
 		rs("REVIEW_STATUS")=rsMatchedInstructMember
 	Case 7	' 撤销导入学院学位评定分会修改意见操作
@@ -253,7 +253,7 @@ If Len(sqlDetect) Then
 End If
 CloseRs rs
 CloseConn conn
-%><form id="ret" action="paperDetail.asp?tid=<%=thesisID%>" method="post">
+%><form id="ret" action="paperDetail.asp?tid=<%=paper_id%>" method="post">
 <input type="hidden" name="In_TEACHTYPE_ID2" value="<%=teachtype_id%>" />
 <input type="hidden" name="In_CLASS_ID2" value="<%=class_id%>" />
 <input type="hidden" name="In_ENTER_YEAR2" value="<%=enter_year%>" />

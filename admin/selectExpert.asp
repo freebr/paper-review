@@ -7,14 +7,14 @@ ctrlname2=Request.QueryString("ctrl2")
 itemid=Request.QueryString("item")
 match_type=Request.QueryString("match_type")
 If match_type=1 Then
-	is_school_only=Request.QueryString("source")
-	If IsEmpty(is_school_only) Then
-		is_school_only=2
+	source=Request.QueryString("source")
+	If IsEmpty(source) Then
+		is_school_only=False
 	Else
-		is_school_only=is_school_only=1
+		is_school_only=source=1
 	End If
 Else
-	is_school_only=1
+	is_school_only=True
 End If
 
 Dim PubTerm,PageNo,PageSize
