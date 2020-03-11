@@ -389,7 +389,7 @@ Case 1	' 上传进程
 
 		Set params=getFormParams("activity_id","grade","speciality_name","subject","predefence_date","view_state")
 
-		If Len(params("activity_id"))=0 Then
+		If is_new_dissertation And Len(params("activity_id"))=0 Then
 			bError=True
 			errdesc="请选择要参加的评阅活动！"
 		ElseIf Not IsNumeric(params("grade")) Or Len(params("grade"))<>4 Then
@@ -535,8 +535,8 @@ Case 1	' 上传进程
 	CloseRs rs3
 
 	' 保存视图状态
-	setViewState Session("StuId"),usertypeStudent,view_name,params("view_state")
-	writeLog Format("学生[{0}]填写提交[{1}]。",Session("Stuname"),arrStuOprName(section_id))
+	' setViewState Session("StuId"),usertypeStudent,view_name,params("view_state")
+	' writeLog Format("学生[{0}]填写提交[{1}]。",Session("Stuname"),arrStuOprName(section_id))
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />

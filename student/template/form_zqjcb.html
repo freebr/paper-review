@@ -1,20 +1,17 @@
 ﻿<table width="100%">
-	<tr><td class="section"><p>封面</p></td>
-	<tr><td><p>姓&emsp;&emsp;名：<input type="text" name="stu_name" size="80" value="<%=Session("StuName")%>" readonly /></p></td></tr>
-	<tr><td><p>学&emsp;&emsp;号：<input type="text" name="stu_no" size="80" value="<%=Session("StuNo")%>" readonly /></p></td></tr>
-	<tr><td><p>学&emsp;&emsp;院：<input type="text" name="faculty" size="80" value="工商管理学院" readonly /></p></td></tr>
-	<tr><td><p>专业类别：<input type="text" name="stu_type" size="80" value="<%=getTeachTypeNameById(stu_type)%>" readonly /></p></td></tr>
+	<tr><td class="section"><p>封面</p></td></tr>
+	<tr><td><p>姓&emsp;&emsp;名：<input type="text" class="txt" name="stu_name" size="80" value="<%=Session("StuName")%>" readonly /></p></td></tr>
+	<tr><td><p>学&emsp;&emsp;号：<input type="text" class="txt" name="stu_no" size="80" value="<%=Session("StuNo")%>" readonly /></p></td></tr>
+	<tr><td><p>学&emsp;&emsp;院：<input type="text" class="txt" name="faculty" size="80" value="工商管理学院" readonly /></p></td></tr>
+	<tr><td><p>专业类别：<input type="text" class="txt" name="stu_type" size="80" value="<%=getTeachTypeNameById(stu_type)%>" readonly /></p></td></tr>
 	<%
 	If stu_type=5 Then %>
-<tr><td><p>工程领域：<input type="text" name="research_field" size="80" value="<%=research_field%>" /></p></td></tr><%
+<tr><td><p>工程领域：<input type="text" class="txt" name="research_field" size="80" value="<%=research_field%>" /></p></td></tr><%
 	End If %>
-	<tr><td class="section"><p>内页</p></td>
-	<tr><td><table width="100%">
-	<tr><td><p>学位论文题目：</p></td>
-	<td><p><input type="text" name="subject" size="75" value="<%=subject%>" /></p></td></tr>
-	</table></td></tr>
+	<tr><td class="section"><p>内页</p></td></tr>
+	<tr><td><p>学位论文题目：<input type="text" class="txt" name="subject" size="75" value="<%=subject%>" /></p></td></tr>
 	<tr><td><p>学位论文进展、存在问题及解决途径：</p></td></tr>
-	<tr><td><p align="center"><textarea name="thesis_progress" rows="25" cols="100" maxlength="900"></textarea></p></td></tr>
+	<tr><td><p align="center"><textarea name="thesis_progress" class="txt" rows="25" cols="110" maxlength="900"></textarea></p></td></tr>
 	<tr><td><p>下阶段工作计划：</p></td></tr>
-	<tr><td><p align="center"><textarea name="work_schedule" rows="10" cols="100" maxlength="900"></textarea></p></td></tr>
+	<tr><td><p align="center"><textarea name="work_schedule" class="txt" rows="10" cols="110" maxlength="900"></textarea></p></td></tr>
 </table>

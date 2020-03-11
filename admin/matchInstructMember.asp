@@ -64,18 +64,18 @@ Case vbNullString	' 选择页面
 <input type="hidden" name="pageNo2" value="<%=pageNo%>" />
 <input type="hidden" name="firstMatch" value="<%=nFirstMatch%>" />
 <table class="form" width="800" cellspacing="1" cellpadding="3">
-<tr><td>论文题目：&emsp;&emsp;&emsp;<input type="text" class="txt" name="subject" size="95%" value="<%=rs("THESIS_SUBJECT")%>" readonly /></td></tr>
-<tr><td>作者姓名：&emsp;&emsp;&emsp;<input type="text" class="txt" name="author" size="40" value="<%=rs("STU_NAME")%>" readonly />&nbsp;
-学号：<input type="text" class="txt" name="stuno" size="15" value="<%=rs("STU_NO")%>" readonly />&nbsp;
-学位类别：<input type="text" class="txt" name="degreename" size="10" value="<%=rs("TEACHTYPE_NAME")%>" readonly /></td></tr>
-<tr><td>指导教师：&emsp;&emsp;&emsp;<input type="text" class="txt" name="tutorname" size="95%" value="<%=rs("TUTOR_NAME")%>" readonly /></td></tr><%
+<tr><td>论文题目：&emsp;&emsp;&emsp;<input type="text" class="txt full-width" name="subject" size="95%" value="<%=rs("THESIS_SUBJECT")%>" readonly /></td></tr>
+<tr><td>作者姓名：&emsp;&emsp;&emsp;<input type="text" class="txt full-width" name="author" size="40" value="<%=rs("STU_NAME")%>" readonly />&nbsp;
+学号：<input type="text" class="txt full-width" name="stuno" size="15" value="<%=rs("STU_NO")%>" readonly />&nbsp;
+学位类别：<input type="text" class="txt full-width" name="degreename" size="10" value="<%=rs("TEACHTYPE_NAME")%>" readonly /></td></tr>
+<tr><td>指导教师：&emsp;&emsp;&emsp;<input type="text" class="txt full-width" name="tutorname" size="95%" value="<%=rs("TUTOR_NAME")%>" readonly /></td></tr><%
 	If reviewfile_type=2 Then %>
-<tr><td>领域名称：&emsp;&emsp;&emsp;<input type="text" class="txt" name="speciality" size="95%" value="<%=rs("SPECIALITY_NAME")%>" readonly /></td></tr><%
+<tr><td>领域名称：&emsp;&emsp;&emsp;<input type="text" class="txt full-width" name="speciality" size="95%" value="<%=rs("SPECIALITY_NAME")%>" readonly /></td></tr><%
 	End If %>
-<tr><td>研究方向：&emsp;&emsp;&emsp;<input type="text" class="txt" name="researchway_name" size="95%" value="<%=rs("RESEARCHWAY_NAME")%>" readonly /></td></tr>
-<tr><td>院系名称：&emsp;&emsp;&emsp;<input type="text" class="txt" name="faculty" size="95%" value="工商管理学院" readonly /></td></tr><%
+<tr><td>研究方向：&emsp;&emsp;&emsp;<input type="text" class="txt full-width" name="researchway_name" size="95%" value="<%=rs("RESEARCHWAY_NAME")%>" readonly /></td></tr>
+<tr><td>院系名称：&emsp;&emsp;&emsp;<input type="text" class="txt full-width" name="faculty" size="95%" value="工商管理学院" readonly /></td></tr><%
 	If Not IsNull(rs("THESIS_FORM")) And Len(rs("THESIS_FORM")) Then %>
-<tr><td>论文形式：&emsp;&emsp;&emsp;<input type="text" class="txt" name="thesisform" size="95%" value="<%=rs("THESIS_FORM")%>" readonly /></td></tr><%
+<tr><td>论文形式：&emsp;&emsp;&emsp;<input type="text" class="txt full-width" name="thesisform" size="95%" value="<%=rs("THESIS_FORM")%>" readonly /></td></tr><%
 	End If %></table>
 <p><font size=4><b>请选择要匹配的教指委委员（单击方框选择）</b></font></p>
 <table class="form" width="800" cellpadding="2" cellspacing="1" bgcolor="dimgray">

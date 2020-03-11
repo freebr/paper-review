@@ -1,44 +1,44 @@
 ﻿<table width="100%">
 <tr><td align="center"><span class="tip">提示：因暂不支持图文编辑，如报告中含图片，请<a href="<%=template_file%>" target="_blank">下载开题报告表模板</a>并填写后，<a href="uploadTable.asp">点击这里直接上传表格文件</a>。</span></td></tr>
 <tr><td class="section"><p>封面</p></td>
-	<tr><td><p>姓&emsp;&emsp;名：<input type="text" name="stu_name" size="80" value="<%=Session("StuName")%>" readonly /></p></td></tr>
-	<tr><td><p>学&emsp;&emsp;号：<input type="text" name="stu_no" size="80" value="<%=Session("StuNo")%>" readonly /></p></td></tr>
-	<tr><td><p>学&emsp;&emsp;院：<input type="text" name="faculty" size="80" value="工商管理学院" readonly /></p></td></tr>
-	<tr><td><p>专业类别：<input type="text" name="stu_type" size="80" value="<%=getTeachTypeNameById(stu_type)%>" readonly /></p></td></tr>
+	<tr><td><p>姓&emsp;&emsp;名：<input type="text" class="txt" name="stu_name" size="80" value="<%=Session("StuName")%>" readonly /></p></td></tr>
+	<tr><td><p>学&emsp;&emsp;号：<input type="text" class="txt" name="stu_no" size="80" value="<%=Session("StuNo")%>" readonly /></p></td></tr>
+	<tr><td><p>学&emsp;&emsp;院：<input type="text" class="txt" name="faculty" size="80" value="工商管理学院" readonly /></p></td></tr>
+	<tr><td><p>专业类别：<input type="text" class="txt" name="stu_type" size="80" value="<%=getTeachTypeNameById(stu_type)%>" readonly /></p></td></tr>
 	<tr><td><p>工程领域：<select name="research_field_select"></select><input type="hidden" name="research_field" /></p></td></tr>
 	<tr><td><p>研究方向：<select name="sub_research_field_select"></select><input type="hidden" name="sub_research_field" />
-	<input type="text" name="custom_sub_research_field" size="20" placeholder="请输入…" value="<%=sub_research_field%>" /></p></td></tr>
+	<input type="text" class="txt" name="custom_sub_research_field" size="20" placeholder="请输入…" value="<%=sub_research_field%>" /></p></td></tr>
 	<tr><td class="section"><p>一、摘要</p></td>
 	<tr><td><table width="100%">
 	<tr><td rowspan="2"><p>论文题目</p></td>
-	<td><p>中文：<input type="text" name="subject" size="75" value="<%=subject%>" /></p></td></tr>
-	<tr><td><p>英文：<input type="text" name="subject_en" size="75" value="<%=subject_en%>" /></p></td></tr>
+	<td><p>中文：<input type="text" class="txt" name="subject" size="75" value="<%=subject%>" /></p></td></tr>
+	<tr><td><p>英文：<input type="text" class="txt" name="subject_en" size="75" value="<%=subject_en%>" /></p></td></tr>
 	</table></td></tr>
 	<tr><td><table width="100%">
-	<tr><td><p>校内导师：<input type="text" name="school_tutor_name" size="10" value="<%=tutor_name%>" /></p></td>
-	<td><p>职称或职务：<input type="text" name="school_tutor_duty" size="10" value="<%=tutor_duty_name%>" /></p></td>
+	<tr><td><p>校内导师：<input type="text" class="txt" name="school_tutor_name" size="10" value="<%=tutor_name%>" /></p></td>
+	<td><p>职称或职务：<input type="text" class="txt" name="school_tutor_duty" size="10" value="<%=tutor_duty_name%>" /></p></td>
 	<td><p>研究方向：<select name="school_tutor_research_field_select">
 	</select><input type="hidden" name="school_tutor_research_field" /></p></td></tr>
-	<tr><td><p>校外导师：<input type="text" name="afterschool_tutor_name" size="10" /></p></td>
-	<td><p>职称或职务：<input type="text" name="afterschool_tutor_duty" size="10" /></p></td>
-	<td><p>学科专长：<input type="text" name="afterschool_tutor_expertise" size="20" /></p></td></tr>
+	<tr><td><p>校外导师：<input type="text" class="txt" name="afterschool_tutor_name" size="10" /></p></td>
+	<td><p>职称或职务：<input type="text" class="txt" name="afterschool_tutor_duty" size="10" /></p></td>
+	<td><p>学科专长：<input type="text" class="txt" name="afterschool_tutor_expertise" size="20" /></p></td></tr>
 	</table></td></tr>
-	<tr><td><p>课题来源：<input type="text" name="issue_source" size="75" /></p></td></tr>
+	<tr><td><p>课题来源：<input type="text" class="txt" name="issue_source" size="75" /></p></td></tr>
 	<tr><td><p>摘要（不超过800字）：</p></td></tr>
-	<tr><td><p align="center"><textarea name="abstract" rows="20" cols="100" maxlength="900"></textarea></p></td></tr>
+	<tr><td><p align="center"><textarea name="abstract" class="txt" rows="20" cols="100" maxlength="900"></textarea></p></td></tr>
 	<tr><td><table width="420">
 	<tr><td colspan="3"><p>关键词（不少于三个，左边为中文，右边为英文）：<input type="hidden" name="keyword_ch_all" /><input type="hidden" name="keyword_en_all" /></td></tr>
-	<tr class="keywordpair"><td><p><input type="text" name="keyword_ch" class="keyword" size="10" placeholder="请输入……" /></p></td>
-	<td><p><input type="text" name="keyword_en" class="keyword" size="20" placeholder="Please input..." /></p></td>
+	<tr class="keywordpair"><td><p><input type="text" class="txt" name="keyword_ch" class="keyword" size="10" placeholder="请输入……" /></p></td>
+	<td><p><input type="text" class="txt" name="keyword_en" class="keyword" size="20" placeholder="Please input..." /></p></td>
 	<td><a class="linkRemove" href="#" title="删除此关键字"><img src="../images/student/remove.png" width="20" height="20" /></a></td></tr>
 	<tr><td colspan="3"><a class="linkAdd" href="#" title="增加关键字"><img src="../images/student/add.png" width="20" height="20" /></a></p></td></tr>
 	</table></td></tr>
 	<tr><td class="section"><p>二、立题依据</p></td>
 	<tr><td><p>1、研究意义<br/>2、国内外研究现状<br/>3、主要参考文献及出处</p></td></tr>
-	<tr><td><p align="center"><textarea name="research_background" rows="20" cols="100"></textarea></p></td></tr>
+	<tr><td><p align="center"><textarea name="research_background" class="txt" rows="20" cols="100"></textarea></p></td></tr>
 	<tr><td class="section"><p>三、研究方案及工作基础</p></td>
 	<tr><td><p>1、研究目标、研究内容及拟解决的关键问题<br/>2、拟采取的研究方法及技术路线<br/>3、研究工作基础</p></td></tr>
-	<tr><td><p align="center"><textarea name="research_solution" rows="20" cols="100"></textarea></p></td></tr>
+	<tr><td><p align="center"><textarea name="research_solution" class="txt" rows="20" cols="100"></textarea></p></td></tr>
 	<tr><td class="section"><p>四、论文工作计划及预期成果</p></td></tr>
 	<tr><td><table width="100%">
 	<tr><td colspan="3"><p>论文工作进度安排</p></td></tr>
@@ -46,12 +46,12 @@
 	<td width="200"><p align="center">工作内容</p></td>
 	<td><p align="center">备注</p></td></tr><%
 	For i=1 To 8 %>
-	<tr><td><p><input type="text" name="work_schedule_duration" size="20" /></p></td>
-	<td><p><input type="text" name="work_schedule_content" size="30" /></p></td>
-	<td><p><input type="text" name="work_schedule_memo" size="20" /></p></td></tr><%
+	<tr><td><p><input type="text" class="txt" name="work_schedule_duration" size="20" /></p></td>
+	<td><p><input type="text" class="txt" name="work_schedule_content" size="30" /></p></td>
+	<td><p><input type="text" class="txt" name="work_schedule_memo" size="20" /></p></td></tr><%
 	Next %>
 	<tr><td colspan="3"><p>预期成果</p></td></tr>
-	<tr><td colspan="3"><textarea name="anticipated_result" rows="8" cols="100"></textarea></td></tr>
+	<tr><td colspan="3"><textarea name="anticipated_result" class="txt" rows="8" cols="100"></textarea></td></tr>
 	</table></td></tr>
 </table><%
 	If str_keywords_ch<>"''" And str_keywords_en<>"''" Then %>

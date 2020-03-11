@@ -1,10 +1,10 @@
 ﻿<table width="100%">
 	<tr><td class="section"><p>正文</p></td>
-	<tr><td><p>&emsp;&emsp;学位申请人<input type="text" name="stu_name" size="10" value="<%=Session("StuName")%>" readonly />，系我校&nbsp;
-<input type="text" name="grade" size="2" maxlength="4" value="<%=enter_year%>" />&nbsp;级
-<input type="text" name="speciality_name" size="10" value="<%=speciality_name%>" />专业的硕士研究生，学位论文题目是
-<input type="text" name="subject" size="45" value="<%=subject%>" />，于
-<input type="text" name="predefence_date" id="predefence_date" class="date" title="预答辩日期" />
+	<tr><td><p>&emsp;&emsp;学位申请人<input type="text" class="txt" name="stu_name" size="20" value="<%=Session("StuName")%>" readonly />，系我校&nbsp;
+<input type="text" class="txt" name="grade" size="5" maxlength="4" value="<%=enter_year%>" />&nbsp;级
+<input type="text" class="txt" name="speciality_name" size="15" value="<%=speciality_name%>" />专业的硕士研究生，学位论文题目是
+<input type="text" class="txt" name="subject" size="60" value="<%=subject%>" />，于
+<input type="text" class="txt" name="predefence_date" id="predefence_date" class="date" title="预答辩日期" />
 <img style="cursor:pointer" src="../images/calendar.gif" onclick="showCalendar('predefence_date','<%=Date%>','y年m月d日')" title="打开日历">
 公开进行并通过了学位论文预答辩。经审查，同意其举行正式的学位论文答辩会。</p>
 <p>&emsp;&emsp;学位申请人应根据预答辩会委员提出的意见，对学位论文做进一步的修改和完善，并严格按照《华南理工大学研究生学位论文撰写规范》的要求，整理、印制出格式规范的学位论文。凭此意见书和印制好的学位论文1份以及指导教师签字的“指导教师对学位论文的学术评语”，到学院负责研究生答辩工作的教务员处审核领取学位材料档案袋，并根据“研究生学位（毕业）论文答辩须知”的规定，办理有关学位论文评审和答辩的审批手续，领取答辩委员会聘书和表决票。</p></td></tr>

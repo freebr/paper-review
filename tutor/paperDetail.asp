@@ -172,29 +172,29 @@ Case vbNullString	' 论文详情页面
 		<fieldset>
 			<legend>论文基本情况</legend>
 			<table class="form">
-			<tr><td class="field-name">评阅活动：</td><td><input type="text" class="txt" size="95%" value="<%=rs("ActivityName")%>" readonly /></td></tr>
-			<tr><td class="field-name">论文题目：</td><td><input type="text" class="txt" name="subject" size="95%" value="<%=rs("THESIS_SUBJECT")%>" readonly /></td></tr>
-			<tr><td class="field-name">（英文）：</td><td><input type="text" class="txt" name="subject_en" size="85%" value="<%=rs("THESIS_SUBJECT_EN")%>" readonly /></td></tr>
-			<tr><td class="field-name">作者姓名：</td><td><input type="text" class="txt" name="author" size="18" value="<%=rs("STU_NAME")%>" readonly />&nbsp;
-			学号：<input type="text" class="txt" name="stuno" size="15" value="<%=rs("STU_NO")%>" readonly />&nbsp;
-			学位类别：<input type="text" class="txt" name="degreename" size="10" value="<%=rs("TEACHTYPE_NAME")%>" readonly /></td></tr>
-			<tr><td class="field-name">指导教师：</td><td><input type="text" class="txt" name="tutorname" size="95%" value="<%=rs("TUTOR_NAME")%>" readonly /></td></tr><%
+			<tr><td class="field-name">评阅活动：</td><td><input type="text" class="txt full-width" size="95%" value="<%=rs("ActivityName")%>" readonly /></td></tr>
+			<tr><td class="field-name">论文题目：</td><td><input type="text" class="txt full-width" name="subject" size="95%" value="<%=rs("THESIS_SUBJECT")%>" readonly /></td></tr>
+			<tr><td class="field-name">（英文）：</td><td><input type="text" class="txt full-width" name="subject_en" size="85%" value="<%=rs("THESIS_SUBJECT_EN")%>" readonly /></td></tr>
+			<tr><td class="field-name">作者姓名：</td><td><input type="text" class="txt full-width" name="author" size="18" value="<%=rs("STU_NAME")%>" readonly /></td></tr>
+			<tr><td class="field-name">学号：</td><td><input type="text" class="txt full-width" name="stuno" size="15" value="<%=rs("STU_NO")%>" readonly /></td></tr>
+			<tr><td class="field-name">学位类别：</td><td><input type="text" class="txt full-width" name="degreename" size="10" value="<%=rs("TEACHTYPE_NAME")%>" readonly /></td></tr>
+			<tr><td class="field-name">指导教师：</td><td><input type="text" class="txt full-width" name="tutorname" size="95%" value="<%=rs("TUTOR_NAME")%>" readonly /></td></tr><%
 	If reviewfile_type=2 Then %>
-			<tr><td class="field-name">领域名称：</td><td><input type="text" class="txt" name="speciality" size="95%" value="<%=rs("SPECIALITY_NAME")%>" readonly /></td></tr><%
+			<tr><td class="field-name">领域名称：</td><td><input type="text" class="txt full-width" name="speciality" size="95%" value="<%=rs("SPECIALITY_NAME")%>" readonly /></td></tr><%
 	End If %>
-			<tr><td class="field-name">研究方向：</td><td><input type="text" class="txt" name="researchway_name" size="95%" value="<%=rs("RESEARCHWAY_NAME")%>" readonly /></td></tr>
-			<tr><td class="field-name">论文关键词：</td><td><input type="text" class="txt" name="keywords_ch" size="85%" value="<%=rs("KEYWORDS")%>" readonly /></td></tr>
-			<tr><td class="field-name">（英文）：</td><td><input type="text" class="txt" name="keywords_en" size="85%" value="<%=rs("KEYWORDS_EN")%>" readonly /></td></tr>
-			<tr><td class="field-name">院系名称：</td><td><input type="text" class="txt" name="faculty" size="30%" value="工商管理学院" readonly />&nbsp;
-			班级：<input type="text" class="txt" name="class" size="51%" value="<%=rs("CLASS_NAME")%>" readonly /></td></tr><%
+			<tr><td class="field-name">研究方向：</td><td><input type="text" class="txt full-width" name="researchway_name" size="95%" value="<%=rs("RESEARCHWAY_NAME")%>" readonly /></td></tr>
+			<tr><td class="field-name">论文关键词：</td><td><input type="text" class="txt full-width" name="keywords_ch" size="85%" value="<%=rs("KEYWORDS")%>" readonly /></td></tr>
+			<tr><td class="field-name">（英文）：</td><td><input type="text" class="txt full-width" name="keywords_en" size="85%" value="<%=rs("KEYWORDS_EN")%>" readonly /></td></tr>
+			<tr><td class="field-name">院系名称：</td><td><input type="text" class="txt full-width" name="faculty" size="30%" value="工商管理学院" readonly /></td></tr>
+			<tr><td class="field-name">班级：</td><td><input type="text" class="txt full-width" name="class" size="51%" value="<%=rs("CLASS_NAME")%>" readonly /></td></tr><%
 	If Not IsNull(rs("THESIS_FORM")) And Len(rs("THESIS_FORM")) Then %>
-			<tr><td class="field-name">论文形式：</td><td><input type="text" class="txt" name="thesisform" size="95%" value="<%=rs("THESIS_FORM")%>" readonly /></td></tr><%
+			<tr><td class="field-name">论文形式：</td><td><input type="text" class="txt full-width" name="thesisform" size="95%" value="<%=rs("THESIS_FORM")%>" readonly /></td></tr><%
 	End If
 	If review_status>=rsDetectUnpassed Then %>
-			<tr><td class="field-name">送检论文文字复制比：</td><td><input type="text" class="txt" name="reproduct_ratio" size="10px" value="<%=toNumericString(reproduct_ratio)%>%" readonly /></td></tr><%
+			<tr><td class="field-name">送检论文文字复制比：</td><td><input type="text" class="txt full-width" name="reproduct_ratio" size="10px" value="<%=toNumericString(reproduct_ratio)%>%" readonly /></td></tr><%
 	End If
 	If review_status>=rsInstructReviewPaperDetected Then %>
-			<tr><td class="field-name">教指委盲评论文文字复制比：</td><td><input type="text" class="txt" name="instruct_review_reproduct_ratio" size="10px" value="<%=toNumericString(instruct_review_reproduct_ratio)%>%" readonly /></td></tr><%
+			<tr><td class="field-name">教指委盲评论文文字复制比：</td><td><input type="text" class="txt full-width" name="instruct_review_reproduct_ratio" size="10px" value="<%=toNumericString(instruct_review_reproduct_ratio)%>%" readonly /></td></tr><%
 	End If
 	If task_progress>=tpTbl1Uploaded Then
 		If Len(table_file(1)) Then %>
@@ -525,12 +525,12 @@ Case 2	' 填写评语页面
 <center><font size=4><b><%=operation_name%></b></font>
 <form id="fmOper" action="updatePaper.asp?tid=<%=paper_id%>" method="post" style="margin-top:0;padding-top:10px">
 <table class="form" width="800" cellspacing="1" cellpadding="3">
-<tr><td>作者姓名：<input type="text" class="txt" name="author" value="<%=rs("STU_NAME")%>" readonly /></td>
-<td>学号：<input type="text" class="txt" name="stuno" value="<%=rs("STU_NO")%>" readonly /></td>
-<td>导师姓名、职称：<input type="text" class="txt" name="tutorinfo" value="<%=Session("Tname")%>&nbsp;<%=tutor_duty_name%>" readonly /></td></tr>
-<tr><td colspan=2>申请学位专业名称：<input type="text" class="txt" name="speciality" size="50" value="<%=rs("SPECIALITY_NAME")%>" readonly /></td>
-<td>学院名称：<input type="text" class="txt" name="faculty" value="工商管理学院" readonly /></td></tr>
-<tr><td colspan=3>学位论文题目：<input type="text" class="txt" name="subject" size="70" value="<%=rs("THESIS_SUBJECT")%>" readonly /></td></tr><%
+<tr><td>作者姓名：<input type="text" class="txt full-width" name="author" value="<%=rs("STU_NAME")%>" readonly /></td>
+<td>学号：<input type="text" class="txt full-width" name="stuno" value="<%=rs("STU_NO")%>" readonly /></td>
+<td>导师姓名、职称：<input type="text" class="txt full-width" name="tutorinfo" value="<%=Session("Tname")%>&nbsp;<%=tutor_duty_name%>" readonly /></td></tr>
+<tr><td colspan=2>申请学位专业名称：<input type="text" class="txt full-width" name="speciality" size="50" value="<%=rs("SPECIALITY_NAME")%>" readonly /></td>
+<td>学院名称：<input type="text" class="txt full-width" name="faculty" value="工商管理学院" readonly /></td></tr>
+<tr><td colspan=3>学位论文题目：<input type="text" class="txt full-width" name="subject" size="70" value="<%=rs("THESIS_SUBJECT")%>" readonly /></td></tr><%
 	Select Case opr
 	Case 1,2,3,4 ' 填写表格审核意见页面
 		Select Case opr

@@ -109,19 +109,19 @@ Select Case step
 			<fieldset>
 				<legend>论文基本情况</legend>
 				<table class="form">
-				<tr><td class="field-name">评阅活动：</td><td><input type="text" class="txt" size="95%" value="<%=rs("ActivityName")%>" readonly /></td></tr>
-				<tr><td class="field-name">论文题目：</td><td><input type="text" class="txt" name="subject" size="95%" value="<%=rs("THESIS_SUBJECT")%>" readonly /></td></tr>
-				<tr><td class="field-name">（英文）：</td><td><input type="text" class="txt" name="subject_en" size="85%" value="<%=rs("THESIS_SUBJECT_EN")%>" readonly /></td></tr>
-				<tr><td class="field-name">学位类别：</td><td><input type="text" class="txt" name="degreename" size="95%" value="<%=rs("TEACHTYPE_NAME")%>" readonly /></td></tr><%
+				<tr><td class="field-name">评阅活动：</td><td><input type="text" class="txt full-width" size="95%" value="<%=rs("ActivityName")%>" readonly /></td></tr>
+				<tr><td class="field-name">论文题目：</td><td><input type="text" class="txt full-width" name="subject" size="95%" value="<%=rs("THESIS_SUBJECT")%>" readonly /></td></tr>
+				<tr><td class="field-name">（英文）：</td><td><input type="text" class="txt full-width" name="subject_en" size="85%" value="<%=rs("THESIS_SUBJECT_EN")%>" readonly /></td></tr>
+				<tr><td class="field-name">学位类别：</td><td><input type="text" class="txt full-width" name="degreename" size="95%" value="<%=rs("TEACHTYPE_NAME")%>" readonly /></td></tr><%
 		If reviewfile_type=2 Then %>
-				<tr><td class="field-name">领域名称：</td><td><input type="text" class="txt" name="speciality" size="95%" value="<%=rs("SPECIALITY_NAME")%>" readonly /></td></tr><%
+				<tr><td class="field-name">领域名称：</td><td><input type="text" class="txt full-width" name="speciality" size="95%" value="<%=rs("SPECIALITY_NAME")%>" readonly /></td></tr><%
 		End If %>
-				<tr><td class="field-name">研究方向：</td><td><input type="text" class="txt" name="researchway_name" size="95%" value="<%=rs("RESEARCHWAY_NAME")%>" readonly /></td></tr>
-				<tr><td class="field-name">论文关键词：</td><td><input type="text" class="txt" name="keywords_ch" size="85%" value="<%=rs("KEYWORDS")%>" readonly /></td></tr>
-				<tr><td class="field-name">（英文）：</td><td><input type="text" class="txt" name="keywords_en" size="85%" value="<%=rs("KEYWORDS_EN")%>" readonly /></td></tr>
-				<tr><td class="field-name">院系名称：</td><td><input type="text" class="txt" name="faculty" size="95%" value="工商管理学院" readonly /></td></tr><%
+				<tr><td class="field-name">研究方向：</td><td><input type="text" class="txt full-width" name="researchway_name" size="95%" value="<%=rs("RESEARCHWAY_NAME")%>" readonly /></td></tr>
+				<tr><td class="field-name">论文关键词：</td><td><input type="text" class="txt full-width" name="keywords_ch" size="85%" value="<%=rs("KEYWORDS")%>" readonly /></td></tr>
+				<tr><td class="field-name">（英文）：</td><td><input type="text" class="txt full-width" name="keywords_en" size="85%" value="<%=rs("KEYWORDS_EN")%>" readonly /></td></tr>
+				<tr><td class="field-name">院系名称：</td><td><input type="text" class="txt full-width" name="faculty" size="95%" value="工商管理学院" readonly /></td></tr><%
 		If Not IsNull(rs("THESIS_FORM")) And Len(rs("THESIS_FORM")) Then %>
-				<tr><td class="field-name">论文形式：</td><td><input type="text" class="txt" name="thesisform" size="95%" value="<%=rs("THESIS_FORM")%>" readonly /></td></tr><%
+				<tr><td class="field-name">论文形式：</td><td><input type="text" class="txt full-width" name="thesisform" size="95%" value="<%=rs("THESIS_FORM")%>" readonly /></td></tr><%
 		End If %>
 				<tr><td class="field-name">送审论文：</td><td><a class="resc" href="fetchDocument.asp?tid=<%=paper_id%>&type=1" target="_blank">点击下载</a></td></tr><%
 		If Len(review_time(reviewer)) Then
@@ -303,12 +303,12 @@ Select Case step
 </td></tr></table>
 <table class="form"><tr><td>
 <div class="fields">
-	<div>申请学位专业名称：<input type="text" class="txt" name="speciality" size="25" value="<%=rs("SPECIALITY_NAME")%>" readonly /></div>
-	<div>研究方向：<input type="text" class="txt" name="researchway" size="25" value="<%=rs("RESEARCHWAY_NAME")%>" readonly /></div>
-	<div>学院名称：<input type="text" class="txt" name="faculty" value="工商管理学院" readonly /></div>
+	<div>申请学位专业名称：<input type="text" class="txt full-width" name="speciality" size="25" value="<%=rs("SPECIALITY_NAME")%>" readonly /></div>
+	<div>研究方向：<input type="text" class="txt full-width" name="researchway" size="25" value="<%=rs("RESEARCHWAY_NAME")%>" readonly /></div>
+	<div>学院名称：<input type="text" class="txt full-width" name="faculty" value="工商管理学院" readonly /></div>
 </div>
 <div class="fields">
-	<div>学位论文题目：<input type="text" class="txt" name="subject" size="70" value="<%=rs("THESIS_SUBJECT")%>" readonly /></div>
+	<div>学位论文题目：<input type="text" class="txt full-width" name="subject" size="70" value="<%=rs("THESIS_SUBJECT")%>" readonly /></div>
 	<div>送审论文：<a class="resc" href="fetchDocument.asp?tid=<%=paper_id%>&type=1" target="_blank">点击下载</a></div>
 </div>
 <div class="fields">
@@ -408,6 +408,8 @@ Select Case step
 			$(':submit').val("正在提交，请稍候……").attr('disabled',true);
 		});
 		$(':submit').attr('disabled',false);
+		// 每30秒保存一次草稿
+		setInterval("$('#btnsavedraft').click()",30000);
 	});
 </script></body></html><%
 End Select

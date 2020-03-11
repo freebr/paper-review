@@ -67,6 +67,9 @@ div#defenceplan table td { padding: 5px }
 form {
 	font-size: 12px;
 }
+.form p {
+	margin: 5px;
+}
 input {
 	font-size: 12px;
 }
@@ -82,6 +85,17 @@ input.txt {
 	background: none;
 	border: 0;
 	border-bottom: 1px solid dimgray;
+}
+textarea.txt:not(:read-only) {
+	background: url(../images/edit.svg) no-repeat left top;
+	text-indent: 4ch;
+	line-height: 1.5em;
+}
+textarea.txt {
+	background: none;
+	border: 1px solid dimgray;
+}
+input.full-width {
 	width: 100%;
 }
 input.score { text-align: center }

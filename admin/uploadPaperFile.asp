@@ -43,19 +43,19 @@ Case vbNullString	' 论文详情页面
 <center><font size=4><b>上传表格/论文文件</font>
 <form id="fmDetail" action="?step=2&tid=<%=paper_id%>" enctype="multipart/form-data" method="post">
 <table class="form" width="800" cellspacing="1" cellpadding="3">
-<tr><td>论文题目：&emsp;&emsp;&emsp;<input type="text" class="txt" name="new_subject" size="95%" value="<%=rs("THESIS_SUBJECT")%>" readonly /></td></tr>
-<tr><td>作者姓名：&emsp;&emsp;&emsp;<input type="text" class="txt" name="author" size="18" value="<%=rs("STU_NAME")%>" readonly />&nbsp;
-学号：<input type="text" class="txt" name="stuno" size="15" value="<%=rs("STU_NO")%>" readonly />&nbsp;
-学位类别：<input type="text" class="txt" name="degreename" size="10" value="<%=rs("TEACHTYPE_NAME")%>" readonly /></td></tr>
-<tr><td>指导教师：&emsp;&emsp;&emsp;<input type="text" class="txt" name="tutorname" size="95%" value="<%=rs("TUTOR_NAME")%>" readonly /></td></tr><%
+<tr><td>论文题目：&emsp;&emsp;&emsp;<input type="text" class="txt full-width" name="new_subject" size="95%" value="<%=rs("THESIS_SUBJECT")%>" readonly /></td></tr>
+<tr><td>作者姓名：&emsp;&emsp;&emsp;<input type="text" class="txt full-width" name="author" size="18" value="<%=rs("STU_NAME")%>" readonly />&nbsp;
+学号：<input type="text" class="txt full-width" name="stuno" size="15" value="<%=rs("STU_NO")%>" readonly />&nbsp;
+学位类别：<input type="text" class="txt full-width" name="degreename" size="10" value="<%=rs("TEACHTYPE_NAME")%>" readonly /></td></tr>
+<tr><td>指导教师：&emsp;&emsp;&emsp;<input type="text" class="txt full-width" name="tutorname" size="95%" value="<%=rs("TUTOR_NAME")%>" readonly /></td></tr><%
 	If reviewfile_type=2 Then %>
-<tr><td>领域名称：&emsp;&emsp;&emsp;<input type="text" class="txt" name="speciality" size="95%" value="<%=rs("SPECIALITY_NAME")%>" readonly /></td></tr><%
+<tr><td>领域名称：&emsp;&emsp;&emsp;<input type="text" class="txt full-width" name="speciality" size="95%" value="<%=rs("SPECIALITY_NAME")%>" readonly /></td></tr><%
 	End If %>
-<tr><td>研究方向：&emsp;&emsp;&emsp;<input type="text" class="txt" name="researchway_name" size="95%" value="<%=rs("RESEARCHWAY_NAME")%>" readonly /></td></tr>
-<tr><td>院系名称：&emsp;&emsp;&emsp;<input type="text" class="txt" name="faculty" size="30%" value="工商管理学院" readonly />&nbsp;
-班级：<input type="text" class="txt" name="class" size="51%" value="<%=rs("CLASS_NAME")%>" readonly /></td></tr><%
+<tr><td>研究方向：&emsp;&emsp;&emsp;<input type="text" class="txt full-width" name="researchway_name" size="95%" value="<%=rs("RESEARCHWAY_NAME")%>" readonly /></td></tr>
+<tr><td>院系名称：&emsp;&emsp;&emsp;<input type="text" class="txt full-width" name="faculty" size="30%" value="工商管理学院" readonly />&nbsp;
+班级：<input type="text" class="txt full-width" name="class" size="51%" value="<%=rs("CLASS_NAME")%>" readonly /></td></tr><%
 	If Not IsNull(rs("THESIS_FORM")) And Len(rs("THESIS_FORM")) Then %>
-<tr><td>论文形式：&emsp;&emsp;&emsp;<input type="text" class="txt" name="thesisform" size="95%" value="<%=rs("THESIS_FORM")%>" readonly /></td></tr><%
+<tr><td>论文形式：&emsp;&emsp;&emsp;<input type="text" class="txt full-width" name="thesisform" size="95%" value="<%=rs("THESIS_FORM")%>" readonly /></td></tr><%
 	End If %>
 <tr><td>开题报告表：&emsp;&emsp;&emsp;&emsp;<input type="file" name="uploadfile1" size="100" /></td></tr>
 <tr><td>开题论文：&emsp;&emsp;&emsp;&emsp;&emsp;<input type="file" name="uploadfile2" size="100" /></td></tr>

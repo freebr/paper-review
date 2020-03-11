@@ -64,13 +64,14 @@ function bundleViewState($form) {
 }
 
 function initViewState($form, init_data, callback) {
+    var path_api=location.origin+"/PaperReview/api/";
     $form = $($form);
     var $hidden=$("<input name='view_state' type='hidden' />");
     $form.submit(function() {
         $(":hidden[name=view_state]").val(bundleViewState($form));
     }).append($hidden);
     $form.find('#btnsavedraft').click(function() {
-        $.post("../api/save-view-state",
+        $.post(path_api+"save-view-state",
             {
                 user_id: init_data.user_id,
                 user_type: init_data.user_type,
@@ -85,7 +86,7 @@ function initViewState($form, init_data, callback) {
         );
     });
     $form.find('#btnloaddraft').click(function() {
-        $.post("../api/get-view-state",
+        $.post(path_api+"get-view-state",
             {
                 user_id: init_data.user_id,
                 user_type: init_data.user_type,

@@ -162,20 +162,20 @@ Case vbNullString	' 论文详情页面
 			<legend>论文基本情况</legend>
 			<table class="form">
 			<tr><td class="field-name">评阅活动：</td><td><input class="easyui-combobox" id="activity_id" name="new_activity_id" /></td></tr>
-			<tr><td class="field-name">论文题目：</td><td><input type="text" class="txt" name="new_subject_ch" size="95%" value="<%=rs("THESIS_SUBJECT")%>" /></td></tr>
-			<tr><td class="field-name">（英文）：</td><td><input type="text" class="txt" name="new_subject_en" size="85%" value="<%=rs("THESIS_SUBJECT_EN")%>" /></td></tr>
-			<tr><td class="field-name">作者姓名：</td><td><input type="text" class="txt" name="author" size="18" value="<%=rs("STU_NAME")%>" readonly />&nbsp;
-			学号：<input type="text" class="txt" name="stuno" size="15" value="<%=rs("STU_NO")%>" readonly />&nbsp;
-			学位类别：<input type="text" class="txt" name="degreename" size="10" value="<%=rs("TEACHTYPE_NAME")%>" readonly /></td></tr>
-			<tr><td class="field-name">指导教师：</td><td><input type="text" class="txt" name="tutorname" size="95%" value="<%=rs("TUTOR_NAME")%>" readonly /></td></tr><%
+			<tr><td class="field-name">论文题目：</td><td><input type="text" class="txt full-width" name="new_subject_ch" size="95%" value="<%=rs("THESIS_SUBJECT")%>" /></td></tr>
+			<tr><td class="field-name">（英文）：</td><td><input type="text" class="txt full-width" name="new_subject_en" size="85%" value="<%=rs("THESIS_SUBJECT_EN")%>" /></td></tr>
+			<tr><td class="field-name">作者姓名：</td><td><input type="text" class="txt full-width" name="author" size="18" value="<%=rs("STU_NAME")%>" readonly /></td></tr>
+			<tr><td class="field-name">学号：</td><td><input type="text" class="txt full-width" name="stuno" size="15" value="<%=rs("STU_NO")%>" readonly /></td></tr>
+			<tr><td class="field-name">学位类别：</td><td><input type="text" class="txt full-width" name="degreename" size="10" value="<%=rs("TEACHTYPE_NAME")%>" readonly /></td></tr>
+			<tr><td class="field-name">指导教师：</td><td><input type="text" class="txt full-width" name="tutorname" size="95%" value="<%=rs("TUTOR_NAME")%>" readonly /></td></tr><%
 				If reviewfile_type=2 Then %>
-			<tr><td class="field-name">领域名称：</td><td><input type="text" class="txt" name="speciality" size="95%" value="<%=rs("SPECIALITY_NAME")%>" readonly /></td></tr><%
+			<tr><td class="field-name">领域名称：</td><td><input type="text" class="txt full-width" name="speciality" size="95%" value="<%=rs("SPECIALITY_NAME")%>" readonly /></td></tr><%
 				End If %>
-			<tr><td class="field-name">研究方向：</td><td><input type="text" class="txt" name="new_researchway_name" size="95%" value="<%=rs("RESEARCHWAY_NAME")%>" /></td></tr>
-			<tr><td class="field-name">论文关键词：</td><td><input type="text" class="txt" name="new_keywords_ch" size="85%" value="<%=rs("KEYWORDS")%>" /></td></tr>
-			<tr><td class="field-name">（英文）：</td><td><input type="text" class="txt" name="new_keywords_en" size="85%" value="<%=rs("KEYWORDS_EN")%>" /></td></tr>
-			<tr><td class="field-name">院系名称：</td><td><input type="text" class="txt" name="faculty" size="30%" value="工商管理学院" readonly />&nbsp;
-			班级：<input type="text" class="txt" name="class" size="51%" value="<%=rs("CLASS_NAME")%>" readonly /></td></tr><%
+			<tr><td class="field-name">研究方向：</td><td><input type="text" class="txt full-width" name="new_researchway_name" size="95%" value="<%=rs("RESEARCHWAY_NAME")%>" /></td></tr>
+			<tr><td class="field-name">论文关键词：</td><td><input type="text" class="txt full-width" name="new_keywords_ch" size="85%" value="<%=rs("KEYWORDS")%>" /></td></tr>
+			<tr><td class="field-name">（英文）：</td><td><input type="text" class="txt full-width" name="new_keywords_en" size="85%" value="<%=rs("KEYWORDS_EN")%>" /></td></tr>
+			<tr><td class="field-name">院系名称：</td><td><input type="text" class="txt full-width" name="faculty" size="30%" value="工商管理学院" readonly /></td></tr>
+			<tr><td class="field-name">班级：</td><td><input type="text" class="txt full-width" name="class" size="51%" value="<%=rs("CLASS_NAME")%>" readonly /></td></tr><%
 				If Not IsNull(rs("REVIEW_TYPE")) Then %>
 			<tr><td class="field-name">论文形式：</td><td><select id="review_type" name="new_review_type" style="width:350px"><%
 					Do While Not rsRevType.EOF
@@ -187,10 +187,10 @@ Case vbNullString	' 论文详情页面
 				End If
 				If task_progress>=tpTbl3Uploaded Then
 					If review_status >= rsDetectPaperUploaded Then %>
-			<tr><td class="field-name">送检论文文字复制比：</td><td><input type="text" class="txt" name="reproduct_ratio" size="10px" value="<%=toNumericString(reproduct_ratio)%>" />%</td></tr><%
+			<tr><td class="field-name">送检论文文字复制比：</td><td><input type="text" class="txt full-width" name="reproduct_ratio" size="10px" value="<%=toNumericString(reproduct_ratio)%>" />%</td></tr><%
 					End If
 					If review_status >= rsInstructReviewPaperUploaded Then %>
-			<tr><td class="field-name">教指委盲评论文文字复制比：</td><td><input type="text" class="txt" name="instruct_review_reproduct_ratio" size="10px" value="<%=toNumericString(instruct_review_reproduct_ratio)%>" />%</td></tr><%
+			<tr><td class="field-name">教指委盲评论文文字复制比：</td><td><input type="text" class="txt full-width" name="instruct_review_reproduct_ratio" size="10px" value="<%=toNumericString(instruct_review_reproduct_ratio)%>" />%</td></tr><%
 					End If
 				End If
 				If task_progress>=tpTbl1Uploaded Then
@@ -334,7 +334,7 @@ Case vbNullString	' 论文详情页面
 		<tr><td class="field-name">导师送检意见：<br /><a href="#" onclick="return rollback(<%=paper_id%>,2,1)">撤销</a></td><td><%=toPlainString(isNullString(rs("DETECT_APP_EVAL"),"未填写"))%></td></tr><%
 			End If
 			If Not IsNull(rs("REVIEW_APP_EVAL")) Then %>
-		<tr><td class="field-name">导师送审意见：<br /><a href="#" onclick="return rollback(<%=paper_id%>,2,2)">撤销</a></td><td>提交时间：<input type="text" class="txt" name="new_submit_review_time" value="<%=rs("SUBMIT_REVIEW_TIME")%>" />
+		<tr><td class="field-name">导师送审意见：<br /><a href="#" onclick="return rollback(<%=paper_id%>,2,2)">撤销</a></td><td>提交时间：<input type="text" class="txt full-width" name="new_submit_review_time" value="<%=rs("SUBMIT_REVIEW_TIME")%>" />
 		<br /><%=toPlainString(isNullString(rs("REVIEW_APP_EVAL"),"未填写"))%></td></tr><%
 			End If
 			If Not IsNull(rs("TUTOR_MODIFY_EVAL")) Then %>
@@ -665,16 +665,16 @@ Case 2	' 填写评语页面
 		<table class="form">
 		<tr><td>
 			<div class="fields">
-				<div>作者姓名：<input type="text" class="txt" name="author" value="<%=rs("STU_NAME")%>" readonly /></div>
-				<div>学号：<input type="text" class="txt" name="stuno" value="<%=rs("STU_NO")%>" readonly /></div>
-				<div>导师姓名、职称：<input type="text" class="txt" name="tutorinfo" value="<%=rs("TUTOR_NAME")%>&nbsp;<%=tutor_duty_name%>" readonly /></div>
+				<div>作者姓名：<input type="text" class="txt full-width" name="author" value="<%=rs("STU_NAME")%>" readonly /></div>
+				<div>学号：<input type="text" class="txt full-width" name="stuno" value="<%=rs("STU_NO")%>" readonly /></div>
+				<div>导师姓名、职称：<input type="text" class="txt full-width" name="tutorinfo" value="<%=rs("TUTOR_NAME")%>&nbsp;<%=tutor_duty_name%>" readonly /></div>
 			</div>
 			<div class="fields">
-				<div>申请学位专业名称：<input type="text" class="txt" name="speciality" size="50" value="<%=rs("SPECIALITY_NAME")%>" readonly /></div>
-				<div>学院名称：<input type="text" class="txt" name="faculty" value="工商管理学院" readonly /></div>
+				<div>申请学位专业名称：<input type="text" class="txt full-width" name="speciality" size="50" value="<%=rs("SPECIALITY_NAME")%>" readonly /></div>
+				<div>学院名称：<input type="text" class="txt full-width" name="faculty" value="工商管理学院" readonly /></div>
 			</div>
 			<div class="fields">
-				学位论文题目：<input type="text" class="txt" name="new_subject" size="70" value="<%=rs("THESIS_SUBJECT")%>"  />
+				学位论文题目：<input type="text" class="txt full-width" name="new_subject" size="70" value="<%=rs("THESIS_SUBJECT")%>"  />
 			</div><%
 			Select Case opr
 			Case 1,2,3,4 ' 填写表格审核意见页面

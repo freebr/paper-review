@@ -361,7 +361,7 @@ End Function
 <script type="text/javascript">
 	$(document).ready(function() {
 		$('table.seqchart tr.hidden').each(function(){$(this).attr({'finalHeight':$(this).height(),'height':1}).hide().css('visibility','visible');})
-																 .eq(0).addClass('half-hidden').show();
+			.eq(0).addClass('half-hidden').show();
 		$('td.seqmore').click(function() {
 			$('table.seqchart tr.hidden').show().each(function(){$(this).removeClass('hidden').removeClass('half-hidden').animate({'height':$(this).attr('finalHeight')},1000)});
 			$(this).hide();
