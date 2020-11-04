@@ -17,11 +17,10 @@ pageNo=Request.Form("pageNo2")
 If Len(paper_id)=0 Then paper_id=Request.Form("paper_id")
 If Len(paper_id)=0 Then
 	bError=True
-	errdesc="您未选择论文！"
+	errMsg="您未选择论文！"
 End If
 If bError Then
-%><body><center><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
-	Response.End()
+	showErrorPage errMsg, "提示"
 End If
 
 Dim numNotify:numNotify=0

@@ -1,6 +1,10 @@
 ﻿<!--#include file="../inc/ExtendedRequest.inc"-->
 <!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"--><%
+If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
+
+tableUploadPath = Server.MapPath(uploadBasePath(usertypeAdmin, "expert_info"))
+ensurePathExists tableUploadPath
 
 step=Request.QueryString("step")
 Select Case step
@@ -16,13 +20,13 @@ Case vbNullstring ' 文件选择页面
 <body>
 <center><font size=4><b>导入专家信息</b><br>
 <form id="fmUpload" action="?step=2" method="POST" enctype="multipart/form-data">
-<p>请选择要导入的 Excel 文件：<br />文件名：<input type="file" name="excelFile" size="100" />
-<input type="submit" name="btnupload" value="上 传" />&nbsp;
+<p>请选择要导入的 Excel 文件：<input type="file" name="tableFile" size="100" /></p>
+<p><input type="submit" name="btnupload" value="上 传" />&nbsp;
 <input type="button" name="btnret" value="返 回" onclick="history.go(-1)" /></p></form></center>
 <script type="text/javascript">
 	$(document).ready(function(){
 		$('form').submit(function() {
-			var valid=checkIfExcel(this.excelFile);
+			var valid=checkIfExcel(this.tableFile);
 			if(valid) {
 				$(':submit').val("正在提交，请稍候...").attr('disabled',true);
 			}
@@ -33,28 +37,19 @@ Case vbNullstring ' 文件选择页面
 </script></body></html><%
 Case 2	' 上传进程
 
-	Dim fso,Upload,File
+	Dim Upload,File
 	
 	Set Upload=New ExtendedRequest
-	Set file=Upload.File("excelFile")
-	Set fso=Server.CreateObject("Scripting.FileSystemObject")
-	
-	' 检查上传目录是否存在
-	strUploadPath = Server.MapPath("upload\xls")
-	If Not fso.FolderExists(strUploadPath) Then fso.CreateFolder(strUploadPath)
+	Set file=Upload.File("tableFile")
 	
 	file_ext=LCase(file.FileExt)
 	If file_ext <> "xls" And file_ext <> "xlsx" Then	' 不被允许的文件类型
 		bError = True
-		errstring = "所选择的不是 Excel 文件！"
+		errMsg = "所选择的不是 Excel 文件！"
 	Else
-		' 生成日期格式文件名
-		fileid = FormatDateTime(Now(),1)&Int(Timer)
-		strDestFile = fileid&"."&file_ext
-		strDestPath = Server.MapPath("upload")&"\xls\"&strDestFile
-		byteFileSize = file.FileSize
-		' 保存
-		file.SaveAs strDestPath
+		destFile = timestamp()&"."&file_ext
+		destPath = resolvePath(tableUploadPath,destFile)
+		file.SaveAs destPath
 	End If
 	Set file=Nothing
 	Set Upload=Nothing
@@ -70,12 +65,12 @@ Case 2	' 上传进程
 <center><br /><b>导入</b><br /><br /><%
 	If Not bError Then %>
 <form id="fmUploadFinish" action="?step=3" method="POST">
-<input type="hidden" name="filename" value="<%=strDestFile%>" />
+<input type="hidden" name="filename" value="<%=destFile%>" />
 <p>文件上传成功，正在导入专家信息...</p></form>
 <script type="text/javascript">setTimeout("$('#fmUploadFinish').submit()",500);</script><%
 	Else
 %>
-<script type="text/javascript">alert("<%=errstring%>");history.go(-1);</script><%
+<script type="text/javascript">alert("<%=errMsg%>");history.go(-1);</script><%
 	End If
 %></center></body></html><%
 Case 3	' 数据读取，导入到数据库
@@ -100,17 +95,17 @@ Case 3	' 数据读取，导入到数据库
 		sql="SELECT * FROM TEACHER_INFO"
 		GetRecordSet connOrigin,rsTea,sql,count
 		Do While Not rs.EOF
-			If IsNull(rs(0).Value) Then Exit Do
+			If IsNull(rs(0)) Then Exit Do
 			bIsUpdated=False
 			' 是否校外专家
-			If IsNull(rs(6).Value) Or rs(6).Value="否" Then
+			If IsNull(rs(6)) Or rs(6)="否" Then
 				bIsInschool=True
 			Else
 				bIsInschool=False
 			End If
 			
 			' 姓名
-			s=Trim(rs(0).Value)
+			s=Trim(rs(0))
 			If bIsInschool Then i=getTeacherIdByName(s)
 			If bIsInschool And i=-1 Then
 				bError=True
@@ -118,17 +113,17 @@ Case 3	' 数据读取，导入到数据库
 			Else
 				fieldValue(0)=s
 				' 职称
-				fieldValue(1)=rs(1).Value
+				fieldValue(1)=rs(1)
 				' 学科专长
-				fieldValue(2)=rs(2).Value
+				fieldValue(2)=rs(2)
 				' 单位（住址）
-				fieldValue(3)=rs(3).Value
+				fieldValue(3)=rs(3)
 				' 联系方式
-				fieldValue(4)=rs(4).Value
+				fieldValue(4)=rs(4)
 				' 邮箱
-				fieldValue(5)=rs(5).Value
+				fieldValue(5)=rs(5)
 				' 备注
-				fieldValue(6)=rs(6).Value
+				fieldValue(6)=rs(6)
 				
 				sql="EXPERT_NAME='"&fieldValue(0)&"' AND INSCHOOL="&Abs(Int(bIsInschool))
 				rsExp.Filter=sql
@@ -147,40 +142,40 @@ Case 3	' 数据读取，导入到数据库
 							CloseRs rsTmp
 							i=i+1
 						Loop While count>0
-						rsTea("TEACHERNO").Value=s
-						rsTea("TEACHERNAME").Value=fieldValue(0)
-						rsTea("USER_PASSWORD").Value="expert@12345" ' generatePassword()
-						rsTea("IFTEACHER").Value=3
-						rsTea("Office_Address").Value=fieldValue(3)
-						rsTea("MOBILE").Value=fieldValue(4)
-						rsTea("EMAIL").Value=fieldValue(5)
-						rsTea("PRO_DUTYID").Value=18	' 职称为其他
+						rsTea("TEACHERNO")=s
+						rsTea("TEACHERNAME")=fieldValue(0)
+						rsTea("USER_PASSWORD")="expert@12345" ' generatePassword()
+						rsTea("IFTEACHER")=3
+						rsTea("Office_Address")=fieldValue(3)
+						rsTea("MOBILE")=fieldValue(4)
+						rsTea("EMAIL")=fieldValue(5)
+						rsTea("PRO_DUTYID")=18	' 职称为其他
 						rsTea.Update()
 						numNewExTeacher=numNewExTeacher+1
 					End If
 					numNewTeacher=numNewTeacher+1
 				Else							' 更新记录
 					If Not bIsInschool Then	' 更新校外专家在教师信息表中的记录
-						rsTea.Find("TEACHERID="&rsExp("TEACHER_ID").Value)
+						rsTea.Find("TEACHERID="&rsExp("TEACHER_ID"))
 						If Not rsTea.EOF Then
-							rsTea("USER_PASSWORD").Value="12345678" ' generatePassword()
-							rsTea("Office_Address").Value=fieldValue(3)
-							rsTea("MOBILE").Value=fieldValue(4)
-							rsTea("EMAIL").Value=fieldValue(5)
-							rsTea("VALID").Value=0
+							rsTea("USER_PASSWORD")="12345678" ' generatePassword()
+							rsTea("Office_Address")=fieldValue(3)
+							rsTea("MOBILE")=fieldValue(4)
+							rsTea("EMAIL")=fieldValue(5)
+							rsTea("VALID")=0
 							rsTea.Update()
 						End If
 					End If
 					numUpdTeacher=numUpdTeacher+1
 				End If
-				rsExp("EXPERT_NAME").Value=fieldValue(0)
-				rsExp("PRO_DUTY_NAME").Value=fieldValue(1)
-				rsExp("EXPERTISE").Value=fieldValue(2)
-				rsExp("WORKPLACE").Value=fieldValue(3)
-				rsExp("MOBILE").Value=fieldValue(4)
-				rsExp("EMAIL").Value=fieldValue(5)
-				rsExp("MEMO").Value=fieldValue(6)
-				rsExp("INSCHOOL").Value=Abs(bIsInschool)
+				rsExp("EXPERT_NAME")=fieldValue(0)
+				rsExp("PRO_DUTY_NAME")=fieldValue(1)
+				rsExp("EXPERTISE")=fieldValue(2)
+				rsExp("WORKPLACE")=fieldValue(3)
+				rsExp("MOBILE")=fieldValue(4)
+				rsExp("EMAIL")=fieldValue(5)
+				rsExp("MEMO")=fieldValue(6)
+				rsExp("INSCHOOL")=Abs(bIsInschool)
 				rsExp.Update()
 			End If
 			rs.MoveNext()
@@ -202,15 +197,15 @@ Case 3	' 数据读取，导入到数据库
 	Dim bError,errMsg,arr
 	
 	filename=Request.Form("filename")
-	filepath=Server.MapPath("upload/xls/"&filename)
+	filepath=resolvePath(tableUploadPath,filename)
 	Set connExcel=Server.CreateObject("ADODB.Connection")
 	connstring="Provider=Microsoft.ACE.OLEDB.12.0;Data Source="&filepath&";Extended Properties=""Excel 12.0;HDR=Yes;IMEX=1"""
 	connExcel.Open connstring
 	
 	Set rs=connExcel.OpenSchema(adSchemaTables)
 	Do While Not rs.EOF
-		If rs("TABLE_TYPE").Value="TABLE" Then
-			table_name=rs("TABLE_NAME").Value
+		If rs("TABLE_TYPE")="TABLE" Then
+			table_name=rs("TABLE_NAME")
 			If InStr("Sheet1$",table_name) Then Exit Do
 		End If
 		rs.MoveNext()

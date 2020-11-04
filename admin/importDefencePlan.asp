@@ -3,7 +3,8 @@
 <!--#include file="common.asp"--><%
 If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 
-Dim conn,sql,ret,rs
+tableUploadPath = Server.MapPath(uploadBasePath(usertypeAdmin, "defence_plan"))
+ensurePathExists tableUploadPath
 
 step=Request.QueryString("step")
 Select Case step
@@ -19,15 +20,15 @@ Case vbNullstring ' 文件选择页面
 <body>
 <center><font size=4><b>导入答辩安排信息</b><br />
 <form id="fmUpload" action="?step=2" method="POST" enctype="multipart/form-data">
-<p><label for="chksendemail"><input type="checkbox" name="sendemail" id="chksendemail" checked />导入后发送通知邮件给导师和学生</label></p>
-<p>请选择要导入的 Excel 文件：<br />文件名：<input type="file" name="excelFile" size="100" /><br />
-<a href="upload/defenceplan_template.xlsx" target="_blank">点击下载答辩安排信息表格模板</a><br />
-<input type="submit" name="btnsubmit" value="提 交" />&nbsp;
+<p><label for="doNoticeStudent"><input type="checkbox" name="do_notice_student" id="doNoticeStudent" checked />导入后发送通知邮件给导师和学生</label></p>
+<p>请选择要导入的 Excel 文件：<input type="file" name="tableFile" size="100" /></p>
+<p><a href="upload/defenceplan_template.xlsx" target="_blank">点击下载答辩安排信息表格模板</a></p>
+<p><input type="submit" name="btnsubmit" value="提 交" />&nbsp;
 <input type="button" name="btnret" value="返 回" onclick="history.go(-1)" /></p></form></center>
 <script type="text/javascript">
 	$(document).ready(function(){
 		$('form').submit(function() {
-			var valid=checkIfExcel(this.excelFile);
+			var valid=checkIfExcel(this.tableFile);
 			if(valid) {
 				$(':submit').val("正在提交，请稍候...").attr('disabled',true);
 			}
@@ -38,29 +39,20 @@ Case vbNullstring ' 文件选择页面
 </script></body></html><%
 Case 2	' 上传进程
 
-	Dim fso,Upload,File
+	Dim Upload,File
 
 	Set Upload=New ExtendedRequest
-	Set file=Upload.File("excelFile")
-	send_email=Upload.Form("sendemail")
-	Set fso=Server.CreateObject("Scripting.FileSystemObject")
-
-	' 检查上传目录是否存在
-	strUploadPath = Server.MapPath("upload\xls")
-	If Not fso.FolderExists(strUploadPath) Then fso.CreateFolder(strUploadPath)
+	Set file=Upload.File("tableFile")
+	do_notice_student=Upload.Form("do_notice_student")
 
 	file_ext=LCase(file.FileExt)
 	If file_ext <> "xls" And file_ext <> "xlsx" Then	' 不被允许的文件类型
 		bError = True
-		errstring = "所选择的不是 Excel 文件！"
+		errMsg = "所选择的不是 Excel 文件！"
 	Else
-		' 生成日期格式文件名
-		fileid = FormatDateTime(Now(),1)&Int(Timer)
-		strDestFile = fileid&"."&file_ext
-		strDestPath = Server.MapPath("upload")&"\xls\"&strDestFile
-		byteFileSize = file.FileSize
-		' 保存
-		file.SaveAs strDestPath
+		destFile = timestamp()&"."&file_ext
+		destPath = resolvePath(tableUploadPath,destFile)
+		file.SaveAs destPath
 	End If
 	Set file=Nothing
 	Set Upload=Nothing
@@ -76,13 +68,13 @@ Case 2	' 上传进程
 <center><br /><b>导入答辩安排信息</b><br /><br /><%
 	If Not bError Then %>
 <form id="fmUploadFinish" action="?step=3" method="POST">
-<input type="hidden" name="sendemail" value="<%=send_email%>" />
-<input type="hidden" name="filename" value="<%=strDestFile%>" />
+<input type="hidden" name="do_notice_student" value="<%=do_notice_student%>" />
+<input type="hidden" name="filename" value="<%=destFile%>" />
 <p>文件上传成功，正在导入答辩安排信息...</p></form>
 <script type="text/javascript">setTimeout("$('#fmUploadFinish').submit()",500);</script><%
 	Else
 %>
-<script type="text/javascript">alert("<%=errstring%>");history.go(-1);</script><%
+<script type="text/javascript">alert("<%=errMsg%>");history.go(-1);</script><%
 	End If
 %></center></body></html><%
 Case 3	' 数据读取，导入到数据库
@@ -97,22 +89,21 @@ Case 3	' 数据读取，导入到数据库
 		' 添加数据
 		Dim sql,sql2,count,rsa,rsb
 		Dim numInsert,numUpdate:numInsert=0:numUpdate=0
-		Dim thesisid,stuid,stu_ids:numThesis=0
+		Dim thesisid,stu_id,stu_ids:numPapers=0
 		Dim member_desc,last_val(7)
-		Connect conn
 		Do While Not rs.EOF
 			If IsNull(rs(0)) Then Exit Do
 			' 按学号检索
-			sql="SELECT ID,STU_ID FROM ViewDissertations WHERE VALID=1 AND STU_NO="&toSqlString(rs(2))&" AND TEACHTYPE_ID="&getTeachTypeIdByName(rs(0))&" ORDER BY STU_ID DESC"
+			sql="SELECT ID,STU_ID FROM ViewDissertations WHERE STU_NO="&toSqlString(rs(2))&" AND TEACHTYPE_ID="&getTeachTypeIdByName(rs(0))&" ORDER BY STU_ID DESC"
 			GetRecordSetNoLock conn,rsa,sql,count
 			If rsa.EOF Then
 				bError=True
-				errMsg=errMsg&"学生不存在:"""&rs(1)&"""。"&vbNewLine
+				errMsg=errMsg&"学生不存在：["&rs(1)&"]。"&vbNewLine
 			Else
-				numThesis=numThesis+1
+				numPapers=numPapers+1
 				thesisid=rsa("ID")
-				stuid=rsa("STU_ID")
-				stu_ids=stu_ids&","&stuid
+				stu_id=rsa("STU_ID")
+				stu_ids=stu_ids&","&stu_id
 				sql="SELECT * FROM DefenceInfo WHERE THESIS_ID="&thesisid
 				GetRecordSet conn,rsb,sql,count
 				If rsb.EOF Then
@@ -138,11 +129,12 @@ Case 3	' 数据读取，导入到数据库
 	End Function
 
 	Dim bError,errMsg
+	Dim conn,connExcel,sql,ret,rs
 	Dim numInsert,numUpdate
 
 	filename=Request.Form("filename")
-	send_email=Request.Form("sendemail")="on"
-	filepath=Server.MapPath("upload/xls/"&filename)
+	do_notice_student=Request.Form("sendemail")="on"
+	filepath=resolvePath(tableUploadPath,filename)
 	Set connExcel=Server.CreateObject("ADODB.Connection")
 	connstring="Provider=Microsoft.ACE.OLEDB.12.0;Data Source="&filepath&";Extended Properties=""Excel 12.0;HDR=Yes;IMEX=1"""
 	connExcel.Open connstring
@@ -158,12 +150,13 @@ Case 3	' 数据读取，导入到数据库
 	sql="SELECT * FROM ["&table_name&"A2:J]"
 	Set rs=connExcel.Execute(sql)
 	' 添加数据
+	Connect conn
 	ret=addData()
 	numInsert=ret(0)
 	numUpdate=ret(1)
 	stu_ids=ret(2)
 
-	If send_email And Len(stu_ids)<>0 Then
+	If do_notice_student And Len(stu_ids)<>0 Then
 		' 发送导入答辩安排通知邮件
 		Dim arrStuIds:arrStuIds=Split(stu_ids,",")
 		Dim dict:Set dict=CreateDictionary()

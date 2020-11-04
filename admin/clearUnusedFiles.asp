@@ -19,7 +19,7 @@ Else
 	enddatestr="至 "&enddate&" "
 End If
 enddate=DateAdd("d",enddate,1)
-Set fso=Server.CreateObject("Scripting.FileSystemObject")
+Set fso=CreateFSO()
 Set folder=fso.GetFolder(uppath)
 Set files=folder.Files
 

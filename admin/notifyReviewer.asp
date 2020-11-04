@@ -17,11 +17,10 @@ pageNo=Request.Form("pageNo2")
 If Len(paper_id)=0 Then paper_id=Request.Form("paper_id")
 If Len(paper_id)=0 Then
 	bError=True
-	errdesc="您未选择论文！"
+	errMsg="您未选择论文！"
 End If
 If bError Then
-%><body><center><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
-	Response.End()
+	showErrorPage errMsg, "提示"
 End If
 
 Dim numNotify:numNotify=0
@@ -32,8 +31,8 @@ Dim activity_id,stu_type,is_mail_sent,is_sms_sent
 Dim errMsg
 Connect conn
 sql="DECLARE @tmptbl TABLE(EXPERT_ID int,ActivityId int,StuType int,THESIS_SUBJECT nvarchar(200),REVNUM int);"&_
-	"INSERT INTO @tmptbl SELECT REVIEWER1,MAX(ActivityId),MIN(TEACHTYPE_ID),MIN(THESIS_SUBJECT),COUNT(ID) FROM ViewDissertations WHERE ID IN ("&paper_id&") AND REVIEWER_EVAL1 IS NULL GROUP BY REVIEWER1 "&_
-	"UNION ALL SELECT REVIEWER2,MAX(ActivityId),MIN(TEACHTYPE_ID),MIN(THESIS_SUBJECT),COUNT(ID) FROM ViewDissertations WHERE ID IN ("&paper_id&") AND REVIEWER_EVAL2 IS NULL GROUP BY REVIEWER2;"&_
+	"INSERT INTO @tmptbl SELECT REVIEWER1,MAX(ActivityId),MIN(TEACHTYPE_ID),MIN(THESIS_SUBJECT),COUNT(ID) FROM ViewDissertations_admin WHERE ID IN ("&paper_id&") AND IsReviewed1=0 GROUP BY REVIEWER1 "&_
+	"UNION ALL SELECT REVIEWER2,MAX(ActivityId),MIN(TEACHTYPE_ID),MIN(THESIS_SUBJECT),COUNT(ID) FROM ViewDissertations_admin WHERE ID IN ("&paper_id&") AND IsReviewed2=0 GROUP BY REVIEWER2;"&_
 	"SELECT EXPERT_ID,EXPERT_NAME,TEACHERNO,MOBILE,EMAIL,MAX(ActivityId) ActivityId,MIN(StuType) StuType,MIN(THESIS_SUBJECT) THESIS_SUBJECT,SUM(REVNUM) REVIEW_NUM FROM @tmptbl LEFT JOIN ViewExpertInfo ON EXPERT_ID=TEACHER_ID GROUP BY EXPERT_ID,EXPERT_NAME,TEACHERNO,MOBILE,EMAIL;"
 Set rs=conn.Execute(sql)
 Set rs=rs.NextRecordSet()

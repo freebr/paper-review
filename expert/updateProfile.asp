@@ -33,59 +33,59 @@ sql="SELECT * FROM TEACHER_INFO WHERE TEACHERID="&Teacherid
 GetRecordSet connOrigin,rs,sql,count
 If sex<>"男" And sex<>"女" Then
 	bError=True
-	errdesc="请选择性别！"
+	errMsg="请选择性别！"
 ElseIf Len(teachername)=0 Then
 	bError=True
-	errdesc="请填写姓名！"
+	errMsg="请填写姓名！"
 ElseIf Len(pro_duty_name)=0 Then
 	bError=True
-	errdesc="请填写专业技术职务（职称）！"
+	errMsg="请填写专业技术职务（职称）！"
 ElseIf Len(last_diploma)=0 Or Not IsNumeric(last_diploma) Or last_diploma="0" Then
 	bError=True
-	errdesc="请选择最高学历！"
+	errMsg="请选择最高学历！"
 ElseIf Len(expertise)=0 Then
 	bError=True
-	errdesc="请填写学科专长！"
+	errMsg="请填写学科专长！"
 ElseIf Len(email)=0 Then
 	bError=True
-	errdesc="请填写电子邮箱！"
+	errMsg="请填写电子邮箱！"
 ElseIf Len(workplace)=0 Then
 	bError=True
-	errdesc="请填写单位名称！"
+	errMsg="请填写单位名称！"
 ElseIf Len(address)=0 Then
 	bError=True
-	errdesc="请填写通信地址！"
+	errMsg="请填写通信地址！"
 ElseIf Len(address)>25 Then
 	bError=True
-	errdesc="通信地址最多只能填25字！"
+	errMsg="通信地址最多只能填25字！"
 ElseIf Len(mailcode)=0 Then
 	bError=True
-	errdesc="请填写邮编！"
+	errMsg="请填写邮编！"
 ElseIf Len(telephone)=0 Then
 	bError=True
-	errdesc="请填写联系电话（办公室）！"
+	errMsg="请填写联系电话（办公室）！"
 ElseIf Len(mobile)=0 Then
 	bError=True
-	errdesc="请填写联系电话（移动）！"
+	errMsg="请填写联系电话（移动）！"
 ElseIf Len(bankaccount)=0 Then
 	bError=True
-	errdesc="请填写银行账户号！"
+	errMsg="请填写银行账户号！"
 ElseIf Len(bankname)=0 Then
 	bError=True
-	errdesc="请填写开户行名称！"
+	errMsg="请填写开户行名称！"
 ElseIf Len(idcard_no)=0 Then
 	bError=True
-	errdesc="请填写身份证号码！"
+	errMsg="请填写身份证号码！"
 ElseIf newpwd<>repeatpwd Then
 	bError=True
-	errdesc="两次输入的密码不相同！"
+	errMsg="两次输入的密码不相同！"
 ElseIf rs.EOF Then
 	bError=True
-	errdesc="数据库没有记录！"
+	errMsg="数据库没有记录！"
 End If
 If bError Then
 %><html><head><% useStylesheet "tutor" %></head>
-<body class="exp"><center><div class="content"><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></div></body></html><%
+<body class="exp"><center><div class="content"><font color=red size="4"><%=errMsg%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></div></body></html><%
 	CloseRs rs
   CloseConn connOrigin
   CloseConn conn

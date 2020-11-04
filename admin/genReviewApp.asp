@@ -1,5 +1,5 @@
 ﻿<%Response.Expires=-1%>
-<!--#include file="appgen.inc"-->
+<!--#include file="../inc/automation/ReviewApplicationFormWriter.inc"-->
 <!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"--><%
 If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
@@ -14,8 +14,7 @@ finalFilter=Request.Form("finalFilter2")
 pageSize=Request.Form("pageSize2")
 pageNo=Request.Form("pageNo2")
 If Len(paper_id)=0 Or Not IsNumeric(paper_id) Then
-%><body><center><font color="red" size="4">参数无效。</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
-	Response.End()
+	showErrorPage "参数无效。", "提示"
 End If
 sql="SELECT * FROM ViewDissertations WHERE ID="&paper_id
 GetRecordSet conn,rs,sql,count
@@ -27,15 +26,15 @@ If IsNull(review_time) Then review_time=Now
 eval_text=rs("REVIEW_APP_EVAL")
 If IsNull(eval_text) Then eval_text=""
 filename=toDateTime(review_time,1)&Int(Timer)&Int(Rnd()*999)&".doc"
-filepath=Server.MapPath("/PaperReview/tutor/export")&"\"&filename
-Set rag=New ReviewAppGen
+filepath=Server.MapPath(basePath()&"tutor/export/"&filename)
+Set rag=New ReviewApplicationFormWriter
 rag.Author=rs("STU_NAME")
 rag.StuNo=rs("STU_NO")
 rag.TutorInfo=rs("TUTOR_NAME")&" "&getProDutyNameOf(rs("TUTOR_ID"))
 rag.Spec=rs("SPECIALITY_NAME")
 rag.Date=toDateTime(review_time,1)
 rag.Subject=rs("THESIS_SUBJECT")
-rag.EvalText=eval_text
+rag.Comment=eval_text
 rag.ReproductRatio=rs("REPRODUCTION_RATIO")
 bError=rag.generateApp(filepath)=0
 Set rag=Nothing

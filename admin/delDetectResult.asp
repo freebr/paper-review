@@ -3,7 +3,7 @@
 <!--#include file="common.asp"--><%
 If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 paper_id=Request.Form("tid")
-hash=Request.Form("hash")
+detect_id=Request.Form("id")
 delete_type=Request.Form("delete_type")
 teachtype_id=Request.Form("In_TEACHTYPE_ID2")
 class_id=Request.Form("In_CLASS_ID2")
@@ -13,7 +13,7 @@ query_review_status=Request.Form("In_REVIEW_STATUS2")
 finalFilter=Request.Form("finalFilter2")
 pageSize=Request.Form("pageSize2")
 pageNo=Request.Form("pageNo2")
-If IsEmpty(paper_id) Or Not IsNumeric(paper_id) Or IsEmpty(hash) Or IsEmpty(delete_type) Or Not IsNumeric(delete_type) Or Not (delete_type=0 Or delete_type=1) Then
+If IsEmpty(paper_id) Or Not IsNumeric(paper_id) Or IsEmpty(detect_id) Or IsEmpty(delete_type) Or Not IsNumeric(delete_type) Or Not (delete_type=0 Or delete_type=1) Then
 	showErrorPage "参数无效。", "提示"
 End If
 
@@ -27,15 +27,15 @@ If rs.EOF Then
 	showErrorPage "数据库没有该论文记录！", "提示"
 End If
 
-sql=Format("SELECT DETECT_TYPE,dbo.isLatestDetectResult('{0}') FROM ViewDetectResults WHERE HASH='{0}'",hash)
+sql=Format("SELECT *,dbo.isLatestDetectResult('{0}') AS IsLatest FROM DetectResults WHERE Id='{0}'",detect_id)
 GetRecordSet conn,rsDetect,sql,count
-detect_type=rsDetect(0)
-is_latest=rsDetect(1)
+detect_type=rsDetect("DetectType")
+is_latest=rsDetect("IsLatest")
 
 If delete_type=0 Then	' 删除送检报告
-	rsDetect("RESULT")=Null
-	rsDetect("DETECT_TIME")=Null
-	rsDetect("DETECT_REPORT")=Null
+	rsDetect("Result")=Null
+	rsDetect("DetectTime")=Null
+	rsDetect("ReportFile")=Null
 	rsDetect.Update()
 ElseIf delete_type=1 Then	' 删除送检记录
 	rsDetect.Delete()
@@ -46,12 +46,14 @@ If is_latest Then	' 更新论文评阅信息表中的检测数据
 	Dim arrDetectFileFieldNames:arrDetectFileFieldNames=Array("","THESIS_FILE","THESIS_FILE4")
 	Dim arrDetectResultFieldNames:arrDetectResultFieldNames=Array("","REPRODUCTION_RATIO","INSTRUCT_REVIEW_REPRODUCTION_RATIO")
 	Dim arrDetectReportFieldNames:arrDetectReportFieldNames=Array("","DETECT_REPORT","INSTRUCT_REVIEW_DETECT_REPORT")
-	sql="SELECT THESIS_FILE,RESULT,DETECT_REPORT FROM DetectResults WHERE THESIS_ID=? AND DETECT_TYPE=? ORDER BY DETECT_TIME DESC"
-	Set ret=ExecQuery(conn,sql,CmdParam("THESIS_ID",adInteger,4,paper_id),CmdParam("DETECT_TYPE",adInteger,4,detect_type))
+	sql="SELECT DetectFile,Result,ReportFile FROM DetectResults WHERE DissertationId=? AND DetectType=? ORDER BY DetectTime DESC"
+	Set ret=ExecQuery(conn,sql,_
+		CmdParam("DissertationId",adInteger,4,paper_id),_
+		CmdParam("DetectType",adInteger,4,detect_type))
 	If ret("count")>0 Then	' 取上次的送检结果
-		If delete_type=1 Then rs(arrDetectFileFieldNames(detect_type))=ret("rs")("THESIS_FILE")
-		rs(arrDetectResultFieldNames(detect_type))=ret("rs")("RESULT")
-		rs(arrDetectReportFieldNames(detect_type))=ret("rs")("DETECT_REPORT")
+		If delete_type=1 Then rs(arrDetectFileFieldNames(detect_type))=ret("rs")("DetectFile")
+		rs(arrDetectResultFieldNames(detect_type))=ret("rs")("Result")
+		rs(arrDetectReportFieldNames(detect_type))=ret("rs")("ReportFile")
 	Else
 		If delete_type=1 Then rs(arrDetectFileFieldNames(detect_type))=Null
 		rs(arrDetectResultFieldNames(detect_type))=Null

@@ -117,7 +117,7 @@ Case 0	' 撤销学生上传操作
 	End Select
 Case 1	' 撤销专家评阅操作
 
-	Dim review_result(2),reviewer_master_level(1),review_file(1),review_time(1),review_level(1)
+	Dim review_result(2),review_time(1),review_level(1)
 	If Not IsNull(rs("REVIEW_RESULT")) Then
 		arr=Split(rs("REVIEW_RESULT"),",")
 		For i=0 To UBound(arr)
@@ -126,17 +126,12 @@ Case 1	' 撤销专家评阅操作
 	End If
 	If IsNull(rs("REVIEWER_EVAL_TIME")) Then
 		For i=0 To 1
-			reviewer_master_level(i)=0
 			review_level(i)=0
 		Next
 	Else
-		arr2=Split(rs("REVIEWER_MASTER_LEVEL"),",")
-		arr3=Split(rs("REVIEW_FILE"),",")
 		arr4=Split(rs("REVIEWER_EVAL_TIME"),",")
 		arr5=Split(rs("REVIEW_LEVEL"),",")
 		For i=0 To 1
-			reviewer_master_level(i)=Int(arr2(i))
-			review_file(i)=arr3(i)
 			review_time(i)=arr4(i)
 			review_level(i)=Int(arr5(i))
 		Next
@@ -144,8 +139,6 @@ Case 1	' 撤销专家评阅操作
 	
 	review_result(opr)="5"
 	review_level(opr)="0"
-	reviewer_master_level(opr)="0"
-	review_file(opr)=""
 	review_time(opr)=""
 	finalresult="6"
 	review_result(2)=finalresult
@@ -153,11 +146,8 @@ Case 1	' 撤销专家评阅操作
 	' 更新记录
 	rs("REVIEW_RESULT")=ArrayJoin(review_result,",")
 	rs("REVIEW_LEVEL")=ArrayJoin(review_level,",")
-	rs("REVIEWER_MASTER_LEVEL")=ArrayJoin(reviewer_master_level,",")
-	rs("REVIEWER_EVAL"&(opr+1))=eval_text
-	rs("REVIEW_FILE")=ArrayJoin(review_file,",")
 	rs("REVIEWER_EVAL_TIME")=ArrayJoin(review_time,",")
-	'rs("TUTOR_REVIEW_EVAL")=Null
+	' TODO: 删除 ReviewRecords 表相应记录
 	rs("REVIEW_STATUS")=rsMatchedReviewer
 	
 Case 2	' 撤销导师审核操作
@@ -184,12 +174,8 @@ Case 2	' 撤销导师审核操作
 		rs("REVIEW_APP")=Null
 		rs("REVIEW_APP_EVAL")=Null
 		rs("SUBMIT_REVIEW_TIME")=Null
-		If detect_count>1 Then	' 检测次数超过一次，回退到二次检测通过状态
-			rs("REVIEW_STATUS")=rsRedetectPassed
-		Else	' 一次检测通过，回退到待同意检测状态
-			rs("DETECT_APP_EVAL")=Null
-			rs("REVIEW_STATUS")=rsDetectPaperUploaded
-		End If
+		rs("DETECT_APP_EVAL")=Null
+		rs("REVIEW_STATUS")=rsDetectPaperUploaded
 	Case 3
 		rs("TUTOR_MODIFY_EVAL")=Null
 		rs("REVIEW_STATUS")=rsDefencePaperUploaded
@@ -213,7 +199,7 @@ Case 3	' 撤销教务员操作
 		rs("DEFENCE_MODIFY_EVAL")=Null	' 旧字段
 		rs("REVIEW_STATUS")=rsAgreedDefence
 	Case 4	' 撤销匹配教指委委员操作
-		rs("REVIEW_STATUS")=rsInstructReviewPaperDetected
+		rs("REVIEW_STATUS")=rsAgreedInstructReview
 	Case 5	' 撤销第一位教指委委员的修改意见
 		audit_info=getAuditInfo(paper_id,rs("THESIS_FILE4"), auditTypeInstructReview)
 		If Not IsEmpty(audit_info(0)("AuditorName")) Then
@@ -236,16 +222,13 @@ If rs("REVIEW_STATUS")<rsMatchedReviewer Then
 	rs("REVIEWER2")=Null
 	rs("REVIEW_RESULT")="5,5,6"
 	rs("REVIEW_LEVEL")="0,0"
-	rs("REVIEWER_EVAL1")=Null
-	rs("REVIEWER_EVAL2")=Null
-	rs("REVIEWER_MASTER_LEVEL")=Null
-	rs("REVIEW_FILE")=Null
-	rs("REVIEW_FILE_STATUS")=0
 	rs("REVIEWER_EVAL_TIME")=Null
+	' TODO: 删除 ReviewRecords 表相应记录
 End If
 If rs("REVIEW_STATUS")<rsMatchedInstructMember Then
 	rs("INSTRUCT_MEMBER1")=Null
 	rs("INSTRUCT_MEMBER2")=Null
+	' TODO: 删除 AuditRecords 表相应记录
 End If
 rs.Update()
 If Len(sqlDetect) Then

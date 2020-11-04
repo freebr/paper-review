@@ -9,7 +9,18 @@
 		);
 		return ret;
 	}
+	function replaceRegEx(str, pattern, substitution) {
+		var flag=arguments[3] || "g";
+		var re=new RegExp(pattern, flag);
+		str=str || "";
+		return str.replace(re, substitution);
+	}
 </script><%
+
+Function HtmlEncode(fieldVal)
+	If Not IsNull(fieldVal) Then HtmlEncode=Server.HTMLEncode(fieldVal)
+End Function
+
 Function toSqlString(ByVal str)
 	If IsNull(str) Then
 		toSqlString="NULL"
@@ -120,6 +131,10 @@ Function isNullString(ByVal str, ByVal default)
 	If IsNull(str) Then isNullString = default Else isNullString = str
 End Function
 
+Function isZeroString(ByVal str, ByVal default)
+	If Len(str) = 0 Then isZeroString = default Else isZeroString = str
+End Function
+
 Function toUnsignedInt(ByVal str)
 	str=Trim(str)
 	If IsNull(str) Or IsEmpty(str) Then
@@ -134,10 +149,8 @@ End Function
 
 Function toDateTime(d,fmt)
 	If IsNull(d) Then
-		toDateTime="0"
-		Exit Function
-	End If
-	If d="0" Then
+		toDateTime="未定"
+	ElseIf d="0" Then
 		toDateTime="未定"
 	Else
 		toDateTime=FormatDateTime(d,fmt)
@@ -184,6 +197,23 @@ Function toSnakeCase(ByVal str)
 	ret=ret&LCase(Mid(str,lastIndex))
 	Set re=Nothing
 	toSnakeCase=ret
+End Function
+
+Function toWideChars(ByVal str)
+	Dim i, charCode, ret
+	For i=1 To Len(str)
+		charCode=AscW(Mid(str,i,1))
+		If charCode>=&H0021 And charCode<=&H007E Then
+			ret=ret&ChrW(charCode+&HFEE0)
+		Else
+			ret=ret&ChrW(charCode)
+		End If
+	Next
+	toWideChars=ret
+End Function
+
+Function toFilenameString(ByVal str)
+	toFilenameString=toWideChars(str)
 End Function
 
 Function ArrayJoin(arr,delim)

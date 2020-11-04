@@ -2,24 +2,23 @@
 <!--#include file="common.asp"-->
 <%If IsEmpty(Session("StuId")) Then Response.Redirect("../error.asp?timeout")
 stu_type=Session("StuType")
+version="20200814"
 
-Dim arrTemplateNames:arrTemplateNames=Array("开题报告表","中期检查表","预答辩意见书","审批材料表","硕士学位论文送审申请表","硕士学位论文文字复制比情况说明表","硕士学位论文分会复审意见表")
-Dim arrTemplateFiles:arrTemplateFiles=Array("ktbg.doc","zqjcb.doc","ydbyjs.doc","spcl.doc","sssqb.doc","fzbsmb.doc","fsyjb.doc")
-prefix0="new/"
-Select Case stu_type
-Case 5:prefix=prefix0&"me_"
-Case 6:prefix=prefix0&"mba_"
-Case 7:prefix=prefix0&"emba_"
-Case 9:prefix=prefix0&"mpacc_"
-End Select
-Dim arrFileIndexToAddPrefix:arrFileIndexToAddPrefix=Array(0,1,3)
-For i=0 To UBound(arrFileIndexToAddPrefix)
-	arrTemplateFiles(arrFileIndexToAddPrefix(i))=prefix&arrTemplateFiles(arrFileIndexToAddPrefix(i))
-Next
+Dim dictCommonMat:Set dictCommonMat=CreateDictionary()
+dictCommonMat.Add "开题报告表","ktbgb.doc"
+dictCommonMat.Add "中期考核表","zqkhb.doc"
+dictCommonMat.Add "预答辩意见书","ydbyjs.doc"
+dictCommonMat.Add "审批材料表（适用于仅申请学位者）","spclb_2.doc"
+dictCommonMat.Add "审批材料表（适用于申请毕业及学位者）","spclb.doc"
+dictCommonMat.Add "硕士学位论文送审申请表","sssqb.doc"
+dictCommonMat.Add "硕士学位论文文字复制比情况说明表","fzbsmb.doc"
+dictCommonMat.Add "硕士学位论文分会复审意见表","fsyjb.doc"
 
-Dim arrSpecMatNames:arrSpecMatNames=Array("研究生学位论文撰写规范","MBA论文撰写手册","MPAcc论文撰写手册")
-Dim arrSpecMatUsers:arrSpecMatUsers=Array("*","6","9")
-Dim arrSpecMatFiles:arrSpecMatFiles=Array("lwzxgf.doc",prefix0&"mba_lwzxsc20170714.pdf",prefix0&"mpacc_lwzxsc20170713.pdf")
+Dim dictSpecMat:Set dictSpecMat=CreateDictionary()
+dictSpecMat.Add "研究生学位论文撰写规范",Array("*","lwzxgf.doc")
+dictSpecMat.Add "Materials for Verification and Approval of Master’s Degree Dissertation (MBA) Defence and Degree Conferral",Array("6","mba_spclb_en.doc")
+dictSpecMat.Add "MBA论文撰写手册",Array("6","mba_lwzxsc20170714.pdf")
+dictSpecMat.Add "MPAcc论文撰写手册",Array("9","mpacc_lwzxsc20170713.pdf")
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -31,17 +30,17 @@ Dim arrSpecMatFiles:arrSpecMatFiles=Array("lwzxgf.doc",prefix0&"mba_lwzxsc201707
 <body>
 <center><font size=4><b>查看论文阶段相关资料</b></font>
 <table class="form" width="800"><tr><td align="left"><%
-For i=0 To UBound(arrTemplateNames)
-	link="template/doc/"&arrTemplateFiles(i)
-	ext=UCase(Mid(arrTemplateFiles(i),InStrRev(arrTemplateFiles(i),".")+1))
-%><p><a href="<%=link%>" target="_blank" title="<%=ext%>格式"><img src="../images/student/<%=ext%>.png" width="16" height="16">下载<%=arrTemplateNames(i)%></a></p><%
+For Each name In dictCommonMat
+	link=resolvePath("template/doc/"&version,dictCommonMat(name))
+	ext=UCase(Mid(dictCommonMat(name),InStrRev(dictCommonMat(name),".")+1))
+%><p><a href="<%=link%>" target="_blank" title="<%=ext%>格式"><img src="../images/student/<%=ext%>.png" width="16" height="16">下载<%=name%></a></p><%
 Next
 
-For i=0 To UBound(arrSpecMatNames)
-	link="template/doc/"&arrSpecMatFiles(i)
-	If arrSpecMatUsers(i)="*" Or InStr(arrSpecMatUsers(i),stu_type) Then
-		ext=UCase(Mid(arrSpecMatFiles(i),InStrRev(arrSpecMatFiles(i),".")+1))
-%><p><a href="<%=link%>" target="_blank" title="<%=ext%>格式"><img src="../images/student/<%=ext%>.png" width="16" height="16">下载<%=arrSpecMatNames(i)%></a></p><%
+For Each name In dictSpecMat
+	link=resolvePath("template/doc/"&version,dictSpecMat(name)(1))
+	If dictSpecMat(name)(0)="*" Or InStr(dictSpecMat(name)(0),stu_type) Then
+		ext=UCase(Mid(dictSpecMat(name)(1),InStrRev(dictSpecMat(name)(1),".")+1))
+%><p><a href="<%=link%>" target="_blank" title="<%=ext%>格式"><img src="../images/student/<%=ext%>.png" width="16" height="16">下载<%=name%></a></p><%
 	End If
 Next
 %>

@@ -13,28 +13,6 @@ Function generatePassword()
 	generatePassword=ret
 End Function
 
-Function getTeacherIdByName(name)
-	If IsNull(name) Then
-		getTeacherIdByName=-1
-		Exit Function
-	End If
-	Dim conn,rsTeacher,sql,count
-	name=Replace(name," ",vbNullString)
-	name=Replace(name,"　",vbNullString)
-	name=Replace(name,"'","''")
-	name=Replace(name,"""","""""")
-	Connect conn
-	sql="SELECT TEACHERID,TEACHERNAME FROM TEACHER_INFO WHERE TEACHERNAME='"&name&"' AND VALID=0"
-	GetRecordSetNoLock conn,rsTeacher,sql,count
-	If rsTeacher.EOF Then
-		getTeacherIdByName=-1
-	Else
-		getTeacherIdByName=rsTeacher("TEACHERID")
-	End If
-	CloseRs rsTeacher
-	CloseConn conn
-End Function
-
 Function getProDutyNameOf(tid)
 	Dim conn,rs,sql,count
 	Connect conn
@@ -65,13 +43,14 @@ Function getNoticeText(stuType,noticeName)
 	CloseConn conn
 End Function
 
-Function addAuditRecord(paper_id,audit_file,audit_type,audit_time,is_passed,eval_text)
-	If Len(eval_text)=0 Then
-		If is_passed Then eval_text="审核通过" Else eval_text="审核不通过"
+Function addAuditRecord(paper_id,audit_file,audit_type,audit_time,is_passed,ByVal comment)
+	If Len(comment)=0 Then
+		If is_passed Then comment="审核通过" Else comment="审核不通过"
 	End If
 	Dim conn,sql
 	Connect conn
 	sql="EXEC spAddAuditRecord ?,?,?,?,?,?,?,NULL"
+	debug(audit_file)
 	ExecNonQuery conn,sql,_
 		CmdParam("paper_id",adInteger,4,paper_id),_
 		CmdParam("audit_file",adVarWChar,50,audit_file),_
@@ -79,7 +58,7 @@ Function addAuditRecord(paper_id,audit_file,audit_type,audit_time,is_passed,eval
 		CmdParam("audit_time",adDate,4,audit_time),_
 		CmdParam("auditor_id",adInteger,4,Session("TId")),_
 		CmdParam("is_passed",adBoolean,1,is_passed),_
-		CmdParam("comment",adLongVarWChar,5000,eval_text)
+		CmdParam("comment",adLongVarWChar,5000,comment)
 	CloseConn conn
 End Function
 
@@ -93,8 +72,8 @@ Function updateActiveTime(teacherID)
 	updateActiveTime=1
 End Function
 
-Function sendEmailToStudent(paper_id,file_type_name,is_pass,ByVal eval_text)
-	If Len(eval_text)=0 Then eval_text="无"
+Function sendEmailToStudent(paper_id,file_type_name,is_pass,ByVal comment)
+	If Len(comment)=0 Then comment="无"
 	Dim conn:Connect conn
 	Dim sql:sql="SELECT ActivityId,TEACHTYPE_ID,STU_NAME,STU_NO,CLASS_NAME,SPECIALITY_NAME,EMAIL,THESIS_SUBJECT,TUTOR_NAME,TUTOR_EMAIL FROM ViewDissertations WHERE ID=?"
 	Dim ret:Set ret=ExecQuery(conn,sql,CmdParam("ID",adInteger,4,paper_id))
@@ -118,6 +97,7 @@ Function sendEmailToStudent(paper_id,file_type_name,is_pass,ByVal eval_text)
 		template_name="pyyjqrtzyj"
 		operation_name="确认评阅书"
 	Else
+		dict("filename")=file_type_name
 		If is_pass Then
 			template_name="lwshtgtzyj"
 			operation_name=Format("审核通过[{0}]",file_type_name)
@@ -135,6 +115,9 @@ End Function
 Function getSectionAccessibilityInfo(activity_id, stu_type_id, section_id)
 	Dim section, time_flag, tip
 	Dim accessible:accessible=False
+	debug(activity_id)
+	debug(stu_type_id)
+	debug(section_id)
 	If Not isActivityOpen(activity_id) Then
 		Set section=getSectionInfo(Null, Null, section_id)
 		time_flag=-3
@@ -165,5 +148,5 @@ If Not hasPrivilege(Session("Twriteprivileges"),"I11") And Not hasPrivilege(Sess
 	showErrorPage "您没有访问本系统的权限！", "提示"
 End If
 
-Dim arrTable:arrTable=Array("","开题报告表","中期检查表","预答辩意见书","答辩审批材料")
+Dim arrTable:arrTable=Array("","开题报告表","中期考核表","预答辩意见书","答辩审批材料")
 %>

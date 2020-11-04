@@ -9,7 +9,6 @@ If sel_count=0 Then
 	Response.End()
 End If
 
-FormGetToSafeRequest(ids)
 finalFilter=Request.Form("finalFilter2")
 pageSize=Request.Form("pageSize2")
 pageNo=Request.Form("pageNo2")

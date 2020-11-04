@@ -17,29 +17,24 @@ query_review_status=Request.Form("In_REVIEW_STATUS2")
 finalFilter=Request.Form("finalFilter2")
 pageSize=Request.Form("pageSize2")
 pageNo=Request.Form("pageNo2")
-FormGetToSafeRequest(review_display_status)
-FormGetToSafeRequest(ids)
 Connect conn
 sql="SELECT THESIS_SUBJECT, STU_NAME FROM ViewDissertations_admin WHERE ID IN ("&ids&")"
 GetRecordSetNoLock conn,rs,sql,count
 
-Dim titles: titles=""
+Dim authors
 Do While Not rs.EOF
-	If Len(titles) Then titles=titles&"；"
-	titles=titles&Format("《{0}》，作者：{1}", rs(0).Value, rs(1).Value)
+	If Len(authors) Then authors=authors&"，"
+	authors=authors&rs(1)
 	rs.MoveNext()
 Loop
 CloseRs rs
-
-sql=Format("UPDATE Dissertations SET REVIEW_FILE_STATUS={0} WHERE ID IN ({1})", review_display_status, ids)
-conn.Execute sql
 
 sql=Format("UPDATE ReviewRecords SET DisplayStatus={0},DisplayStatusModifiedBy={1} WHERE DissertationId IN ({2})",_
 	review_display_status, Session("Id"), ids)
 conn.Execute sql
 CloseConn conn
 
-writeEventLog 0,Session("Name"),"对以下论文修改评阅书开放状态为["&arrReviewFileStat(review_display_status)&"]："&titles
+writeEventLog 0,Session("Name"),"对以下论文修改评阅书开放状态为["&arrReviewFileStat(review_display_status)&"]："&authors
 %><form id="ret" action="paperList.asp" method="post">
 <input type="hidden" name="In_ActivityId" value="<%=activity_id%>">
 <input type="hidden" name="In_TEACHTYPE_ID" value="<%=teachtype_id%>" />

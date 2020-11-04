@@ -35,9 +35,6 @@ Else
 	Case rsNone,rsDetectPaperUploaded,rsRefusedDetect,rsDetectUnpassed
 		' 上传送检论文和送审论文
 		section_id=sectionUploadDetectReview
-	Case rsRefusedReview
-		' 上传送审论文
-		section_id=sectionUploadReview
 	Case rsReviewEval,rsDefencePaperUploaded,rsRefusedDefence
 		' 上传答辩论文
 		section_id=sectionUploadDefence
@@ -78,7 +75,7 @@ End If
 If redirect_to_tbl_upload Then
 	CloseRs rs
 	CloseConn conn
-	Response.Redirect "fillInTable.asp"
+	Response.Redirect "uploadTable.asp"
 End If
 
 step=Request.QueryString("step")
@@ -121,8 +118,8 @@ Case vbNullstring ' 填写信息页面
 		End Select
 	End If %></p></td></tr>
 <tr><td><form id="fmDissertation" action="?step=1" method="post" enctype="multipart/form-data">
-<input type="hidden" name="uploadid" value="_student_thesisReview_uploadThesis_asp" />
-<input type="hidden" name="stuid" value="<%=Session("StuId")%>" />
+<input type="hidden" name="upload_id" value="_student_thesisReview_uploadThesis_asp" />
+<input type="hidden" name="stu_id" value="<%=Session("StuId")%>" />
 <table class="form" width="800">
 <tr><td align="center"><span class="tip">以下信息均为必填项</span></td></tr>
 <tr><td>
@@ -183,8 +180,8 @@ PDF&nbsp;格式<%
 				callbackValidate="checkIfWordRar" %>
 Word&nbsp;格式<%
 			Case sectionUploadInstructReview
-				callbackValidate="checkIfWordRar" %>
-Word&nbsp;格式<%
+				callbackValidate="checkIfPdfRar" %>
+PDF&nbsp;格式<%
 			Case sectionUploadFinal
 				callbackValidate="checkIfPdfRar" %>
 PDF&nbsp;格式<%
@@ -279,29 +276,29 @@ Case 1	' 上传进程
 
 	If time_flag=-3 Then
 		bError=True
-		errdesc=Format("当前评阅活动【{0}】已关闭，不能提交表格！", rs("ActivityName"))
+		errMsg=Format("当前评阅活动【{0}】已关闭，不能提交表格！", rs("ActivityName"))
 	ElseIf time_flag=-2 Then
 		bError=True
-		errdesc=Format("【{0}】环节已关闭，不能上传论文！",current_section("Name"))
+		errMsg=Format("【{0}】环节已关闭，不能上传论文！",current_section("Name"))
 	ElseIf time_flag<>0 Then
 		bError=True
-		errdesc=Format("【{0}】环节开放时间为{1}至{2}，当前不在开放时间内，不能上传论文！",_
+		errMsg=Format("【{0}】环节开放时间为{1}至{2}，当前不在开放时间内，不能上传论文！",_
 			current_section("Name"),_
 			toDateTime(current_section("StartTime"),1),_
 			toDateTime(current_section("EndTime"),1))
 	ElseIf Not uploadable Then
 		bError=True
 		If Not table_ready Then
-			errdesc="表格审核进度未完成，不能上传论文！"
+			errMsg="表格审核进度未完成，不能上传论文！"
 		Else
-			errdesc="当前状态为【"&rs("STAT_TEXT")&"】，不能上传论文！"
+			errMsg="当前状态为【"&rs("STAT_TEXT")&"】，不能上传论文！"
 		End If
 	End If
 	If bError Then
 		CloseRs rs
 		CloseRs rsStu
 		CloseConn conn
-		showErrorPage errdesc, "提示"
+		showErrorPage errMsg, "提示"
 	End If
 
 	Dim fso,Upload,file,file2
@@ -322,35 +319,35 @@ Case 1	' 上传进程
 	new_review_type=Upload.Form("thesisform")
 	If Len(new_subject_ch)=0 Then
 		bError=True
-		errdesc="请填写论文题目！"
+		errMsg="请填写论文题目！"
 	ElseIf Len(new_subject_en)=0 Then
 		bError=True
-		errdesc="请填写论文题目（英文）！"
+		errMsg="请填写论文题目（英文）！"
 	ElseIf (section_id=sectionUploadDetectReview Or section_id=sectionUploadReview) And Len(new_keywords_ch)=0 Then
 		bError=True
-		errdesc="请填写论文关键词！"
+		errMsg="请填写论文关键词！"
 	ElseIf (section_id=sectionUploadDetectReview Or section_id=sectionUploadReview) And Len(new_keywords_en)=0 Then
 		bError=True
-		errdesc="请填写论文关键词（英文）！"
+		errMsg="请填写论文关键词（英文）！"
 	ElseIf Len(new_sub_research_field_id)=0 Then
 		bError=True
-		errdesc="请选择研究方向！"
+		errMsg="请选择研究方向！"
 	ElseIf new_sub_research_field_id="-1" And Len(custom_sub_research_field)=0 Then
 		bError=True
-		errdesc="请填写研究方向！"
+		errMsg="请填写研究方向！"
 	ElseIf new_review_type=0 Then
 		bError=True
-		errdesc="请选择论文形式！"
+		errMsg="请选择论文形式！"
 	End If
 	If bError Then
 		Set Upload=Nothing
 		CloseRs rs
 		CloseRs rsStu
 		CloseConn conn
-		showErrorPage errdesc, "提示"
+		showErrorPage errMsg, "提示"
 	End If
 
-	Set fso=Server.CreateObject("Scripting.FileSystemObject")
+	Set fso=CreateFSO()
 	' 检查上传目录是否存在
 	uploadPath=Server.MapPath("upload")
 	If Not fso.FolderExists(uploadPath) Then fso.CreateFolder(uploadPath)
@@ -362,30 +359,30 @@ Case 1	' 上传进程
 		fileExt2=LCase(file2.FileExt)
 		If file_ext<>"doc" And file_ext<>"docx" And file_ext<>"rar" Then
 			bError=True
-			errdesc="所选择的不是 Word 文件或 RAR 压缩文件！"
+			errMsg="所选择的不是 Word 文件或 RAR 压缩文件！"
 		End If
 		If fileExt2<>"pdf" And fileExt2<>"rar" Then
 			bError=True
-			errdesc="所选择的不是 PDF 文件或 RAR 压缩文件！"
+			errMsg="所选择的不是 PDF 文件或 RAR 压缩文件！"
 		End If
-	Case sectionUploadReview,sectionUploadFinal
+	Case sectionUploadReview,sectionUploadInstructReview,sectionUploadFinal
 		Set file=Upload.File("upFile")
 		file_ext=LCase(file.FileExt)
 		If file_ext<>"pdf" And file_ext<>"rar" Then
 			bError=True
-			errdesc="所选择的不是 PDF 文件或 RAR 压缩文件！"
+			errMsg="所选择的不是 PDF 文件或 RAR 压缩文件！"
 		End If
 	Case Else
 		Set file=Upload.File("upFile")
 		file_ext=LCase(file.FileExt)
 		If file_ext<>"doc" And file_ext<>"docx" And file_ext<>"rar" Then
 			bError=True
-			errdesc="所选择的不是 Word 文件或 RAR 压缩文件！"
+			errMsg="所选择的不是 Word 文件或 RAR 压缩文件！"
 		End If
 	End Select
 	If Not bError Then
 		' 生成日期格式文件名
-		fileid=FormatDateTime(Now(),1)&Int(Timer)
+		fileid=timestamp()
 		destFile=fileid&"."&file_ext
 		destPath=uploadPath&"\"&destFile
 		fileSize=file.FileSize
@@ -420,13 +417,6 @@ Case 1	' 上传进程
 				rs3("DETECT_APP_EVAL")=Null
 				rs3("REVIEW_APP_EVAL")=Null
 			End If
-		Case sectionUploadReview ' 送审论文
-			rs3("THESIS_FILE2")=destFile
-			rs3("KEYWORDS")=new_keywords_ch
-			rs3("KEYWORDS_EN")=new_keywords_en
-			rs3("REVIEW_STATUS")=rsRedetectPassed
-			rs3("SUBMIT_REVIEW_TIME")=Null
-			rs3("REVIEW_APP_EVAL")=Null
 		Case sectionUploadDefence ' 答辩论文
 			rs3("THESIS_FILE3")=destFile
 			rs3("REVIEW_STATUS")=rsDefencePaperUploaded
@@ -471,7 +461,7 @@ Case 1	' 上传进程
 <script type="text/javascript">alert("上传成功！");$('#fmFinish').submit();</script><%
 	Else
 %>
-<script type="text/javascript">alert("<%=errdesc%>");history.go(-1);</script><%
+<script type="text/javascript">alert("<%=errMsg%>");history.go(-1);</script><%
 	End If
 %></center></body></html><%
 End Select

@@ -8,11 +8,10 @@ pageSize=Request.Form("pageSize2")
 pageNo=Request.Form("pageNo2")
 If Len(uid_type)=0 Then
 	bError=True
-	errdesc="您未选择通知对象！"
+	errMsg="您未选择通知对象！"
 End If
 If bError Then
-%><body><center><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
-	Response.End()
+	showErrorPage errMsg, "提示"
 End If
 
 Dim arr,arr2,user_type,user_id

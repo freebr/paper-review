@@ -5,7 +5,6 @@ If Not hasPrivilege(Session("Twriteprivileges"),"I10") Then Response.Redirect(".
 step=Request.QueryString("step")
 paper_id=Request.QueryString("tid")
 teachtype_id=Request.Form("In_TEACHTYPE_ID2")
-spec_id=Request.Form("In_SPECIALITY_ID2")
 finalFilter=Request.Form("finalFilter2")
 pageSize=Request.Form("pageSize2")
 pageNo=Request.Form("pageNo2")
@@ -20,24 +19,24 @@ sql="SELECT * FROM ViewDissertations_expert WHERE ID="&paper_id&" AND "&Session(
 GetRecordSet conn,rs,sql,count
 If IsEmpty(paper_id) Or Not IsNumeric(paper_id) Then
 	bError=True
-	errdesc="参数无效。"
+	errMsg="参数无效。"
 ElseIf count=0 Then
 	bError=True
-	errdesc="数据库没有该论文记录，或您未受邀评阅该论文！"
+	errMsg="数据库没有该论文记录，或您未受邀评阅该论文！"
 ElseIf Not checkIfProfileFilledIn() Then
 	bError=True
-	errdesc="在开始评阅前，您需要完善个人信息，<a href=""profile.asp"">请点击这里编辑。</a>"
+	errMsg="在开始评阅前，您需要完善个人信息，<a href=""profile.asp"">请点击这里编辑。</a>"
 End If
 If bError Then
 	CloseRs rs
 	CloseConn conn
-	showErrorPage errdesc, "提示"
+	showErrorPage errMsg, "提示"
 End If
 
 Dim section_access_info
 Set section_access_info=getSectionAccessibilityInfo(rs("ActivityId"),rs("TEACHTYPE_ID"),sectionReview)
 
-Dim author_stu_type,reviewer,review_status
+Dim author_stu_type,reviewer_type,review_status
 Dim review_result(2),reviewer_master_level(1),review_file(1),review_time(1),review_level(1)
 Dim formAction
 
@@ -50,16 +49,16 @@ Case Else
 End Select
 
 If rs("REVIEWER1")=Session("TId") Then
-	reviewer=0
+	reviewer_type=0
 Else
-	reviewer=1
+	reviewer_type=1
 End If
 If author_stu_type=5 Or author_stu_type=6 Then
 	reviewfile_type=2
 Else
 	reviewfile_type=1
 End If
-eval_text=rs("REVIEWER_EVAL"&(reviewer+1))
+eval_text=rs("ReviewerComment"&(reviewer_type+1))
 review_app=rs("REVIEW_APP")
 review_status=rs("REVIEW_STATUS")
 If Not IsNull(rs("THESIS_FILE2")) Then
@@ -72,7 +71,7 @@ If Not IsNull(rs("REVIEW_RESULT")) Then
 	Next
 End If
 If Not IsNull(rs("REVIEWER_EVAL_TIME")) Then
-	arr2=Split(rs("REVIEWER_MASTER_LEVEL"),",")
+	arr2=Array(rs("ReviewerMasterLevel1"),rs("ReviewerMasterLevel2"))
 	arr3=Array(rs("ReviewFile1"),rs("ReviewFile2"))
 	arr4=Split(rs("REVIEWER_EVAL_TIME"),",")
 	arr5=Split(rs("REVIEW_LEVEL"),",")
@@ -83,10 +82,11 @@ If Not IsNull(rs("REVIEWER_EVAL_TIME")) Then
 		review_level(i)=Int(arr5(i))
 	Next
 End If
-If Len(review_time(reviewer))=0 Then
-	stat="您尚未评阅"
-Else
+is_reviewed=rs("IsComment"&(reviewer_type+1))
+If is_reviewed Then
 	stat="您已评阅"
+Else
+	stat="您尚未评阅"
 End If
 Select Case step
 	Case vbNullString	' 论文详情页面
@@ -101,8 +101,8 @@ Select Case step
 <body class="exp">
 <div class="content">
 	<h1>专业硕士论文详情<h2>论文当前状态：【<%=stat%>】</h2></h1><%
-		If Len(review_time(reviewer))=0 And Not section_access_info("accessible") Then
-%><p><span class="tip"><%=section_access_info("tip")%></span></p><%
+		If Not is_reviewed Then
+%><p align="center"><span class="tip"><%=section_access_info("tip")%></span></p><%
 		End If %>
 	<div class="box">
 		<form id="fmDetail" action="<%=formAction%>" method="post">
@@ -124,36 +124,33 @@ Select Case step
 				<tr><td class="field-name">论文形式：</td><td><input type="text" class="txt full-width" name="thesisform" size="95%" value="<%=rs("THESIS_FORM")%>" readonly /></td></tr><%
 		End If %>
 				<tr><td class="field-name">送审论文：</td><td><a class="resc" href="fetchDocument.asp?tid=<%=paper_id%>&type=1" target="_blank">点击下载</a></td></tr><%
-		If Len(review_time(reviewer)) Then
+		If Len(review_time(reviewer_type)) Then
 				%><tr><td height="10"></td></tr><%
-			If Len(review_file(reviewer)) Then
-				%><tr><td></td><td>您已于&nbsp;<%=toDateTime(review_time(reviewer),1)%>&nbsp;<%=toDateTime(review_time(reviewer),4)%>&nbsp;评阅该论文</td></tr>
-				<tr><td class="field-name">论文评阅书：</td><td><a class="resc" href="fetchDocument.asp?tid=<%=paper_id%>&type=<%=2+reviewer%>" target="_blank">点击下载</a></td></tr><%
+			If Len(review_file(reviewer_type)) Then
+				%><tr><td></td><td>您已于&nbsp;<%=toDateTime(review_time(reviewer_type),1)%>&nbsp;<%=toDateTime(review_time(reviewer_type),4)%>&nbsp;评阅该论文</td></tr>
+				<tr><td class="field-name">论文评阅书：</td><td><a class="resc" href="fetchDocument.asp?tid=<%=paper_id%>&type=<%=2+reviewer_type%>" target="_blank">点击下载</a></td></tr><%
 			End If %>
-				<tr><td class="field-name">您对本论文涉及内容的熟悉程度：</td><td><%=masterLevelRadios("master_level",reviewer_master_level(reviewer))%></td></tr>
-				<tr><td class="field-name">对学位论文的总体评价：</td><td><%=reviewLevelRadios("review_level",reviewfile_type,review_level(reviewer))%></td></tr>
-				<tr><td class="field-name">您的评审结果：</td><td><%=reviewResultList("review_result",review_result(reviewer),false)%>&emsp;<span class="tip">(A→同意答辩；B→需做适当修改；C→需做重大修改；D→不同意答辩；E→尚未返回)</span></td></tr><%
+				<tr><td class="field-name">您对本论文涉及内容的熟悉程度：</td><td><%=masterLevelRadios("master_level",reviewer_master_level(reviewer_type))%></td></tr>
+				<tr><td class="field-name">对学位论文的总体评价：</td><td><%=reviewLevelRadios("review_level",reviewfile_type,review_level(reviewer_type))%></td></tr>
+				<tr><td class="field-name">您的评审结果：</td><td><%=reviewResultList("review_result",review_result(reviewer_type),false)%>&emsp;<span class="tip">(A→同意答辩；B→需做适当修改；C→需做重大修改；D→不同意答辩；E→尚未返回)</span></td></tr><%
 		End If %>
 			</fieldset>
 			<table class="form buttons"><tr><td><%
 		If section_access_info("accessible") Then
-			btnsubmittext=""
-			If Len(review_time(reviewer))=0 Then
-				btnsubmittext="评阅该论文"
+			submit_caption=""
+			If Not is_reviewed Then
+				submit_caption="评阅该论文"
 			ElseIf review_status=rsMatchedReviewer Or review_status=rsReviewed Then
-				btnsubmittext="重新评阅该论文"
+				submit_caption="重新评阅该论文"
 			End If
-			If Len(btnsubmittext) Then
-				%><input type="button" id="btnsubmit" name="btnsubmit" value="<%=btnsubmittext%>" /><%
+			If Len(submit_caption) Then
+				%><input type="button" id="btnsubmit" name="btnsubmit" value="<%=submit_caption%>" /><%
 			End If
 		End If
 				%><input type="button" value="关 闭" onclick="<%=code_close_window%>" />
 			</td></tr></table>
 			<input type="hidden" name="In_TEACHTYPE_ID2" value="<%=teachtype_id%>" />
-			<input type="hidden" name="In_SPECIALITY_ID2" value="<%=spec_id%>" />
 			<input type="hidden" name="In_ENTER_YEAR2" value="<%=enter_year%>" />
-			<input type="hidden" name="In_TASK_PROGRESS2" value="<%=query_task_progress%>" />
-			<input type="hidden" name="In_REVIEW_STATUS2" value="<%=query_review_status%>" />
 			<input type="hidden" name="finalFilter2" value="<%=toPlainString(finalFilter)%>" />
 			<input type="hidden" name="pageSize2" value="<%=pageSize%>" />
 			<input type="hidden" name="pageNo2" value="<%=pageNo%>" />
@@ -162,10 +159,7 @@ Select Case step
 </div>
 <form id="ret" name="ret" action="paperList.asp" method="post">
 <input type="hidden" name="In_TEACHTYPE_ID" value="<%=teachtype_id%>" />
-<input type="hidden" name="In_SPECIALITY_ID" value="<%=spec_id%>" />
 <input type="hidden" name="In_ENTER_YEAR" value="<%=enter_year%>" />
-<input type="hidden" name="In_TASK_PROGRESS" value="<%=query_task_progress%>" />
-<input type="hidden" name="In_REVIEW_STATUS" value="<%=query_review_status%>" />
 <input type="hidden" name="finalFilter" value="<%=toPlainString(finalFilter)%>" />
 <input type="hidden" name="pageSize" value="<%=pageSize%>" />
 <input type="hidden" name="pageNo" value="<%=pageNo%>" /></form>
@@ -210,7 +204,7 @@ Select Case step
 <tr><td><div id="noticeContent"><p align="center">
 <%
 	For i=0 To UBound(arrNoticeFile)
-%><img id="page<%=i+1%>" src="images/<%=arrNoticeFile(i)%>" style="display:none" /><%
+%><img id="page<%=i+1%>" src="notices/<%=arrNoticeFile(i)%>" style="display:none" /><%
 	Next
 %></p></div>
 <p align="center"><button id="btnPrev">&lt;&lt;上一页</button>
@@ -221,19 +215,13 @@ Select Case step
 <input type="button" value="关 闭" onclick="closeWindow()" />
 </td></tr></table>
 <input type="hidden" name="In_TEACHTYPE_ID2" value="<%=teachtype_id%>" />
-<input type="hidden" name="In_SPECIALITY_ID2" value="<%=spec_id%>" />
 <input type="hidden" name="In_ENTER_YEAR2" value="<%=enter_year%>" />
-<input type="hidden" name="In_TASK_PROGRESS2" value="<%=query_task_progress%>" />
-<input type="hidden" name="In_REVIEW_STATUS2" value="<%=query_review_status%>" />
 <input type="hidden" name="finalFilter2" value="<%=toPlainString(finalFilter)%>" />
 <input type="hidden" name="pageSize2" value="<%=pageSize%>" />
 <input type="hidden" name="pageNo2" value="<%=pageNo%>" /></form></div></center>
 <form id="ret" name="ret" action="paperList.asp" method="post">
 <input type="hidden" name="In_TEACHTYPE_ID" value="<%=teachtype_id%>" />
-<input type="hidden" name="In_SPECIALITY_ID" value="<%=spec_id%>" />
 <input type="hidden" name="In_ENTER_YEAR" value="<%=enter_year%>" />
-<input type="hidden" name="In_TASK_PROGRESS" value="<%=query_task_progress%>" />
-<input type="hidden" name="In_REVIEW_STATUS" value="<%=query_review_status%>" />
 <input type="hidden" name="finalFilter" value="<%=toPlainString(finalFilter)%>" />
 <input type="hidden" name="pageSize" value="<%=pageSize%>" />
 <input type="hidden" name="pageNo" value="<%=pageNo%>" /></form>
@@ -312,9 +300,10 @@ Select Case step
 	<div>送审论文：<a class="resc" href="fetchDocument.asp?tid=<%=paper_id%>&type=1" target="_blank">点击下载</a></div>
 </div>
 <div class="fields">
-	<div>对本论文涉及内容的熟悉程度：<%=masterLevelRadios("master_level",reviewer_master_level(reviewer))%></div>
+	<div>对本论文涉及内容的熟悉程度：<%=masterLevelRadios("master_level",reviewer_master_level(reviewer_type))%></div>
 </div>
-<div class="fields">评阅专家对论文的学术评语<span class="eval_notice">（包括选题意义；文献资料的掌握；数据、材料的收集、论证、结论是否合理；基本论点、结论和建议有无理论意义和实践价值；论文的不足之处和建议等，200-2000字）</span>：</div>
+<div class="fields">评阅专家对论文的学术评语：</div>
+<div class="fields"><span class="comment-notice">（包括选题意义；文献资料的掌握；数据、材料的收集、论证、结论是否合理；基本论点、结论和建议有无理论意义和实践价值；论文的不足之处和建议等，200-2000字）</span></div>
 <div class="fields"><textarea name="eval_text" rows="10" style="width:100%">
 <%=eval_text%>
 </textarea></div>
@@ -337,27 +326,27 @@ Select Case step
 	</table>
 </fieldset><%
 			Case 6
-				strJsArrRemarkStd="[{'name':'优秀','min':90},{'name':'良好','min':75},{'name':'合格','min':60},{'name':'不合格','min':0}]"
+				strJsArrRemarkStd="[{'name':'优秀','min':85},{'name':'良好','min':75},{'name':'一般','min':60},{'name':'较差','min':0}]"
 %>
 <fieldset>
 	<legend><%=rs("TEACHTYPE_NAME")%>学位论文评价指标</legend>
 	<p>说明：请评审专家在各二级指标得分空格处按百分制打分，系统将自动生成各一级指标得分并最后汇总计算出总分。</p>
 	<table class="form">
-		<tr><td width="6s0" align="center">一级指标</td><td align="center">二级指标</td><td width="350" align="center">评分标准（优秀：≥90；良好：89-75；合格：74-60；不合格：≤59）</td><td align="center">一级指标得分</td></tr>
+		<tr><td width="100" align="center">一级指标</td><td align="center">二级指标</td><td width="350" align="center">得分（采用百分制，评分标准：优秀：≥85；良好：84-75；一般：74-60；较差：≤59）</td><td align="center">加权得分</td></tr>
 		<%=code_scoring%><tr><td align="center">总分</td><td align="center" colspan="3"><span id="total_score"></span></td></tr>
 		<tr><td align="center" rowspan="2">对学位论文的总体评价</td><td align="center" colspan="3"><span id="review_level_text">&nbsp;</span></td></tr>
-		<tr><td colspan="3"><p>优秀：≥90；良好：89-75；合格：74-60；不合格：≤59。<input type="hidden" name="review_level" /></p></td></tr>
+		<tr><td colspan="3"><p>采用百分制，评分标准：优秀：≥85；良好：84-75；一般：74-60；较差：≤59。<input type="hidden" name="review_level" /></p></td></tr>
 	</table>
 </fieldset><%
 			Case Else
 %>
 <table class="form">
-	<tr><td align="center">对学位论文的总体评价</td><td align="center" colspan="2"><%=reviewLevelRadios("review_level",1,review_level(reviewer))%></td></tr>
+	<tr><td align="center">对学位论文的总体评价</td><td align="center" colspan="2"><%=reviewLevelRadios("review_level",1,review_level(reviewer_type))%></td></tr>
 </table><%
 		End Select %>
 <table class="form"><tr><td>
 	<div class="fields"><div><%=correlation_level_name%><%=correlationLevelRadios("correlation_level",1)%></div></div>
-	<div class="fields"><div>是否同意举行论文答辩：<%=reviewResultRadios("review_result",review_result(reviewer))%></div></div>
+	<div class="fields"><div>是否同意举行论文答辩：<%=reviewResultRadios("review_result",review_result(reviewer_type))%></div></div>
 </td></tr></table>
 <table class="form buttons"><tr><td>
 <input type="submit" value="提 交" />
@@ -365,7 +354,6 @@ Select Case step
 <input type="button" value="关 闭" onclick="closeWindow()" />
 </td></tr></table>
 <input type="hidden" name="In_TEACHTYPE_ID2" value="<%=teachtype_id%>" />
-<input type="hidden" name="In_SPECIALITY_ID2" value="<%=spec_id%>" />
 <input type="hidden" name="In_ENTER_YEAR2" value="<%=enter_year%>" />
 <input type="hidden" name="In_TASK_PROGRESS2" value="<%=query_task_progress%>" />
 <input type="hidden" name="In_REVIEW_STATUS2" value="<%=query_review_status%>" />
@@ -374,7 +362,6 @@ Select Case step
 <input type="hidden" name="pageNo2" value="<%=pageNo%>" /></form></div></center>
 <form id="ret" name="ret" action="paperList.asp" method="post">
 <input type="hidden" name="In_TEACHTYPE_ID" value="<%=teachtype_id%>" />
-<input type="hidden" name="In_SPECIALITY_ID" value="<%=spec_id%>" />
 <input type="hidden" name="In_ENTER_YEAR" value="<%=enter_year%>" />
 <input type="hidden" name="In_TASK_PROGRESS" value="<%=query_task_progress%>" />
 <input type="hidden" name="In_REVIEW_STATUS" value="<%=query_review_status%>" />

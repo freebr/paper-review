@@ -1,0 +1,208 @@
+﻿<table width="1000">
+	<tr><td class="section">Ⅰ 学位申请书</td>
+	<tr><td>
+	<div class="form-row">
+主要内容包括：申请人完成培养计划的情况及学位论文的工作情况，含论文选题的意义和价值；研究目的；创造性成果等
+	</div>
+	<div class="form-row"><textarea class="required" name="degree_application" cols="100" style="height: 400px"></textarea></div>
+	</td></tr>
+	<tr><td class="section">Ⅱ 学位申请人基本情况</td></tr>
+	<tr><td>
+		<div class="form-row">
+			<div class="label" style="flex-basis: 90px">姓名：</div>
+			<div style="flex-basis: 200px"><input type="text" class="required" name="stu_name" size="20" value="<%=Session("StuName")%>" readonly /></div>
+			<div class="label" style="flex-basis: 90px">性别：</div>
+			<div style="flex-basis: 110px"><label for="sex_male"><input type="radio" name="sex" id="sex_male" size="5" value="男" />男</label>
+			<label for="sex_female"><input type="radio" name="sex" id="sex_female" size="5" value="女" />女</label></div>
+			<div class="label" style="flex-basis: 60px">民族：</div>
+			<div style="flex-basis: 140px">
+				<select id="ethnic" class="easyui-combobox" name="ethnic"
+					data-options="prompt: '【请选择】', value: ''" style="width:120px;"><%
+			For i=0 To UBound(arrEthnic)
+				val=arrEthnic(i) %>
+					<option value="<%=val%>"><%=val%></option><%
+			Next %>
+				</select>
+			</div>
+			<div class="label" style="flex-basis: 90px">出生日期：</div>
+			<div><input type="text" class="required" name="birthday" size="3" maxlength="4" />年<input type="text" class="required" name="birthday" size="1" maxlength="2" />月<input type="text" class="required" name="birthday" size="1" maxlength="2" />日</div>
+		</div>
+		<div class="form-row">
+			<div class="label" style="flex-basis: 90px">国籍：</div>
+			<div style="flex-basis: 200px"><input type="text" class="required" name="nation" size="20" /></div>
+			<div class="label" style="flex-basis: 90px">政治面貌：</div>
+			<div style="flex-basis: 310px">
+				<select id="political_status" class="easyui-combobox" name="political_status"
+					data-options="prompt: '【请选择】', value: ''" style="width:170px;"><%
+			For i=0 To UBound(arrPoliticalStatus)
+				val=arrPoliticalStatus(i) %>
+					<option value="<%=val%>"><%=val%></option><%
+			Next %>
+				</select>
+			</div>
+			<div class="label" style="flex-basis: 90px">入学年月：</div>
+			<div><input type="text" class="required" name="entrance_ym" size="3" maxlength="4" />年<input type="text" class="required" name="entrance_ym" size="1" maxlength="2" />月</div>
+		</div>
+		<div class="form-row">
+			<div class="label" style="flex-basis: 90px">身份证号：</div>
+			<div style="flex-basis: 200px"><input type="text" class="required" name="idcard_no" size="20" maxlength="18" /></div>
+			<div class="label" style="flex-basis: 90px">学号：</div>
+			<div><input type="text" class="required" name="stu_no" size="20" value="<%=stu_no%>" readonly /></div>
+		</div>
+		<div class="form-row">
+			<div class="label" style="flex-basis: 90px">专业名称：</div>
+			<div style="flex-basis: 200px"><input type="text" class="required" name="speciality_name" size="20" value="<%=speciality_name%>" /></div>
+			<div class="label" style="flex-basis: 90px">指导教师：</div>
+			<div style="flex-basis: 200px"><input type="text" class="required" name="tutor_name" size="20" value="<%=tutor_name%>" /></div><%
+			If stu_type=5 Then %>
+			<div class="label" style="flex-basis: 90px">工程领域：</div>
+			<div>
+				<select id="research_field" class="easyui-combobox" name="research_field"
+					data-options="prompt: '【请选择】', value: '', editable: false, required: true, panelHeight: '150px'" style="width:200px;"><%
+				For i=0 To UBound(arrResearchField)
+					val=arrResearchField(i) %>
+					<option value="<%=val%>"><%=val%></option><%
+				Next %>
+				</select>
+			</div><%
+			End If %>
+		</div>
+		<div class="form-row">
+			<div class="label" style="flex-basis: 90px">学习方式：</div>
+			<div>
+			<label for="study_type_1"><input type="radio" name="study_type" id="study_type_1" size="5" value="脱产" checked />脱产</label>
+			<label for="study_type_2"><input type="radio" name="study_type" id="study_type_2" size="5" value="半脱产" />半脱产</label>
+			</div>
+		</div>
+		<div class="sub-section">攻读本学位前学位信息</div>
+		<div class="form-row">
+			<div class="label" style="flex-basis: 120px">学位授予单位：</div>
+			<div style="flex-basis: 260px"><input type="text" class="required" name="graduated_at" size="30" /></div>
+			<div class="label" style="flex-basis: 120px">专业：</div>
+			<div><input type="text" class="required" name="before_speciality_name" size="20" /></div>
+		</div>
+		<div class="form-row">
+			<div class="label" style="flex-basis: 120px">学位级别：</div>
+			<div style="flex-basis: 260px">
+			<label for="last_degree_0"><input type="radio" name="last_degree" id="last_degree_0" size="5" value="无" />无</label>
+			<label for="last_degree_1"><input type="radio" name="last_degree" id="last_degree_1" size="5" value="学士" />学士</label>
+			<label for="last_degree_2"><input type="radio" name="last_degree" id="last_degree_2" size="5" value="硕士" />硕士</label>
+			<label for="last_degree_3"><input type="radio" name="last_degree" id="last_degree_3" size="5" value="博士" />博士</label>
+		</div>
+		<div class="label" style="flex-basis: 120px">获学位年月：</div>
+			<div><input type="text" class="required" name="graduation_ym" size="3" maxlength="4" />年<input type="text" class="required" name="graduation_ym" size="1" maxlength="2" />月</div>
+		</div>
+		<div class="sub-section">简历（大学至今）</div>
+		<div class="form-row" style="text-align: center">
+			<div style="flex-basis: 33%">起止时间</div>
+			<div style="flex-basis: 33%; text-align: center">学习或工作单位</div>
+			<div style="flex-basis: 33%; text-align: center">职称、职务</div>
+		</div><%
+		For i=1 To 6 %>
+		<div class="form-row" style="text-align: center">
+			<div style="flex-basis: 33%"><input type="text" class="duration" name="resume_duration" size="30" /></div>
+			<div style="flex-basis: 33%"><input type="text" <% If i=1 Then %>class="required"<% End If %> name="resume_place" size="40" /></div>
+			<div style="flex-basis: 33%"><input type="text" <% If i=1 Then %>class="required"<% End If %> name="resume_job" size="40" /></div>
+		</div><%
+		Next %>
+		<div class="form-row"><div class="label">奖惩情况：</div></div>
+		<div class="form-row"><textarea name="honor_penalty" cols="100" style="height: 200px"></textarea></div>
+	</td></tr>
+	<tr><td class="section">Ⅲ 培养计划完成情况</td></tr>
+	<tr><td>
+		<div class="sub-section">在学期间取得的学术成果（含论文、专著、专利等）</div>
+		<div class="form-row" style="text-align: center">
+			<div style="flex-basis: 5%">序号</div>
+			<div style="flex-basis: 30%">成果名称</div>
+			<div style="flex-basis: 15%">获得年月（卷期号）</div>
+			<div style="flex-basis: 25%">成果出处</div>
+			<div style="flex-basis: 10%">排名</div>
+			<div style="flex-basis: 15%">成果状态</div>
+		</div><%
+	For i=1 To 6 %>
+		<div class="form-row" style="text-align: center">
+			<div style="flex-basis: 5%"><%=i%></div>
+			<div style="flex-basis: 30%"><input type="text" name="achievement_name" size="30" /></div>
+			<div style="flex-basis: 15%"><input type="text" name="achievement_ym" size="20" /></div>
+			<div style="flex-basis: 25%"><input type="text" name="achievement_source" size="25" /></div>
+			<div style="flex-basis: 10%"><input type="text" name="achievement_authornum" size="4" /></div>
+			<div style="flex-basis: 15%"><input type="text" name="achievement_status" size="10" /></div>
+		</div><%
+	Next %>
+	</td></tr>
+	<tr><td>
+		<div class="sub-section">论文工作情况</div>
+		<div class="form-row">
+			<div class="label" style="flex-basis: 120px">论文题目：</div>
+			<div><input type="text" class="required" name="dissertation_subject" size="80" value="<%=subject%>" /></div>
+		</div>
+		<div class="form-row">
+			<div class="label" style="flex-basis: 120px">论文关键词：</div>
+			<div style="flex-basis: 420px"><input type="text" class="required" name="dissertation_keywords" size="55" /></div>
+			<div class="label" style="flex-basis: 110px">论文字数：</div>
+			<div style="flex-basis: 100px"><input type="text" class="required" name="dissertation_word_count" size="3" />万</div>
+		</div>
+		<div class="form-row">
+			<div class="label" style="flex-basis: 120px">论文选题来源：</div>
+			<div style="flex-basis: 400px">
+				<select id="issue_source" class="easyui-combobox" name="issue_source"
+					data-options="prompt: '【请选择】', value: '', editable: false, required: true" style="width:360px;"><%
+			For i=0 To UBound(arrIssueSource)
+				arr=Split(arrIssueSource(i),".") %>
+					<option value="<%=arr(0)%>"><%=arrIssueSource(i)%></option><%
+			Next %>
+				</select>
+			</div>
+			<div class="label" style="flex-basis: 130px">项目名称及代码：</div>
+			<div><input type="text" name="project_name_code" size="35" /></div>
+		</div>
+		<div class="form-row">
+			<div class="label" style="flex-basis: 120px">论文类型：</div>
+			<div style="flex-basis: 380px">
+				<select id="dissertation_type" class="easyui-combobox" name="dissertation_type"
+					data-options="prompt: '【请选择】', value: '', editable: false, required: true, panelHeight: '100px'" style="width:360px;"><%
+			For i=0 To UBound(arrDissertationType)
+				arr=Split(arrDissertationType(i),".") %>
+					<option value="<%=arr(0)%>"><%=arrDissertationType(i)%></option><%
+			Next %>
+				</select>
+			</div>
+			<div class="label" style="flex-basis: 150px">论文工作起止时间：</div>
+			<div><input type="text" class="duration" name="dissertation_duration" size="35" /></div>
+		</div>
+	</td></tr>
+	<tr><td class="section">Ⅳ 指导教师评语</td></tr>
+	<tr><td>
+		<div class="form-row">
+主要内容包括：对申请人的业务学习、思想表现及论文的学术评语，科研工作能力和完成科研工作情况，以及是否同意申请论文答辩的意见等
+		</div>
+		<div class="form-row"><div><textarea class="required" name="tutor_eval" cols="100" style="height: 200px"><%=tutor_modify_eval%></textarea></div></div>
+	</td></tr>
+</table>
+<script type="text/javascript">
+	$(function() {
+		$('[name="sex"]').eq(<%=stu_sex%>).prop('checked', true);
+		$('[name="tutor_eval"').val("<%=toJsString(tutor_eval)%>");
+		$(":text[class!='required']").textbox();
+		$('.duration').maskedbox({
+			mask: '9999年99月——9999年99月'
+		}).each(function (index, item) {
+			$(item).textbox('textbox').bind('focus', function() {
+				$(this).select();
+			});
+		});
+		$(':text.required').textbox({
+			required: true
+		});
+		$("textarea[class!='required']").textbox({
+			multiline: true
+		});
+		$('textarea.required').textbox({
+			required: true,
+			multiline: true
+		});
+	});
+	$().ready(function() {
+		initCurrentViewState();
+	});
+</script>

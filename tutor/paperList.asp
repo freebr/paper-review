@@ -12,10 +12,25 @@ query_review_status=toUnsignedInt(Request.Form("In_REVIEW_STATUS"))
 is_instruct_review=Request.QueryString()="instruct"
 teacher_id=Session("TId")
 finalFilter=Request.Form("finalFilter")
-If Len(finalFilter) Then PubTerm="AND ("&finalFilter&")"
+
+If is_instruct_review Then
+	PubTerm=teacher_id&" IN (INSTRUCT_MEMBER1,INSTRUCT_MEMBER2)"
+	is_reviewed=toUnsignedInt(Request.Form("In_IS_REVIEWED"))
+	If is_reviewed>-1 Then
+		PubTerm=PubTerm&" AND (INSTRUCT_MEMBER1="&teacher_id&" AND IS_COMMENT1="&is_reviewed&_
+			" OR INSTRUCT_MEMBER2="&teacher_id&" AND IS_COMMENT2="&is_reviewed&")"
+	End If
+	If Len(finalFilter) Then PubTerm=PubTerm&" AND ("&finalFilter&")"
+	table_name="ViewDissertations_instruct"
+	arrStatText=Array("未审核","已审核")
+Else
+	PubTerm="TUTOR_ID="&teacher_id
+	If Len(finalFilter) Then PubTerm=PubTerm&" AND ("&finalFilter&")"
+	table_name="ViewDissertations_tutor"
+End If
 If activity_id=-1 Then
 	' Dim activity:Set activity=getLastActivityInfoOfStuType(stutypeMBA)
-	' If Not IsNull(activity) Then activity_id=activity("Id")
+	' If Not activity Is Nothing Then activity_id=activity("Id")
 	activity_id = 0
 End If
 If activity_id>0 Then PubTerm=PubTerm&" AND ActivityId="&activity_id
@@ -25,19 +40,11 @@ If enter_year>0 Then PubTerm=PubTerm&" AND ENTER_YEAR="&enter_year
 If query_task_progress>-1 Then PubTerm=PubTerm&" AND TASK_PROGRESS="&query_task_progress
 If query_review_status>-1 Then PubTerm=PubTerm&" AND REVIEW_STATUS="&query_review_status
 If is_instruct_review Then
-	PubTerm=PubTerm&teacher_id&" IN (INSTRUCT_MEMBER1,INSTRUCT_MEMBER2)"
-	is_reviewed=toUnsignedInt(Request.Form("In_IS_REVIEWED"))
-	If is_reviewed>-1 Then
-		PubTerm=PubTerm&" AND (INSTRUCT_MEMBER1="&teacher_id&" AND IS_COMMENT1="&is_reviewed&_
-			" OR INSTRUCT_MEMBER2="&teacher_id&" AND IS_COMMENT2="&is_reviewed&")"
-	End If
-	table_name="ViewDissertations_instruct"
-	arrStatText=Array("未审核","已审核")
+	PubTerm=PubTerm&" ORDER BY ActivityId DESC,STU_NO,GRANT_DEGREE_RESULT,ISINSTRUCTREVIEW"
 Else
-	PubTerm=PubTerm&" TUTOR_ID="&teacher_id&" ORDER BY ISTABLE DESC,ISINSTRUCTREVIEW DESC,ISMODIFY DESC,ISEVAL DESC,ISREVIEW DESC,ISDETECT DESC,ActivityId DESC"
-	table_name="ViewDissertations_tutor"
+	' PubTerm=PubTerm&" ORDER BY ISTABLE,ISMODIFY,ISEVAL,ISREVIEW,ISDETECT,ActivityId DESC"
+	PubTerm=PubTerm&" ORDER BY ActivityId DESC,TEACHTYPE_ID,GRANT_DEGREE_RESULT,REVIEW_STATUS,TASK_PROGRESS"
 End If
-
 '----------------------PAGE-------------------------
 PageNo=""
 PageSize=""
@@ -122,11 +129,14 @@ GetMenuListPubTerm "ReviewStatuses","STATUS_ID1","STATUS_NAME",query_task_progre
 GetMenuListPubTerm "ReviewStatuses","STATUS_ID2","STATUS_NAME",query_review_status,"AND STATUS_ID2 IS NOT NULL"
 %></select></td></tr></table></td></tr><tr><td>
 <!--查找-->
+<%
+	If is_instruct_review Then %>
 <select id="is_reviewed" name="In_IS_REVIEWED">
 <option value="-1">所有</option>
 <option value="0">未审核</option>
 <option value="1">已审核</option>
-</select>
+</select><%
+	End If %>
 <select name="field" onchange="ReloadOperator()">
 <option value="s_THESIS_SUBJECT">论文题目</option>
 <option value="s_STU_NO">学号</option>
@@ -155,9 +165,9 @@ GetMenuListPubTerm "ReviewStatuses","STATUS_ID2","STATUS_NAME",query_review_stat
 <select name="pageNo" onchange="if(Chk_Select())submitForm($('#paperList'))">
 <%
 For i=1 to rs.PageCount
-		Response.write "<option value="&i
-		If rs.AbsolutePage=i Then Response.write " selected"
-		Response.write ">"&i&"</option>"
+	Response.write "<option value="&i
+	If rs.AbsolutePage=i Then Response.write " selected"
+	Response.write ">"&i&"</option>"
 Next
 %>
 </select>
@@ -188,6 +198,7 @@ Next
 		<td width="180" align="center">状态</td>
 	</tr><%
 	Dim is_review_visible,auditor_type,audit_flag,audit_time
+	Dim last_rec_activity_id
 	For i=1 to rs.PageSize
 		If rs.EOF Then Exit For
 		is_review_visible=Array(rs("ReviewFileDisplayStatus1")>0,rs("ReviewFileDisplayStatus2")>0)
@@ -228,23 +239,32 @@ Next
 				auditor_type=-1
 			End Select
 			reviewer_eval_time=rs("REVIEWER_EVAL_TIME")
-			If rs("ISTABLE") Or rs("ISINSTRUCTREVIEW") Or rs("ISMODIFY") Or rs("ISEVAL") Or rs("ISREVIEW") Or rs("ISDETECT") Then
-				cssclass="paper-status-unhandled"
-			ElseIf rs("REVIEW_STATUS")=rsAgreedReview And auditor_type<>-1 Then
-				If IsNull(reviewer_eval_time) Then
+			If is_instruct_review Then
+				If rs("ISINSTRUCTREVIEW") Then
 					cssclass="paper-status-unhandled"
 				Else
-					audit_time=Split(reviewer_eval_time,",")
-					If Len(audit_time(auditor_type))=0 Then
-						cssclass="paper-status-unhandled"
-					Else
-						cssclass="paper-status"
-					End If
+					cssclass="paper-status"
 				End If
 			Else
-				cssclass="paper-status"
+				If rs("ISTABLE") Or rs("ISMODIFY") Or rs("ISEVAL") Or rs("ISINSTRUCTREVIEWDETECT") Or rs("ISDETECT") Then
+					cssclass="paper-status-unhandled"
+				ElseIf rs("REVIEW_STATUS")=rsAgreedReview And auditor_type<>-1 Then
+					If IsNull(reviewer_eval_time) Then
+						cssclass="paper-status-unhandled"
+					Else
+						audit_time=Split(reviewer_eval_time,",")
+						If Len(audit_time(auditor_type))=0 Then
+							cssclass="paper-status-unhandled"
+						Else
+							cssclass="paper-status"
+						End If
+					End If
+				Else
+					cssclass="paper-status"
+				End If
 			End If
 		End If
+		is_granted_degree=rs("GRANT_DEGREE_RESULT")
 	%><tr bgcolor="ghostwhite" height="30">
 		<td align="center"><a href="#" onclick="return showPaperDetail(<%=rs("ID")%>,2)"><%=HtmlEncode(rs("THESIS_SUBJECT"))%></a></td>
 		<td align="center"><a href="#" onclick="return showStudentProfile(<%=rs("STU_ID")%>,2)"><%=HtmlEncode(rs("STU_NAME"))%></a></td>
@@ -256,15 +276,14 @@ Next
 		<td align="center"><%=rs("FINAL_RESULT_TEXT_tutor")%>
 		<td align="center"><a href="#" onclick="return showPaperDetail(<%=rs("ID")%>,2)"><span class="<%=cssclass%>"><%=stat%></span></a><%
 		If Len(substat) Then
-		%><br/><span class="thesissubstat"><%=substat%></span><%
+		%><br/><span class="review-display-status"><%=substat%></span><%
 		End If %></a></td></tr><%
 		rs.MoveNext()
 	Next
 %></table></form></center>
 <script type="text/javascript">
 	$("#is_reviewed").val("<%=is_reviewed%>");
-</script>
-</body></html><%
+</script></body></html><%
 	CloseRs rs
 	CloseConn conn
 %>

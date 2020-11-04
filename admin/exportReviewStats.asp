@@ -3,7 +3,7 @@
 <%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 filename=Request.QueryString("fn")
 If Len(filename)=0 Then
-	filename=FormatDateTime(Now(),1)&Int(Timer)
+	filename=timestamp()
 	bFilenameSpec=False
 Else
 	bFilenameSpec=True
@@ -25,7 +25,10 @@ If Len(finalFilter) Then PubTerm=" AND ("&finalFilter&")"
 
 If activity_id=-1 Then
 	Dim activity:Set activity=getLastActivityInfoOfStuType(Null)
-	If Not IsNull(activity) Then activity_id=activity("Id")
+	If activity Is Nothing Then
+		showErrorPage "暂无评阅活动可导出统计信息。", "错误"
+	End If
+	activity_id=activity("Id")
 End If
 If activity_id>0 Then PubTerm=PubTerm&" AND ActivityId="&activity_id
 If teachtype_id>0 Then PubTerm=PubTerm&" AND TEACHTYPE_ID="&teachtype_id
@@ -40,54 +43,54 @@ Class ExcelGen
 	Private iRowOffset
 
 	Sub Class_Initialize()
-	  Set spSheet=Server.CreateObject("OWC11.Spreadsheet")
-	  spSheet.DisplayToolBar=True
-	  iRowOffSet=2
-	  iColOffSet=2
+		Set spSheet=Server.CreateObject("OWC11.Spreadsheet")
+		spSheet.DisplayToolBar=True
+		iRowOffSet=2
+		iColOffSet=2
 	End Sub
 
 	Sub Class_Terminate()
-	  Set spSheet=Nothing 'Clean up
+	  	Set spSheet=Nothing 'Clean up
 	End Sub
 
 	Public Property Let ColumnOffset(iColOff)
-	  If iColOff > 0 then
-	    iColOffSet=iColOff
-	  Else
-	    iColOffSet=2
-	  End If
+	  	If iColOff > 0 then
+	    	iColOffSet=iColOff
+	  	Else
+	    	iColOffSet=2
+		End If
 	End Property
 
 	Public Property Let RowOffset(iRowOff)
-	  If iRowOff > 0 then
-	     iRowOffSet=iRowOff
-	  Else
-	     iRowOffSet=2
-	  End If
+		If iRowOff > 0 then
+	    	iRowOffSet=iRowOff
+		Else
+	    	iRowOffSet=2
+		End If
 	End Property
 
 	Function GenerateWorksheet(arrFields,arrRs,arrSheetName)
-	  'Populates the Excel worksheet based on a Recordset's contents
-	  'Start by displaying the titles
-	  Dim iCol,iRow,colId
-	  Dim parentFieldName,colSubfieldBegin,colSubfieldEnd,bNewParentField
-	  Dim fieldSizeDef
-	  Dim i,j,tmp,cellid,arr
-	  Dim nSheetId,nRecNum,sheet
+		'Populates the Excel worksheet based on a Recordset's contents
+		'Start by displaying the titles
+		Dim iCol,iRow,colId
+		Dim parentFieldName,colSubfieldBegin,colSubfieldEnd,bNewParentField
+		Dim fieldSizeDef
+		Dim i,j,tmp,cellid,arr
+		Dim nSheetId,nRecNum,sheet
 
-	  For nSheetId=0 To UBound(arrRs)
-		  nRecNum=0
-	  	If nSheetId>0 Then
-	  		Set sheet=sheet.Next
-	  		If sheet Is Nothing Then
-	  			Set sheet=spSheet.Sheets.Add()
-	  		End If
-	  		sheet.Activate()
-	  	Else
-	  		Set sheet=spSheet.ActiveSheet
-	  	End If
-	  	sheet.Name=arrSheetName(nSheetId)
-	  	If Not arrRs(nSheetId).EOF Then
+		For nSheetId=0 To UBound(arrRs)
+			nRecNum=0
+			If nSheetId>0 Then
+				Set sheet=sheet.Next
+				If sheet Is Nothing Then
+					Set sheet=spSheet.Sheets.Add()
+				End If
+				sheet.Activate()
+			Else
+				Set sheet=spSheet.ActiveSheet
+			End If
+			sheet.Name=arrSheetName(nSheetId)
+			If Not arrRs(nSheetId).EOF Then
 				iCol=iColOffset
 				iRow=iRowOffset
 				parentFieldName=""
@@ -155,24 +158,24 @@ Class ExcelGen
 				'Display all of the data
 				iRow=iRowOffset+1
 				Do While Not arrRs(nSheetId).EOF
-				 	iRow=iRow + 1
-				 	iCol=iColOffset
-				 	For j=0 To UBound(arrFields(nSheetId))
-				    If IsNull(arrRs(nSheetId)(j)) Then
-				      spSheet.Cells(iRow, iCol).Value=""
-				    Else
-				      spSheet.Cells(iRow, iCol).Value="'"&CStr(arrRs(nSheetId)(j))
-							spSheet.Cells(iRow, iCol).Font.Bold=False
-							spSheet.Cells(iRow, iCol).Font.Italic=False
-							spSheet.Cells(iRow, iCol).Font.Size=10
-							If Len(fieldSizeDef(j,0))=0 Then
-								spSheet.Columns(iCol).AutoFit()
-							End If
-							If Len(fieldSizeDef(j,1))<>0 Then
-								spSheet.Cells(iRow, iCol).RowHeight=fieldSizeDef(j,1)
-							End If
-				    End If
-				  	iCol=iCol + 1
+					iRow=iRow + 1
+					iCol=iColOffset
+					For j=0 To UBound(arrFields(nSheetId))
+					If IsNull(arrRs(nSheetId)(j)) Then
+						spSheet.Cells(iRow, iCol).Value=""
+					Else
+						spSheet.Cells(iRow, iCol).Value="'"&CStr(arrRs(nSheetId)(j))
+						spSheet.Cells(iRow, iCol).Font.Bold=False
+						spSheet.Cells(iRow, iCol).Font.Italic=False
+						spSheet.Cells(iRow, iCol).Font.Size=10
+						If Len(fieldSizeDef(j,0))=0 Then
+							spSheet.Columns(iCol).AutoFit()
+						End If
+						If Len(fieldSizeDef(j,1))<>0 Then
+							spSheet.Cells(iRow, iCol).RowHeight=fieldSizeDef(j,1)
+						End If
+					End If
+					iCol=iCol + 1
 					Next
 					nRecNum=nRecNum+1
 					arrRs(nSheetId).MoveNext()
@@ -195,11 +198,11 @@ Dim arrFields,rs(1),arrSheetName
 arrFields=Array(Array("","学位类别","专业名称","总数",_
 	"送审结果.同意答辩","送审结果.适当修改","送审结果.重大修改","送审结果.加送两份","送审结果.延期送审","送审结果.未齐",_
 	"总体评价.优","总体评价.良","总体评价.中","总体评价.差","导师审核.同意","导师审核.不同意"),_
-	Array("状态","论文题目*37*80","作者姓名","学号","专业","研究方向","论文形式","导师","开题报告","中期检查表","预答辩意见书","答辩审批材料","复制比","专家一姓名","专家一工作单位","专家二姓名","专家二工作单位","送审结果1","送审结果2","处理意见","答辩修改意见*55*80","答辩成绩","分会修改意见*55*80"))
+	Array("状态","论文题目*37*80","作者姓名","学号","学位类别","研究方向","论文形式","导师","开题报告","中期考核表","预答辩意见书","答辩审批材料","复制比","专家一姓名","专家一工作单位","专家二姓名","专家二工作单位","送审结果1","送审结果2","处理意见","答辩修改意见*55*80","答辩成绩","分会修改意见*55*80"))
 arrSheetName=Array("送审结果统计表","全部论文列表")
 
 Connect conn
-selectFields="dbo.getThesisStatusText(1,TASK_PROGRESS,1)+'，'+dbo.getThesisStatusText(2,REVIEW_STATUS,1),THESIS_SUBJECT,STU_NAME,STU_NO,SPECIALITY_NAME,RESEARCHWAY_NAME,THESIS_FORM,TUTOR_NAME,"&_
+selectFields="dbo.getThesisStatusText(1,TASK_PROGRESS,1)+'，'+dbo.getThesisStatusText(2,REVIEW_STATUS,1),THESIS_SUBJECT,STU_NAME,STU_NO,TEACHTYPE_NAME,RESEARCHWAY_NAME,THESIS_FORM,TUTOR_NAME,"&_
 	"dbo.isFileExisted(ID,0,0),dbo.isFileExisted(ID,0,1),dbo.isFileExisted(ID,0,2),dbo.isFileExisted(ID,0,3),"&_
 	"dbo.getDetectResultString(ID) AS RATIO,EXPERT_NAME1,EXPERT_WORKPLACE1,EXPERT_NAME2,EXPERT_WORKPLACE2,"&_
 	"dbo.getReviewResultText(LEFT(REVIEW_RESULT,1)) AS REVIEW_RESULT1,dbo.getReviewResultText(SUBSTRING(REVIEW_RESULT,3,1)) AS REVIEW_RESULT2,dbo.getFinalResultText(RIGHT(REVIEW_RESULT,1)) AS FINAL_RESULT,DEFENCE_EVAL,dbo.getDefenceResultText(DEFENCE_RESULT),DEGREE_MODIFY_EVAL"
@@ -210,11 +213,11 @@ Set ret=ExecQuery(conn,sql,_
   CmdParam("@stu_types",adInteger,4,Session("AdminType")("ManageStuTypes")))
 Set rs(0)=ret("rs")
 ' 导出送审论文列表
-sql="SELECT "&selectFields&" FROM ViewDissertations WHERE VALID=1 "&PubTerm
+sql="SELECT "&selectFields&" FROM ViewDissertations WHERE 1=1 "&PubTerm
 Set ret=ExecQuery(conn,sql)
 Set rs(1)=ret("rs")
 
-Dim fso:Set fso=Server.CreateObject("Scripting.FileSystemObject")
+Dim fso:Set fso=CreateFSO()
 exportBaseDir=Server.MapPath("export")
 exportSpecDir=exportBaseDir&"/spec"
 If Not fso.FolderExists(exportBaseDir) Then

@@ -3,7 +3,6 @@
 Dim ids,sel_count
 ids=Request.Form("sel")
 sel_count=Request.Form("sel").Count
-FormGetToSafeRequest(ids)
 Connect conn
 ConnectOriginDb connOrigin
 For i=1 To sel_count

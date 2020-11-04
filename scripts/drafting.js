@@ -1,30 +1,30 @@
 ﻿$(document).ready(function(){
 	$('#btnloaddraft').click(function() {
-		var eval_text_autosaved=getCookie('tutor_eval_text');
-		if(!eval_text_autosaved) {
+		var comment_autosaved=getCookie('tutor_comment');
+		if(!comment_autosaved) {
 			alert('未找到已保存的草稿！');
 			return;
 		}
-		var lastTimeSaved=getCookie('tutor_eval_text_time');
+		var lastTimeSaved=getCookie('tutor_comment_time');
 		if(confirm('将在当前内容结尾处插入上次保存草稿（保存时间为 '+lastTimeSaved+'），是否继续？')) {
-			var tb=$('[name="eval_text"]');
-			tb.val(tb.val()+'\r\n\r\n'+eval_text_autosaved);
+			var tb=$('[name="comment"]');
+			tb.val(tb.val()+'\r\n\r\n'+comment_autosaved);
 		}
 	});
 });
 
 function verifyDraft(tid) {
-	var eval_text_autosaved=getCookie('tutor_eval_text');
+	var comment_autosaved=getCookie('tutor_comment');
 	var thesis_id_autosaved=getCookie('tutor_thesis_id');
-	var lastTimeSaved=getCookie('tutor_eval_text_time');
-	if(eval_text_autosaved&&thesis_id_autosaved==new String(tid)) {
+	var lastTimeSaved=getCookie('tutor_comment_time');
+	if(comment_autosaved&&thesis_id_autosaved==new String(tid)) {
 		if(confirm('系统于 '+lastTimeSaved+' 自动保存了您的草稿，是否读取？')) {
-			$('[name="eval_text"]').val(eval_text_autosaved).keyup();
+			$('[name="comment"]').val(comment_autosaved).keyup();
 		}
 	}
 }
 function saveAsDraft(tid,autosaved) {
-	if(!$('[name="eval_text"]').val().length) return;
+	if(!$('[name="comment"]').val().length) return;
 	var timeSaved=(new Date()).toLocaleTimeString();
 	var tip;
 	if(autosaved)
@@ -32,8 +32,8 @@ function saveAsDraft(tid,autosaved) {
 	else
 		tip='草稿已保存于';
 	setCookie('tutor_thesis_id',tid,24);
-	setCookie('tutor_eval_text',$('[name="eval_text"]').val(),24);
-	setCookie('tutor_eval_text_time',timeSaved,24);
+	setCookie('tutor_comment',$('[name="comment"]').val(),24);
+	setCookie('tutor_comment_time',timeSaved,24);
 	$('#tip').html('<font color="blue">'+tip+' '+timeSaved+'</font>');
 	return;
 }

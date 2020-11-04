@@ -16,8 +16,12 @@ table.notice-list tr td:first-child {
 	width: 100%;
 	height: 200px;
 }
-
 option.user-id-category {
 	color: blue;
 	font-weight: bold;
+}
+.output-message {
+	color: #0000aa;
+	line-height: 1.5ch;
+	white-space: pre-wrap;
 }

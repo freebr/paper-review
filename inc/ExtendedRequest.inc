@@ -26,11 +26,14 @@ Class ExtendedRequest
 	Private Sub Class_Initialize()
 		Dim RequestData,sStart,bCrlf,sInfo,iInfoStart,iInfoEnd,iStart,theFile,charset
 		Dim iBytesUploaded,iBlockSize,iFileSize
-		Dim sTmpPath,sUploadId,sStreamProgFile,sFilePath,sFileType,sFormValue,sFileName
+		Dim tmpDir,sUploadId,sStreamProgFile,sFilePath,sFileType,sFormValue,sFileName
 		Dim iFindStart,iFindEnd
 		Dim iFormStart,iFormEnd,sFormName
 		Dim isStudent:isStudent=Not IsEmpty(Session("StuId"))
 		Dim tStream,streamProg,fso
+		
+		tmpDir=tempPath()
+		ensurePathExists Server.MapPath(tmpDir)
 		If Response.Charset="utf-8" Then
 			charset="utf-8"
 		Else
@@ -45,11 +48,9 @@ Class ExtendedRequest
 		Set streamReq = Server.CreateObject("ADODB.Stream")
 		If isStudent Then
 		  Set streamProg=Server.CreateObject("ADODB.Stream")
-		  Set fso=Server.CreateObject("Scripting.FileSystemObject")
+		  Set fso=CreateFSO()
 		  sUploadId=Replace(Replace(Request.ServerVariables("SCRIPT_NAME"),"/","_"),".","_")
-		  sTmpPath=Server.MapPath("tmp")
-		  If Not fso.FolderExists(sTmpPath) Then fso.CreateFolder sTmpPath
-		  sStreamProgFile=Server.MapPath("tmp/"&Session("StuId")&sUploadId&".json")
+		  sStreamProgFile=Server.MapPath(resolvePath(tmpDir,Session("StuId")&sUploadId&".json"))
 		  streamProg.Type = 2
 		  streamProg.Mode = 3
 		  streamProg.Charset=charset
@@ -194,7 +195,7 @@ Class FileInfo
     FileExt  = ""
   End Sub
 
-	Public Function SaveAs(FullPath)
+	Public Function SaveAs(fullpath)
 	  Dim dr
 	  SaveAs=True
 	  If Trim(fullpath)="" Or FileStart=0 Or FileName="" Or Right(fullpath,1)="/" Then exit Function
@@ -204,7 +205,7 @@ Class FileInfo
 	  dr.Open()
 	  streamReq.Position=FileStart
 	  streamReq.CopyTo dr,FileSize
-	  dr.SaveToFile FullPath,2
+	  dr.SaveToFile fullpath,2
 	  dr.Close()
 	  Set dr=Nothing
 	  SaveAs=False

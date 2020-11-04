@@ -2,15 +2,14 @@
 <!--#include file="common.asp"-->
 <%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 TeacherId=Request.QueryString("id")
-FormGetToSafeRequest(TeacherId)
 If Len(TeacherId)=0 Or Not IsNumeric(TeacherId) Then
 	bError=True
-	errdesc="参数无效。"
+	errMsg="参数无效。"
 End If
 If bError Then
 	CloseRs rs
 	CloseConn conn
-	showErrorPage errdesc, "提示"
+	showErrorPage errMsg, "提示"
 End If
 
 Connect conn
@@ -65,7 +64,7 @@ End If
 	If rs("INSCHOOL").Value Then
 %><%=rs("TEACHERNO").Value%><%
 	Else
-%><input type="text" class="txt full-width" name="teacherno" value="<%=HtmlEncode(rs("TEACHERNO").Value)%>" /><%
+%><input type="text" class="txt full-width" name="teacherno" value="<%=rs("TEACHERNO").Value%>" /><%
 	End If
 %></td>
 	<td bgcolor="gainsboro" align="center">身份证号码</td>

@@ -106,12 +106,12 @@ sql="SELECT ID,EXPERT_NAME,TEACHERNO,PASSWORD,PRO_DUTY_NAME,EXPERTISE,WORKPLACE,
 Set rs=conn.Execute(sql)
 
 Dim fso
-Set fso=Server.CreateObject("Scripting.FileSystemObject")
+Set fso=CreateFSO()
 exportBaseDir=Server.MapPath("export")
 If Not fso.FolderExists(exportBaseDir) Then
 	fso.CreateFolder(exportBaseDir)
 End If
-filename=FormatDateTime(Now(),1)&Int(Timer)
+filename=timestamp()
 s="/"&filename&".xls"
 excelPath=exportBaseDir&s
 exportPath="export"&s

@@ -359,7 +359,11 @@ var Common = {
 	curryLoadFilter: function() {
 		var args = arguments;
 		return function(data) {
-			if (Array.isArray(data)) return data[0];
+			if (data instanceof Array) return data[0];
+			if (data.rows) {
+				data.status = 'ok';
+				data.data = data.rows;
+			}
 			if (data.status !== "ok") {
 				$.messager.alert("提示", data.msg, "error");
 				return [];

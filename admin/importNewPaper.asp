@@ -1,6 +1,10 @@
 ﻿<!--#include file="../inc/ExtendedRequest.inc"-->
 <!--#include file="../inc/global.inc"-->
 <!--#include file="common.asp"--><%
+If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
+
+tableUploadPath = Server.MapPath(uploadBasePath(usertypeAdmin, "new_paper_table"))
+ensurePathExists tableUploadPath
 
 step=Request.QueryString("step")
 Select Case step
@@ -25,14 +29,14 @@ GetMenuListPubTerm "ReviewStatuses","STATUS_ID1","STATUS_NAME","","AND STATUS_ID
 GetMenuListPubTerm "ReviewStatuses","STATUS_ID2","STATUS_NAME","","AND STATUS_ID2 IS NOT NULL"
 %></select></p>
 <p>检索方式：<select name="selectmode"><option value="0" selected>按学号检索</option><option value="1">按姓名检索</option></select></p>
-<p>请选择要导入的 Excel 文件：<br />文件名：<input type="file" name="excelFile" size="100" /><br />
-<a href="upload/newpaperinf_template.xlsx" target="_blank">点击下载论文信息表格模板</a><br />
-<input type="submit" name="btnsubmit" value="提 交" />&nbsp;
+<p>请选择要导入的 Excel 文件：<input type="file" name="tableFile" size="100" /></p>
+<p><a href="upload/newpaperinf_template.xlsx" target="_blank">点击下载论文信息表格模板</a></p>
+<p><input type="submit" name="btnsubmit" value="提 交" />&nbsp;
 <input type="button" name="btnret" value="返 回" onclick="history.go(-1)" /></p></form></center>
 <script type="text/javascript">
 	$(document).ready(function(){
 		$('form').submit(function() {
-			var valid=checkIfExcel(this.excelFile);
+			var valid=checkIfExcel(this.tableFile);
 			if(valid) {
 				$(':submit').val("正在提交，请稍候...").attr('disabled',true);
 			}
@@ -43,35 +47,26 @@ GetMenuListPubTerm "ReviewStatuses","STATUS_ID2","STATUS_NAME","","AND STATUS_ID
 </script></body></html><%
 Case 2	' 上传进程
 
-	Dim fso,Upload,File
+	Dim Upload,File
 
 	Set Upload=New ExtendedRequest
-	Set file=Upload.File("excelFile")
+	Set file=Upload.File("tableFile")
 	activity_id=toUnsignedInt(Upload.Form("In_ActivityId"))
 	task_progress=Upload.Form("In_TASK_PROGRESS")
 	review_status=Upload.Form("In_REVIEW_STATUS")
 	select_mode=Upload.Form("selectmode")
-	Set fso=Server.CreateObject("Scripting.FileSystemObject")
-
-	' 检查上传目录是否存在
-	strUploadPath = Server.MapPath("upload\xls")
-	If Not fso.FolderExists(strUploadPath) Then fso.CreateFolder(strUploadPath)
 
 	file_ext=LCase(file.FileExt)
 	If activity_id="0" Then
 		bError = True
-		errstring = "请选择评阅活动！"
+		errMsg = "请选择评阅活动！"
 	ElseIf file_ext <> "xls" And file_ext <> "xlsx" Then	' 不被允许的文件类型
 		bError = True
-		errstring = "所选择的不是 Excel 文件！"
+		errMsg = "所选择的不是 Excel 文件！"
 	Else
-		' 生成日期格式文件名
-		fileid = FormatDateTime(Now(),1)&Int(Timer)
-		strDestFile = fileid&"."&file_ext
-		strDestPath = Server.MapPath("upload")&"\xls\"&strDestFile
-		byteFileSize = file.FileSize
-		' 保存
-		file.SaveAs strDestPath
+		destFile = timestamp()&"."&file_ext
+		destPath = resolvePath(tableUploadPath,destFile)
+		file.SaveAs destPath
 	End If
 	Set file=Nothing
 	Set Upload=Nothing
@@ -91,12 +86,12 @@ Case 2	' 上传进程
 <input type="hidden" name="In_TASK_PROGRESS" value="<%=task_progress%>" />
 <input type="hidden" name="In_REVIEW_STATUS" value="<%=review_status%>" />
 <input type="hidden" name="selectmode" value="<%=select_mode%>" />
-<input type="hidden" name="filename" value="<%=strDestFile%>" />
+<input type="hidden" name="filename" value="<%=destFile%>" />
 <p>文件上传成功，正在导入新增论文信息...</p></form>
 <script type="text/javascript">setTimeout("$('#fmUploadFinish').submit()",500);</script><%
 	Else
 %>
-<script type="text/javascript">alert("<%=errstring%>");history.go(-1);</script><%
+<script type="text/javascript">alert("<%=errMsg%>");history.go(-1);</script><%
 	End If
 %></center></body></html><%
 Case 3	' 数据读取，导入到数据库
@@ -104,9 +99,9 @@ Case 3	' 数据读取，导入到数据库
 	Function addData()
 		' 添加数据
 		Dim fieldValue(3)
-		Dim sql,sql_upd_rv,sql_upd_pv,sql_upd_apply,conn,connOrigin,count,rsa,rsb,rsc
-		Dim stuid,tutorid,recid,teachtypeid,submit_review_time
-		Dim numThesis
+		Dim sql,sql_upd_rv,sql_upd_pv,conn,connOrigin,rsa,rsb
+		Dim stu_id,tutorid,submit_review_time
+		Dim numPapers
 		Dim s,i,strTmp,strTmp2
 		If review_status>=rsAgreedReview Then
 			submit_review_time=Now
@@ -114,7 +109,7 @@ Case 3	' 数据读取，导入到数据库
 			submit_review_time=vbNullString
 		End If
 		submit_review_time=toSqlString(submit_review_time)
-		numThesis=0
+		numPapers=0
 		sql_upd_rv="DECLARE @id int;"
 		Connect conn
 		ConnectOriginDb connOrigin
@@ -130,9 +125,9 @@ Case 3	' 数据读取，导入到数据库
 			Set rsa=conn.Execute(sql)
 			If rsa.EOF Then
 				bError=True
-				errMsg=errMsg&"学生不存在:"""&rs(0)&"""。"&vbNewLine
+				errMsg=errMsg&"学生不存在：["&rs(1)&"]。"&vbNewLine
 			Else
-				stuid=rsa("STU_ID")
+				stu_id=rsa("STU_ID")
 				' 导师姓名
 				fieldValue(0)=toSqlString(rs(2))
 				' 学位类别
@@ -149,32 +144,18 @@ Case 3	' 数据读取，导入到数据库
 				Set rsb=conn.Execute(sql)
 				If Not rsb.EOF Then
 					tutorid=rsb("TEACHER_ID")
-					sql="SELECT RECRUIT_ID,TEACHTYPE_ID FROM TutorRecruitSys..ViewRecruitInfo WHERE TEACHER_ID="&tutorid&" AND PERIOD_ID="&activity("SemesterId")&" AND TEACHTYPE_ID="&fieldValue(1)
-					Set rsc=conn.Execute(sql)
-					If Not rsc.EOF Then
-						recid=rsc("RECRUIT_ID")
-						teachtypeid=rsc("TEACHTYPE_ID")
+					
+					sql_upd_rv=sql_upd_rv&"SET @id=NULL;SELECT @id=ID FROM Dissertations WHERE STU_ID="&stu_id&"; IF @id IS NULL INSERT INTO Dissertations (STU_ID,THESIS_SUBJECT,REVIEW_TYPE,TASK_PROGRESS,REVIEW_STATUS,SUBMIT_REVIEW_TIME,REVIEW_RESULT,REVIEW_LEVEL,ActivityId,VALID) VALUES("&_
+					stu_id&","&fieldValue(3)&",dbo.getReviewTypeId("&fieldValue(1)&","&fieldValue(2)&"),"&task_progress&","&review_status&","&submit_review_time&",'5,5,6','0,0',"&activity_id&",1);"&_
+					"ELSE UPDATE Dissertations SET THESIS_SUBJECT="&fieldValue(3)&",REVIEW_TYPE=dbo.getReviewTypeId("&fieldValue(1)&","&fieldValue(2)&"),TASK_PROGRESS="&task_progress&",REVIEW_STATUS="&review_status&",SUBMIT_REVIEW_TIME=CASE WHEN SUBMIT_REVIEW_TIME IS NULL THEN "&submit_review_time&" ELSE SUBMIT_REVIEW_TIME END,ActivityId="&activity_id&",VALID=1 WHERE ID=@id;"
+					sql_upd_pv=sql_upd_pv&"UPDATE STUDENT_INFO SET WRITEPRIVILEGETAGSTRING=dbo.addPrivilege(WRITEPRIVILEGETAGSTRING,'SA8',''),"&_
+						"READPRIVILEGETAGSTRING=dbo.addPrivilege(READPRIVILEGETAGSTRING,'SA8','') WHERE STU_ID="&stu_id&";"
 
-						sql_upd_rv=sql_upd_rv&"SET @id=NULL;SELECT @id=ID FROM Dissertations WHERE STU_ID="&stuid&"; IF @id IS NULL INSERT INTO Dissertations (STU_ID,THESIS_SUBJECT,REVIEW_TYPE,TASK_PROGRESS,REVIEW_STATUS,SUBMIT_REVIEW_TIME,REVIEW_FILE_STATUS,REVIEW_RESULT,REVIEW_LEVEL,ActivityId,VALID) VALUES("&_
-						stuid&","&fieldValue(3)&",dbo.getReviewTypeId("&teachtypeid&","&fieldValue(2)&"),"&task_progress&","&review_status&","&submit_review_time&",0,'5,5,6','0,0',"&activity_id&",1);"&_
-						"ELSE UPDATE Dissertations SET THESIS_SUBJECT="&fieldValue(3)&",REVIEW_TYPE=dbo.getReviewTypeId("&teachtypeid&","&fieldValue(2)&"),TASK_PROGRESS="&task_progress&",REVIEW_STATUS="&review_status&",SUBMIT_REVIEW_TIME=CASE WHEN SUBMIT_REVIEW_TIME IS NULL THEN "&submit_review_time&" ELSE SUBMIT_REVIEW_TIME END,ActivityId="&activity_id&",VALID=1 WHERE ID=@id;"
-
-						sql_upd_pv=sql_upd_pv&"UPDATE STUDENT_INFO SET TUTOR_ID="&tutorid&",TUTOR_RECRUIT_ID="&recid&",TUTOR_RECRUIT_STATUS=3,"&_
-											 "WRITEPRIVILEGETAGSTRING=dbo.addPrivilege(WRITEPRIVILEGETAGSTRING,'SA8',''),READPRIVILEGETAGSTRING=dbo.addPrivilege(READPRIVILEGETAGSTRING,'SA8','') WHERE STU_ID="&stuid&";"
-
-						sql_upd_apply=sql_upd_apply&"IF NOT EXISTS(SELECT STU_ID FROM TutorRecruitSys..ApplyInfo WHERE STU_ID="&stuid&" AND RECRUIT_ID="&recid&") BEGIN;"&_
-													"DELETE FROM TutorRecruitSys..ApplyInfo WHERE STU_ID="&stuid&" AND TURN_NUM=1;"&_
-													"INSERT INTO TutorRecruitSys..ApplyInfo (STU_ID,TUTOR_ID,RECRUIT_ID,PERIOD_ID,TURN_NUM,APPLY_TIME,TUTOR_REPLY_TIME,APPLY_STATUS) VALUES("&stuid&","&tutorid&","&recid&","&activity("SemesterId")&",1,'"&Now&"','"&Now&"',3); END;"
-
-						numThesis=numThesis+1
-					Else
-						bError=True
-						errMsg=errMsg&"学生"""&rs(0)&"""所选导师"""&rs(2)&"""缺少必需的招生信息。"&vbNewLine
-					End If
+					numPapers=numPapers+1
 					CloseRs rsc
 				Else
 					bError=True
-					errMsg=errMsg&"学生"""&rs(0)&"""所选导师"""&rs(2)&"""未被录入导师信息数据库。"&vbNewLine
+					errMsg=errMsg&"学生["&rs(0)&"]所选导师["&rs(2)&"]未被录入导师信息数据库。"&vbNewLine
 				End If
 				CloseRs rsb
 			End If
@@ -185,11 +166,9 @@ Case 3	' 数据读取，导入到数据库
 		If Len(sql_upd_rv) Then conn.Execute sql_upd_rv
 		' 添加学生访问评阅系统的权限
 		If Len(sql_upd_pv) Then connOrigin.Execute sql_upd_pv
-		' 添加学生选导师系统填报志愿信息
-		If Len(sql_upd_apply) Then conn.Execute sql_upd_apply
 		CloseConn connOrigin
 		CloseConn conn
-		addData=numThesis
+		addData=numPapers
 	End Function
 
 	Dim bError,errMsg
@@ -199,7 +178,7 @@ Case 3	' 数据读取，导入到数据库
 	task_progress=Request.Form("In_TASK_PROGRESS")
 	review_status=Request.Form("In_REVIEW_STATUS")
 	select_mode=Request.Form("selectmode")
-	filepath=Server.MapPath("upload/xls/"&filename)
+	filepath=resolvePath(tableUploadPath,filename)
 
 	Set activity=getActivityInfo(activity_id)
 	If IsNull(activity) Then

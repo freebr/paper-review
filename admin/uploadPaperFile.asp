@@ -59,7 +59,7 @@ Case vbNullString	' 论文详情页面
 	End If %>
 <tr><td>开题报告表：&emsp;&emsp;&emsp;&emsp;<input type="file" name="uploadfile1" size="100" /></td></tr>
 <tr><td>开题论文：&emsp;&emsp;&emsp;&emsp;&emsp;<input type="file" name="uploadfile2" size="100" /></td></tr>
-<tr><td>中期检查表：&emsp;&emsp;&emsp;&emsp;<input type="file" name="uploadfile3" size="100" /></td></tr>
+<tr><td>中期考核表：&emsp;&emsp;&emsp;&emsp;<input type="file" name="uploadfile3" size="100" /></td></tr>
 <tr><td>中期论文：&emsp;&emsp;&emsp;&emsp;&emsp;<input type="file" name="uploadfile4" size="100" /></td></tr>
 <tr><td>预答辩意见书：&emsp;&emsp;&emsp;<input type="file" name="uploadfile5" size="100" /></td></tr>
 <tr><td>预答辩论文：&emsp;&emsp;&emsp;&emsp;<input type="file" name="uploadfile6" size="100" /></td></tr>
@@ -141,16 +141,16 @@ Case 2	' 文件上传页面
 	Dim msg
 	Randomize()
 	
-	Set fso=Server.CreateObject("Scripting.FileSystemObject")
+	Set fso=CreateFSO()
 	For i=1 To UBound(arrDefaultFileListName)
 		Set upFile=Upload.File("uploadfile"&i)
 		If Len(upFile.FileName) Then
 			' 检查上传目录是否存在
-			uploadPath=Server.MapPath(arrDefaultFileListPath(i))
+			uploadPath=Server.MapPath(basePath()&arrDefaultFileListPath(i))
 			If Not fso.FolderExists(uploadPath) Then fso.CreateFolder(uploadPath)
 			file_ext=LCase(upFile.FileExt)
 			' 生成日期格式文件名
-			fileid=FormatDateTime(Now(),1)&Int(Timer)
+			fileid=timestamp()
 			destFile=fileid&"."&file_ext
 			destPath=uploadPath&"\"&destFile
 			' 保存

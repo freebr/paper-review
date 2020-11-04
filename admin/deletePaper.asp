@@ -6,7 +6,6 @@ If Len(ids)=0 Then
 	showErrorPage "请选择要删除的论文记录！", "提示"
 End If
 
-FormGetToSafeRequest(ids)
 Connect conn
 sql="DELETE FROM Dissertations WHERE ID IN ("&ids&")"
 conn.Execute sql

@@ -21,7 +21,7 @@ function addReviewTypeItem(rid,typename,teachtypeid,thesisform,reviewfile) {
 								 +'&emsp;&emsp;论文形式名称：<input type="text" name="thesisform" value="'+thesisform+'" /><br/>';
 	tdhtml+='&emsp;&emsp;&nbsp;<input type="button" name="removeitem" value="－ 删除" onclick="removeReviewTypeItem(this.parentNode.parentNode)" />';
 	if(reviewfile) {
-		tdhtml+='&emsp;<a href="upload/review/'+reviewfile+'" target="_blank">查看评阅书</a>';
+		tdhtml+='&emsp;<a href="upload/review_template/'+reviewfile+'" target="_blank">查看评阅书</a>';
 	}
 	tdhtml+='&emsp;上传：<input type="file" name="reviewfile'+numItems+'" accept="application/vnd.ms-word,application/vnd.openxmlformats-officedocument.wordprocessingml.document" /><br/>';
 	if(rid) {

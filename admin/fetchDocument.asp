@@ -2,88 +2,103 @@
 <!--#include file="common.asp"--><%
 If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 paper_id=Request.QueryString("tid")
+store=Request.QueryString("store")
 filetype=Request.QueryString("type")
-hash=Request.QueryString("hash")
+id=Request.QueryString("id")
 If Not IsNumeric(filetype) Then
 	bError=True
-	errdesc="参数无效。"
+	errMsg="参数无效。"
 Else
 	filetype=Int(filetype)
 	If filetype<1 Or filetype>UBound(arrDefaultFileListName) Then
 		bError=True
-		errdesc="参数无效。"
+		errMsg="参数无效。"
 	End If
 End If
 If bError Then
-	showErrorPage errdesc, "提示"
+	showErrorPage errMsg, "提示"
 End If
 
 Connect conn
-sql=Format("SELECT * FROM ViewDissertations_admin WHERE ID={0}",paper_id)
-GetRecordSet conn,rs,sql,count
+
+Dim source_file,file_ext,newfilename
+Dim fso,file,stream
+Set fso=CreateFSO()
+
+If Not IsEmpty(store) Then
+	Select Case store
+		Case "audit"
+			sql="SELECT * FROM AuditRecords WHERE Id=?"
+			Set ret=ExecQuery(conn,sql,CmdParam("Id",adVarWChar,100,id))
+			Set rsAudit=ret("rs")
+			If rsAudit.EOF Then
+				CloseRs rsAudit
+				CloseConn conn
+				showErrorPage "找不到所需的审核记录！", "提示"
+			End If
+			paper_id=rsAudit("DissertationId")
+			source_file=rsAudit("AuditFile")
+			CloseRs rsAudit
+		Case "detect"
+			sql="SELECT * FROM DetectResults WHERE Id=?"
+			Set ret=ExecQuery(conn,sql,CmdParam("Id",adVarWChar,100,id))
+			Set rsDetect=ret("rs")
+			If rsDetect.EOF Then
+				CloseRs rsDetect
+				CloseConn conn
+				showErrorPage "找不到所需的检测记录！", "提示"
+			End If
+			paper_id=rsDetect("DissertationId")
+			If filetype=8 Then
+				source_file=rsDetect("DetectFile")
+			Else
+				source_file=rsDetect("ReportFile")
+			End If
+			CloseRs rsDetect
+		Case "review"
+			sql="SELECT * FROM ViewReviewRecords WHERE Id=?"
+			Set ret=ExecQuery(conn,sql,CmdParam("Id",adVarWChar,100,id))
+			Set rsReview=ret("rs")
+			If rsReview.EOF Then
+				CloseRs rsReview
+				CloseConn conn
+				showErrorPage "找不到所需的评阅记录！", "提示"
+			End If
+			paper_id=rsReview("DissertationId")
+			source_file=rsReview("ReviewFile")&".pdf"
+			CloseRs rsReview
+	End Select
+End If
+sql="SELECT * FROM ViewDissertations WHERE Id=?"
+Set ret=ExecQuery(conn,sql,CmdParam("Id",adInteger,4,paper_id))
+Set rs=ret("rs")
 If rs.EOF Then
 	CloseRs rs
 	CloseConn conn
 	showErrorPage "数据库没有该论文记录！", "提示"
 End If
-
-Dim source_file,file_ext,newfilename
-Dim fso,file,stream
-Set fso=Server.CreateObject("Scripting.FileSystemObject")
-
-If (filetype=8 Or filetype=13) And Len(hash) Then
-	sql="SELECT * FROM ViewDetectResults WHERE THESIS_ID=? AND HASH=?"
-	Set ret=ExecQuery(conn,sql,_
-		CmdParam("THESIS_ID",adInteger,4,paper_id),CmdParam("HASH",adVarWChar,100,hash))
-	Set rsDetect=ret("rs")
-	If filetype=8 Then
-		source_file=rsDetect("THESIS_FILE")
-	Else
-		source_file=rsDetect("DETECT_REPORT")
-	End If
-	CloseRs rsDetect
-ElseIf filetype=16 Or filetype=17 Then
-	source_file=rs(arrDefaultFileListField(filetype))&".pdf"
-ElseIf filetype=18 Then
-	review_order=toUnsignedInt(Request.QueryString("order"))
-	If review_order=-1 Then review_order=0
-	sql="SELECT * FROM ViewReviewRecords WHERE DissertationId=? AND ReviewOrder=?"
-	Set ret=ExecQuery(conn,sql,_
-		CmdParam("DissertationId",adInteger,4,paper_id),_
-		CmdParam("ReviewOrder",adInteger,4,review_order))
-	Set rsReview=ret("rs")
-	If rsReview.EOF Then
-		showErrorPage "找不到评阅书！", "提示"
-	End If
-	source_file=rsReview("ReviewFile")&".pdf"
-	CloseRs rsReview
-Else
+If IsEmpty(store) Then
 	source_file=rs(arrDefaultFileListField(filetype))
 End If
+
 If IsNull(source_file) Then
 	source_file=""
 Else
-	source_file=Server.MapPath(baseUrl()&arrDefaultFileListPath(filetype)&"/"&source_file)
+	source_file=Server.MapPath(resolvePath(basePath(),arrDefaultFileListPath(filetype),source_file))
 	file_ext=LCase(fso.GetExtensionName(source_file))
 End If
 
 If Not fso.FileExists(source_file) Then
 	Set fso=Nothing
+	CloseRs rs
+	CloseConn conn
 	showErrorPage "该论文暂无"&arrDefaultFileListName(filetype)&"或已被删除！", "提示"
 End If
 Set file=fso.GetFile(source_file)
 If Len(arrDefaultFileListNamePostfix(filetype)) Then
 	newfilename=rs("STU_NAME")&"_"&rs("STU_NO")&"_"&arrDefaultFileListNamePostfix(filetype)
 Else
-	subject=Replace(rs("THESIS_SUBJECT"),":","_")
-	subject=Replace(subject,"""","_")
-	subject=Replace(subject,"<","_")
-	subject=Replace(subject,">","_")
-	subject=Replace(subject,"?","_")
-	subject=Replace(subject,"\","_")
-	subject=Replace(subject,"/","_")
-	subject=Replace(subject,"|","_")
-	subject=Replace(subject,"*","_")
+	subject=toFilenameString(rs("THESIS_SUBJECT"))
 	newfilename=rs("STU_NAME")&"_"&rs("STU_NO")&"_"&subject
 End If
 newfilename=newfilename&"."&file_ext

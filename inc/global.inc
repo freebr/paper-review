@@ -42,29 +42,27 @@ Const rsRefusedDetect=2
 Const rsAgreedDetect=3
 Const rsDetectUnpassed=4
 Const rsRedetectUnpassed=5
-Const rsRedetectPassed=6
-Const rsRefusedReview=7
-Const rsAgreedReview=8
-Const rsMatchedReviewer=9
-Const rsReviewed=10
-Const rsReviewEval=11
-Const rsDefencePaperUploaded=12
-Const rsRefusedDefence=13
-Const rsAgreedDefence=14
-Const rsDefenceEval=15
-Const rsInstructReviewPaperUploaded=16
-Const rsRefusedInstructReview=17
-Const rsAgreedInstructReview=18
-Const rsInstructReviewPaperDetected=19
-Const rsMatchedInstructMember=20
-Const rsInstructEval=21
-Const rsFinalPaperUploaded=22
+Const rsAgreedReview=6
+Const rsMatchedReviewer=7
+Const rsReviewed=8
+Const rsReviewEval=9
+Const rsDefencePaperUploaded=10
+Const rsRefusedDefence=11
+Const rsAgreedDefence=12
+Const rsDefenceEval=13
+Const rsInstructReviewPaperUploaded=14
+Const rsRefusedInstructReview=15
+Const rsAgreedInstructReview=16
+Const rsInstructReviewPaperDetected=17	' 停用
+Const rsMatchedInstructMember=18
+Const rsInstructEval=19
+Const rsFinalPaperUploaded=20
 
 ' 环节 Id
-Const sectionUploadKtbg = 1
-Const sectionUploadZqjcb = 2
+Const sectionUploadKtbgb = 1
+Const sectionUploadZqkhb = 2
 Const sectionUploadYdbyjs = 3
-Const sectionUploadSpcl = 4
+Const sectionUploadSpclb = 4
 Const sectionUploadDetectReview = 5
 Const sectionUploadReview = 6
 Const sectionUploadDefence = 7
@@ -75,10 +73,10 @@ Const sectionInstructReview = 11
 Const sectionReview = 12
 
 ' 审核意见类型
-Const auditTypeKtbg = 1
-Const auditTypeZqjcb = 2
+Const auditTypeKtbgb = 1
+Const auditTypeZqkhb = 2
 Const auditTypeYdbyjs = 3
-Const auditTypeSpcl = 4
+Const auditTypeSpclb = 4
 Const auditTypeDetectReview = 5
 Const auditTypeReviewApp = 6
 Const auditTypeReviewResult = 7
@@ -117,11 +115,11 @@ Const auditTypeInstructReview = 10
 					var arr=value.split("|");
 					for(var j=0;j<arr.length;++j) {
 						Response.Write(Format('<{0} type="text/javascript" src="{1}scripts/{2}.js{3}"></{0}>',
-							'script', baseUrl(), arr[j], query_string));
+							'script', basePath(), arr[j], query_string));
 					}
 				} else {
 					Response.Write(Format('<{0} type="text/javascript" src="{1}scripts/{2}.js{3}"></{0}>',
-						'script', baseUrl(), value, query_string));
+						'script', basePath(), value, query_string));
 				}
 			}
 		}
@@ -147,14 +145,25 @@ Const auditTypeInstructReview = 10
 					var arr=value.split("|");
 					for(var j=0;j<arr.length;++j) {
 						Response.Write(Format('<link href="{0}css/{1}.css{2}" rel="stylesheet" type="text/css" />',
-							baseUrl(), arr[j], query_string));
+							basePath(), arr[j], query_string));
 					}
 				} else {
 					Response.Write(Format('<link href="{0}css/{1}.css{2}" rel="stylesheet" type="text/css" />',
-							baseUrl(), value, query_string));
+							basePath(), value, query_string));
 				}
 			}
 		}
+	}
+
+	// 返回规范化路径名
+	function resolvePath() {
+		var arr=[];
+		var delimeter;
+		for(var i=0;i<arguments.length;++i) {
+			arr.push(arguments[i]);
+		}
+		delimeter=arr[0].indexOf("/") != -1 ? "/" : "\\";
+		return arr.join(delimeter).replace(/[\/\\]{2,}/g,delimeter);
 	}
 </script><%
 
@@ -173,8 +182,52 @@ Function hasPrivilege(pArr,privilege)
 	hasPrivilege=False
 End Function
 
-Function baseUrl()
-	baseUrl = "/PaperReview/"
+Function basePath()
+	basePath = "/PaperReview/"
+End Function
+
+Function baseLogPath()
+	baseLogPath = "/log/PaperReview/"
+End Function
+
+Function tempPath()
+	tempPath = resolvePath(basePath(), "temp/")
+End Function
+
+Function uploadBasePath(user_type, file_type)
+	Dim client_path:client_path = Array("admin","student","tutor","expert")(user_type)
+	uploadBasePath = basePath() & client_path & "/upload/" & file_type & "/"
+End Function
+
+Function exportBasePath(user_type)
+	Dim client_path:client_path = Array("admin","student","tutor","expert")(user_type)
+	exportBasePath = basePath() & client_path & "/export/"
+End Function
+
+Function reviewFileExportPath()
+	reviewFileExportPath = resolvePath(basePath(),"expert/export/")
+End Function
+
+Function reviewFileVersionPath(filename)
+	Dim basePath:basePath = reviewFileExportPath()
+	reviewFileVersionPath=Array(Server.MapPath(resolvePath(basePath,filename&".pdf")),_
+		Server.MapPath(resolvePath(basePath,filename&"_nostu.pdf")),_
+		Server.MapPath(resolvePath(basePath,filename&"_noexp.pdf")))
+End Function
+
+' 若指定目录不存在，则新建目录
+Function ensurePathExists(path)
+	Dim fso: Set fso = CreateFSO()
+	If Not fso.FolderExists(path) Then
+		fso.CreateFolder(path)
+	End If
+	Set fso = Nothing
+	ensurePathExists = True
+End Function
+
+' 返回与当前时间相关的字符序列
+Function timestamp()
+	timestamp=toDateTime(Now(),1)&Int(Timer)
 End Function
 
 Function serverVar(name)
@@ -182,12 +235,17 @@ Function serverVar(name)
 End Function
 
 Function currentPage()
-	currentPage=LCase(Mid(serverVar("SCRIPT_NAME"),Len(baseUrl())+1))
+	currentPage=LCase(Mid(serverVar("SCRIPT_NAME"),Len(basePath())+1))
 End Function
 
 Function currentClient()
 	Dim str:str=currentPage()
-	currentClient=LCase(Left(str,InStr(str,"/")-1))
+	Dim i:i=InStr(str,"/")
+	If i=0 Then
+		currentClient="none"
+	Else
+		currentClient=LCase(Left(str,InStr(str,"/")-1))
+	End If
 End Function
 
 Function getCurrentSemester()
@@ -223,7 +281,7 @@ Function getSystemConfigs()
 	If rs.EOF Then
 		CloseRs rs
 		CloseConn conn
-		Response.Redirect baseUrl()&"error.asp?no-config"
+		Response.Redirect basePath()&"error.asp?no-config"
 		Exit Function
 	End If
 
@@ -297,7 +355,7 @@ Function getActivityInfo(activity_id)
     Dim rs:Set rs=ret("rs")
     Dim count:count=ret("count")
 	If count=0 Then
-		getLastActivityInfoOfStuType=Null
+		getActivityInfo=Null
 		Exit Function
 	End If
 	Dim dict:Set dict=CreateDictionary()
@@ -313,15 +371,15 @@ End Function
 ' 获取指定学生类型中最新的评阅活动信息
 Function getLastActivityInfoOfStuType(stu_type_id)
 	If IsNull(stu_type_id) Then
-		stu_type_id=stutypeME Or stutypeMBA Or stutypeMPAcc Or stutypeEMBA
+		stu_type_id=stutypeME Or stutypeMBA Or stutypeMPAcc ' Or stutypeEMBA
 	End If
 	Dim conn:Connect conn
-	Dim sql:sql="SELECT TOP 1 Id,Name FROM ViewActivities WHERE Valid=1 AND (?&StuType)<>0 ORDER BY SemesterId DESC"
+	Dim sql:sql="SELECT TOP 1 Id,Name,SemesterId,SemesterName FROM ViewActivities WHERE Valid=1 AND (?&StuType)<>0 ORDER BY SemesterId DESC"
 	Dim ret:Set ret=ExecQuery(conn,sql,CmdParam("StuTypes",adInteger,4,stu_type_id))
     Dim rs:Set rs=ret("rs")
     Dim count:count=ret("count")
 	If count=0 Then
-		getLastActivityInfoOfStuType=Null
+		Set getLastActivityInfoOfStuType=Nothing
 		Exit Function
 	End If
 	Dim dict:Set dict=CreateDictionary()
@@ -359,31 +417,104 @@ Function compareNowWithSectionTime(section)
 	compareNowWithSectionTime=compareNowWithTimeRange(section("StartTime"), section("EndTime"))
 End Function
 
+' 根据姓名获取教师 ID
+Function getTeacherIdByName(ByVal name)
+	If IsNull(name) Then
+		getTeacherIdByName=-1
+		Exit Function
+	End If
+	Dim conn,rs,sql,count
+	name=Replace(name," ",vbNullString)
+	name=Replace(name,"　",vbNullString)
+	ConnectOriginDb conn
+	sql="SELECT TEACHERID,TEACHERNAME FROM TEACHER_INFO WHERE TEACHERNAME="&toSqlString(name)&" AND VALID=0"
+	GetRecordSetNoLock conn,rs,sql,count
+	If rs.EOF Then
+		getTeacherIdByName=-1
+	Else
+		getTeacherIdByName=rs("TEACHERID")
+	End If
+	CloseRs rs
+	CloseConn conn
+End Function
+
+' 根据姓名获取评阅专家 ID
+Function getExpertIdByName(ByVal name)
+	If IsNull(name) Then
+		getExpertIdByName=-1
+		Exit Function
+	End If
+	Dim conn,rs,sql
+	Connect conn
+	sql="SELECT TEACHER_ID,EXPERT_NAME FROM Experts WHERE EXPERT_NAME="&toSqlString(name)
+	Set rs=conn.Execute(sql)
+	If rs.EOF Then
+		getExpertIdByName=-1
+	Else
+		getExpertIdByName=rs("TEACHER_ID")
+	End If
+	CloseRs rs
+	CloseConn conn
+End Function
+
+' 根据联系号码获取评阅专家 ID
+Function getExpertIdByTelephone(ByVal telephone)
+	If IsNull(telephone) Then
+		getExpertIdByTelephone=-1
+		Exit Function
+	End If
+	Dim conn,rs,sql
+	Connect conn
+	sql="SELECT TEACHER_ID,EXPERT_NAME FROM Experts WHERE "&toSqlString(telephone)&" IN (TELEPHONE, MOBILE)"
+	Set rs=conn.Execute(sql)
+	If rs.EOF Then
+		getExpertIdByTelephone=-1
+	Else
+		getExpertIdByTelephone=rs("TEACHER_ID")
+	End If
+	CloseRs rs
+	CloseConn conn
+End Function
+
 ' 获取审核记录信息
 Function getAuditInfo(paper_id,audit_file,audit_type)
-	Dim sql:sql="SELECT * FROM ViewAuditRecords WHERE DissertationId=? AND AuditFile=? And AuditType=? ORDER BY AuditTime DESC"
-	Dim ret:Set ret=ExecQuery(conn,sql,_
-		CmdParam("paper_id",adInteger,4,paper_id),_
-		CmdParam("audit_file",adVarWChar,50,audit_file),_
-		CmdParam("audit_type",adInteger,4,audit_type))
+	Dim conn:Connect conn
+	Dim sql,ret
+	If Not IsNull(audit_file) And Not IsNull(audit_type) Then
+		sql="SELECT * FROM ViewAuditRecords WHERE DissertationId=? AND AuditFile=? AND AuditType=? ORDER BY AuditTime DESC"
+		Set ret=ExecQuery(conn,sql,_
+			CmdParam("paper_id",adInteger,4,paper_id),_
+			CmdParam("audit_file",adVarWChar,50,audit_file),_
+			CmdParam("audit_type",adInteger,4,audit_type))
+	ElseIf Not IsNull(audit_type) Then
+		sql="SELECT * FROM ViewAuditRecords WHERE DissertationId=? AND AuditType=? ORDER BY AuditTime DESC"
+		Set ret=ExecQuery(conn,sql,_
+			CmdParam("paper_id",adInteger,4,paper_id),_
+			CmdParam("audit_type",adInteger,4,audit_type))
+	Else
+		sql="SELECT * FROM ViewAuditRecords WHERE DissertationId=? ORDER BY AuditTime DESC"
+		Set ret=ExecQuery(conn,sql,CmdParam("paper_id",adInteger,4,paper_id))
+	End If
     Dim rs:Set rs=ret("rs")
     Dim count:count=ret("count")
 	Dim result:ReDim result(count-1)
+	Dim dict
 	If count=0 Then
 		Set dict = CreateDictionary()
-		dict.Add "DissertationId",paper_id
-		dict.Add "AuditFile",audit_file
-		dict.Add "Comment","（无）"
+		dict.Add "Id","0"
 		ReDim result(0):Set result(0) = dict
 		getAuditInfo = result
 		CloseRs rs
+		CloseConn conn
 		Exit Function
 	End If
-	Dim dict,i
+	Dim i
 	For i=0 To UBound(result)
 		Set dict = CreateDictionary()
+		dict.Add "Id", rs("Id").Value
 		dict.Add "DissertationId",rs("DissertationId").Value
 		dict.Add "AuditFile",rs("AuditFile").Value
+		dict.Add "AuditType",rs("AuditType").Value
 		dict.Add "AuditTypeName",rs("AuditTypeName").Value
 		dict.Add "AuditTime",rs("AuditTime").Value
 		dict.Add "AuditorName",rs("AuditorName").Value
@@ -394,12 +525,42 @@ Function getAuditInfo(paper_id,audit_file,audit_type)
 	Next
 	getAuditInfo = result
 	CloseRs rs
+	CloseConn conn
+End Function
+
+' 获取指定论文和审核类型的最新审核记录信息
+Function getLatestAuditInfo(dissertationId,auditType)
+	Dim conn,sql,ret,rs
+	Connect conn
+	sql="EXEC spGetAuditRecord ?,?,NULL"
+	Set ret=ExecQuery(conn,sql,_
+		CmdParam("DissertationId",adInteger,4,dissertationId),_
+		CmdParam("AuditType",adInteger,4,auditType))
+	Set rs=ret("rs")
+	Dim dict:Set dict=CreateDictionary()
+	If rs.EOF Then
+		dict.Add "Id","0"
+		Set getLatestAuditInfo = dict
+		CloseRs rs
+		CloseConn conn
+		Exit Function
+	End If
+	dict.Add "Id", rs("Id").Value
+	dict.Add "DissertationId", rs("DissertationId").Value
+	dict.Add "AuditTypeName", rs("AuditTypeName").Value
+	dict.Add "AuditTime",rs("AuditTime").Value
+	dict.Add "AuditorName", rs("AuditorName").Value
+	dict.Add "IsPassed",rs("IsPassed").Value
+	dict.Add "Comment", rs("Comment").Value
+	Set getLatestAuditInfo = dict
+	CloseRs rs
+	CloseConn conn
 End Function
 
 Function ensureSystemOpen()
 	Dim configs:Set configs=getSystemConfigs()
 	If configs("Status")="closed" Then
-		Response.Redirect baseUrl()&"error.asp?closed"
+		Response.Redirect basePath()&"error.asp?closed"
 		Exit Function
 	End If
 	ensureSystemOpen=1
@@ -450,6 +611,10 @@ Function CreateDictionary()
 	Dim ret: Set ret = Server.CreateObject("Scripting.Dictionary")
 	Set CreateDictionary = ret
 	Set ret = Nothing
+End Function
+
+Function CreateFSO()
+	Set CreateFSO = Server.CreateObject("Scripting.FileSystemObject")
 End Function
 
 // 注册脚本别名
@@ -514,19 +679,6 @@ Function getViewState(userId,userType,viewName)
 	CloseConn conn
 End Function
 
-' 若指定目录不存在，则新建目录
-Function ensurePathExists(path)
-	Set fso=Server.CreateObject("Scripting.FileSystemObject")
-	' 检查上传目录是否存在
-	If fso.FolderExists(path) Then
-		ensurePathExists = True
-	Else
-		fso.CreateFolder(path)
-		ensurePathExists = False
-	End If
-	Set fso=Nothing
-End Function
-
 ' 生成日期格式文件名
 Function generateDateTimeFilename(ext)
 	generateDateTimeFilename = FormatDateTime(Now(),1)&Int(Timer)&"."&ext
@@ -535,8 +687,8 @@ End Function
 ' 添加日志记录
 Function writeLog(content)
 	Dim logfile,fso,stream,msg
-	logfile=Server.MapPath("/log/PaperReview/"&toDateTime(Date,1)&".log")
-	Set fso=Server.CreateObject("Scripting.FileSystemObject")
+	logfile=Server.MapPath(baseLogPath()&toDateTime(Date,1)&".log")
+	Set fso=CreateFSO()
 	Set stream=fso.OpenTextFile(logfile,8,true)
 	msg="["&Time&"]"&content
 	stream.WriteLine msg
@@ -562,41 +714,95 @@ Function writeEventLog(user_type,user_name,trigger_operation)
 	writeEventLog=writeLog(log_text)
 End Function
 
-' 显示错误提示
-Function showErrorPage(content, title)
-	Dim client_name, class_prop, statement
-	client_name=currentClient()
-	If client_name="expert" Then
-		class_prop="class=""exp"""
-		client_name="tutor"
-	Else
-		class_prop="bgcolor=""ghostwhite"""
-	End If
-	If isMatched("(expertProfile|fetchDocument|paperDetail)\.asp",currentPage(),True) Then
-		statement="closeWindow();"
-	Else
-		statement="history.go(-1);"
-	End If
-%><html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="theme-color" content="#2D79B2" />
-<title><%=title%></title>
-<% useStylesheet client_name, "jeasyui" %>
-<% useScript "jquery", "jeasyui", "common" %>
-</head>
-<body <%=class_prop%>>
-<script type="text/javascript">
-	$.messager.alert("<%=toJsString(title)%>", "<%=toJsString(content)%>", "error",
-		function() {
-			<%=statement%>
-		}
-	);
-</script>
-</body></html><%
+Function loadReviewScoringInfo(review_type,formcode,power1code,power2code)
+	' 显示评阅书评价指标信息
+	Dim stream,filepath
+	Dim data,numScores1,numScores2,nameScore1,nameScore2,power1,power2,power2sum,detail
+	Dim c,i,j,k,tmp,tmp2,tmp3
+	Dim retcode,retpower1,retpower2
+	Set stream=Server.CreateObject("ADODB.Stream")
+	filepath=Server.MapPath(basePath()&"expert/data/scoreform"&review_type&".html")
+	stream.Mode=3
+	stream.Type=2
+	stream.Charset="utf-8"
+	stream.Open()
+	stream.LoadFromFile filepath
+	data=Split(stream.ReadText(),"|")
+	numScores1=data(2)
+	c=3
+	For i=1 To numScores1
+		power2sum=0
+		nameScore1=data(c)
+		power1=data(c+1)
+		numScores2=data(c+2)
+		c=c+3
+		tmp=vbNullString
+		If Len(retpower1) Then retpower1=retpower1&","
+		retpower1=retpower1&power1
+		If i>1 Then
+			retpower2=retpower2&",["
+		Else
+			retpower2=retpower2&"["
+		End If
+		For j=1 To numScores2
+			nameScore2=Replace(data(c),vbNewLine,"<br/>")
+			detail=Split(data(c+1),"；")
+			power2=data(c+2)
+			If IsNumeric(power2) Then
+				power2=power2*1
+				power2sum=power2sum+power2
+			Else
+				power2=0
+			End If
+			If j>1 Then retpower2=retpower2&","
+			retpower2=retpower2&power2
+			tmp3=vbNullString
+			For k=0 To UBound(detail)
+				tmp3=tmp3&"<li>"&detail(k)&"</li>"
+			Next
+			If j=1 Then
+				tmp2=data(0)
+			Else
+				tmp2=data(1)
+			End If
+			tmp2=Replace(tmp2,"$numScores2",numScores2)
+			tmp2=Replace(tmp2,"<score2 />",i&"."&j&"&nbsp;"&nameScore2)
+			tmp2=Replace(tmp2,"<detail />",tmp3)
+			tmp2=Replace(tmp2,"<power2 />",power2*100)
+			tmp=tmp&tmp2
+			c=c+3
+		Next
+		retpower2=retpower2&"]"
+		tmp=Replace(tmp,"<score1 />",nameScore1)
+		tmp=Replace(tmp,"<power1 />",power1*100)
+		tmp=Replace(tmp,"<power2sum />",power2sum*100)
+		retcode=retcode&tmp
+	Next
+	retpower1="["&retpower1&"]"
+	retpower2="["&retpower2&"]"
+	stream.Close()
+	Set stream=Nothing
+	formcode=retcode
+	power1code=retpower1
+	power2code=retpower2
+End Function
 
-	Response.End()
-	showErrorPage=1
+' 解压缩 RAR/ZIP 文件
+Function ExtractFile(file, destPath)
+	Dim exe, cmd, fileType
+	fileType = LCase(Mid(file, InStrRev(file, ".")))
+	If fileType = ".zip" Then
+		exe = Server.MapPath("rar/unzip.exe")
+		cmd = Format("""{0}"" -j ""{1}"" -d ""{2}""",exe,file,destPath)
+	ElseIf fileType = ".rar" Then
+		exe = Server.MapPath("rar/Rar.exe")
+		cmd = Format("""{0}"" e -o+ ""{1}"" ""{2}""",exe,file,destPath)
+	End If
+	Dim wsh:Set wsh=Server.CreateObject("WScript.Shell")
+	Dim exec:Set exec=wsh.Exec(cmd)
+	ExtractFile = exec.StdOut.ReadAll()
+	Set exec=Nothing
+	Set wsh=Nothing
 End Function
 
 Session("DebugInfo")=Empty
@@ -618,11 +824,11 @@ End With
 
 Dim arrDiplomaName:arrDiplomaName=Array("","专科","本科","硕士研究生","博士研究生","博士后")
 Dim arrDefenceResult:arrDefenceResult=Array("未录入","优秀","良好","一般","较差")
-Dim arrGrantDegreeResult:arrGrantDegreeResult=Array("未录入","同意毕业及授予学位","同意毕业，但不同意授予学位","不同意毕业")
+Dim arrGrantDegreeResult:arrGrantDegreeResult=Array("未录入","同意毕业及授予硕士学位","同意毕业，但不同意授予硕士学位","不同意毕业")
 Dim arrReviewFileStat:arrReviewFileStat=Array("不开放显示","仅向导师显示","完全开放显示")
-Dim arrDefaultFileListName:arrDefaultFileListName=Array("","开题报告表","开题论文","中期检查表","中期论文","预答辩意见书","预答辩论文","答辩及授予学位审批材料","送检论文","送审论文","答辩论文","教指委盲评论文","定稿论文","送检论文检测报告","教指委盲评论文检测报告","硕士学位论文送审申请表","论文评阅书 1","论文评阅书 2","论文评阅书")
-Dim arrDefaultFileListNamePostfix:arrDefaultFileListNamePostfix=Array("","开题报告表","开题论文","中期检查表","中期论文","预答辩意见书","预答辩论文","答辩审批材料","","","","","","送检论文检测报告","教指委盲评论文检测报告","送审申请表","论文评阅书(1)","论文评阅书(2)","论文评阅书")
-Dim arrDefaultFileListPath:arrDefaultFileListPath=Array("","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","admin/upload/report","admin/upload/report","tutor/export","expert/export","expert/export","expert/export")
+Dim arrDefaultFileListName:arrDefaultFileListName=Array("","开题报告表","开题论文","中期考核表","中期论文","预答辩意见书","预答辩论文","答辩及授予学位审批材料","送检论文","送审论文","答辩论文","教指委盲评论文","定稿论文","送检论文检测报告","教指委盲评论文检测报告","硕士学位论文送审申请表","论文评阅书（专家一）","论文评阅书（专家二）","论文评阅书")
+Dim arrDefaultFileListNamePostfix:arrDefaultFileListNamePostfix=Array("","开题报告表","开题论文","中期考核表","中期论文","预答辩意见书","预答辩论文","答辩审批材料","","","","","","送检论文检测报告","教指委盲评论文检测报告","送审申请表","论文评阅书（专家一）","论文评阅书（专家二）","论文评阅书")
+Dim arrDefaultFileListPath:arrDefaultFileListPath=Array("","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","admin/upload/detect_report","admin/upload/detect_report","tutor/export","expert/export","expert/export","expert/export")
 Dim arrDefaultFileListField:arrDefaultFileListField=Array("","TABLE_FILE1","TBL_THESIS_FILE1","TABLE_FILE2","TBL_THESIS_FILE2","TABLE_FILE3","TBL_THESIS_FILE3","TABLE_FILE4","THESIS_FILE","THESIS_FILE2","THESIS_FILE3","THESIS_FILE4","THESIS_FILE5","DETECT_REPORT","INSTRUCT_REVIEW_DETECT_REPORT","REVIEW_APP","ReviewFile1","ReviewFile2","")
 ' 禁止缓存，仅在需要客户端重新请求 JS/CSS/HTML 等静态文件时使用
 Response.CacheControl="no-cache"

@@ -5,16 +5,16 @@ paper_id=Request.QueryString("tid")
 filetype=Request.QueryString("type")
 If Not IsNumeric(filetype) Then
 	bError=True
-	errdesc="参数无效。"
+	errMsg="参数无效。"
 Else
 	filetype=Int(filetype)
 	If filetype<1 Or filetype>UBound(arrFileListName) Then
 		bError=True
-		errdesc="参数无效。"
+		errMsg="参数无效。"
 	End If
 End If
 If bError Then
-	showErrorPage errdesc, "提示"
+	showErrorPage errMsg, "提示"
 End If
 
 Connect conn
@@ -26,48 +26,41 @@ If rs.EOF Then
 	showErrorPage "数据库没有该论文记录！", "提示"
 End If
 
-Dim source_file,file_ext,newfilename
+Dim source_file,newfilename
 Dim bReviewFileVisible(1)
 Dim fso,file,stream
-Set fso=Server.CreateObject("Scripting.FileSystemObject")
+Set fso=CreateFSO()
 source_file=rs(arrFileListField(filetype))
 bReviewFileVisible(0)=(rs("ReviewFileDisplayStatus1") And 2)<>0
 bReviewFileVisible(1)=(rs("ReviewFileDisplayStatus2") And 2)<>0
 If IsNull(source_file) Then
 	source_file=""
 Else
-	file_ext=LCase(fso.GetExtensionName(source_file))
 	If filetype=17 Or filetype=18 Then ' 评阅书则提供无专家信息版本
 		' 根据评阅书显示设置决定是否显示文件
 		If Not bReviewFileVisible(filetype-17) Then
 			source_file=""
 		Else
-			source_file=arrFileListPath(filetype)&"/"&fso.GetBaseName(source_file)&"_noexp."&file_ext
+			source_file=resolvePath(arrFileListPath(filetype),fso.GetBaseName(source_file)&"_noexp.pdf")
 		End If
 	Else
-		source_file=arrFileListPath(filetype)&"/"&source_file
+		source_file=resolvePath(arrFileListPath(filetype),source_file)
 	End If
-	source_file=Server.MapPath(baseUrl()&source_file)
+	source_file=Server.MapPath(resolvePath(basePath(),source_file))
 End If
 If Not fso.FileExists(source_file) Then
 	Set fso=Nothing
 	showErrorPage "该论文暂无"&arrFileListName(filetype)&"或已被删除！", "提示"
 End If
 Set file=fso.GetFile(source_file)
+
 If Len(arrFileListNamePostfix(filetype)) Then
-	newfilename=rs("SPECIALITY_NAME")&rs("STU_NAME")&rs("STU_NO")&"-"&arrFileListNamePostfix(filetype)
+	newfilename=rs("STU_NAME")&"_"&rs("STU_NO")&"_"&arrFileListNamePostfix(filetype)
 Else
-	subject=Replace(rs("THESIS_SUBJECT"),":","_")
-	subject=Replace(subject,"""","_")
-	subject=Replace(subject,"<","_")
-	subject=Replace(subject,">","_")
-	subject=Replace(subject,"?","_")
-	subject=Replace(subject,"\","_")
-	subject=Replace(subject,"/","_")
-	subject=Replace(subject,"|","_")
-	subject=Replace(subject,"*","_")
-	newfilename=rs("SPECIALITY_NAME")&"-"&subject
+	subject=toFilenameString(rs("THESIS_SUBJECT").Value)
+	newfilename=rs("STU_NAME")&"_"&rs("STU_NO")&"_"&subject
 End If
+Dim file_ext:file_ext=LCase(fso.GetExtensionName(source_file))
 newfilename=newfilename&"."&file_ext
 Set stream=Server.CreateObject("ADODB.Stream")
 stream.Mode=3

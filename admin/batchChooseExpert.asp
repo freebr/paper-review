@@ -15,7 +15,7 @@ finalFilter=Request.Form("finalFilter2")
 pageSize=Request.Form("pageSize2")
 pageNo=Request.Form("pageNo2")
 Connect conn
-sql="SELECT * FROM ViewDissertations WHERE ID IN ("&ids&")"
+sql="SELECT * FROM ViewDissertations_admin WHERE ID IN ("&ids&")"
 GetRecordSetNoLock conn,rs,sql,count
 %><html>
 <head>
@@ -49,36 +49,41 @@ GetRecordSetNoLock conn,rs,sql,count
 		<td align="center">论文题目</td>
 		<td width="80" align="center">姓名</td>
 		<td width="90" align="center">学号</td>
-		<td width="120" align="center">专业</td>
-		<td width="50" align="center">学位类别</td>
+		<td width="100" align="center">学位类别</td>
 		<td width="60" align="center">导师</td>
 		<td width="110" align="center">状态</td>
 	</tr><%
-	Dim review_result
+	Dim review_result,review_result_text(1)
 	For i=1 to rs.PageSize
 		If rs.EOF Then Exit For
+		If Not IsNull(rs("REVIEW_RESULT")) Then
+			review_result=Split(rs("REVIEW_RESULT"),",")
+			review_result_text(0)=HtmlEncode(rs("EXPERT_NAME1"))&"<br/>"&rs("REVIEW_RESULT_TEXT1")
+			review_result_text(1)=HtmlEncode(rs("EXPERT_NAME2"))&"<br/>"&rs("REVIEW_RESULT_TEXT2")
+		End If
 		substat=vbNullString
 		If rs("TASK_PROGRESS")>=tpTbl4Uploaded Then
-			stat=rs("TASK_PROGRESS_NAME")&"，"&rs("REVIEW_STATUS_NAME")
+			stat=rs("STAT_TEXT1")&"，"&rs("STAT_TEXT2")
 		ElseIf rs("REVIEW_STATUS")=0 Then
-			stat=rs("TASK_PROGRESS_NAME")
+			stat=rs("STAT_TEXT1")
 		Else
-			stat=rs("REVIEW_STATUS_NAME")
-			If rs("REVIEW_STATUS")>=rsReviewed And rs("REVIEW_FILE_STATUS")<>3 Then
-				substat="评阅结果["&arrReviewFileStat(rs("REVIEW_FILE_STATUS"))&"]"
-			End If
+			stat=rs("STAT_TEXT2")
+		End If
+		If rs("UNHANDLED") Then
+			cssclass="paper-status-unhandled"
+		Else
+			cssclass="paper-status"
 		End If
 	%><tr bgcolor="ghostwhite">
-		<td align="center"><%=HtmlEncode(rs("THESIS_SUBJECT"))%></td>
-		<td align="center"><%=HtmlEncode(rs("STU_NAME"))%></td>
+		<td align="center"><a href="#" onclick="return showPaperDetail(<%=rs("ID")%>,0)"><%=HtmlEncode(rs("THESIS_SUBJECT"))%></a></td>
+		<td align="center"><a href="#" onclick="return showStudentProfile(<%=rs("STU_ID")%>,0)"><%=HtmlEncode(rs("STU_NAME"))%></a></td>
 		<td align="center"><%=rs("STU_NO")%></td>
-		<td align="center"><%=HtmlEncode(rs("SPECIALITY_NAME"))%></td>
 		<td align="center"><%=rs("TEACHTYPE_NAME")%></td>
-		<td align="center"><%=HtmlEncode(rs("TUTOR_NAME"))%></td>
-		<td align="center"><span class="paper-status"><%=stat%></span><%
+		<td align="center"><a href="#" onclick="return showTeacherProfile(<%=rs("TUTOR_ID")%>)"><%=HtmlEncode(rs("TUTOR_NAME"))%></a></td>
+		<td align="center"><a href="#" onclick="return showPaperDetail(<%=rs("ID")%>,0)"><span class="<%=cssclass%>"><%=stat%></span></a><%
 		If Len(substat) Then
-		%><br/><span class="thesissubstat"><%=substat%></span><%
-		End If %></td></tr><%
+		%><br/><span class="review-display-status"><%=substat%></span><%
+		End If %></td><%
 		rs.MoveNext()
 	Next
 %></table>

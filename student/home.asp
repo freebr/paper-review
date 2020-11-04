@@ -62,14 +62,14 @@ Else
 	End If
 End If
 Function showStepInfo(stepDisplay,stepCounter,is_hidden)
-	If stepDisplay=rsRedetectPassed And detect_count>1 And (review_status=rsAgreedReview Or review_status=rsRefusedReview) Then
-		showStepInfo=True
-	ElseIf review_status<>stepDisplay And _
+	If stepDisplay=rsInstructReviewPaperDetected Then
+		showStepInfo=False
+		Exit Function
+	End If
+	If review_status<>stepDisplay And _
 		(stepDisplay=rsRefusedDetect Or _
 		stepDisplay=rsDetectUnpassed Or _
 		stepDisplay=rsRedetectUnpassed Or _
-		stepDisplay=rsRedetectPassed Or _
-		stepDisplay=rsRefusedReview Or _
 		stepDisplay=rsRefusedDefence Or _
 		stepDisplay=rsRefusedInstructReview) Then
 		showStepInfo=False
@@ -94,10 +94,10 @@ Function showStepInfo(stepDisplay,stepCounter,is_hidden)
 	Case rsRefusedDetect
 		audit_info=getAuditInfo(paper_id,thesis_files(0),auditTypeDetectReview)
 %><span class="section-detail">导师不同意您的论文进行查重，请修改论文后重新上传。
-<br/>送检意见：<%=toPlainString(audit_info(0)("Comment"))%></span><%
+<br/>送检意见：<span class="comment"><%=toPlainString(audit_info(0)("Comment"))%></span><%
 	Case rsAgreedDetect
 %><span class="section-detail">导师已同意您的论文进行查重。</span><%
-	Case rsDetectUnpassed,rsRedetectUnpassed,rsRedetectPassed
+	Case rsDetectUnpassed,rsRedetectUnpassed
 %><span class="section-detail"><%
 		Dim filetype
 		Select Case stepDisplay
@@ -107,14 +107,8 @@ Function showStepInfo(stepDisplay,stepCounter,is_hidden)
 		Case rsRedetectUnpassed
 			filetype=15
 %>经过二次检测，您的送检论文文字复制比为&nbsp;<%=reproduct_ratio%>%，不符合学院送检论文重复率低于10%的要求。<%
-		Case Else
-			filetype=15
-%>您的论文已通过二次查重检测，请等候导师同意送审。<br/>检测结果摘要：经图书馆检测，学位论文文字复制比为&nbsp;<%=reproduct_ratio%>%。<%
 		End Select
 %><br/><a class="resc" href="fetchDocument.asp?tid=<%=paper_id%>&type=<%=filetype%>" target="_blank">点此下载检测报告</a></span><%
-	Case rsRefusedReview
-		audit_info=getAuditInfo(paper_id,thesis_files(1),auditTypeReviewApp)
-%><span class="section-detail">导师不同意您的论文送审，请对照导师意见修改送审论文后重新上传。<br/>送审意见：<%=toPlainString(audit_info(0)("Comment"))%></span><%
 	Case rsAgreedReview
 %><span class="section-detail"><%
 		audit_info=getAuditInfo(paper_id,thesis_files(1),auditTypeReviewApp)
@@ -134,13 +128,13 @@ Function showStepInfo(stepDisplay,stepCounter,is_hidden)
 	Case rsReviewEval
 %><span class="section-detail">专家已完成论文评阅，请按照评阅书意见对论文进行修改，然后上传答辩论文。</span><br/><%
 		If bReviewFileVisible(0) Then
-%>评阅意见&nbsp;1：【<%=getReviewResultText(review_result(0))%>】&nbsp;<%
+%><span class="review-result">评阅意见&nbsp;1：【<%=getReviewResultText(review_result(0))%>】</span>&nbsp;<%
 		End If
 		If bReviewFileVisible(1) Then
-%>评阅意见&nbsp;2：【<%=getReviewResultText(review_result(1))%>】&nbsp;<%
+%><span class="review-result">评阅意见&nbsp;2：【<%=getReviewResultText(review_result(1))%>】</span>&nbsp;<%
 		End If
 		If bAllReviewFileVisible Then
-%>总体评价：【<%=getFinalResultText(review_result(2))%>】<br/><%
+%><span class="review-result">总体评价：【<%=getFinalResultText(review_result(2))%>】</span><br/><%
 		End If
 		For i=0 To 1
 			If arrRevRet(i)<>5 And bReviewFileVisible(i) Then	' 该专家已评阅且评阅书开放显示
@@ -156,19 +150,19 @@ Function showStepInfo(stepDisplay,stepCounter,is_hidden)
 %></span><%
 	Case rsRefusedDefence
 		audit_info=getAuditInfo(paper_id,thesis_files(2),auditTypeDefence)
-%><span class="section-detail">您的答辩论文未获导师<%=rs("TUTOR_NAME")%>审核通过，请修改论文后重新上传。审核意见如下：<br/>&emsp;&emsp;<%=toPlainString(audit_info(0)("Comment"))%></span><%
+%><span class="section-detail">您的答辩论文未获导师<%=rs("TUTOR_NAME")%>审核通过，请修改论文后重新上传。审核意见如下：</span><br/><span class="comment">&emsp;&emsp;<%=toPlainString(audit_info(0)("Comment"))%></span><%
 	Case rsAgreedDefence
 		audit_info=getAuditInfo(paper_id,thesis_files(2),auditTypeDefence)
-%><span class="section-detail">导师<%=rs("TUTOR_NAME")%>已审核通过您的答辩论文。审核意见如下：<br/>&emsp;&emsp;<%=toPlainString(audit_info(0)("Comment"))%></span><%
+%><span class="section-detail">导师<%=rs("TUTOR_NAME")%>已审核通过您的答辩论文。审核意见如下：</span><br/><span class="comment">&emsp;&emsp;<%=toPlainString(audit_info(0)("Comment"))%></span><%
 	Case rsDefenceEval
-%><span class="section-detail">答辩委员会已对您的论文提出了如下修改意见，请根据意见修改并上传教指委盲评论文。<br/><%=toPlainString(defence_eval)%></span><%
+%><span class="section-detail">答辩委员会已对您的论文提出了如下修改意见，请根据意见进行修改。</span><br/><span class="comment"><%=toPlainString(defence_eval)%></span><%
 	Case rsInstructReviewPaperUploaded
 %><span class="section-detail">您已上传教指委盲评论文，请等候导师审核。</span><%
 	Case rsRefusedInstructReview
 		audit_info=getAuditInfo(paper_id,thesis_files(3),auditTypeInstructReviewDetect)
-%><span class="section-detail">导师不同意您的教指委盲评论文进行查重，请修改论文后重新上传。<br/>审核意见：<%=toPlainString(audit_info(0)("Comment"))%></span><%
+%><span class="section-detail">导师审核不通过教指委盲评论文，请修改论文后重新上传。</span><br/><span class="comment">审核意见：<%=toPlainString(audit_info(0)("Comment"))%></span><%
 	Case rsAgreedInstructReview
-%><span class="section-detail">导师已同意您的教指委盲评论文进行查重。</span><%
+%><span class="section-detail">导师已审核通过教指委盲评论文。</span><%
 	Case rsInstructReviewPaperDetected
 %><span class="section-detail">您的教指委盲评论文已完成查重，请等候教务员为您的论文匹配教指委委员。<br/>检测结果摘要：经图书馆检测，学位论文文字复制比为&nbsp;<%=instruct_review_reproduct_ratio%>%。
 <br/><a class="resc" href="fetchDocument.asp?tid=<%=paper_id%>&type=16" target="_blank">点此下载检测报告</a></span><%
@@ -176,11 +170,13 @@ Function showStepInfo(stepDisplay,stepCounter,is_hidden)
 %><span class="section-detail">教务员已为您的论文匹配教指委委员，请等候委员审核。</span><%
 	Case rsInstructEval
 		audit_info=getAuditInfo(paper_id,thesis_files(3),auditTypeInstructReview)
-%><span class="section-detail">教指委已对您的论文提出了如下修改意见：
-<br/>第一位委员的意见：<br/><%=toPlainString(audit_info(0)("Comment"))%>
-<br/>第二位委员的意见：<br/><%=toPlainString(audit_info(1)("Comment"))%><%
+		If UBound(audit_info)=1 Then
+%><span class="section-detail">教指委已对您的论文提出了如下修改意见：</span>
+<br/>第一位委员的意见：<span class="comment"><br/><%=toPlainString(audit_info(0)("Comment"))%></span>
+<br/>第二位委员的意见：<span class="comment"><br/><%=toPlainString(audit_info(1)("Comment"))%></span><%
+		End If
 		If Not IsNull(rs("DEGREE_MODIFY_EVAL")) Then %>
-<br/>学院学位评定分会修改意见：<br/><%=toPlainString(rs("DEGREE_MODIFY_EVAL"))%></span><%
+<br/>学院学位评定分会修改意见：</span><br/><span class="comment"><%=toPlainString(rs("DEGREE_MODIFY_EVAL"))%></span><%
 		End If
 	Case rsFinalPaperUploaded
 %><span class="section-detail">您已上传定稿论文。<%
@@ -199,12 +195,12 @@ End Function
 	td.modcontent { padding-left:20px;padding-top:10px;background:url(../images/student/modback.png) repeat }
 	p.stepname { margin-top:10px;margin-bottom:0 }
 	p.stepcontent { margin:0 0 5px 0;padding-left:10px }
-	p.tutoreval { padding-left:20px;text-align:left;color:#0000ff;font-size:10pt }
-	p.defenceresult { padding:20px 0 }
-	p.defenceresult span { color:#ff0000;font-weight:bold }
+	p.tutor-comment { padding-left:20px;color:#0000ff;text-align:left;text-indent:4ch }
+	p.defence-result { padding:20px 0 }
+	p.defence-result span { color:#ff0000;font-weight:bold }
 	table.taskprogress { margin:10px 0 }
 	table.taskprogress td { display:inline-block;table-layout:fixed;padding:10px;border:1px solid #3399dd;
-													background-color:#fffddf;font-size:10pt;text-align:center }
+		background-color:#fffddf;font-size:10pt;text-align:center }
 	table.taskprogress td.step { height: 100px }
 	table.taskprogress span.s0 { color:#cccccc }
 	table.taskprogress span.s1 { color:#0000cc }
@@ -302,7 +298,7 @@ End Function
 			
 			' 显示答辩成绩
 			If Not IsNull(defence_result) And defence_result<>0 Then %>
-	<hr/><p class="defenceresult"><span>您的答辩成绩为：<%=arrDefenceResult(defence_result)%>，答辩表决结果：<%=arrGrantDegreeResult(grant_degree_result)%></span></p><%
+	<hr/><p class="defence-result"><span>您的答辩成绩为：<%=arrDefenceResult(defence_result)%>，答辩表决结果：<%=arrGrantDegreeResult(grant_degree_result)%></span></p><%
 			End If
 		End If
 %></td></tr>
@@ -325,31 +321,41 @@ End Function
 %></p></td><%
 		Next %></tr><%
 		If bTableNotPassed Then
-%><tr><td colspan="4" width="90%"><p align="left">【导师&nbsp;<%=rs("TUTOR_NAME")%>&nbsp;的审核意见】</p>
-	<p class="tutoreval"><%=toPlainString(rs("TASK_EVAL"))%></p></td></tr><%
+			Dim audit_type
+			Select Case task_progress
+				Case tpTbl1Unpassed: audit_type=auditTypeKtbgb
+				Case tpTbl2Unpassed: audit_type=auditTypeZqkhb
+				Case tpTbl3Unpassed: audit_type=auditTypeYdbyjs
+				Case tpTbl4Unpassed: audit_type=auditTypeSpclb
+			End Select
+			Dim audit_result:Set audit_result=getLatestAuditInfo(paper_id,audit_type)
+%><tr><td colspan="4" width="90%"><p align="left">【导师&nbsp;<%=audit_result("AuditorName")%>&nbsp;的审核意见】（<%=audit_result("AuditTime")%>）</p>
+	<p class="tutor-comment"><%=audit_result("Comment")%></p></td></tr><%
 		End If %></table></td></tr>
 <tr bgcolor="#E4E8EF"><td class="modtitle"><img src="../images/student/bullet.gif">&nbsp;<b>论文及相关文件</b></td></tr>
 <tr><td class="modcontent" width="100%" height="180" valign="top"><%
 	If rs.EOF Then %>
-<p style="font-size:10pt">当前还没有上传或生成过任何文件！</b></p>
+<p>当前还没有上传或生成过任何文件！</b></p>
 <%
 	Else %>
-<p style="font-size:10pt">评阅活动：<b><%=rs("ActivityName")%></b></p>
-<p style="font-size:10pt">论文题目：<b><%=rs("THESIS_SUBJECT")%></b></p><p><ul class="filelist"><%
-		Dim fso,file
-		Set fso=Server.CreateObject("Scripting.FileSystemObject")
+<p>评阅活动：<b><%=rs("ActivityName")%></b></p>
+<p>论文题目：<b><%=rs("THESIS_SUBJECT")%></b></p><p><ul class="filelist"><%
+		Dim fso:Set fso=CreateFSO()
 		For i=1 To UBound(arrFileListName)
 			filename=rs(arrFileListField(i))
 			If Not IsNull(filename) Then
 				If i=17 Or i=18 Then
 					' 根据评阅书显示设置决定是否显示文件
-					If Not bReviewFileVisible(i-17) Then filename=""
+					If bReviewFileVisible(i-17) Then
+						filename=filename&".pdf"
+					Else
+						filename=""
+					End If
 				End If
-				filepath=arrFileListPath(i)&"/"&filename
-				fullfilepath=Server.MapPath(arrFileListPath(i))&"\"&filename
-				If fso.FileExists(fullfilepath) Then
-					Set file=fso.GetFile(fullfilepath)
-					file_ext=fso.GetExtensionName(filename) %>
+				filepath=Server.MapPath(resolvePath(basePath(),arrFileListPath(i),filename))
+				If fso.FileExists(filepath) Then
+					Dim file:Set file=fso.GetFile(filepath)
+					file_ext=fso.GetExtensionName(file.Name) %>
 <li><a class="fileitem" href="fetchDocument.asp?tid=<%=paper_id%>&type=<%=i%>" target="_blank" title="大小：<%=toDataSizeString(file.Size)%>&#10;创建时间：<%=FormatDateTime(file.DateCreated,2)&" "&FormatDateTime(file.DateCreated,4)%>&#10;点击下载此文件"><img src="../images/student/<%=file_ext%>.png" title="<%=UCase(file_ext)%>格式" /><div><%=arrFileListName(i)%></div></a></li><%
 					Set file=Nothing
 				End If

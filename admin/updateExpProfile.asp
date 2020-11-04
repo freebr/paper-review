@@ -4,10 +4,8 @@
 <%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 Set upload=New ExtendedRequest
 TeacherId=upload.Form("teacherid")
-FormGetToSafeRequest(TeacherId)
 If Len(TeacherId)=0 Or Not IsNumeric(TeacherId) Then
-%><body><center><font color=red size="4">参数无效。</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
-	Response.End()
+	showErrorPage "参数无效。", "提示"
 End If
 
 teachername=upload.Form("teachername")
@@ -34,65 +32,64 @@ sql="SELECT * FROM TEACHER_INFO WHERE TEACHERID="&Teacherid
 GetRecordSet connOrigin,rs,sql,count
 If sex<>"男" And sex<>"女" Then
 	bError=True
-	errdesc="请选择性别！"
+	errMsg="请选择性别！"
 ElseIf Len(teachername)=0 Then
 	bError=True
-	errdesc="请填写姓名！"
-ElseIf Len(teacherno)=0 Then
+	errMsg="请填写姓名！"
+ElseIf rs("IFTEACHER")=3 And Len(teacherno)=0 Then
 	bError=True
-	errdesc="请填写登录名！"
+	errMsg="请填写登录名！"
 ElseIf Len(pro_duty_name)=0 Then
 	bError=True
-	errdesc="请填写专业技术职务（职称）！"
+	errMsg="请填写专业技术职务（职称）！"
 ElseIf Len(last_diploma)=0 Or Not IsNumeric(last_diploma) Or last_diploma="0" Then
 	bError=True
-	errdesc="请选择最高学历！"
+	errMsg="请选择最高学历！"
 ElseIf Len(expertise)=0 Then
 	bError=True
-	errdesc="请填写学科专长！"
+	errMsg="请填写学科专长！"
 ElseIf Len(email)=0 Then
 	bError=True
-	errdesc="请填写电子邮箱！"
+	errMsg="请填写电子邮箱！"
 ElseIf Len(workplace)=0 Then
 	bError=True
-	errdesc="请填写单位名称！"
+	errMsg="请填写单位名称！"
 ElseIf Len(address)=0 Then
 	bError=True
-	errdesc="请填写通信地址！"
+	errMsg="请填写通信地址！"
 ElseIf Len(address)>25 Then
 	bError=True
-	errdesc="通信地址最多只能填25字！"
+	errMsg="通信地址最多只能填25字！"
 ElseIf Len(mailcode)=0 Then
 	bError=True
-	errdesc="请填写邮编！"
+	errMsg="请填写邮编！"
 ElseIf Len(telephone)=0 Then
 	bError=True
-	errdesc="请填写联系电话（办公室）！"
+	errMsg="请填写联系电话（办公室）！"
 ElseIf Len(mobile)=0 Then
 	bError=True
-	errdesc="请填写联系电话（移动）！"
+	errMsg="请填写联系电话（移动）！"
 ElseIf Len(bankaccount)=0 Then
 	bError=True
-	errdesc="请填写银行账户号！"
+	errMsg="请填写银行账户号！"
 ElseIf Len(bankname)=0 Then
 	bError=True
-	errdesc="请填写开户行名称！"
+	errMsg="请填写开户行名称！"
 ElseIf Len(idcard_no)=0 Then
 	bError=True
-	errdesc="请填写身份证号码！"
+	errMsg="请填写身份证号码！"
 ElseIf newpwd<>repeatpwd Then
 	bError=True
-	errdesc="两次输入的密码不相同！"
+	errMsg="两次输入的密码不相同！"
 ElseIf rs.EOF Then
 	bError=True
-	errdesc="数据库没有记录！"
+	errMsg="数据库没有记录！"
 End If
 If bError Then
-%><body><center><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 	CloseRs rs
-  CloseConn connOrigin
-  CloseConn conn
-	Response.End()
+	CloseConn connOrigin
+	CloseConn conn
+	showErrorPage errMsg, "提示"
 End If
 
 If rs("IFTEACHER").Value=3 Then

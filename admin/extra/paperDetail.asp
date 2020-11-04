@@ -1,34 +1,30 @@
 ﻿<!--#include file="../../inc/global.inc"-->
 <!--#include file="common.asp"--><%
 If IsEmpty(Session("Id")) Then Response.Redirect("../../error.asp?timeout")
-paper_id=Request.Form("tid")
+paper_id=Request.QueryString("tid")
+reviewer=Request.QueryString("rev")
 teachtype_id=Request.Form("In_TEACHTYPE_ID2")
 class_id=Request.Form("In_CLASS_ID2")
-reviewer=Request.Form("rev")
 finalFilter=Request.Form("finalFilter2")
 pageSize=Request.Form("pageSize2")
 pageNo=Request.Form("pageNo2")
 
-If Len(paper_id)=0 And Len(stuname)=0 Then
+If Len(paper_id)=0 Then
 	bError=True
-	errdesc="参数无效。"
+	errMsg="参数无效。"
 Else
 	Connect conn
-	If Len(paper_id) Then
-		sql="SELECT * FROM ViewDissertations WHERE ID="&paper_id
-	Else
-		sql="SELECT * FROM ViewDissertations WHERE STU_NAME="&toSqlString(stuname)
-	End If
+	sql="SELECT * FROM ViewDissertations_admin WHERE ID="&paper_id
 	GetRecordSet conn,rs,sql,count
 	If count=0 Then
 		bError=True
-		errdesc="数据库没有该论文记录，或您未受邀评阅该论文！"
+		errMsg="数据库没有该论文记录！"
 	End If
 End If
 If bError Then
 	CloseRs rs
 	CloseConn conn
-	showErrorPage errdesc, "提示"
+	showErrorPage errMsg, "提示"
 End If
 
 Dim review_status
@@ -40,7 +36,7 @@ If author_stu_type=5 Or author_stu_type=6 Then
 Else
 	reviewfile_type=1
 End If
-eval_text=rs("REVIEWER_EVAL"&(reviewer+1))
+eval_text=rs("ReviewerComment"&(reviewer+1))
 review_app=rs("REVIEW_APP")
 review_status=rs("REVIEW_STATUS")
 If Not IsNull(rs("THESIS_FILE2")) Then
@@ -53,7 +49,7 @@ If Not IsNull(rs("REVIEW_RESULT")) Then
 	Next
 End If
 If Not IsNull(rs("REVIEWER_EVAL_TIME")) Then
-	arr2=Split(rs("REVIEWER_MASTER_LEVEL"),",")
+	arr2=Array(rs("ReviewerMasterLevel1"),rs("ReviewerMasterLevel2"))
 	arr3=Array(rs("ReviewFile1"),rs("ReviewFile2"))
 	arr4=Split(rs("REVIEWER_EVAL_TIME"),",")
 	arr5=Split(rs("REVIEW_LEVEL"),",")
@@ -72,7 +68,7 @@ End If
 
 view_name = "paperDetail_review_"&paper_id
 ' 获取视图状态
-view_state = getViewState(Session("TId"),usertypeExpert,view_name)
+view_state = getViewState(Session("Id"),usertypeExpert,view_name)
 
 tutor_duty_name=getProDutyNameOf(rs("TUTOR_ID"))
 If reviewfile_type=2 Then
@@ -111,7 +107,8 @@ End If
 <div class="fields">
 	<div>对本论文涉及内容的熟悉程度：<%=masterLevelRadios("master_level",reviewer_master_level(reviewer))%></div>
 </div>
-<div class="fields">评阅专家对论文的学术评语<span class="eval_notice">（包括选题意义；文献资料的掌握；数据、材料的收集、论证、结论是否合理；基本论点、结论和建议有无理论意义和实践价值；论文的不足之处和建议等，200-2000字）</span>：</div>
+<div class="fields">评阅专家对论文的学术评语：</div>
+<div class="fields"><span class="comment-notice">（包括选题意义；文献资料的掌握；数据、材料的收集、论证、结论是否合理；基本论点、结论和建议有无理论意义和实践价值；论文的不足之处和建议等，200-2000字）</span></div>
 <div class="fields"><textarea name="eval_text" rows="10" style="width:100%">
 <%=eval_text%>
 </textarea></div>
@@ -134,16 +131,16 @@ End If
 	</table>
 </fieldset><%
 			Case 6
-				strJsArrRemarkStd="[{'name':'优秀','min':90},{'name':'良好','min':75},{'name':'合格','min':60},{'name':'不合格','min':0}]"
+				strJsArrRemarkStd="[{'name':'优秀','min':85},{'name':'良好','min':75},{'name':'一般','min':60},{'name':'较差','min':0}]"
 %>
 <fieldset>
 	<legend><%=rs("TEACHTYPE_NAME")%>学位论文评价指标</legend>
 	<p>说明：请评审专家在各二级指标得分空格处按百分制打分，系统将自动生成各一级指标得分并最后汇总计算出总分。</p>
 	<table class="form">
-		<tr><td width="6s0" align="center">一级指标</td><td align="center">二级指标</td><td width="350" align="center">评分标准（优秀：≥90；良好：89-75；合格：74-60；不合格：≤59）</td><td align="center">一级指标得分</td></tr>
+		<tr><td width="100" align="center">一级指标</td><td align="center">二级指标</td><td width="350" align="center">得分（采用百分制，评分标准：优秀：≥85；良好：84-75；一般：74-60；较差：≤59）</td><td align="center">加权得分</td></tr>
 		<%=code_scoring%><tr><td align="center">总分</td><td align="center" colspan="3"><span id="total_score"></span></td></tr>
 		<tr><td align="center" rowspan="2">对学位论文的总体评价</td><td align="center" colspan="3"><span id="review_level_text">&nbsp;</span></td></tr>
-		<tr><td colspan="3"><p>优秀：≥90；良好：89-75；合格：74-60；不合格：≤59。<input type="hidden" name="review_level" /></p></td></tr>
+		<tr><td colspan="3"><p>采用百分制，评分标准：优秀：≥85；良好：84-75；一般：74-60；较差：≤59。<input type="hidden" name="review_level" /></p></td></tr>
 	</table>
 </fieldset><%
 			Case Else
@@ -190,7 +187,7 @@ End If
 		}<%
 		End If %>
 		initViewState($("form"), {
-			user_id: <%=Session("TId")%>,
+			user_id: <%=Session("Id")%>,
 			user_type: <%=usertypeExpert%>,
 			view_name: "<%=view_name%>",
 			view_state: <%=isNullString(view_state, "null")%>

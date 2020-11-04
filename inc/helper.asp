@@ -320,25 +320,58 @@ End Function
 
 ' 显示答辩成绩选择框
 Function defenceResultList(ctlname,sel)
-	Dim arr,i
-	arr=arrDefenceResult
-	arr(0)="未录入"
+	Dim i
 %><div class="divcontrol"><select name="<%=ctlname%>"><%
-	For i=0 To UBound(arr)
-%><option value="<%=i%>"<% If sel=i Then Response.Write " selected"%>><%=arr(i)%></option><%
+	For i=0 To UBound(arrDefenceResult)
+%><option value="<%=i%>"<% If sel=i Then Response.Write " selected"%>><%=arrDefenceResult(i)%></option><%
 	Next %>
 </select></div><%
 End Function
 
 ' 显示答辩表决结果选择框
 Function grantDegreeList(ctlname,ByVal sel)
-	Dim arr,i
-	arr=arrGrantDegreeResult
-	arr(0)="未录入"
+	Dim i
 %><select name="<%=ctlname%>"><%
-	For i=0 To UBound(arr)
-%><option value="<%=i%>"<% If sel=i Then Response.Write " selected"%>><%=arr(i)%></option><%
+	For i=0 To UBound(arrGrantDegreeResult)
+%><option value="<%=i%>"<% If sel=i Then Response.Write " selected"%>><%=arrGrantDegreeResult(i)%></option><%
 	Next %>
 </select><%
+End Function
+
+' 显示错误提示
+Function showErrorPage(content, title)
+	Dim client_name, class_prop, statement
+	client_name=currentClient()
+	If client_name="expert" Then
+		class_prop="class=""exp"""
+		client_name="tutor"
+	Else
+		class_prop="bgcolor=""ghostwhite"""
+	End If
+	If isMatched("(expertProfile|fetchDocument|paperDetail)\.asp",currentPage(),True) Then
+		statement="closeWindow();"
+	Else
+		statement="history.go(-1);"
+	End If
+%><html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="theme-color" content="#2D79B2" />
+<title><%=title%></title>
+<% useStylesheet client_name, "jeasyui" %>
+<% useScript "jquery", "jeasyui", "common" %>
+</head>
+<body <%=class_prop%>>
+<script type="text/javascript">
+	$.messager.alert("<%=toJsString(title)%>", "<%=toJsString(content)%>", "error",
+		function() {
+			<%=statement%>
+		}
+	);
+</script>
+</body></html><%
+
+	Response.End()
+	showErrorPage=1
 End Function
 %>

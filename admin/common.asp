@@ -15,28 +15,6 @@ Function getTeachTypeIdByName(teachtype_name)
 	getTeachTypeIdByName=ret
 End Function
 
-Function getTeacherIdByName(name)
-	If IsNull(name) Then
-		getTeacherIdByName=-1
-		Exit Function
-	End If
-	Dim conn,rsTeacher,sql,count
-	name=Replace(name," ",vbNullString)
-	name=Replace(name,"　",vbNullString)
-	name=Replace(name,"'","''")
-	name=Replace(name,"""","""""")
-	ConnectOriginDb conn
-	sql="SELECT TEACHERID,TEACHERNAME FROM TEACHER_INFO WHERE TEACHERNAME='"&name&"' AND VALID=0"
-	GetRecordSetNoLock conn,rsTeacher,sql,count
-	If rsTeacher.EOF Then
-		getTeacherIdByName=-1
-	Else
-		getTeacherIdByName=rsTeacher("TEACHERID")
-	End If
-	CloseRs rsTeacher
-	CloseConn conn
-End Function
-
 Function getProDutyNameOf(tid)
 	Dim conn,rs,sql,count
 	Connect conn
@@ -118,9 +96,9 @@ Function setNoticeText(stuType,noticeName,noticeContent)
 	CloseConn conn
 End Function
 
-Function addAuditRecord(paper_id,audit_file,audit_type,audit_time,auditor_id,is_passed,eval_text)
-	If Len(eval_text)=0 Then
-		If is_passed Then eval_text="审核通过" Else eval_text="审核不通过"
+Function addAuditRecord(paper_id,audit_file,audit_type,audit_time,auditor_id,is_passed,ByVal comment)
+	If Len(comment)=0 Then
+		If is_passed Then comment="审核通过" Else comment="审核不通过"
 	End If
 	Dim conn,sql
 	Connect conn
@@ -132,13 +110,13 @@ Function addAuditRecord(paper_id,audit_file,audit_type,audit_time,auditor_id,is_
 		CmdParam("audit_time",adDate,4,audit_time),_
 		CmdParam("auditor_id",adInteger,4,auditor_id),_
 		CmdParam("is_passed",adBoolean,1,is_passed),_
-		CmdParam("comment",adLongVarWChar,5000,eval_text),_
+		CmdParam("comment",adLongVarWChar,5000,comment),_
 		CmdParam("creator",adInteger,4,Session("TId"))
 	CloseConn conn
 End Function
 
-Function sendEmailToStudent(paper_id,file_type_name,is_pass,ByVal eval_text)
-	If Len(eval_text)=0 Then eval_text="无"
+Function sendEmailToStudent(paper_id,file_type_name,is_pass,ByVal comment)
+	If Len(comment)=0 Then comment="无"
 	Dim conn:Connect conn
 	Dim sql:sql="SELECT ActivityId,TEACHTYPE_ID,STU_NAME,STU_NO,CLASS_NAME,SPECIALITY_NAME,EMAIL,THESIS_SUBJECT,TUTOR_NAME,TUTOR_EMAIL FROM ViewDissertations WHERE ID=?"
 	Dim ret:Set ret=ExecQuery(conn,sql,CmdParam("ID",adInteger,4,paper_id))
@@ -162,6 +140,7 @@ Function sendEmailToStudent(paper_id,file_type_name,is_pass,ByVal eval_text)
 		template_name="pyyjqrtzyj"
 		operation_name="确认评阅书"
 	Else
+		dict("filename")=file_type_name
 		If is_pass Then
 			template_name="lwshtgtzyj"
 			operation_name=Format("审核通过[{0}]",file_type_name)
@@ -185,7 +164,5 @@ If Not IsEmpty(Session("Id")) And IsEmpty(Session("AdminType")) Then
 	Set Session("AdminType")=getAdminType(Session("Id"))
 End If
 
-Dim arrTable,reportBaseDir
-arrTable=Array("","开题报告表","中期检查表","预答辩意见书","答辩审批材料")
-reportBaseDir="/PaperReview/admin/upload/report/"
+Dim arrTable:arrTable=Array("","开题报告表","中期考核表","预答辩意见书","答辩审批材料")
 %>

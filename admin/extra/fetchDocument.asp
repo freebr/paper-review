@@ -10,13 +10,13 @@ paper_id=Request.QueryString("tid")
 filetype=Request.QueryString("type")
 If Not IsNumeric(filetype) Then
 	bError=True
-	errdesc="参数无效。"
+	errMsg="参数无效。"
 ElseIf filetype<1 Or filetype>3 Then
 	bError=True
-	errdesc="参数无效。"
+	errMsg="参数无效。"
 End If
 If bError Then
-%><body><center><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="关 闭" onclick="window.close()" /></center></body><%
+%><body><center><font color=red size="4"><%=errMsg%></font><br /><input type="button" value="关 闭" onclick="window.close()" /></center></body><%
 	Response.End()
 End If
 
@@ -30,7 +30,7 @@ End If
 
 Dim source_file,file_ext,newfilename
 Dim fso,file,stream
-Set fso=Server.CreateObject("Scripting.FileSystemObject")
+Set fso=CreateFSO()
 source_file=rs(arrFileListField(filetype))
 If IsNull(source_file) Then
 	source_file=""
@@ -52,15 +52,7 @@ Set file=fso.GetFile(source_file)
 If Len(arrFileListNamePostfix(filetype)) Then
 	newfilename=rs("SPECIALITY_NAME")&"-"&arrFileListNamePostfix(filetype)
 Else
-	subject=Replace(rs("THESIS_SUBJECT"),":","_")
-	subject=Replace(subject,"""","_")
-	subject=Replace(subject,"<","_")
-	subject=Replace(subject,">","_")
-	subject=Replace(subject,"?","_")
-	subject=Replace(subject,"\","_")
-	subject=Replace(subject,"/","_")
-	subject=Replace(subject,"|","_")
-	subject=Replace(subject,"*","_")
+	subject=toFilenameString(rs("THESIS_SUBJECT").Value)
 	newfilename=rs("SPECIALITY_NAME")&"-"&subject
 End If
 newfilename=newfilename&"."&file_ext

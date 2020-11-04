@@ -1,0 +1,64 @@
+﻿<table width="100%">
+	<tr><td class="section"><p>封面</p></td></tr>
+	<tr><td><p>论文题目：<input type="text" class="txt" name="subject" size="80" value="<%=subject%>" readonly /></p></td></tr>
+	<tr><td><p>姓&emsp;&emsp;名：<input type="text" class="txt" name="stu_name" size="80" value="<%=Session("StuName")%>" readonly /></p></td></tr>
+	<tr><td><p>学&emsp;&emsp;号：<input type="text" class="txt" name="stu_no" size="80" value="<%=Session("StuNo")%>" readonly /></p></td></tr>
+	<tr><td><p>学&emsp;&emsp;院：<input type="text" class="txt" name="faculty" size="80" value="工商管理学院" readonly /></p></td></tr>
+	<tr><td><p>学位类别：<input type="text" class="txt" name="stu_type" size="80" value="<%=dictStuTypes(stu_type)(0)%>" readonly /></p></td></tr>
+	<tr><td><p>校内导师：<input type="text" class="txt" name="school_tutor_name" size="80" value="<%=tutor_name%>" /></p></td></tr>
+	<tr><td><p>校外导师：<input type="text" class="txt" name="afterschool_tutor_name" size="80" /></p></td></tr>
+	<%
+	If stu_type=5 Then %>
+	<tr><td><p>领域名称：<select name="research_field_select"></select><input type="hidden" name="research_field" /></p></td></tr><%
+	End If %>
+	<tr><td><p>学习方式：
+		<label for="study_type_0"><input type="radio" id="study_type_0" name="study_type" value="0" checked>全日制</label>
+		<label for="study_type_1"><input type="radio" id="study_type_1" name="study_type" value="1">非全日制</label>
+	</p></td></tr>
+	<tr><td class="section"><p>一、论文工作已完成的研究工作和已取得阶段性成果</p></td></tr>
+	<tr><td><p>论文工作已完成的研究工作：</p></td></tr>
+	<tbody style="text-align: center;">
+		<tr><td><textarea name="accomplished_researches" class="txt" rows="15" cols="120" maxlength="900"></textarea></td></tr>
+	</tbody>
+	<tr><td><p>已取得阶段性成果：</p></td></tr>
+	<tbody style="text-align: center;">
+		<tr><td><textarea name="milestones" class="txt" rows="15" cols="120" maxlength="900"></textarea></td></tr>
+	</tbody>
+	<tr><td class="section"><p>二、论文工作后期进度安排、拟完成的研究工作及预期成果</p></td></tr>
+	<tr><td><table width="100%">
+	<thead><tr><td colspan="3"><p>论文工作进度安排</p></td></tr></thead>
+	<thead style="text-align: center;">
+		<tr><td><p>起止时间</p></td>
+		<td width="200"><p>工作内容</p></td>
+		<td><p>备注</p></td></tr>
+	</thead>
+	<tbody style="text-align: center;"><%
+	For i=1 To 6 %>
+	<tr><td><p><input type="text" class="txt" name="work_schedule_duration" size="20" /></p></td>
+	<td><p><input type="text" class="txt" name="work_schedule_content" size="30" /></p></td>
+	<td><p><input type="text" class="txt" name="work_schedule_memo" size="20" /></p></td></tr><%
+	Next %>
+	</tbody>
+	</table></td></tr>
+	<tr><td><p>拟完成的研究工作：</p></td></tr>
+	<tbody style="text-align: center;">
+		<tr><td><textarea name="following_researches" class="txt" rows="15" cols="120" maxlength="900"></textarea></td></tr>
+	</tbody>
+	<tr><td><p>预期成果：</p></td></tr>
+	<tbody style="text-align: center;">
+		<tr><td><textarea name="anticipated_result" class="txt" rows="15" cols="120" maxlength="900"></textarea></td></tr>
+	</tbody>
+	<tr><td class="section"><p>三、目前存在或预期可能出现的困难与问题</p></td></tr>
+	<tbody style="text-align: center;">
+		<tr><td><textarea name="difficulties" class="txt" rows="15" cols="120" maxlength="900"></textarea></td></tr>
+	</tbody>
+</table>
+<script type="text/javascript">
+	$().ready(function() {
+		$('select[name="research_field_select"]').change(function(){
+			$('input[name="research_field"]').val(!this.value.length?'':$(this).find('option:selected').text());
+		});
+		initResearchFieldSelectBox($('select[name="research_field_select"]'),<%=stu_type%>)
+			.then(initCurrentViewState);
+	});
+</script>

@@ -8,7 +8,7 @@ function submitUploadForm(fm) {
 	if(typeof(fm.size)==='function')fm=fm[0];
 	fm.btnsubmit.value="正在提交，请稍候……";
 	fm.btnsubmit.disabled=true;
-	newUploadProgress(fm.uploadid.value,fm.stuid.value);
+	newUploadProgress(fm.upload_id.value,fm.stu_id.value);
 	return;
 }
 

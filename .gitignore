@@ -1,8 +1,9 @@
 admin/export/*
 admin/rar/*.rar
 admin/tmp/*
-admin/upload/report/*
-admin/upload/review/*
+admin/upload/detect_report/*
+admin/upload/review_result/*
+admin/upload/review_template/*
 admin/upload/xls/*
 expert/export/*
 expert/tmp/*

@@ -14,7 +14,7 @@ bSearch=Not IsEmpty(Request.Form("btnsearch"))
 If Len(finalFilter) Then PubTerm="AND ("&finalFilter&")"
 If activity_id=-1 Then
 	Dim activity:Set activity=getLastActivityInfoOfStuType(Null)
-	If Not IsNull(activity) Then activity_id=activity("Id")
+	If Not activity Is Nothing Then activity_id=activity("Id")
 End If
 If activity_id>0 Then PubTerm=PubTerm&" AND ActivityId="&activity_id
 If teachtype_id>0 Then PubTerm=PubTerm&" AND TEACHTYPE_ID="&teachtype_id
@@ -22,7 +22,6 @@ If enter_year>0 Then PubTerm=PubTerm&" AND ENTER_YEAR="&enter_year
 If class_id>0 Then PubTerm=PubTerm&" AND CLASS_ID="&class_id
 If query_task_progress>-1 Then PubTerm=PubTerm&" AND TASK_PROGRESS="&query_task_progress
 If query_review_status>-1 Then PubTerm=PubTerm&" AND REVIEW_STATUS="&query_review_status
-
 bQuery=bSearch Or Len(PubTerm)>0
 '----------------------PAGE-------------------------
 PageNo=""
@@ -142,9 +141,9 @@ If bQuery Then %>
 <select name="pageNo" onchange="if(Chk_Select())submitForm(this.form)">
 <%
 For i=1 to rs.PageCount
-		Response.write "<option value="&i
-		If rs.AbsolutePage=i Then Response.write " selected"
-		Response.write ">"&i&"</option>"
+	Response.write "<option value="&i
+	If rs.AbsolutePage=i Then Response.write " selected"
+	Response.write ">"&i&"</option>"
 Next
 %>
 </select>
@@ -162,16 +161,19 @@ Next %></select><input type="button" value="设置" onclick="batchUpdatePaper($(
 </td>
 <td>
 <a href="javascript:void(0)" id="menuImport">导入数据</a>
-<div id="popupImport">
+<div id="popupImport" style="display: none">
 <div data-options="name: 'importNewPaper'">导入新增论文信息</div>
+<div class="menu-sep"></div>
 <div data-options="name: 'importDetectResult'">导入送检论文查重信息</div>
-<div data-options="name: 'importInstructReviewDetectResult'">导入教指委盲评论文查重信息</div>
-<div data-options="name: 'importDefencePlan'">导入答辩安排信息</div>
-<div data-options="name: 'importDefenceEval'">导入答辩委员会修改意见</div>
-<div data-options="name: 'importDegreeEval'">导入学院学位评定分会修改意见</div>
+<!--<div data-options="name: 'importInstructReviewDetectResult'">导入教指委盲评论文查重信息</div>-->
 <div class="menu-sep"></div>
 <div data-options="name: 'importReviewerMatchResult'">导入评阅专家匹配结果</div>
 <div data-options="name: 'importInstructMemberMatchResult'">导入教指委委员匹配结果</div>
+<div data-options="name: 'importReviewResult'">导入送审论文评阅结果</div>
+<div class="menu-sep"></div>
+<div data-options="name: 'importDefencePlan'">导入答辩安排信息</div>
+<div data-options="name: 'importDefenceEval'">导入答辩委员会修改意见</div>
+<div data-options="name: 'importDegreeEval'">导入学院学位评定分会修改意见</div>
 </div>
 <a href="javascript:void(0)" id="btnBatchNotifyExpert">批量通知专家评阅</a>
 <a href="javascript:void(0)" id="btnBatchFetchDocument">批量下载表格/论文</a>
@@ -194,7 +196,6 @@ Next %></select><input type="button" value="设置" onclick="batchUpdatePaper($(
 		<td align="center">论文题目</td>
 		<td width="80" align="center">姓名</td>
 		<td width="90" align="center">学号</td>
-		<td width="120" align="center">专业</td>
 		<td width="100" align="center">学位类别</td>
 		<td width="60" align="center">导师</td>
 		<td width="80" align="center">送审结果1</td>
@@ -205,7 +206,7 @@ Next %></select><input type="button" value="设置" onclick="batchUpdatePaper($(
 		<td width="50" align="center">操作</td>
 	</tr><%
 If bQuery Then
-	Dim is_review_visible,review_result,review_result_text(1)
+	Dim display_status,review_result,review_result_text(1)
 	For i=1 to rs.PageSize
 		If rs.EOF Then Exit For
 		If Not IsNull(rs("REVIEW_RESULT")) Then
@@ -213,7 +214,7 @@ If bQuery Then
 			review_result_text(0)=HtmlEncode(rs("EXPERT_NAME1"))&"<br/>"&rs("REVIEW_RESULT_TEXT1")
 			review_result_text(1)=HtmlEncode(rs("EXPERT_NAME2"))&"<br/>"&rs("REVIEW_RESULT_TEXT2")
 		End If
-		is_review_visible=Array(rs("ReviewFileDisplayStatus1")>0,rs("ReviewFileDisplayStatus2")>0)
+		display_status=Array(rs("ReviewFileDisplayStatus1"),rs("ReviewFileDisplayStatus2"))
 		substat=vbNullString
 		If rs("TASK_PROGRESS")>=tpTbl4Uploaded Then
 			stat=rs("STAT_TEXT1")&"，"&rs("STAT_TEXT2")
@@ -221,8 +222,13 @@ If bQuery Then
 			stat=rs("STAT_TEXT1")
 		Else
 			stat=rs("STAT_TEXT2")
-			If rs("REVIEW_STATUS")>=rsReviewed And Not is_review_visible(0) And Not is_review_visible(1) Then
-				substat="评阅结果["&arrReviewFileStat(rs("REVIEW_FILE_STATUS"))&"]"
+			If rs("REVIEW_STATUS")>=rsReviewed Then
+				If display_status(0)<>2 Then
+					substat="评阅结果 1："&arrReviewFileStat(display_status(0))
+				End If
+				If display_status(1)<>2 Then
+					substat=substat&"评阅结果 2："&arrReviewFileStat(display_status(1))
+				End If
 			End If
 		End If
 		If rs("UNHANDLED") Then
@@ -234,15 +240,14 @@ If bQuery Then
 		<td align="center"><a href="#" onclick="return showPaperDetail(<%=rs("ID")%>,0)"><%=HtmlEncode(rs("THESIS_SUBJECT"))%></a></td>
 		<td align="center"><a href="#" onclick="return showStudentProfile(<%=rs("STU_ID")%>,0)"><%=HtmlEncode(rs("STU_NAME"))%></a></td>
 		<td align="center"><%=rs("STU_NO")%></td>
-		<td align="center"><%=HtmlEncode(rs("SPECIALITY_NAME"))%></td>
 		<td align="center"><%=rs("TEACHTYPE_NAME")%></td>
-		<td align="center"><%=HtmlEncode(rs("TUTOR_NAME"))%></td>
-	<td align="center"><%=review_result_text(0)%></td>
+		<td align="center"><a href="#" onclick="return showTeacherProfile(<%=rs("TUTOR_ID")%>)"><%=HtmlEncode(rs("TUTOR_NAME"))%></a></td>
+		<td align="center"><%=review_result_text(0)%></td>
 		<td align="center"><%=review_result_text(1)%></td>
 		<td align="center"><%=rs("FINAL_RESULT_TEXT")%></td>
 		<td align="center"><a href="#" onclick="return showPaperDetail(<%=rs("ID")%>,0)"><span class="<%=cssclass%>"><%=stat%></span></a><%
 		If Len(substat) Then
-		%><br/><span class="thesissubstat"><%=substat%></span><%
+		%><br/><span class="review-display-status"><%=substat%></span><%
 		End If %></td>
 		<td align="center"><input type="checkbox" name="sel" value="<%=rs("ID")%>" /></td>
 		<td align="center"><%

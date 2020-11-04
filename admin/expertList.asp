@@ -49,7 +49,7 @@ If rs.RecordCount>0 Then rs.AbsolutePage=pageNo
 <table width="1000" cellpadding="2" cellspacing="1" bgcolor="dimgray">
 <tr bgcolor="ghostwhite"><td style="font-weight:bold">从Excel文件导入评阅专家信息&emsp;<a href="upload/exp_template.xlsx" target="_blank">点击下载专家信息表格模板</a></td></tr>
 <tr bgcolor="ghostwhite"><td>
-<p>请选择要导入的 Excel 文件：<br />文件名：<input type="file" name="excelFile" size="100" />
+<p>请选择要导入的 Excel 文件：<br />文件名：<input type="file" name="tableFile" size="100" />
 <input type="submit" name="btnsubmit" value="提 交" />&nbsp;</p>
 </td></tr></table>
 </form>
@@ -145,7 +145,7 @@ Next
 <script type="text/javascript">
 	$(document).ready(function(){
     $('#fmUpload :submit').click(function() {
-      var valid=checkIfExcel(this.excelFile);
+      var valid=checkIfExcel(this.tableFile);
       if(valid) {
         $(':submit').val("正在提交，请稍候...").attr('disabled',true);
       }

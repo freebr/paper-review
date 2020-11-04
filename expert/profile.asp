@@ -4,10 +4,10 @@
 TeacherId=Session("TId")
 If Len(TeacherId)=0 Or Not IsNumeric(TeacherId) Then
 	bError=True
-	errdesc="参数无效。"
+	errMsg="参数无效。"
 End If
 If bError Then
-%><body><center><font color=red size="4"><%=errdesc%></font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
+%><body><center><font color=red size="4"><%=errMsg%></font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 	CloseRs rs
 	CloseConn conn
 	Response.End()
@@ -29,10 +29,11 @@ End If
 <% useScript "jquery", "common", "expert" %>
 <title>个人信息编辑</title>
 </head>
-<body class="exp"><center><div class="content">
+<body class="exp">
+<div class="content">
 <form id="profile" action="updateProfile.asp" method="post" enctype="multipart/form-data">
-<span class="title">个人信息编辑</span>
-<p><span class="tip">以下信息均为必填项</span></p>
+<p align="center"><span class="title">个人信息编辑</span></p>
+<p align="center"><span class="tip">以下信息均为必填项</span></p>
 <table class="form profile">
 <tr height="30">
 	<td bgcolor="gainsboro" align="center">姓名</td>
@@ -85,14 +86,15 @@ End If
 <input type="button" id="btnsubmit" value="提 交" />&nbsp;
 <input type="button" id="btnreturn" value="返 回" /></td></tr></table>
 <hr />
-<span class="title">登录密码修改</span>
+<p align="center"><span class="title">登录密码修改</span></p>
 <table class="form">
 <tr height="30">
 <td bgcolor="white" colspan="6" align="center">请输入新密码：<input type="password" class="txt full-width" name="newpwd" id="newpwd" style="width:150px" />&emsp;
 确认新密码：<input type="password" class="txt full-width" name="repeatpwd" id="repeatpwd" style="width:150px" /></td>
 </tr>
 <tr bgcolor="white"><td colspan="6" align="center">
-<input type="button" value="修改密码" onclick="submitForm(this.form)" /></td></tr></table></form></div></center></body></html><%
+<input type="button" value="修改密码" onclick="submitForm(this.form)" /></td></tr></table></form>
+</div></body></html><%
 CloseRs rs
 CloseConn conn
 %>

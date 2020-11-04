@@ -1,0 +1,112 @@
+﻿<table width="100%">
+	<thead style="text-align: center;">
+	<tr><td><span class="tip">提示：因暂不支持图文编辑，如报告中含图片，请<a href="<%=template_file%>" target="_blank">下载开题报告表模板</a>并填写后，<a href="uploadTable.asp">点击这里直接上传表格文件</a>。</span></td></tr>
+	</thead>
+	<tr><td class="section"><p>封面</p></td></tr>
+	<tr><td><p>姓&emsp;&emsp;名：<input type="text" class="txt" name="stu_name" size="80" value="<%=Session("StuName")%>" readonly /></p></td></tr>
+	<tr><td><p>学&emsp;&emsp;号：<input type="text" class="txt" name="stu_no" size="80" value="<%=Session("StuNo")%>" readonly /></p></td></tr>
+	<tr><td><p>学&emsp;&emsp;院：<input type="text" class="txt" name="faculty" size="80" value="工商管理学院" readonly /></p></td></tr>
+	<tr><td><p>学位类别：<input type="text" class="txt" name="stu_type" size="80" value="<%=dictStuTypes(stu_type)(0)%>" readonly /></p></td></tr>
+	<tr><td><p>校内导师：<input type="text" class="txt" name="school_tutor_name" size="80" value="<%=tutor_name%>" /></p></td></tr>
+	<tr><td><p>校外导师：<input type="text" class="txt" name="afterschool_tutor_name" size="80" /></p></td></tr>
+	<tr><td><p>领域名称：<select name="research_field_select"></select><input type="hidden" name="research_field" /></p></td></tr>
+	<tr><td><p>研究方向：<select name="sub_research_field_select"></select><input type="hidden" name="sub_research_field" />
+		<input type="text" class="txt" name="custom_sub_research_field" size="20" placeholder="请输入…" value="<%=sub_research_field%>" /></p></td></tr>
+	<tr><td><p>学习方式：
+		<label for="study_type_0"><input type="radio" id="study_type_0" name="study_type" value="0" checked>全日制</label>
+		<label for="study_type_1"><input type="radio" id="study_type_1" name="study_type" value="1">非全日制</label>
+	</p></td></tr>
+	<tr><td class="section"><p>一、摘要</p></td>
+	<tr><td><table width="100%">
+	<tr><td rowspan="2"><p>论文题目</p></td>
+	<td><p>中文：<input type="text" class="txt" name="subject" size="75" value="<%=subject%>" /></p></td></tr>
+	<tr><td><p>英文：<input type="text" class="txt" name="subject_en" size="75" value="<%=subject_en%>" /></p></td></tr>
+	</table></td></tr><%
+	If stu_type=5 Then %>
+	<tr id="thesis_form"><td><p>论文形式：
+		<label for="thesis_form_0"><input type="radio" id="thesis_form_0" name="thesis_form" value="产品研发" checked>产品研发</label>
+		<label for="thesis_form_1"><input type="radio" id="thesis_form_1" name="thesis_form" value="工程设计">工程设计</label>
+		<label for="thesis_form_2"><input type="radio" id="thesis_form_2" name="thesis_form" value="应用研究">应用研究</label>
+		<label for="thesis_form_3"><input type="radio" id="thesis_form_3" name="thesis_form" value="工程/项目管理">工程/项目管理</label>
+		<label for="thesis_form_4"><input type="radio" id="thesis_form_4" name="thesis_form" value="调研报告">调研报告</label>
+	</p></td></tr><%
+	End If %>
+	<tr><td><p>论文选题项目是否涉密：</p>
+		<p><label for="is_credential_0"><input type="radio" id="is_credential_0" name="is_credential" value="0">是，并已办理《华南理工大学学位论文定密审批表》审批手续，复印件已附于本报告末页。</label></p>
+		<p><label for="is_credential_1"><input type="radio" id="is_credential_1" name="is_credential" value="1" checked>否，并承诺学位论文将不涉及国家秘密和其他不宜公开的内容。</label></p>
+	</p></td></tr>
+	<tr><td><p>选题来源：</p>
+		<p><label for="issue_source_0"><input type="radio" id="issue_source_0" name="issue_source" value="0" checked>校内导师承担的纵向项目</label></p>
+		<p><label for="issue_source_1"><input type="radio" id="issue_source_1" name="issue_source" value="1">校内导师承担的横向项目</label></p>
+		<p><label for="issue_source_2"><input type="radio" id="issue_source_2" name="issue_source" value="2">实践单位承担或自设的项目（校内导师非项目组成员）</label></p>
+		<p><label for="issue_source_3"><input type="radio" id="issue_source_3" name="issue_source" value="3">无明确项目来源</label></p>
+	</p></td></tr>
+	<tr><td><p>摘要（不超过800字）：</p></td></tr>
+	<tbody style="text-align: center;">
+		<tr><td><textarea name="abstract" class="txt" rows="20" cols="120" maxlength="900"></textarea></td></tr>
+	</tbody>
+	<tr><td><table width="420">
+	<tr><td colspan="3"><p>关键词（不少于三个，左边为中文，右边为英文）：<input type="hidden" name="keyword_ch_all" /><input type="hidden" name="keyword_en_all" /></td></tr>
+	<tr class="keywordpair"><td><p><input type="text" class="txt keyword" name="keyword_ch" size="10" placeholder="请输入……" /></p></td>
+	<td><p><input type="text" class="txt keyword" name="keyword_en" size="20" placeholder="Please input..." /></p></td>
+	<td><a class="linkRemove" href="#" title="删除此关键字"><img src="../images/student/remove.png" width="20" height="20" /></a></td></tr>
+	<tr><td colspan="3"><a class="linkAdd" href="#" title="增加关键字"><img src="../images/student/add.png" width="20" height="20" /></a></p></td></tr>
+	</table></td></tr>
+	<tr><td class="section"><p>二、选题依据</p></td>
+	<tr><td><p>1、选题来源及意义<br/>2、文献综述与调查分析综述<br/>3、主要参考文献及出处</p></td></tr>
+	<tbody style="text-align: center;">
+		<tr><td><textarea name="research_background" class="txt" rows="20" cols="120"></textarea></td></tr>
+	</tbody>
+	<tr><td class="section"><p>三、研究方案及工作基础</p></td>
+	<tr><td><p>1、研究目标、研究内容及拟解决的关键问题<br/>2、拟采取的研究方法及技术路线<br/>3、工作基础</p></td></tr>
+	<tbody style="text-align: center;">
+		<tr><td><textarea name="research_solution" class="txt" rows="20" cols="120"></textarea></td></tr>
+	</tbody>
+	<tr><td class="section"><p>四、论文工作计划及预期成果</p></td></tr>
+	<tr><td><table width="100%">
+	<thead><tr><td colspan="3"><p>论文工作进度安排</p></td></tr></thead>
+	<thead style="text-align: center;">
+		<tr><td><p>起止时间</p></td>
+		<td width="200"><p>工作内容</p></td>
+		<td><p>备注</p></td></tr>
+	</thead>
+	<tbody style="text-align: center;"><%
+	For i=1 To 8 %>
+	<tr><td><p><input type="text" class="txt" name="work_schedule_duration" size="20" /></p></td>
+	<td><p><input type="text" class="txt" name="work_schedule_content" size="30" /></p></td>
+	<td><p><input type="text" class="txt" name="work_schedule_memo" size="20" /></p></td></tr><%
+	Next %>
+	</tbody>
+	</table></td></tr>
+	<tr><td><p>预期成果形式及其应用价值</p></td></tr>
+	<tbody style="text-align: center;">
+		<tr><td><textarea name="anticipated_result" class="txt" rows="8" cols="120"></textarea></td></tr>
+	</tbody>
+</table>
+<script type="text/javascript">
+$().ready(function() {
+<% If str_keywords_ch<>"''" And str_keywords_en<>"''" Then %>
+	setKeywords([<%=str_keywords_ch%>],[<%=str_keywords_en%>]);
+	<%
+End If
+If uploadable Then %>
+	$('select[name="sub_research_field_select"]').change(function(){
+		$('input[name="sub_research_field"]').val(!this.value.length?'':$(this).find('option:selected').text());
+		var $custom_field=$('input[name="custom_sub_research_field"]');
+		if(this.value=='-1')
+			$custom_field.show().focus();
+		else
+			$custom_field.hide();
+	});
+	$('select[name="research_field_select"]').change(function(){
+		initSubResearchFieldSelectBox($('select[name="sub_research_field_select"]'),$(this),this.value, '<%=sub_research_field%>');
+		$('select[name="sub_research_field_select"]').change();
+		$('input[name="research_field"]').val(!this.value.length?'':$(this).find('option:selected').text());
+	});
+	initResearchFieldSelectBox($('select[name="research_field_select"]'),<%=stu_type%>)
+		.then(initCurrentViewState);<%
+Else %>
+	initCurrentViewState();<%
+End If %>
+});
+</script>

@@ -67,9 +67,10 @@ function onActivityPeriodsClickCell(field, row) {
 }
 
 function onActivityPeriodsAfterEdit(row, changes) {
-    const zero=/ (0)+:(0)+(:(0)+)?\b/;
-    row.start_time=row.start_time.replace(zero, '');
-    row.end_time=row.end_time.replace(zero, '');
+    const reZero=/(?=\s)0+:0+(:0+)?\b/;
+    row.start_time=row.start_time.replace(reZero, '');
+    row.end_time=row.end_time.replace(reZero, '');
+    if (row.end_time.match(/^\d{4}-\d{1,2}-\d{1,2}$/)) row.end_time += ' 23:59:59';
     data=activityPeriodDataHandler.call(Array({ children: [row]}), true);
     $(this).treegrid("update", { id: row.id, row: data[0].children[0] });
     $.post("../api/set-activity-section-periods", {
@@ -163,6 +164,7 @@ $(function() {
     });
     $("#switch_system_status").switchbutton({
 		label: "系统状态：",
+        labelWidth: 90,
         onText: "开放",
         offText: "关闭",
         checked: $(this).data("system_status") === 'open',
@@ -173,7 +175,8 @@ $(function() {
         valueField: "id",
         textField: "name",
         label: "评阅活动：",
-        labelAlign: "center",
+        labelWidth: 90,
+        labelAlign: "right",
         width: 400,
         value: "请选择评阅活动…",
         loadFilter: Common.curryLoadFilter(Array.prototype.reverse, addStatusIndicator),

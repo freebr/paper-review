@@ -33,18 +33,18 @@ function checkIfWord($ctlupload) {
 	}
 	return true;
 }
-function checkIfRar($ctlupload) {
+function checkIfRarZip($ctlupload) {
 	$ctlupload=$($ctlupload);
 	if(!$ctlupload.size()) return true;
 	var ctl=$ctlupload[0];
 	var fileName=ctl.value;
 	if (!fileName.length) {
-		alert("请为"+ctl.title+"选择要上传的 RAR 压缩文件！");
+		alert("请为"+ctl.title+"选择要上传的 RAR 或 ZIP 压缩文件！");
 		return false;
 	}
 	var file_ext=getFileExt(fileName);
-	if (file_ext!=".rar") {
-		alert("所选"+ctl.title+"不是 RAR 压缩文件！");
+	if (file_ext!=".rar"&&file_ext!=".zip") {
+		alert("所选"+ctl.title+"不是 RAR 或 ZIP 压缩文件！");
 		return false;
 	}
 	return true;
@@ -61,6 +61,22 @@ function checkIfWordRar($ctlupload) {
 	var file_ext=getFileExt(fileName);
 	if (file_ext!=".doc"&&file_ext!=".docx"&&file_ext!=".rar") {
 		alert("所选"+ctl.title+"不是 Word 文件或 RAR 压缩文件！");
+		return false;
+	}
+	return true;
+}
+function checkIfExcel($ctlupload) {
+	$ctlupload=$($ctlupload);
+	if(!$ctlupload.size()) return true;
+	var ctl=$ctlupload[0];
+	var fileName=ctl.value;
+	if (!fileName.length) {
+		alert("请为"+ctl.title+"选择要上传的 Excel 文件！");
+		return false;
+	}
+	var file_ext=getFileExt(fileName);
+	if (file_ext!=".xls"&&file_ext!=".xlsx") {
+		alert("所选"+ctl.title+"不是 Excel 文件！");
 		return false;
 	}
 	return true;
@@ -89,7 +105,7 @@ function getProgress(sck,url) {
 	sck.core.open("get","http://"+location.host+'/'+url+"?t="+Number(Math.random(999)*999),true);
 	sck.core.send();
 }
-function newUploadProgress(uploadid,stuid) {
+function newUploadProgress(upload_id,stu_id) {
 	var div=document.createElement("div");
 	div.id="divupload";
 	div.className="upload";
@@ -102,7 +118,7 @@ function newUploadProgress(uploadid,stuid) {
 	document.body.appendChild(div);
 	sckUpload=createSocket();
 	sckUpload.onProgress=showUploadProgress;
-	setInterval("getProgress(sckUpload,'PaperReview/student/tmp/"+stuid+uploadid+".json')",1000);
+	setInterval("getProgress(sckUpload,'PaperReview/student/tmp/"+stu_id+upload_id+".json')",1000);
 	return;
 }
 function showUploadProgress() {

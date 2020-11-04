@@ -3,26 +3,23 @@
 body.exp {
 	background: url(../images/expert_bg.jpg) no-repeat fixed ghostwhite;
 	margin: 0;
-	font-size: 10pt;
+	font-size: 16px;
 }
 .divcontrol {
 	display: inline;
 }
 .content {
-	display: inline-block;
-	background-color: #ffffff;
-	filter: alpha(opacity=85);
-	opacity: .85;
-	-webkit-opacity: .85;
-	-moz-opacity: .85;
-	padding: 20px;
+	margin: 0 auto;
+	padding: 10px 0;
+	width: 100%;
+	display: block;
+	background-color: #ffffffc0;
 }
 .content .maintitle {
-	font: bold 20pt 楷体;
+	font: bold 30px 楷体;
 	color: #0000aa;
 }
 .title {
-	font-size: 12pt;
-	font-weight: bold;
+	font: bold 16px normal;
 	color: #0000aa;
 }

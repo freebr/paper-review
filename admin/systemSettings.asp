@@ -16,8 +16,9 @@ Dim status:status=configs("Status")
 <% useScript "jquery", "jeasyui", "common", "systemSettings" %>
 </head>
 <body bgcolor="ghostwhite" style="overflow-y: scroll">
-<center><font size=4><b>专业学位论文评阅系统基本设置</b></font>
-<table width="900" cellpadding="2" cellspacing="1" bgcolor="dimgray">
+<h1>专业学位论文评阅系统基本设置</h1>
+<div class="box">
+<table width="1000" cellpadding="2" cellspacing="1" bgcolor="dimgray">
 <tr bgcolor="ghostwhite"><td align="left">其他设置：
 	<a href="noticeText.asp">提示文本设置</a>
 </td></tr>
@@ -48,7 +49,7 @@ Dim status:status=configs("Status")
 		<div id="panel_mail_templates" style="padding: 5px">
 			<div><p>
 	字段符号:<br/>$stuname - 学生姓名,$stuno - 学号,$stuclass - 学生班级,$stuspec - 所选专业,$stumail - 学生邮箱,<br/>
-	$subject - 论文题目,$tutorname - 导师姓名,$tutormail - 导师邮箱,$expertname - 专家姓名,<br/>$filename - 审核文件名称/意见类型,$uploadtime - 审核文件上传时间,$evaltext - 导师意见,$postscript - 附注
+	$subject - 论文题目,$tutorname - 导师姓名,$tutormail - 导师邮箱,$expertname - 专家姓名,<br/>$filename - 审核文件名称/意见类型,$uploadtime - 审核文件上传时间,$Comment - 导师意见,$postscript - 附注
 			</p></div>
 			<div style="display: flex; flex-direction: row">
 				<div style="flex-basis: 390px; height: 425px; overflow-y: scroll">
@@ -82,7 +83,8 @@ Dim status:status=configs("Status")
 			<a href="#" class="easyui-linkbutton" id="btn_close_dialog_activity" iconCls="icon-cancel">关 闭</a>
 		</div>
 	</form>
-</div></center>
+</div>
+</div>
 <script type="text/javascript">
 	$(document).data({
 		system_status: "<%=status%>"

@@ -105,19 +105,19 @@ Case 2	' 后台处理
 	bFirstMatch=Request.Form("firstMatch")<>"0"
 	If Len(thesis_ids)=0 Then
 		bError=True
-		errdesc="您未选择论文！"
+		errMsg="您未选择论文！"
 	ElseIf Request.Form("expertid").Count<>2 Then
 		bError=True
-		errdesc="必须选择两名专家！"
+		errMsg="必须选择两名专家！"
 	ElseIf Not IsNumeric(expertid1) Or Not IsNumeric(expertid2) Then
 		bError=True
-		errdesc="必须选择两名专家！"
+		errMsg="必须选择两名专家！"
 	ElseIf expertid1=expertid2 Then
 		bError=True
-		errdesc="所选两名专家不能相同！"
+		errMsg="所选两名专家不能相同！"
 	End If
 	If bError Then
-		showErrorPage errdesc, "提示"
+		showErrorPage errMsg, "提示"
 	End If
 
 	expertid1=Int(expertid1)

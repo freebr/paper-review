@@ -15,7 +15,7 @@ Connect conn
 sql="SELECT *,dbo.getThesisStatusText(1,TASK_PROGRESS,2) AS STAT_TEXT FROM ViewDissertations WHERE STU_ID="&Session("Stuid")&" ORDER BY ActivityId DESC"
 GetRecordSetNoLock conn,rs,sql,count
 If rs.EOF Then
-	section_id=sectionUploadKtbg
+	section_id=sectionUploadKtbgb
 	task_progress=tpNone
 	str_keywords_ch="''"
 	str_keywords_en="''"
@@ -26,11 +26,11 @@ Else
 	task_progress=rs("TASK_PROGRESS")
 	Select Case task_progress
 	Case tpNone,tpTbl1Uploaded,tpTbl1Unpassed	' 开题报告
-		section_id=sectionUploadKtbg
+		section_id=sectionUploadKtbgb
 		is_generated=Not IsNull(rs("TABLE_FILE1"))
 		filetype=1
-	Case tpTbl1Passed,tpTbl2Uploaded,tpTbl2Unpassed	' 中期检查表
-		section_id=sectionUploadZqjcb
+	Case tpTbl1Passed,tpTbl2Uploaded,tpTbl2Unpassed	' 中期考核表
+		section_id=sectionUploadZqkhb
 		is_generated=Not IsNull(rs("TABLE_FILE2"))
 		filetype=3
 	Case tpTbl2Passed,tpTbl3Uploaded,tpTbl3Unpassed	' 预答辩意见书
@@ -40,14 +40,12 @@ Else
 	Case tpTbl3Passed,tpTbl4Uploaded,tpTbl4Unpassed	' 答辩审批材料
 		review_status=rs("REVIEW_STATUS")
 		If review_status>=rsReviewEval Then
-			section_id=sectionUploadSpcl
+			section_id=sectionUploadSpclb
 			is_generated=Not IsNull(rs("TABLE_FILE4"))
 			filetype=7
-		Else
-			section_id=sectionUploadYdbyjs
 		End If
 	Case tpTbl4Passed ' 答辩审批材料审核通过
-		section_id=sectionUploadSpcl
+		section_id=sectionUploadSpclb
 		is_generated=True
 		filetype=7
 	End Select
@@ -58,7 +56,7 @@ Else
 	str_keywords_en="'"&Join(Split(toPlainString(rs("KEYWORDS_EN")),"；"),"','")&"'"
 End If
 If section_id<>0 Then
-	is_new_dissertation=section_id=sectionUploadKtbg Or stu_type=7 And section_id=sectionUploadYdbyjs
+	is_new_dissertation=section_id=sectionUploadKtbgb Or stu_type=7 And section_id=sectionUploadYdbyjs
 	If rs.EOF Then
 		uploadable=True
 	ElseIf Not isActivityOpen(rs("ActivityId")) Then
@@ -67,6 +65,9 @@ If section_id<>0 Then
 		Set current_section=getSectionInfo(rs("ActivityId"), stu_type, section_id)
 		time_flag=compareNowWithSectionTime(current_section)
 		uploadable=time_flag=0
+		If section_id<=sectionUploadYdbyjs Then
+			is_tbl_thesis_uploaded=Not IsNull(rs("TBL_THESIS_FILE"&section_id))
+		End If
 	End If
 End If
 step=Request.QueryString("step")
@@ -83,13 +84,17 @@ Case vbNullstring ' 填写信息页面
 <body>
 <center><font size=4><b>上传表格文件</b></font>
 <form id="fmDissertation" action="?step=1" method="post" enctype="multipart/form-data">
-<table class="form" width="1000" align="center"><tr><td class="summary"><%
+<table class="form" width="1000"><tr><td class="summary"><%
 	If Not uploadable Then
-%><p><span class="tip">当前状态为【<%=rs("STAT_TEXT")%>】，不能上传表格文件！</span></p><%
-	ElseIf time_flag=-2 Then
-%><p><span class="tip">【<%=current_section("Name")%>】环节已关闭，不能上传表格文件！</span></p><%
-	ElseIf time_flag<>0 Then
-%><p><span class="tip">【<%=current_section("Name")%>】环节开放时间为<%=toDateTime(current_section("StartTime"),1)%>至<%=toDateTime(current_section("EndTime"),1)%>，当前不在开放时间内，不能上传表格文件！</span></p><%
+		If time_flag=-3 Then
+%><p><span class="tip">当前评阅活动【<%=rs("ActivityName")%>】已关闭，不能提交表格！</span></p><%
+		ElseIf time_flag=-2 Then
+%><p><span class="tip">【<%=current_section("Name")%>】环节已关闭，不能提交表格！</span></p><%
+		ElseIf time_flag<>0 Then
+%><p><span class="tip">【<%=current_section("Name")%>】环节开放时间为<%=toDateTime(current_section("StartTime"),1)%>至<%=toDateTime(current_section("EndTime"),1)%>，当前不在开放时间内，不能提交表格！</span></p><%
+		Else
+%><p><span class="tip">当前状态为【<%=rs("STAT_TEXT")%>】，没有需提交的表格！</span></p><%
+		End If
 	Else
 %><p>当前上传的是：<span style="color:#ff0000;font-weight:bold"><%=arrStuOprName(section_id)%></span></p><%
 		If is_new_dissertation Then %>
@@ -111,8 +116,8 @@ Case vbNullstring ' 填写信息页面
 	End If %></td></tr>
 <tr><td align="center">
 <table class="form">
-<tr><td><p>论文题目：《<input type="text" name="subject_ch" size="50" value="<%=subject_ch%>" />》</p>
-<p>（英文）：&nbsp;<input type="text" name="subject_en" size="53" maxlength="200" value="<%=subject_en%>" /></p><%
+<tr><td><p>论文题目：《<input type="text" name="subject_ch" size="100" value="<%=subject_ch%>" />》</p>
+<p>（英文）：&nbsp;<input type="text" name="subject_en" size="100" maxlength="200" value="<%=subject_en%>" /></p><%
 	If is_new_dissertation Then %>
 <p>工程领域：<select name="research_field_select"></select><input type="hidden" name="research_field" /></p>
 <p>研究方向：<select name="sub_research_field_select"></select><input type="hidden" name="sub_research_field" />
@@ -127,7 +132,10 @@ Case vbNullstring ' 填写信息页面
 <td><a class="linkRemove" href="#" title="删除此关键字"><img src="../images/student/remove.png" width="20" height="20" /></a></td></tr>
 <tr><td colspan="3"><a class="linkAdd" href="#" title="增加关键字"><img src="../images/student/add.png" width="20" height="20" /></a></p></td></tr><%
 	End If %>
-</table></td></tr>
+</table></td></tr><%
+	If section_id>0 And section_id<=sectionUploadYdbyjs And uploadable And Not is_tbl_thesis_uploaded Then %>
+<tr><td align="center"><span class="tip">提示：您目前尚未上传<%=arrTblThesis(section_id)%>，<a href="uploadTablePaper.asp">点击这里上传。</a></span></td></tr><%
+	End If %>
 <tr><td align="center"><p><%
 	If uploadable Then
 %><input type="submit" id="btnsubmit" value="提 交" />&nbsp;<%
@@ -135,8 +143,7 @@ Case vbNullstring ' 填写信息页面
 	If is_generated Then
 %><input type="button" id="btndownload" value="下载打印" />&nbsp;<%
 	End If
-%><input type="button" name="btnUploadTable" value="返回填写表格页面" onclick="location.href='fillInTable.asp'" />&nbsp;
-<input type="button" name="btnreturn" value="返回首页" onclick="location.href='home.asp'" /></p></td></tr></table>
+%><input type="button" name="btnreturn" value="返回首页" onclick="location.href='home.asp'" /></p></td></tr></table>
 </td></tr></table></form></center>
 <script type="text/javascript"><%
 	If is_new_dissertation Then
@@ -186,24 +193,24 @@ Case 1	' 上传进程
 
 	If time_flag=-3 Then
 		bError=True
-		errdesc=Format("当前评阅活动【{0}】已关闭，不能提交表格！", rs("ActivityName"))
+		errMsg=Format("当前评阅活动【{0}】已关闭，不能提交表格！", rs("ActivityName"))
 	ElseIf time_flag=-2 Then
 		bError=True
-		errdesc=Format("【{0}】环节已关闭，不能上传表格文件！",current_section("Name"))
+		errMsg=Format("【{0}】环节已关闭，不能上传表格文件！",current_section("Name"))
 	ElseIf time_flag<>0 Then
 		bError=True
-		errdesc=Format("【{0}】环节开放时间为{1}至{2}，当前不在开放时间内，不能上传表格文件！",_
+		errMsg=Format("【{0}】环节开放时间为{1}至{2}，当前不在开放时间内，不能上传表格文件！",_
 			current_section("Name"),_
 			toDateTime(current_section("StartTime"),1),_
 			toDateTime(current_section("EndTime"),1))
 	ElseIf Not uploadable Then
 		bError=True
-		errdesc="当前状态为【"&rs("STAT_TEXT")&"】，不能上传表格文件！"
+		errMsg="当前状态为【"&rs("STAT_TEXT")&"】，没有需提交的表格！"
 	End If
 	If bError Then
 		CloseRs rs
 		CloseConn conn
-		showErrorPage errdesc, "提示"
+		showErrorPage errMsg, "提示"
 	End If
 
 	Dim fso,Upload,table_file
@@ -222,7 +229,7 @@ Case 1	' 上传进程
 	sub_research_field=Upload.Form("sub_research_field")
 	custom_sub_research_field=Upload.Form("custom_sub_research_field")
 	Set table_file=Upload.File("table_file")
-	Set fso=Server.CreateObject("Scripting.FileSystemObject")
+	Set fso=CreateFSO()
 
 	' 检查上传目录是否存在
 	strUploadPath=Server.MapPath("upload")
@@ -231,39 +238,45 @@ Case 1	' 上传进程
 	If is_new_dissertation Then
 		If Len(activity_id)=0 Then
 			bError=True
-			errdesc="请选择要参加的评阅活动！"
+			errMsg="请选择要参加的评阅活动！"
 		ElseIf stu_type = 5 And Len(research_field_select)=0 Then
 			bError=True
-			errdesc="请选择工程领域！"
+			errMsg="请选择工程领域！"
 		ElseIf Len(sub_research_field_select)=0 Then
 			bError=True
-			errdesc="请选择研究方向！"
+			errMsg="请选择研究方向！"
+		ElseIf UBound(Split(keyword_ch_all, ", "))<2 Then
+			bError=True
+			errMsg="请输入至少三个论文关键字（中文）！"
+		ElseIf UBound(Split(keyword_en_all, ", "))<2 Then
+			bError=True
+			errMsg="请输入至少三个论文关键字（英文）！"
 		ElseIf sub_research_field_select="-1" And Len(custom_sub_research_field)=0 Then
 			custom_sub_research_field="其他"
 		End If
 	ElseIf InStr("doc docx rar",table_file_ext)=0 Then	' 不被允许的文件类型
 		bError=True
-		errdesc="所上传的不是 Word 文件或 RAR 压缩文件！"
+		errMsg="所上传的不是 Word 文件或 RAR 压缩文件！"
 	ElseIf Len(new_subject_ch)=0 Then
 		bError=True
-		errdesc="请填写论文题目！"
+		errMsg="请填写论文题目！"
 	ElseIf Len(new_subject_en)=0 Then
 		bError=True
-		errdesc="请填写论文题目（英文）！"
+		errMsg="请填写论文题目（英文）！"
 '	ElseIf file.FileSize>10485760 Then
 '		filesize=Round(file.FileSize/1048576,2)
 '		bError=True
-'		errdesc="文件大小为 "&filesize&"MB，已超出限制(10MB)！"
+'		errMsg="文件大小为 "&filesize&"MB，已超出限制(10MB)！"
 	End If
 	If Not bError Then
 		byteFileSize=0
 		' 生成日期格式文件名
-		fileid=FormatDateTime(Now(),1)&Int(Timer)
+		fileid=timestamp()
 		strDestTableFile=fileid&"."&table_file_ext
-		strDestPath=strUploadPath&"\"&strDestTableFile
+		destPath=strUploadPath&"\"&strDestTableFile
 		byteFileSize=table_file.FileSize
 		' 保存表格文件
-		table_file.SaveAs strDestPath
+		table_file.SaveAs destPath
 	End If
 	Set fso=Nothing
 	Set table_file=Nothing
@@ -284,7 +297,6 @@ Case 1	' 上传进程
 			rs3("STU_ID")=Session("Stuid")
 			rs3("ActivityId")=activity_id
 			rs3("REVIEW_STATUS")=rsNone
-			rs3("REVIEW_FILE_STATUS")=0
 			rs3("REVIEW_RESULT")="5,5,6"
 			rs3("REVIEW_LEVEL")="0,0"
 			rs3("KEYWORDS")=Replace(keyword_ch_all,", ","；")
@@ -319,7 +331,7 @@ Case 1	' 上传进程
 </form>
 <script type="text/javascript">alert("上传成功！");$('#fmFinish').submit();</script><%
 	Else
-%><script type="text/javascript">alert("<%=errdesc%>");history.go(-1);</script><%
+%><script type="text/javascript">alert("<%=errMsg%>");history.go(-1);</script><%
 	End If
 %></body></html><%
 End Select

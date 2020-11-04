@@ -15,7 +15,7 @@ Connect conn
 sql="SELECT *,dbo.getThesisStatusText(1,TASK_PROGRESS,2) AS STAT_TEXT FROM ViewDissertations WHERE STU_ID="&Session("Stuid")&" ORDER BY ActivityId DESC"
 GetRecordSetNoLock conn,rs,sql,count
 If rs.EOF Then
-	section_id=sectionUploadKtbg
+	section_id=sectionUploadKtbgb
 	task_progress=tpNone
 Else
 	activity_id=rs("ActivityId")
@@ -25,15 +25,15 @@ Else
 	task_progress=rs("TASK_PROGRESS")
 	Select Case task_progress
 	Case tpNone,tpTbl1Uploaded,tpTbl1Unpassed	' 开题报告
-		section_id=sectionUploadKtbg
-	Case tpTbl1Passed,tpTbl2Uploaded,tpTbl2Unpassed	' 中期检查表
-		section_id=sectionUploadZqjcb
+		section_id=sectionUploadKtbgb
+	Case tpTbl1Passed,tpTbl2Uploaded,tpTbl2Unpassed	' 中期考核表
+		section_id=sectionUploadZqkhb
 	Case tpTbl2Passed,tpTbl3Uploaded,tpTbl3Unpassed	' 预答辩意见书
 		section_id=sectionUploadYdbyjs
 	End Select
 End If
 If section_id<>0 Then
-	is_new_dissertation=section_id=sectionUploadKtbg Or stu_type=7 And section_id=sectionUploadYdbyjs
+	is_new_dissertation=section_id=sectionUploadKtbgb Or stu_type=7 And section_id=sectionUploadYdbyjs
 	If rs.EOF Then
 		uploadable=True
 	ElseIf Not isActivityOpen(rs("ActivityId")) Then
@@ -86,11 +86,11 @@ Case vbNullstring ' 填写信息页面
 	End If %></td></tr>
 <tr><td align="center">
 <table class="form">
-<tr><td><p>论文题目：《<input type="text" name="subject_ch" size="50" value="<%=subject_ch%>" />》</p>
-<p>（英文）：&nbsp;<input type="text" name="subject_en" size="53" maxlength="200" value="<%=subject_en%>" />&nbsp;</p>
+<tr><td><p>论文题目：《<input type="text" name="subject_ch" size="100" value="<%=subject_ch%>" />》</p>
+<p>（英文）：&nbsp;<input type="text" name="subject_en" size="100" maxlength="200" value="<%=subject_en%>" />&nbsp;</p>
 <p>文件名：<input type="file" name="thesis_file" size="50" title="<%=arrTblThesis(section_id)%>" /><br/><span class="tip">Word&nbsp;或&nbsp;RAR&nbsp;格式，超过20M请先压缩成rar文件再上传，否则上传不成功</span></p>
 <p align="center"><input type="submit" id="btnsubmit" value="提 交"<%If Not uploadable Then %> disabled<% End If %> />&nbsp;
-<input type="button" name="btnUploadTable" value="返回填写表格页面" onclick="location.href='fillInTable.asp'" />&nbsp;
+<input type="button" name="btnUploadTable" value="返回上传表格页面" onclick="location.href='uploadTable.asp'" />&nbsp;
 <input type="button" name="btnreturn" value="返回首页" onclick="location.href='home.asp'" /></p></td></tr></table>
 </td></tr></table></form></center>
 <script type="text/javascript">
@@ -111,24 +111,24 @@ Case 1	' 上传进程
 
 	If time_flag=-3 Then
 		bError=True
-		errdesc=Format("当前评阅活动【{0}】已关闭，不能提交表格！", rs("ActivityName"))
+		errMsg=Format("当前评阅活动【{0}】已关闭，不能提交表格！", rs("ActivityName"))
 	ElseIf time_flag=-2 Then
 		bError=True
-		errdesc=Format("【{0}】环节已关闭，不能上传附加论文！",current_section("Name"))
+		errMsg=Format("【{0}】环节已关闭，不能上传附加论文！",current_section("Name"))
 	ElseIf time_flag<>0 Then
 		bError=True
-		errdesc=Format("【{0}】环节开放时间为{1}至{2}，当前不在开放时间内，不能上传附加论文！",_
+		errMsg=Format("【{0}】环节开放时间为{1}至{2}，当前不在开放时间内，不能上传附加论文！",_
 			current_section("Name"),_
 			toDateTime(current_section("StartTime"),1),_
 			toDateTime(current_section("EndTime"),1))
 	ElseIf Not uploadable Then
 		bError=True
-		errdesc="当前状态为【"&rs("STAT_TEXT")&"】，不能上传附加论文！"
+		errMsg="当前状态为【"&rs("STAT_TEXT")&"】，不能上传附加论文！"
 	End If
 	If bError Then
 		CloseRs rs
 		CloseConn conn
-		showErrorPage errdesc, "提示"
+		showErrorPage errMsg, "提示"
 	End If
 
 	Dim fso,Upload,thesis_file
@@ -139,7 +139,7 @@ Case 1	' 上传进程
 	new_subject_ch=Upload.Form("subject_ch")
 	new_subject_en=Upload.Form("subject_en")
 	Set thesis_file=Upload.File("thesis_file")
-	Set fso=Server.CreateObject("Scripting.FileSystemObject")
+	Set fso=CreateFSO()
 
 	' 检查上传目录是否存在
 	strUploadPath=Server.MapPath("upload")
@@ -147,29 +147,29 @@ Case 1	' 上传进程
 	thesis_file_ext=LCase(thesis_file.FileExt)
 	If is_new_dissertation And Len(activity_id)=0 Then
 		bError=True
-		errdesc="请选择要参加的评阅活动！"
+		errMsg="请选择要参加的评阅活动！"
 	ElseIf InStr("doc docx rar",thesis_file_ext)=0 Then	' 不被允许的文件类型
 		bError=True
-		errdesc="所上传的不是 Word 文件或 RAR 压缩文件！"
+		errMsg="所上传的不是 Word 文件或 RAR 压缩文件！"
 	ElseIf Len(new_subject_ch)=0 Then
 		bError=True
-		errdesc="请填写论文题目！"
+		errMsg="请填写论文题目！"
 	ElseIf Len(new_subject_en)=0 Then
 		bError=True
-		errdesc="请填写论文题目（英文）！"
+		errMsg="请填写论文题目（英文）！"
 '	ElseIf file.FileSize>10485760 Then
 '		filesize=Round(file.FileSize/1048576,2)
 '		bError=True
-'		errdesc="文件大小为 "&filesize&"MB，已超出限制(10MB)！"
+'		errMsg="文件大小为 "&filesize&"MB，已超出限制(10MB)！"
 	Else
 		byteFileSize=0
 		' 生成日期格式文件名
-		fileid=FormatDateTime(Now(),1)&Int(Timer)
+		fileid=timestamp()
 		strDestThesisFile=fileid&"."&thesis_file_ext
-		strDestPath=strUploadPath&"\"&strDestThesisFile
+		destPath=strUploadPath&"\"&strDestThesisFile
 		byteFileSize=thesis_file.FileSize
 		' 保存论文文件
-		thesis_file.SaveAs strDestPath
+		thesis_file.SaveAs destPath
 	End If
 	Set fso=Nothing
 	Set thesis_file=Nothing
@@ -189,7 +189,6 @@ Case 1	' 上传进程
 			rs3("STU_ID")=Session("Stuid")
 			rs3("ActivityId")=activity_id
 			rs3("REVIEW_STATUS")=rsNone
-			rs3("REVIEW_FILE_STATUS")=0
 			rs3("REVIEW_RESULT")="5,5,6"
 			rs3("REVIEW_LEVEL")="0,0"
 			rs3("RESEARCHWAY_NAME")=""
@@ -217,7 +216,7 @@ Case 1	' 上传进程
 </form>
 <script type="text/javascript">alert("上传成功！");$('#fmFinish').submit();</script><%
 	Else
-%><script type="text/javascript">alert("<%=errdesc%>");history.go(-1);</script><%
+%><script type="text/javascript">alert("<%=errMsg%>");history.go(-1);</script><%
 	End If
 %></body></html><%
 End Select

@@ -1,9 +1,10 @@
 function restoreViewState($form, data, callback) {
-    $form.find(':input[name]:not([type=button],[type=submit],[type=radio],[type=checkbox],[readonly])').val('');
-    $form.find(':input[type=radio]:not([readonly]),:input[type=checkbox]:not([readonly])').attr('checked', false);
+    $form[0].reset();
+    if (!data) return;
     for(var field in data) {
         var state = data[field];
         var $el = $form.find(":input[name="+field+"]");
+        if (!$el.size()) continue;
         if (Array.isArray(state)) {
             state.forEach(function(s, index) {
                 var $sub = $el.eq(index);
@@ -105,5 +106,5 @@ function initViewState($form, init_data, callback) {
             }
         );
     });
-    init_data.view_state && restoreViewState($form, init_data.view_state, callback);
+    restoreViewState($form, init_data.view_state, callback);
 }

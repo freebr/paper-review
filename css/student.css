@@ -12,6 +12,20 @@ table.form { margin:0 auto;padding:0 30px;background-color:#ffffff;border:1px so
 	font-weight: bold;
 	text-align: center;
 }
+.comment, .review-result {
+	font-weight: bold;
+	color: darkblue;
+	line-height: 1.5em;
+}
+.comment:before {
+	content: "“";
+	display: inline-block;
+	font-family: 'Times New Roman', Times, serif;
+	font-size: 3em;
+	color: dimgray;
+	margin-top: .5ch;
+	margin-left: -1ch;
+}
 
 td.summary p { color:dimgray;text-align:center }
 input[type="text"],select { text-align:left;font-size:12pt;background:none;border-top:0;border-left:0;border-right:0;border-bottom:1px solid dimgray }

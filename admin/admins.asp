@@ -18,6 +18,7 @@ If json="1" Then
 	Else
 		ret="{""status"": ""ok"", ""admin_type"": "&dict.Items()(0)&"}"
 		Response.Clear()
+		Response.AddHeader "Content-Type", "application/json"
 		Response.Write ret
 	End If
 	CloseRs rs
@@ -83,12 +84,13 @@ Case "1"
 </center></body>
 <script type="text/javascript">
 	$("select#userId").change(function() {
-		$.ajax({url: 'admins.asp', type: 'post', data: {userId: $(this).val(), json: 1}, dataType: 'json',
-			success: function(data, status) {
-				$("[name='manage_stu_type']").each(function(index, item) {
-					item.checked=(data.admin_type&Math.pow(2,item.value-1))!==0;
-				});
-			}
+		$.post("admins.asp", {
+			userId: $(this).val(),
+			json: 1
+		}).then(function(res) {
+			$("[name='manage_stu_type']").each(function(index, item) {
+				item.checked=(res.admin_type&Math.pow(2,item.value-1))!==0;
+			});
 		});
 	})<%
 	If userId<>0 Then %>

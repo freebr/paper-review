@@ -6,33 +6,12 @@ Function loadResearchwayList(stu_type)
 		"--【项目管理领域研究方向：】","项目计划与控制","项目质量管理","项目可行性与评估","项目投融资与风险管理","项目管理信息化","企业项目化管理","项目管理其他相关方向",_
 		"--【物流工程领域研究方向：】","物流系统规划","电子商务物流","仓储与库存管理","国际物流管理","供应链协调与整合","采购与供应管理","供应链金融","物流工程其他相关方向")
 	ElseIf stu_type=6 Or stu_type=7 Then	' MBA/EMBA
-		arr=Array("创新与创业","项目管理与工业工程","组织与人力资源","财务与金融","服务与营销","企业战略")
+		arr=Array("创新与创业","物流与供应链管理","工业工程与信息系统","组织行为与人力资源管理","投资管理与公司财务","会计与财务管理","金融工程与风险管理","营销管理","企业战略管理")
+		' arr=Array("创新与创业","项目管理与工业工程","组织与人力资源","财务与金融","服务与营销","企业战略")
 	Else
 		arr=Array("")
 	End If
 	loadResearchwayList=arr
-End Function
-
-Function getTeacherIdByName(name)
-	If IsNull(name) Then
-		getTeacherIdByName=-1
-		Exit Function
-	End If
-	Dim conn,rsTeacher,sql,num
-	name=Replace(name," ",vbNullString)
-	name=Replace(name,"　",vbNullString)
-	name=Replace(name,"'","''")
-	name=Replace(name,"""","""""")
-	Connect conn
-	sql="SELECT TEACHERID,TEACHERNAME FROM TEACHER_INFO WHERE TEACHERNAME='"&name&"' AND VALID=0"
-	GetRecordSetNoLock conn,rsTeacher,sql,num
-	If rsTeacher.EOF Then
-		getTeacherIdByName=-1
-	Else
-		getTeacherIdByName=rsTeacher("TEACHERID")
-	End If
-	CloseRs rsTeacher
-	CloseConn conn
 End Function
 
 Function getTeachTypeNameById(teachtype_id)
@@ -145,16 +124,20 @@ If Not hasPrivilege(Session("writeprivileges"),"SA8") And Not hasPrivilege(Sessi
 	showErrorPage "您没有访问本系统的权限！", "提示"
 End If
 
-Dim arrTable:arrTable=Array("","开题报告表","中期检查表","预答辩意见书","答辩及授予学位审批材料")
+If Len(Session("StuNo")) <> 12 Then
+	showErrorPage "身份证账号无法使用本系统，请使用学号重新登录。", "提示"
+End If
+
+Dim arrTable:arrTable=Array("","开题报告表","中期考核表","预答辩意见书","答辩及授予学位审批材料")
 Dim arrTblThesis:arrTblThesis=Array("","开题论文","中期论文","预答辩论文")
 Dim arrTblpaperDetail:arrTblpaperDetail=Array("","开题论文（已完成的论文部分）","中期论文","预答辩论文")
 Dim arrTableStatText:arrTableStatText=Array("—","待审核","审核不通过","审核通过")
-Dim arrStuOprName:arrStuOprName=Array("","开题报告表","中期检查表","预答辩意见书","答辩及授予学位审批材料","送检论文和送审论文","送审论文","答辩论文","教指委盲评论文","定稿论文")
-Dim arrStep:arrStep=Array("","提交送检和送审论文","导师不同意检测","导师同意检测","论文一次检测未通过","论文二次检测未通过","论文二次检测已通过，等候导师同意送审","导师不同意送审","论文检测已通过，导师同意送审","专家正在评阅","专家完成评阅","导师确认评阅结果","提交答辩论文","答辩论文未通过","答辩论文已通过","答辩委员会给出修改意见","教指委盲评论文已上传","教指委盲评论文审核不通过","教指委盲评论文审核通过","教指委盲评论文完成查重","盲评论文已匹配教指委委员","教指委给出修改意见","提交定稿论文")
-Dim arrFileListName:arrFileListName=Array("","开题报告表","开题论文","中期检查表","中期论文","预答辩意见书","预答辩论文","答辩及授予学位审批材料","一次送检论文","二次送检论文","送审论文","答辩论文","教指委盲评论文","定稿论文","一次送检论文检测报告","二次送检论文检测报告","教指委盲评论文检测报告","论文评阅书 1","论文评阅书 2")
-Dim arrFileListNamePostfix:arrFileListNamePostfix=Array("","开题报告表","开题论文","中期检查表","中期论文","预答辩意见书","预答辩论文","答辩审批材料","","","","","","","一次检测报告","二次检测报告","教指委盲评论文检测报告","论文评阅书(1)","论文评阅书(2)")
-Dim arrFileListPath:arrFileListPath=Array("","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","admin/upload/report","admin/upload/report","admin/upload/report","expert/export","expert/export")
-Dim arrFileListField:arrFileListField=Array("","TABLE_FILE1","TBL_THESIS_FILE1","TABLE_FILE2","TBL_THESIS_FILE2","TABLE_FILE3","TBL_THESIS_FILE3","TABLE_FILE4","DETECT_THESIS1","DETECT_THESIS2","THESIS_FILE2","THESIS_FILE3","THESIS_FILE4","THESIS_FILE5","DETECT_REPORT1","DETECT_REPORT2","INSTRUCT_REVIEW_DETECT_REPORT","ReviewFile1","ReviewFile2")
+Dim arrStuOprName:arrStuOprName=Array("","开题报告表","中期考核表","预答辩意见书","答辩及授予学位审批材料","送检论文和送审论文","送审论文","答辩论文","教指委盲评论文","定稿论文")
+Dim arrStep:arrStep=Array("","提交送检和送审论文","导师不同意检测","导师同意检测","论文一次检测未通过","论文二次检测未通过","论文检测已通过，导师同意送审","专家正在评阅","专家完成评阅","导师确认评阅结果","提交答辩论文","答辩论文未通过","答辩论文已通过","答辩委员会给出修改意见","教指委盲评论文已上传","教指委盲评论文审核不通过","教指委盲评论文审核通过","教指委盲评论文完成查重","盲评论文已匹配教指委委员","教指委给出修改意见","提交定稿论文")
+Dim arrFileListName:arrFileListName=Array("","开题报告表","开题论文","中期考核表","中期论文","预答辩意见书","预答辩论文","答辩及授予学位审批材料","一次送检论文","二次送检论文","送审论文","答辩论文","教指委盲评论文","定稿论文","一次送检论文检测报告","二次送检论文检测报告","教指委盲评论文检测报告","论文评阅书（专家一）","论文评阅书（专家二）")
+Dim arrFileListNamePostfix:arrFileListNamePostfix=Array("","开题报告表","开题论文","中期考核表","中期论文","预答辩意见书","预答辩论文","答辩审批材料","","","","","","","一次检测报告","二次检测报告","教指委盲评论文检测报告","论文评阅书（专家一）","论文评阅书（专家二）")
+Dim arrFileListPath:arrFileListPath=Array("","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","admin/upload/detect_report","admin/upload/detect_report","admin/upload/detect_report","expert/export","expert/export")
+Dim arrFileListField:arrFileListField=Array("","TABLE_FILE1","TBL_THESIS_FILE1","TABLE_FILE2","TBL_THESIS_FILE2","TABLE_FILE3","TBL_THESIS_FILE3","TABLE_FILE4","DETECT_THESIS1","DETECT_THESIS2","THESIS_FILE2","THESIS_FILE3","THESIS_FILE4","THESIS_FILE5","DetectReport1","DetectReport2","INSTRUCT_REVIEW_DETECT_REPORT","ReviewFile1","ReviewFile2")
 
 Dim arrEthnic:arrEthnic=Array(_
 "汉族","阿昌族","白族","保安族","布朗族","布依族","朝鲜族","达斡尔族","傣族","德昂族","侗族","东乡族","独龙族","鄂伦春族","俄罗斯族","鄂温克族","高山族","仡佬族","哈尼族","哈萨克族","赫哲族","回族","基诺族","京族","景颇族","柯尔克孜族","拉祜族","黎族","傈僳族","珞巴族","满族","毛南族","门巴族","蒙古族","苗族","仫佬族","纳西族","怒族","普米族","羌族","撒拉族","畲族","水族","塔吉克族","塔塔尔族","土族","土家族","佤族","维吾尔族","乌兹别克族","锡伯族","瑶族","彝族","裕固族","藏族","壮族")

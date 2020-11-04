@@ -18,10 +18,10 @@ Function sendNotifyMail(activity_id,stu_type_id,template_name,recipient,field_va
 
 	' 用实际值替换邮件标题及内容中的符号
 	For Each name In field_values
-		If Not IsNull(field_values(name)) Then
-			mail_subject=Replace(mail_subject,"$"&name,field_values(name))
-			mail_content=Replace(mail_content,"$"&name,field_values(name))
-		End If
+		Dim value:value=field_values(name)
+		If IsNull(value) Then value=""
+		mail_subject=Replace(mail_subject,"$"&name,value)
+		mail_content=Replace(mail_content,"$"&name,value)
 	Next
 	mail_subject="【工管院务系统】"&mail_subject
 

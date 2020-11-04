@@ -6,13 +6,13 @@ paper_id=Request.Form("tid")
 new_thesis_form=Request.Form("thesis_form")
 If IsEmpty(paper_id) Then
 	bError=True
-	errdesc="参数无效。"
+	errMsg="参数无效。"
 ElseIf new_thesis_form=0 Then
 	bError=True
-	errdesc="请选择论文形式！"
+	errMsg="请选择论文形式！"
 End If
 If bError Then
-%><body><center><font color=red size="4"><%=errdesc%></font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
+%><body><center><font color=red size="4"><%=errMsg%></font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 	Response.End()
 End If
 

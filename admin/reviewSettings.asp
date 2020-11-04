@@ -39,13 +39,10 @@ Case 1	' 后台进程
 	Dim numItems,numOldItems
 	Dim type_name,teachtype_id,thesis_form,file_id
 	Dim rids,arr_rid,arr_typename,arr_teachtypeid,arr_thesisform,arr_fileid
-	Dim fso,Upload,file,bError,delim
+	Dim Upload,file,bError,delim
 	
 	Set Upload=New ExtendedRequest
-	Set fso=Server.CreateObject("Scripting.FileSystemObject")
-	' 检查上传目录是否存在
-	strUploadPath = Server.MapPath("upload/review")
-	If Not fso.FolderExists(strUploadPath) Then fso.CreateFolder(strUploadPath)
+	ensurePathExists Server.MapPath(uploadBasePath(usertypeAdmin,"review_template"))
 	
 	numItems=Int(Upload.Form("num_items"))
 	numOldItems=Int(Upload.Form("num_olditems"))
@@ -58,32 +55,28 @@ Case 1	' 后台进程
 		If Len(file.FileName)=0 Then
 			If i>numOldItems Then
 				bError=True
-				errdesc="请为第&nbsp;"&i&"&nbsp;个条目上传评阅书模板文件！"
+				errMsg="请为第&nbsp;"&i&"&nbsp;个条目上传评阅书模板文件！"
 				Exit For
 			End If
 		Else
 			file_ext=LCase(file.FileExt)
 			'If file_ext<>"pdf" Then
 				'bError=True
-				'errdesc="请为第&nbsp;"&i&"&nbsp;个条目上传PDF格式文件！"
+				'errMsg="请为第&nbsp;"&i&"&nbsp;个条目上传PDF格式文件！"
 				'Exit For
 			'End If
-			' 生成日期格式文件名
-			fileid = FormatDateTime(Now(),1)&Int(Timer)&Int(Rnd()*999)
-			strDestFile = fileid&"."&file_ext
-			strDestPath = strUploadPath&"\"&strDestFile
+			destFile = timestamp()&Int(Rnd()*999)&"."&file_ext
+			destPath = strUploadPath&"\"&destFile
 			byteFileSize = byteFileSize+file.FileSize
 			' 保存
-			file.SaveAs strDestPath
-			arr_fileid(i-1)=strDestFile
+			file.SaveAs destPath
+			arr_fileid(i-1)=destFile
 		End If
 		Set file=Nothing
 	Next
-	Set fso=Nothing
 	
 	If bError Then
-%><body><center><font color=red size="4"><%=errdesc%></font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
-		Response.End()
+		showErrorPage errMsg, "提示"
 	End If
 	
 	' 获取表单上旧条目的ID

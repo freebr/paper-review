@@ -1,26 +1,4 @@
 ﻿<%
-Function getTeacherIdByName(name)
-	If IsNull(name) Then
-		getTeacherIdByName=-1
-		Exit Function
-	End If
-	Dim conn,rsTeacher,sql,num
-	name=Replace(name," ",vbNullString)
-	name=Replace(name,"　",vbNullString)
-	name=Replace(name,"'","''")
-	name=Replace(name,"""","""""")
-	ConnectOriginDb conn
-	sql="SELECT TEACHERID,TEACHERNAME FROM TEACHER_INFO WHERE TEACHERNAME='"&name&"' AND VALID=0"
-	GetRecordSetNoLock conn,rsTeacher,sql,num
-	If rsTeacher.EOF Then
-		getTeacherIdByName=-1
-	Else
-		getTeacherIdByName=rsTeacher("TEACHERID")
-	End If
-	CloseRs rsTeacher
-	CloseConn conn
-End Function
-
 Function getProDutyNameOf(tid)
 	Dim conn,rs,sql,num
 	Connect conn
@@ -50,7 +28,7 @@ Function loadReviewScoringInfo(review_type,formcode,power1code,power2code)
 	Dim c,i,j,k,tmp,tmp2,tmp3
 	Dim retcode,retpower1,retpower2
 	Set stream=Server.CreateObject("ADODB.Stream")
-	filepath=Server.MapPath("/PaperReview/expert/data/scoreform"&review_type&".html")
+	filepath=Server.MapPath(basePath()&"expert/data/scoreform"&review_type&".html")
 	stream.Mode=3
 	stream.Type=2
 	stream.Charset="utf-8"

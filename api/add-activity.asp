@@ -22,7 +22,7 @@ Function main(args)
     Dim conn,sql,sql2,count
     Connect conn
     sql="INSERT INTO Activities (Name,SemesterId,StuType,IsOpen,CreatedAt,Creator) VALUES (?,?,?,?,?,?)"
-    On Error Resume Next
+    'On Error Resume Next
     count=ExecNonQuery(conn,sql,_
         CmdParam("Name",adVarWChar,50,arg("name")),_
         CmdParam("SemesterId",adInteger,4,arg("semester")),_
@@ -52,6 +52,7 @@ Function main(args)
             rs.MoveNext()
         Next
         sectionIds(i)=arr
+        CloseRs rs
     Next
 
     ' 新增所有环节的开放时间记录
@@ -77,7 +78,8 @@ Function main(args)
     Dim mail_template_keys: mail_template_keys=mail_templates.Keys()
     Dim new_time: new_time=Now
     sql="INSERT INTO ActivityPeriods (ActivityId,StuType,SectionId,StartTime,EndTime) VALUES (?,?,?,?,?)"
-    sql2="INSERT INTO ActivityMailTemplates (ActivityId,StuType,Name,MailSubject,MailContent) VALUES (?,?,?,?,?)"
+    ' sql2="INSERT INTO ActivityMailTemplates (ActivityId,StuType,Name,MailSubject,MailContent) VALUES (?,?,?,?,?)"
+    sql2="INSERT INTO ActivityMailTemplates (ActivityId,StuType,Name,MailSubject,MailContent) SELECT ?,StuType,Name,MailSubject,MailContent FROM ActivityMailTemplates WHERE StuType=? AND ActivityId=(SELECT TOP 1 Id FROM Activities WHERE StuType & POWER(2,?-1) > 0 AND Id<? ORDER BY Id DESC)"
     For i=0 To UBound(arrStuTypes)
         Set params(1)=CmdParam("StuType",adInteger,4,arrStuTypes(i))
         For j=1 To UBound(sectionIds)
@@ -89,20 +91,24 @@ Function main(args)
             Next
         Next
         ' 新增通知邮件（短信）模板
-        For j=0 To UBound(mail_template_keys)
-            Set params(2)=CmdParam("Name",adVarWChar,50,mail_template_keys(j))
-            Set params(3)=CmdParam("MailSubject",adVarWChar,50,mail_templates(mail_template_keys(j)))
-        	' 获取同类型的上一活动邮件（短信）模板内容
-            Dim sql3:sql3="SELECT * FROM ActivityMailTemplates WHERE StuType=? AND Name=? AND Valid=1 ORDER BY Id DESC"
-            Dim ret2:Set ret2=ExecQuery(conn,sql3,params(1),params(2))
-            Dim mail_content:mail_content=""
-            If ret2("count") Then
-                Dim rs2:Set rs2=ret2("rs")
-                mail_content=rs2("MailContent")
-            End If
-            Set params(4)=CmdParam("MailContent",adVarWChar,3000,mail_content)
-            count=ExecNonQuery(conn,sql2,params(0),params(1),params(2),params(3),params(4))
-        Next
+        Set params(2)=CmdParam("StuType",adInteger,4,arrStuTypes(i))
+        Set params(3)=CmdParam("ActivityId",adInteger,4,new_id)
+        count=ExecNonQuery(conn,sql2,params(0),params(1),params(2),params(3))
+        ' For j=0 To UBound(mail_template_keys)
+        '     Set params(2)=CmdParam("Name",adVarWChar,50,mail_template_keys(j))
+        '     Set params(3)=CmdParam("MailSubject",adVarWChar,50,mail_templates(mail_template_keys(j)))
+        ' 	' 获取同类型的上一活动邮件（短信）模板内容
+        '     Dim sql3:sql3="SELECT * FROM ActivityMailTemplates WHERE StuType=? AND Name=? AND Valid=1 ORDER BY Id DESC"
+        '     Dim ret2:Set ret2=ExecQuery(conn,sql3,params(1),params(2))
+        '     Dim mail_content:mail_content=""
+        '     Dim rs2:Set rs2=ret2("rs")
+        '     If ret2("count") Then
+        '         mail_content=rs2("MailContent")
+        '     End If
+        '     CloseRs rs2
+        '     Set params(4)=CmdParam("MailContent",adVarWChar,3000,mail_content)
+        '     count=ExecNonQuery(conn,sql2,params(0),params(1),params(2),params(3),params(4))
+        ' Next
     Next
 
     If Err.Number Then

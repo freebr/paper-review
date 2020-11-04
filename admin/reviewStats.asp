@@ -6,6 +6,9 @@ manage_stu_types=Session("AdminType")("ManageStuTypes")
 activity_id=Request.Form("activity_id")
 If IsEmpty(activity_id) Or Not IsNumeric(activity_id) Then
 	Dim activity:Set activity=getLastActivityInfoOfStuType(manage_stu_types)
+	If activity Is Nothing Then
+		showErrorPage "所选的评阅活动不存在。", "错误"
+	End If
 	activity_id=activity("Id")
 Else
 	activity_id=Int(activity_id)
@@ -13,8 +16,8 @@ End If
 Dim conn:Connect conn
 Dim sql:sql="EXEC spGetReviewStatistics ?,?"
 Dim ret:Set ret=ExecQuery(conn,sql,_
-	CmdParam("@activity_id",adInteger,4,activity_id),_
-	CmdParam("@stu_types",adInteger,4,manage_stu_types))
+	CmdParam("activity_id",adInteger,4,activity_id),_
+	CmdParam("stu_types",adInteger,4,manage_stu_types))
 Dim rs:Set rs=ret("rs")
 %><html>
 <head>

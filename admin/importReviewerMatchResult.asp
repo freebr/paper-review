@@ -3,7 +3,8 @@
 <!--#include file="common.asp"--><%
 If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 
-Dim conn,sql,ret,rs
+tableUploadPath = Server.MapPath(uploadBasePath(usertypeAdmin, "reviewer_match_result"))
+ensurePathExists tableUploadPath
 
 step=Request.QueryString("step")
 Select Case step
@@ -19,14 +20,14 @@ Case vbNullstring ' 文件选择页面
 <body>
 <center><font size=4><b>导入评阅专家匹配结果</b><br />
 <form id="fmUpload" action="?step=2" method="POST" enctype="multipart/form-data">
-<p>请选择要导入的 Excel 文件：<br />文件名：<input type="file" name="excelFile" size="100" /><br />
-<a href="upload/reviewer_match_result_template.xlsx" target="_blank">点击下载评阅专家匹配结果表格模板</a><br />
-<input type="submit" name="btnsubmit" value="提 交" />&nbsp;
+<p>请选择要导入的 Excel 文件：<input type="file" name="tableFile" size="100" /></p>
+<p><a href="upload/reviewer_match_result_template.xlsx" target="_blank">点击下载评阅专家匹配结果表格模板</a></p>
+<p><input type="submit" name="btnsubmit" value="提 交" />&nbsp;
 <input type="button" name="btnret" value="返 回" onclick="history.go(-1)" /></p></form></center>
 <script type="text/javascript">
 	$(document).ready(function(){
 		$('form').submit(function() {
-			var valid=checkIfExcel(this.excelFile);
+			var valid=checkIfExcel(this.tableFile);
 			if(valid) {
 				$(':submit').val("正在提交，请稍候...").attr('disabled',true);
 			}
@@ -37,32 +38,22 @@ Case vbNullstring ' 文件选择页面
 </script></body></html><%
 Case 2	' 上传进程
 
-	Dim Upload,file,fso
+	Dim Upload,file
 
 	Set Upload=New ExtendedRequest
-	Set file=Upload.File("excelFile")
-	Set fso=Server.CreateObject("Scripting.FileSystemObject")
-
-	' 检查上传目录是否存在
-	strUploadPath = Server.MapPath("upload\xls")
-	If Not fso.FolderExists(strUploadPath) Then fso.CreateFolder(strUploadPath)
+	Set file=Upload.File("tableFile")
 
 	file_ext=LCase(file.FileExt)
 	If file_ext <> "xls" And file_ext <> "xlsx" Then	' 不被允许的文件类型
 		bError = True
-		errstring = "所选择的不是 Excel 文件！"
+		errMsg = "所选择的不是 Excel 文件！"
 	Else
-		' 生成日期格式文件名
-		fileid = FormatDateTime(Now(),1)&Int(Timer)
-		strDestFile = fileid&"."&file_ext
-		strDestPath = Server.MapPath("upload")&"\xls\"&strDestFile
-		byteFileSize = file.FileSize
-		' 保存
-		file.SaveAs strDestPath
+		destFile = timestamp()&"."&file_ext
+		destPath = resolvePath(tableUploadPath,destFile)
+		file.SaveAs destPath
 	End If
 	Set file=Nothing
 	Set Upload=Nothing
-	Set fso=Nothing
 %><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -76,22 +67,23 @@ Case 2	' 上传进程
 	If Not bError Then %>
 <form id="fmUploadFinish" action="?step=3" method="POST">
 <input type="hidden" name="selectmode" value="<%=select_mode%>" />
-<input type="hidden" name="filename" value="<%=strDestFile%>" />
+<input type="hidden" name="filename" value="<%=destFile%>" />
 <p>文件上传成功，正在导入评阅专家匹配结果...</p></form>
 <script type="text/javascript">setTimeout("$('#fmUploadFinish').submit()",500);</script><%
 	Else
 %>
-<script type="text/javascript">alert("<%=errstring%>");history.go(-1);</script><%
+<script type="text/javascript">alert("<%=errMsg%>");history.go(-1);</script><%
 	End If
 %></center></body></html><%
 Case 3	' 数据读取，导入到数据库
 
 	Dim bError,errMsg
+	Dim conn,sql,ret,rs
 	Dim countInsert,countUpdate,thesis_ids
 
 	filename=Request.Form("filename")
-	filepath=Server.MapPath("upload/xls/"&filename)
-	send_email=True
+	filepath=resolvePath(tableUploadPath,filename)
+	do_notice_student=True
 	sql="CREATE TABLE #ret(CountInsert int,CountUpdate int,CountError int,FirstMatchThesisIDs nvarchar(MAX),IsError bit,ErrMsg nvarchar(MAX));"&_
 		"INSERT INTO #ret EXEC spImportMatchReviewerResult '"&filepath&"'; SELECT * FROM #ret"
 	Connect conn
@@ -103,7 +95,7 @@ Case 3	' 数据读取，导入到数据库
 	errMsg=rs("ErrMsg")
 	CloseRs rs
 
-	If send_email And Len(thesis_ids) Then
+	If do_notice_student And Len(thesis_ids) Then
 		' 发送送审通知邮件
 		Dim arrDissertations:arrDissertations=Split(thesis_ids,",")
 		Dim dict:Set dict=CreateDictionary()
