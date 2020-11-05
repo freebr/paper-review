@@ -56,7 +56,7 @@ Else
 	PageSize=Request.Form("In_pageSize")
 End If
 '------------------------------------------------------
-Connect conn
+ConnectDb conn
 sql="SELECT * FROM "&table_name&" WHERE "&PubTerm
 GetRecordSetNoLock conn,rs,sql,count
 If IsEmpty(pageSize) Or Not IsNumeric(pageSize) Then

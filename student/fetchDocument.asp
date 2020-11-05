@@ -17,7 +17,7 @@ If bError Then
 	showErrorPage errMsg, "提示"
 End If
 
-Connect conn
+ConnectDb conn
 sql=Format("SELECT * FROM ViewDissertations_student WHERE ID={0}",paper_id)
 GetRecordSetNoLock conn,rs,sql,count
 If rs.EOF Then

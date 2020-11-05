@@ -27,7 +27,7 @@ review_level=Request.Form("review_level")
 comment=Request.Form("comment")
 
 Dim conn,sql,ret,rs,count
-Connect conn
+ConnectDb conn
 sql="SELECT * FROM ViewDissertations WHERE ID=? AND ? IN (REVIEWER1,REVIEWER2)"
 Set ret=ExecQuery(conn,sql,_
 	CmdParam("ID",adInteger,4,paper_id),_

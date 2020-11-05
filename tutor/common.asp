@@ -15,7 +15,7 @@ End Function
 
 Function getProDutyNameOf(tid)
 	Dim conn,rs,sql,count
-	Connect conn
+	ConnectDb conn
 	sql="SELECT PRO_DUTYNAME FROM ViewTeacherInfo WHERE TEACHERID="&tid
 	GetRecordSetNoLock conn,rs,sql,count
 	If Not rs.EOF Then
@@ -27,7 +27,7 @@ End Function
 
 Function getNoticeText(stuType,noticeName)
 	Dim conn,rs,sql,count
-	Connect conn
+	ConnectDb conn
 	sql="EXEC spGetNoticeText ?,?"
 	Dim ret:Set ret=ExecQuery(conn,sql,_
 		CmdParam("StudentType",adInteger,4,stuType),_
@@ -48,7 +48,7 @@ Function addAuditRecord(paper_id,audit_file,audit_type,audit_time,is_passed,ByVa
 		If is_passed Then comment="审核通过" Else comment="审核不通过"
 	End If
 	Dim conn,sql
-	Connect conn
+	ConnectDb conn
 	sql="EXEC spAddAuditRecord ?,?,?,?,?,?,?,NULL"
 	debug(audit_file)
 	ExecNonQuery conn,sql,_
@@ -65,7 +65,7 @@ End Function
 Function updateActiveTime(teacherID)
 	' 更新数据库中用户使用评阅系统时间的记录
 	Dim conn,sql
-	Connect conn
+	ConnectDb conn
 	sql="UPDATE NotifyList SET LAST_ACTIVE_TIME="&toSqlString(Now)&" WHERE USER_ID="&teacherID
 	conn.Execute sql
 	CloseConn conn
@@ -74,7 +74,7 @@ End Function
 
 Function sendEmailToStudent(paper_id,file_type_name,is_pass,ByVal comment)
 	If Len(comment)=0 Then comment="无"
-	Dim conn:Connect conn
+	Dim conn:ConnectDb conn
 	Dim sql:sql="SELECT ActivityId,TEACHTYPE_ID,STU_NAME,STU_NO,CLASS_NAME,SPECIALITY_NAME,EMAIL,THESIS_SUBJECT,TUTOR_NAME,TUTOR_EMAIL FROM ViewDissertations WHERE ID=?"
 	Dim ret:Set ret=ExecQuery(conn,sql,CmdParam("ID",adInteger,4,paper_id))
 	Dim rs:Set rs=ret("rs")
@@ -148,5 +148,5 @@ If Not hasPrivilege(Session("Twriteprivileges"),"I11") And Not hasPrivilege(Sess
 	showErrorPage "您没有访问本系统的权限！", "提示"
 End If
 
-Dim arrTable:arrTable=Array("","开题报告表","中期考核表","预答辩意见书","答辩审批材料")
+Public arrTable:arrTable=Array("","开题报告表","中期考核表","预答辩意见书","答辩审批材料")
 %>

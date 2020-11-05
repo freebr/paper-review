@@ -12,7 +12,7 @@ sem_info=getCurrentSemester()
 task_progress=0
 stu_type=Session("StuType")
 
-Connect conn
+ConnectDb conn
 sql="SELECT * FROM ViewDissertations_student WHERE STU_ID="&Session("Stuid")&" ORDER BY ActivityId DESC"
 GetRecordSetNoLock conn,rs,sql,count
 If rs.EOF Then

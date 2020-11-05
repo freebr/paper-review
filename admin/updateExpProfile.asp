@@ -26,8 +26,8 @@ idcard_no=upload.Form("idcard_no")
 newpwd=upload.Form("newpwd")
 repeatpwd=upload.Form("repeatpwd")
 
-Connect conn
-ConnectOriginDb connOrigin
+ConnectDb conn
+ConnectJWDb connOrigin
 sql="SELECT * FROM TEACHER_INFO WHERE TEACHERID="&Teacherid
 GetRecordSet connOrigin,rs,sql,count
 If sex<>"男" And sex<>"女" Then

@@ -18,7 +18,7 @@ If IsEmpty(paper_id) Or Not IsNumeric(paper_id) Or IsEmpty(detect_id) Or IsEmpty
 End If
 
 Dim conn,rs,sql,count
-Connect conn
+ConnectDb conn
 sql="SELECT THESIS_FILE,THESIS_FILE4,REPRODUCTION_RATIO,INSTRUCT_REVIEW_REPRODUCTION_RATIO,DETECT_REPORT,INSTRUCT_REVIEW_DETECT_REPORT FROM Dissertations WHERE ID="&paper_id
 GetRecordSet conn,rs,sql,count
 If rs.EOF Then

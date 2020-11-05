@@ -86,7 +86,7 @@ Else
 End If
 
 Dim conn,rs,sql,sqlDetect,count
-Connect conn
+ConnectDb conn
 sql=Format("SELECT * FROM Dissertations WHERE ID={0}",paper_id)
 GetRecordSet conn,rs,sql,count
 If rs.EOF Then

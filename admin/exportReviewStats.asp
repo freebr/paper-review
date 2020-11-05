@@ -201,7 +201,7 @@ arrFields=Array(Array("","学位类别","专业名称","总数",_
 	Array("状态","论文题目*37*80","作者姓名","学号","学位类别","研究方向","论文形式","导师","开题报告","中期考核表","预答辩意见书","答辩审批材料","复制比","专家一姓名","专家一工作单位","专家二姓名","专家二工作单位","送审结果1","送审结果2","处理意见","答辩修改意见*55*80","答辩成绩","分会修改意见*55*80"))
 arrSheetName=Array("送审结果统计表","全部论文列表")
 
-Connect conn
+ConnectDb conn
 selectFields="dbo.getThesisStatusText(1,TASK_PROGRESS,1)+'，'+dbo.getThesisStatusText(2,REVIEW_STATUS,1),THESIS_SUBJECT,STU_NAME,STU_NO,TEACHTYPE_NAME,RESEARCHWAY_NAME,THESIS_FORM,TUTOR_NAME,"&_
 	"dbo.isFileExisted(ID,0,0),dbo.isFileExisted(ID,0,1),dbo.isFileExisted(ID,0,2),dbo.isFileExisted(ID,0,3),"&_
 	"dbo.getDetectResultString(ID) AS RATIO,EXPERT_NAME1,EXPERT_WORKPLACE1,EXPERT_NAME2,EXPERT_WORKPLACE2,"&_

@@ -12,7 +12,7 @@
 Function main()
     Dim data: Set data=CreateDictionary()
     Dim conn,rs,sql,count
-    Connect conn
+    ConnectDb conn
     sql="EXEC spGetSemesterList"
     Dim ret:Set ret=ExecQuery(conn,sql)
     Set rs=ret("rs")

@@ -31,7 +31,7 @@ If Request.QueryString()="logout" Then
 Else
 	Dim usertype,conn,sql,rs,count
 	usertype=Request.QueryString("usertype")
-	ConnectOriginDb conn
+	ConnectJWDb conn
 	Select Case usertype
 		Case "admin"
 			sql="SELECT TEACHERID,TEACHERNO,TEACHERNAME,WRITEPRIVILEGETAGSTRING,READPRIVILEGETAGSTRING FROM TEACHER_INFO WHERE TEACHERID=863 AND VALID=0"

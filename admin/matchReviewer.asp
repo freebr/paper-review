@@ -19,7 +19,7 @@ Case vbNullString	' 选择页面
 	If Len(thesis_ids)=0 Then
 		thesis_ids=Request.Form("sel")
 	End If
-	Connect conn
+	ConnectDb conn
 	sql="SELECT * FROM ViewDissertations WHERE ID IN ("&thesis_ids&")"
 	GetRecordSet conn,rs,sql,count
 	If rs("TEACHTYPE_ID")=5 Then
@@ -122,7 +122,7 @@ Case 2	' 后台处理
 
 	expertid1=Int(expertid1)
 	expertid2=Int(expertid2)
-	Connect conn
+	ConnectDb conn
 	For i=1 To 2
 		teacherID=Request.Form("expertid")(i)
 		sql="SELECT ID FROM Experts WHERE TEACHER_ID="&teacherID

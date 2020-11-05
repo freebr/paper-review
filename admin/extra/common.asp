@@ -1,7 +1,7 @@
 ﻿<%
 Function getProDutyNameOf(tid)
 	Dim conn,rs,sql,num
-	Connect conn
+	ConnectDb conn
 	sql="SELECT PRO_DUTYNAME FROM ViewTeacherInfo WHERE TEACHERID="&tid
 	GetRecordSetNoLock conn,rs,sql,num
 	If Not rs.EOF Then
@@ -14,7 +14,7 @@ End Function
 Function updateActiveTime(teacherID)
 	' 更新数据库中用户使用评阅系统时间的记录
 	Dim conn,sql
-	Connect conn
+	ConnectDb conn
 	sql="UPDATE NotifyList SET LAST_ACTIVE_TIME="&toSqlString(Now)&" WHERE USER_ID="&teacherID
 	conn.Execute sql
 	CloseConn conn
@@ -97,7 +97,7 @@ End Function
 
 Function checkIfProfileFilledIn()
 	Dim conn,rs,sql,i,ret
-	Connect conn
+	ConnectDb conn
 	sql="SELECT EXPERT_NAME,PRO_DUTY_NAME,EXPERTISE,WORKPLACE,ADDRESS,MAILCODE,TELEPHONE,MOBILE,EMAIL,BANK_ACCOUNT,BANK_NAME,IDCARD_NO FROM Experts WHERE TEACHER_ID="&Session("TId")
 	Set rs=conn.Execute(sql)
 	If rs.EOF Then

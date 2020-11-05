@@ -91,7 +91,7 @@ Case 2	' 下载页面
 		rarFilename=Format("{0}（共{1}份）", arrDefaultFileListName(filetype), numRecord)
 	End If
 	rarFilename=rarFilename&".rar"
-	Connect conn
+	ConnectDb conn
 	sql="SELECT * FROM ViewDissertations_admin WHERE ID IN ("&ids&")"
 	GetRecordSet conn,rs,sql,count
 	If rs.EOF Then

@@ -15,7 +15,7 @@ Function main(args)
     Dim arg: Set arg=CreateDictionary()
     ensureArgument args, arg, data
     Dim conn,sql,count
-    Connect conn
+    ConnectDb conn
 	sql="UPDATE Configs SET Status=?, StatusUpdateTime=GETDATE()"
     On Error Resume Next
     count=ExecNonQuery(conn,sql,CmdParam("Status",adVarWChar,50,arg("status")))

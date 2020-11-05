@@ -12,7 +12,7 @@
 Function main()
     Dim data: Set data=CreateDictionary()
     Dim conn,rs,sql,count
-    Connect conn
+    ConnectDb conn
     sql="SELECT Id,Name,SemesterId,SemesterName,StuType,StuTypeName FROM ViewActivities WHERE Valid=1 AND IsOpen=1 AND (?&StuType)<>0"
     Dim ret:Set ret=ExecQuery(conn,sql,CmdParam("CurrentStuType",adInteger,4,2^(Session("StuType")-1)))
     Set rs=ret("rs")

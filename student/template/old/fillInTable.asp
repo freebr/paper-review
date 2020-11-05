@@ -13,7 +13,7 @@ uploadable=False
 stu_type=Session("StuType")
 researchway_list=loadResearchwayList(stu_type)
 
-Connect conn
+ConnectDb conn
 sql="SELECT *,dbo.getThesisStatusText(1,TASK_PROGRESS,2) AS STAT_TEXT FROM ViewDissertations WHERE STU_ID="&Session("Stuid")&" ORDER BY ActivityId DESC"
 GetRecordSetNoLock conn,rs,sql,count
 sql="SELECT STU_NO,SEX,CLASS_NAME,ENTER_YEAR,TEACHERNAME,TUTOR_ID FROM ViewStudentInfo WHERE STU_ID="&Session("Stuid")

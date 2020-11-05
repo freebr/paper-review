@@ -88,8 +88,8 @@ Case 3	' 数据读取，导入到数据库
 		numNewTeacher=0
 		numNewExTeacher=0
 		Set py=New PinyinQuery
-		Connect conn
-		ConnectOriginDb connOrigin
+		ConnectDb conn
+		ConnectJWDb connOrigin
 		sql="SELECT * FROM Experts"
 		GetRecordSet conn,rsExp,sql,count
 		sql="SELECT * FROM TEACHER_INFO"

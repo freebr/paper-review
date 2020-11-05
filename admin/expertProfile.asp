@@ -12,7 +12,7 @@ If bError Then
 	showErrorPage errMsg, "提示"
 End If
 
-Connect conn
+ConnectDb conn
 sql="SELECT * FROM ViewExpertInfo WHERE TEACHER_ID="&TeacherId
 GetRecordSetNoLock conn,rs,sql,count
 If rs.EOF Then

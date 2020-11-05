@@ -113,7 +113,7 @@ Case 3	' 数据读取，导入到数据库
 		regExp.IgnoreCase=True
 		numPapers=0
 		Set folder=fso.GetFolder(zipUploadPath)
-		Connect conn
+		ConnectDb conn
 		Do While Not rs.EOF
 			If IsNull(rs(0)) Then Exit Do
 			stu_name=rs(0)
@@ -186,7 +186,7 @@ Case 3	' 数据读取，导入到数据库
 	numFailed=0
 	numSucceeded=0
 	' 解压缩
-	ExtractFile resolvePath(zipUploadPath,zipFilename), zipUploadPath
+	extractFile resolvePath(zipUploadPath,zipFilename), zipUploadPath
 	
 	' 导入送检结果
 	Set connExcel=Server.CreateObject("ADODB.Connection")

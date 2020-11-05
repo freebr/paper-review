@@ -13,7 +13,7 @@ If IsEmpty(activity_id) Or Not IsNumeric(activity_id) Then
 Else
 	activity_id=Int(activity_id)
 End If
-Dim conn:Connect conn
+Dim conn:ConnectDb conn
 Dim sql:sql="EXEC spGetReviewStatistics ?,?"
 Dim ret:Set ret=ExecQuery(conn,sql,_
 	CmdParam("activity_id",adInteger,4,activity_id),_

@@ -29,7 +29,7 @@ Dim send_sms:send_sms=True
 Dim dict:Set dict=CreateDictionary()
 Dim activity_id,stu_type,is_mail_sent,is_sms_sent
 Dim errMsg
-Connect conn
+ConnectDb conn
 sql="DECLARE @tmptbl TABLE(TEACHER_ID int,ActivityId int,StuType int,THESIS_SUBJECT nvarchar(200),REVNUM int);"&_
 	"INSERT INTO @tmptbl SELECT INSTRUCT_MEMBER1,MAX(ActivityId),MIN(TEACHTYPE_ID),MIN(THESIS_SUBJECT),COUNT(ID) FROM ViewDissertations WHERE ID IN ("&paper_id&") GROUP BY INSTRUCT_MEMBER1 "&_
 	"UNION ALL SELECT INSTRUCT_MEMBER2,MAX(ActivityId),MIN(TEACHTYPE_ID),MIN(THESIS_SUBJECT),COUNT(ID) FROM ViewDissertations WHERE ID IN ("&paper_id&") GROUP BY INSTRUCT_MEMBER2;"&_

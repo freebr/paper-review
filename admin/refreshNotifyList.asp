@@ -5,7 +5,7 @@ session("Debug")=true
 Dim newTutorCount:newTutorCount=0
 Dim newExpertCount:newExpertCount=0
 Dim bError,errMsg:bError=False
-Connect conn
+ConnectDb conn
 sql="DELETE FROM NotifyList"
 conn.Execute sql
 

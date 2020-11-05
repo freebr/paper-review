@@ -35,7 +35,7 @@ bShowAll=Request.QueryString="showAll"
 If bShowAll Then PageSize=-1
 '------------------------------------------------------
 
-Connect conn
+ConnectDb conn
 If is_school_only Then	' 校内导师
 	sql="SELECT * FROM ViewTeacherInfo WHERE PRO_DUTYID IS NOT NULL AND PRO_DUTYID NOT IN (0,18) "&PubTerm&" ORDER BY TEACHERNAME"
 	title="校内导师名单"

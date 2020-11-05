@@ -28,7 +28,7 @@ End Function
 
 Function getProDutyNameOf(tid)
 	Dim conn,rs,sql,count
-	Connect conn
+	ConnectDb conn
 	sql="SELECT PRO_DUTYNAME FROM ViewTeacherInfo WHERE TEACHERID="&tid
 	GetRecordSetNoLock conn,rs,sql,count
 	If Not rs.EOF Then
@@ -128,36 +128,36 @@ If Len(Session("StuNo")) <> 12 Then
 	showErrorPage "身份证账号无法使用本系统，请使用学号重新登录。", "提示"
 End If
 
-Dim arrTable:arrTable=Array("","开题报告表","中期考核表","预答辩意见书","答辩及授予学位审批材料")
-Dim arrTblThesis:arrTblThesis=Array("","开题论文","中期论文","预答辩论文")
-Dim arrTblpaperDetail:arrTblpaperDetail=Array("","开题论文（已完成的论文部分）","中期论文","预答辩论文")
-Dim arrTableStatText:arrTableStatText=Array("—","待审核","审核不通过","审核通过")
-Dim arrStuOprName:arrStuOprName=Array("","开题报告表","中期考核表","预答辩意见书","答辩及授予学位审批材料","送检论文和送审论文","送审论文","答辩论文","教指委盲评论文","定稿论文")
-Dim arrStep:arrStep=Array("","提交送检和送审论文","导师不同意检测","导师同意检测","论文一次检测未通过","论文二次检测未通过","论文检测已通过，导师同意送审","专家正在评阅","专家完成评阅","导师确认评阅结果","提交答辩论文","答辩论文未通过","答辩论文已通过","答辩委员会给出修改意见","教指委盲评论文已上传","教指委盲评论文审核不通过","教指委盲评论文审核通过","教指委盲评论文完成查重","盲评论文已匹配教指委委员","教指委给出修改意见","提交定稿论文")
-Dim arrFileListName:arrFileListName=Array("","开题报告表","开题论文","中期考核表","中期论文","预答辩意见书","预答辩论文","答辩及授予学位审批材料","一次送检论文","二次送检论文","送审论文","答辩论文","教指委盲评论文","定稿论文","一次送检论文检测报告","二次送检论文检测报告","教指委盲评论文检测报告","论文评阅书（专家一）","论文评阅书（专家二）")
-Dim arrFileListNamePostfix:arrFileListNamePostfix=Array("","开题报告表","开题论文","中期考核表","中期论文","预答辩意见书","预答辩论文","答辩审批材料","","","","","","","一次检测报告","二次检测报告","教指委盲评论文检测报告","论文评阅书（专家一）","论文评阅书（专家二）")
-Dim arrFileListPath:arrFileListPath=Array("","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","admin/upload/detect_report","admin/upload/detect_report","admin/upload/detect_report","expert/export","expert/export")
-Dim arrFileListField:arrFileListField=Array("","TABLE_FILE1","TBL_THESIS_FILE1","TABLE_FILE2","TBL_THESIS_FILE2","TABLE_FILE3","TBL_THESIS_FILE3","TABLE_FILE4","DETECT_THESIS1","DETECT_THESIS2","THESIS_FILE2","THESIS_FILE3","THESIS_FILE4","THESIS_FILE5","DetectReport1","DetectReport2","INSTRUCT_REVIEW_DETECT_REPORT","ReviewFile1","ReviewFile2")
+Public arrTable:arrTable=Array("","开题报告表","中期考核表","预答辩意见书","答辩及授予学位审批材料")
+Public arrTblThesis:arrTblThesis=Array("","开题论文","中期论文","预答辩论文")
+Public arrTblpaperDetail:arrTblpaperDetail=Array("","开题论文（已完成的论文部分）","中期论文","预答辩论文")
+Public arrTableStatText:arrTableStatText=Array("—","待审核","审核不通过","审核通过")
+Public arrStuOprName:arrStuOprName=Array("","开题报告表","中期考核表","预答辩意见书","答辩及授予学位审批材料","送检论文和送审论文","送审论文","答辩论文","教指委盲评论文","定稿论文")
+Public arrStep:arrStep=Array("","提交送检和送审论文","导师不同意检测","导师同意检测","论文一次检测未通过","论文二次检测未通过","论文检测已通过，导师同意送审","专家正在评阅","专家完成评阅","导师确认评阅结果","提交答辩论文","答辩论文未通过","答辩论文已通过","答辩委员会给出修改意见","教指委盲评论文已上传","教指委盲评论文审核不通过","教指委盲评论文审核通过","教指委盲评论文完成查重","盲评论文已匹配教指委委员","教指委给出修改意见","提交定稿论文")
+Public arrFileListName:arrFileListName=Array("","开题报告表","开题论文","中期考核表","中期论文","预答辩意见书","预答辩论文","答辩及授予学位审批材料","一次送检论文","二次送检论文","送审论文","答辩论文","教指委盲评论文","定稿论文","一次送检论文检测报告","二次送检论文检测报告","教指委盲评论文检测报告","论文评阅书（专家一）","论文评阅书（专家二）")
+Public arrFileListNamePostfix:arrFileListNamePostfix=Array("","开题报告表","开题论文","中期考核表","中期论文","预答辩意见书","预答辩论文","答辩审批材料","","","","","","","一次检测报告","二次检测报告","教指委盲评论文检测报告","论文评阅书（专家一）","论文评阅书（专家二）")
+Public arrFileListPath:arrFileListPath=Array("","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","admin/upload/detect_report","admin/upload/detect_report","admin/upload/detect_report","expert/export","expert/export")
+Public arrFileListField:arrFileListField=Array("","TABLE_FILE1","TBL_THESIS_FILE1","TABLE_FILE2","TBL_THESIS_FILE2","TABLE_FILE3","TBL_THESIS_FILE3","TABLE_FILE4","DETECT_THESIS1","DETECT_THESIS2","THESIS_FILE2","THESIS_FILE3","THESIS_FILE4","THESIS_FILE5","DetectReport1","DetectReport2","INSTRUCT_REVIEW_DETECT_REPORT","ReviewFile1","ReviewFile2")
 
-Dim arrEthnic:arrEthnic=Array(_
+Public arrEthnic:arrEthnic=Array(_
 "汉族","阿昌族","白族","保安族","布朗族","布依族","朝鲜族","达斡尔族","傣族","德昂族","侗族","东乡族","独龙族","鄂伦春族","俄罗斯族","鄂温克族","高山族","仡佬族","哈尼族","哈萨克族","赫哲族","回族","基诺族","京族","景颇族","柯尔克孜族","拉祜族","黎族","傈僳族","珞巴族","满族","毛南族","门巴族","蒙古族","苗族","仫佬族","纳西族","怒族","普米族","羌族","撒拉族","畲族","水族","塔吉克族","塔塔尔族","土族","土家族","佤族","维吾尔族","乌兹别克族","锡伯族","瑶族","彝族","裕固族","藏族","壮族")
 
-Dim arrPoliticalStatus:arrPoliticalStatus=Array(_
+Public arrPoliticalStatus:arrPoliticalStatus=Array(_
 "中共党员","中共预备党员","共青团员","民革会员","民盟盟员","民建会员","民进会员","农公党党员","致公党党员","九三学社社员","台盟盟员","无党派人士","群众")
 
-Dim arrResearchField:arrResearchField=Array(_
+Public arrResearchField:arrResearchField=Array(_
 "物流工程","项目管理","工业工程")
 
-Dim arrIssueSource:arrIssueSource=Array(_
+Public arrIssueSource:arrIssueSource=Array(_
 "02.973、863项目","04.国家社科规划、基金项目","05.教育部人文、社会科学研究项目","06.国家自然科学基金项目","07.中央、国家各部门项目","09.省（自治区、直辖市）项目","12.国际合作研究项目","13.与港、澳、台合作研究项目","14.企、事业单位委托项目","15.外资项目","16.学校自选项目","17.国防项目","90.非立项","99.其它项目")
 
-Dim arrDissertationType:arrDissertationType=Array(_
+Public arrDissertationType:arrDissertationType=Array(_
 "2.应用研究","4.其它")
 
-Dim arrResearchFieldEn:arrResearchFieldEn=Array(_
+Public arrResearchFieldEn:arrResearchFieldEn=Array(_
 "Logistics Engineering","Project Management","Industrial Engineering")
 
-Dim arrIssueSourceEn:arrIssueSourceEn=Array(_
+Public arrIssueSourceEn:arrIssueSourceEn=Array(_
 "02.Projects sponsored by the State Key Development Program for Basic Research of China, projects sponsored by the State Key Development Program for Basic Research of China",_
 "04.Projects sponsored by the State Social Science Fund of China",_
 "05.Projects sponsored by the Ministry of Education on humanities and social science",_
@@ -173,6 +173,6 @@ Dim arrIssueSourceEn:arrIssueSourceEn=Array(_
 "90.Non-established projects",_
 "99.Other projects")
 
-Dim arrDissertationTypeEn:arrDissertationTypeEn=Array(_
+Public arrDissertationTypeEn:arrDissertationTypeEn=Array(_
 "2.Applied research","4.Others")
 %>

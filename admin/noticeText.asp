@@ -107,7 +107,7 @@ Case "1"
 Case "2"
 	Dim ok:ok="1"
 	Dim paramStudentType:Set paramStudentType=CmdParam("StudentType",adInteger,4,stuType)
-	Connect conn
+	ConnectDb conn
 	For i=0 To dict.Count-1
 		Dim key:key=dict.Keys()(i)
 		Dim content:content=Request.Form(key)

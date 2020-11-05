@@ -14,7 +14,7 @@ Else
 	pageNo=Request.Form("pageNo2")
 End If
 If Len(finalFilter) Then PubTerm="AND ("&finalFilter&")"
-Connect conn
+ConnectDb conn
 sql="SELECT * FROM ViewExpertInfo WHERE Valid=1 "&PubTerm&" ORDER BY EXPERT_NAME"
 GetRecordSetNoLock conn,rs,sql,count
 If IsEmpty(pageSize) Or Not IsNumeric(pageSize) Then

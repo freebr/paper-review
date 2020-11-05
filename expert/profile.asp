@@ -13,7 +13,7 @@ If bError Then
 	Response.End()
 End If
 
-Connect conn
+ConnectDb conn
 sql="SELECT * FROM ViewExpertInfo WHERE TEACHER_ID="&TeacherId
 GetRecordSetNoLock conn,rs,sql,count
 If rs.EOF Then

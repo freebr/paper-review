@@ -17,7 +17,7 @@ End Function
 
 Function getProDutyNameOf(tid)
 	Dim conn,rs,sql,count
-	Connect conn
+	ConnectDb conn
 	sql="SELECT PRO_DUTYNAME FROM ViewTeacherInfo WHERE TEACHERID="&tid
 	GetRecordSetNoLock conn,rs,sql,count
 	If Not rs.EOF Then
@@ -29,7 +29,7 @@ End Function
 
 Function getAdminType(user_id)
 	Dim conn,rs,sql,count,dict
-	Connect conn
+	ConnectDb conn
 	sql="EXEC spGetEduAdminType ?"
 	Dim ret:Set ret=ExecQuery(conn,sql,CmdParam("UserID",adInteger,4,user_id))
     Set rs=ret("rs")
@@ -59,7 +59,7 @@ Function setAdminType(user_id, arrManageStuTypes)
 		admin_type=admin_type+2^Int(arrManageStuTypes(i)-1)
 	Next
 	Dim conn,sql
-	Connect conn
+	ConnectDb conn
 	sql="EXEC spSetEduAdminType ?,?"
 	ExecNonQuery conn,sql,_
 		CmdParam("UserID",adInteger,4,user_id),_
@@ -69,7 +69,7 @@ End Function
 
 Function getNoticeText(stuType,noticeName)
 	Dim conn,rs,sql,count
-	Connect conn
+	ConnectDb conn
 	sql="EXEC spGetNoticeText ?,?"
 	Dim ret:Set ret=ExecQuery(conn,sql,_
 		CmdParam("StudentType",adInteger,4,stuType),_
@@ -87,7 +87,7 @@ End Function
 
 Function setNoticeText(stuType,noticeName,noticeContent)
 	Dim conn,sql
-	Connect conn
+	ConnectDb conn
 	sql="EXEC spSetNoticeText ?,?,?"
 	ExecNonQuery conn,sql,_
 		CmdParam("StudentType",adInteger,4,stuType),_
@@ -101,7 +101,7 @@ Function addAuditRecord(paper_id,audit_file,audit_type,audit_time,auditor_id,is_
 		If is_passed Then comment="审核通过" Else comment="审核不通过"
 	End If
 	Dim conn,sql
-	Connect conn
+	ConnectDb conn
 	sql="EXEC spAddAuditRecord ?,?,?,?,?,?,?,?"
 	ExecNonQuery conn,sql,_
 		CmdParam("paper_id",adInteger,4,paper_id),_
@@ -117,7 +117,7 @@ End Function
 
 Function sendEmailToStudent(paper_id,file_type_name,is_pass,ByVal comment)
 	If Len(comment)=0 Then comment="无"
-	Dim conn:Connect conn
+	Dim conn:ConnectDb conn
 	Dim sql:sql="SELECT ActivityId,TEACHTYPE_ID,STU_NAME,STU_NO,CLASS_NAME,SPECIALITY_NAME,EMAIL,THESIS_SUBJECT,TUTOR_NAME,TUTOR_EMAIL FROM ViewDissertations WHERE ID=?"
 	Dim ret:Set ret=ExecQuery(conn,sql,CmdParam("ID",adInteger,4,paper_id))
 	Dim rs:Set rs=ret("rs")
@@ -164,5 +164,5 @@ If Not IsEmpty(Session("Id")) And IsEmpty(Session("AdminType")) Then
 	Set Session("AdminType")=getAdminType(Session("Id"))
 End If
 
-Dim arrTable:arrTable=Array("","开题报告表","中期考核表","预答辩意见书","答辩审批材料")
+Public arrTable:arrTable=Array("","开题报告表","中期考核表","预答辩意见书","答辩审批材料")
 %>

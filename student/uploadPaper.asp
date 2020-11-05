@@ -12,7 +12,7 @@ table_ready=True
 section_id=0
 stu_type=Session("StuType")
 
-Connect conn
+ConnectDb conn
 sql="SELECT *,dbo.getThesisStatusText(2,REVIEW_STATUS,2) AS STAT_TEXT FROM ViewDissertations WHERE STU_ID="&Session("StuId")&" ORDER BY ActivityId DESC"
 GetRecordSetNoLock conn,rs,sql,count
 sql="SELECT * FROM ViewStudentInfo WHERE STU_ID="&Session("StuId")

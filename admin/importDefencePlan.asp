@@ -150,7 +150,7 @@ Case 3	' 数据读取，导入到数据库
 	sql="SELECT * FROM ["&table_name&"A2:J]"
 	Set rs=connExcel.Execute(sql)
 	' 添加数据
-	Connect conn
+	ConnectDb conn
 	ret=addData()
 	numInsert=ret(0)
 	numUpdate=ret(1)

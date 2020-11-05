@@ -26,7 +26,7 @@ correlation_level=Request.Form("correlation_level")
 review_result=Request.Form("review_result")
 review_level=Request.Form("review_level")
 comment=Request.Form("comment")
-Connect conn
+ConnectDb conn
 sql="SELECT * FROM ViewDissertations WHERE ID="&paper_id
 GetRecordSetNoLock conn,rs,sql,count
 If Len(master_level)=0 Then

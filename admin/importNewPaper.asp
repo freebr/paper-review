@@ -111,8 +111,8 @@ Case 3	' 数据读取，导入到数据库
 		submit_review_time=toSqlString(submit_review_time)
 		numPapers=0
 		sql_upd_rv="DECLARE @id int;"
-		Connect conn
-		ConnectOriginDb connOrigin
+		ConnectDb conn
+		ConnectJWDb connOrigin
 		Do While Not rs.EOF
 			If IsNull(rs(0)) Then Exit Do
 			' 学号

@@ -13,7 +13,7 @@ If Len(paper_id)=0 Then
 	bError=True
 	errMsg="参数无效。"
 Else
-	Connect conn
+	ConnectDb conn
 	sql="SELECT * FROM ViewDissertations_admin WHERE ID="&paper_id
 	GetRecordSet conn,rs,sql,count
 	If count=0 Then

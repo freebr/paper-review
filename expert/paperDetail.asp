@@ -14,7 +14,7 @@ Else
 	code_close_window="closeWindow();"
 End If
 
-Connect conn
+ConnectDb conn
 sql="SELECT * FROM ViewDissertations_expert WHERE ID="&paper_id&" AND "&Session("TId")&" IN (REVIEWER1,REVIEWER2)"
 GetRecordSet conn,rs,sql,count
 If IsEmpty(paper_id) Or Not IsNumeric(paper_id) Then

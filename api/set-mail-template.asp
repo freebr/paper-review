@@ -15,7 +15,7 @@ Function main(args)
     Dim arg: Set arg=CreateDictionary()
     ensureArgument args, arg, data
     Dim conn,sql,count
-    Connect conn
+    ConnectDb conn
     sql="UPDATE ActivityMailTemplates SET MailContent=? WHERE Id=?"
     On Error Resume Next
     count=ExecNonQuery(conn,sql,_

@@ -37,7 +37,7 @@ bShowAll=Request.QueryString="showAll"
 If bShowAll Then PageSize=-1
 '------------------------------------------------------
 If bQuery Then
-	Connect conn
+	ConnectDb conn
 	sql="SELECT * FROM ViewDissertations_admin WHERE 1=1 "&PubTerm
 	GetRecordSetNoLock conn,rs,sql,count
 	If IsEmpty(pageSize) Or Not IsNumeric(pageSize) Then

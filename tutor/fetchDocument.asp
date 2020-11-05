@@ -19,7 +19,7 @@ If bError Then
 	showErrorPage errMsg, "提示"
 End If
 
-Connect conn
+ConnectDb conn
 
 Dim source_file,file_ext,newfilename
 Dim fso,file,stream

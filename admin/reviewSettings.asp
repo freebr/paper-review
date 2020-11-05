@@ -3,7 +3,7 @@
 <!--#include file="common.asp"-->
 <%If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 Dim conn,rs,sql,count
-Connect conn
+ConnectDb conn
 step=Request.QueryString("step")
 Select Case step
 Case vbNullstring ' 设置页面

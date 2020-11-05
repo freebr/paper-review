@@ -17,7 +17,7 @@ If bError Then
 End If
 
 Dim conn,sql
-Connect conn
+ConnectDb conn
 sql="UPDATE Dissertations SET REVIEW_TYPE="&new_thesis_form&" WHERE ID="&paper_id
 conn.Execute sql
 CloseConn conn

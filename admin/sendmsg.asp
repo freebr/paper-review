@@ -26,7 +26,7 @@ Case vbNullString
 %><body><center><font color=red size="4">请选择要通知的专家！</font><br /><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 		Response.End()
 	End If
-	Connect conn
+	ConnectDb conn
 	sql="SELECT TEACHERNAME,MOBILE,EMAIL FROM ViewTeacherInfo WHERE TEACHERID IN ("&tid&")"
 	GetRecordSetNoLock conn,rs,sql,count
 	If count=1 Then

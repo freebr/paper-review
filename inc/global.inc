@@ -275,7 +275,7 @@ End Function
 
 Function getSystemConfigs()
 	Dim conn,rs,sql,count
-	Connect conn
+	ConnectDb conn
 	sql="SELECT * FROM Configs"
 	GetRecordSetNoLock conn,rs,sql,count
 	If rs.EOF Then
@@ -298,7 +298,7 @@ End Function
 ' 获取指定评阅活动的开放状态
 Function isActivityOpen(activity_id)
 	Dim conn,rs,sql
-	Connect conn
+	ConnectDb conn
 	sql="SELECT IsOpen FROM Activities WHERE Id=?"
 	Dim ret:Set ret=ExecQuery(conn,sql,CmdParam("Id",adInteger,4,activity_id))
 	Set rs=ret("rs")
@@ -314,7 +314,7 @@ End Function
 ' 获取环节模板信息，或指定评阅活动的环节信息
 Function getSectionInfo(activity_id, stu_type_id, section_id)
 	Dim conn,rs,sql,count,ret
-	Connect conn
+	ConnectDb conn
 	If IsNull(activity_id) Then
 		sql="SELECT Id,Name,ClientType,ClientTypeName FROM ViewSections WHERE ID=?"
 		Set ret=ExecQuery(conn,sql,CmdParam("SectionId",adInteger,4,section_id))
@@ -349,7 +349,7 @@ Function getActivityInfo(activity_id)
 	If IsNull(activity_id) Then
 		Exit Function
 	End If
-	Dim conn:Connect conn
+	Dim conn:ConnectDb conn
 	Dim sql:sql="SELECT * FROM ViewActivities WHERE Id=?"
 	Dim ret:Set ret=ExecQuery(conn,sql,CmdParam("Id",adInteger,4,activity_id))
     Dim rs:Set rs=ret("rs")
@@ -373,7 +373,7 @@ Function getLastActivityInfoOfStuType(stu_type_id)
 	If IsNull(stu_type_id) Then
 		stu_type_id=stutypeME Or stutypeMBA Or stutypeMPAcc ' Or stutypeEMBA
 	End If
-	Dim conn:Connect conn
+	Dim conn:ConnectDb conn
 	Dim sql:sql="SELECT TOP 1 Id,Name,SemesterId,SemesterName FROM ViewActivities WHERE Valid=1 AND (?&StuType)<>0 ORDER BY SemesterId DESC"
 	Dim ret:Set ret=ExecQuery(conn,sql,CmdParam("StuTypes",adInteger,4,stu_type_id))
     Dim rs:Set rs=ret("rs")
@@ -426,7 +426,7 @@ Function getTeacherIdByName(ByVal name)
 	Dim conn,rs,sql,count
 	name=Replace(name," ",vbNullString)
 	name=Replace(name,"　",vbNullString)
-	ConnectOriginDb conn
+	ConnectJWDb conn
 	sql="SELECT TEACHERID,TEACHERNAME FROM TEACHER_INFO WHERE TEACHERNAME="&toSqlString(name)&" AND VALID=0"
 	GetRecordSetNoLock conn,rs,sql,count
 	If rs.EOF Then
@@ -445,7 +445,7 @@ Function getExpertIdByName(ByVal name)
 		Exit Function
 	End If
 	Dim conn,rs,sql
-	Connect conn
+	ConnectDb conn
 	sql="SELECT TEACHER_ID,EXPERT_NAME FROM Experts WHERE EXPERT_NAME="&toSqlString(name)
 	Set rs=conn.Execute(sql)
 	If rs.EOF Then
@@ -464,7 +464,7 @@ Function getExpertIdByTelephone(ByVal telephone)
 		Exit Function
 	End If
 	Dim conn,rs,sql
-	Connect conn
+	ConnectDb conn
 	sql="SELECT TEACHER_ID,EXPERT_NAME FROM Experts WHERE "&toSqlString(telephone)&" IN (TELEPHONE, MOBILE)"
 	Set rs=conn.Execute(sql)
 	If rs.EOF Then
@@ -478,7 +478,7 @@ End Function
 
 ' 获取审核记录信息
 Function getAuditInfo(paper_id,audit_file,audit_type)
-	Dim conn:Connect conn
+	Dim conn:ConnectDb conn
 	Dim sql,ret
 	If Not IsNull(audit_file) And Not IsNull(audit_type) Then
 		sql="SELECT * FROM ViewAuditRecords WHERE DissertationId=? AND AuditFile=? AND AuditType=? ORDER BY AuditTime DESC"
@@ -531,7 +531,7 @@ End Function
 ' 获取指定论文和审核类型的最新审核记录信息
 Function getLatestAuditInfo(dissertationId,auditType)
 	Dim conn,sql,ret,rs
-	Connect conn
+	ConnectDb conn
 	sql="EXEC spGetAuditRecord ?,?,NULL"
 	Set ret=ExecQuery(conn,sql,_
 		CmdParam("DissertationId",adInteger,4,dissertationId),_
@@ -594,7 +594,7 @@ Dim dictSystemOptions:Set dictSystemOptions = CreateDictionary()
 Function getSystemOption(name,stu_type_id)
 	If Not dictSystemOptions.Exists(name) Then Exit Function
 	Dim conn,rs,sql,count
-	Connect conn
+	ConnectDb conn
 	sql="EXEC spGetSystemOption ?,?,?"
 	Dim ret:Set ret=ExecQuery(conn,sql,_
 		CmdParam("Name",adVarWChar,50,name),_
@@ -651,7 +651,7 @@ dictStylesheets.Add "tutor",		"tutor"
 Function setViewState(userId,userType,viewName,viewStateData)
 	If Len(viewStateData) = 0 Then viewStateData=Null
 	Dim conn,sql
-	Connect conn
+	ConnectDb conn
 	sql="EXEC spSetViewState ?,?,?,?"
 	ExecNonQuery conn,sql,_
 		CmdParam("UserId",adInteger,4,userId),_
@@ -664,7 +664,7 @@ End Function
 ' 获取视图状态
 Function getViewState(userId,userType,viewName)
 	Dim conn,sql,ret,rs
-	Connect conn
+	ConnectDb conn
 	sql="EXEC spGetViewState ?,?,?"
 	Set ret=ExecQuery(conn,sql,_
 		CmdParam("UserId",adInteger,4,userId),_
@@ -714,8 +714,8 @@ Function writeEventLog(user_type,user_name,trigger_operation)
 	writeEventLog=writeLog(log_text)
 End Function
 
+' 显示评阅书评价指标信息
 Function loadReviewScoringInfo(review_type,formcode,power1code,power2code)
-	' 显示评阅书评价指标信息
 	Dim stream,filepath
 	Dim data,numScores1,numScores2,nameScore1,nameScore2,power1,power2,power2sum,detail
 	Dim c,i,j,k,tmp,tmp2,tmp3
@@ -788,7 +788,7 @@ Function loadReviewScoringInfo(review_type,formcode,power1code,power2code)
 End Function
 
 ' 解压缩 RAR/ZIP 文件
-Function ExtractFile(file, destPath)
+Function extractFile(file, destPath)
 	Dim exe, cmd, fileType
 	fileType = LCase(Mid(file, InStrRev(file, ".")))
 	If fileType = ".zip" Then
@@ -800,7 +800,7 @@ Function ExtractFile(file, destPath)
 	End If
 	Dim wsh:Set wsh=Server.CreateObject("WScript.Shell")
 	Dim exec:Set exec=wsh.Exec(cmd)
-	ExtractFile = exec.StdOut.ReadAll()
+	extractFile = exec.StdOut.ReadAll()
 	Set exec=Nothing
 	Set wsh=Nothing
 End Function
@@ -814,7 +814,7 @@ If currentPage()<>"default.asp" And IsEmpty(Session("id")) Then
 	ensureSystemOpen()
 End If
 
-Dim dictStuTypes:Set dictStuTypes=CreateDictionary()
+Public dictStuTypes:Set dictStuTypes=CreateDictionary()
 With dictStuTypes
 	.Add 5,Array("工程硕士", "ME")
 	.Add 6,Array("工商管理硕士", "MBA")
@@ -822,14 +822,14 @@ With dictStuTypes
 	.Add 9,Array("会计硕士", "MPAcc")
 End With
 
-Dim arrDiplomaName:arrDiplomaName=Array("","专科","本科","硕士研究生","博士研究生","博士后")
-Dim arrDefenceResult:arrDefenceResult=Array("未录入","优秀","良好","一般","较差")
-Dim arrGrantDegreeResult:arrGrantDegreeResult=Array("未录入","同意毕业及授予硕士学位","同意毕业，但不同意授予硕士学位","不同意毕业")
-Dim arrReviewFileStat:arrReviewFileStat=Array("不开放显示","仅向导师显示","完全开放显示")
-Dim arrDefaultFileListName:arrDefaultFileListName=Array("","开题报告表","开题论文","中期考核表","中期论文","预答辩意见书","预答辩论文","答辩及授予学位审批材料","送检论文","送审论文","答辩论文","教指委盲评论文","定稿论文","送检论文检测报告","教指委盲评论文检测报告","硕士学位论文送审申请表","论文评阅书（专家一）","论文评阅书（专家二）","论文评阅书")
-Dim arrDefaultFileListNamePostfix:arrDefaultFileListNamePostfix=Array("","开题报告表","开题论文","中期考核表","中期论文","预答辩意见书","预答辩论文","答辩审批材料","","","","","","送检论文检测报告","教指委盲评论文检测报告","送审申请表","论文评阅书（专家一）","论文评阅书（专家二）","论文评阅书")
-Dim arrDefaultFileListPath:arrDefaultFileListPath=Array("","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","admin/upload/detect_report","admin/upload/detect_report","tutor/export","expert/export","expert/export","expert/export")
-Dim arrDefaultFileListField:arrDefaultFileListField=Array("","TABLE_FILE1","TBL_THESIS_FILE1","TABLE_FILE2","TBL_THESIS_FILE2","TABLE_FILE3","TBL_THESIS_FILE3","TABLE_FILE4","THESIS_FILE","THESIS_FILE2","THESIS_FILE3","THESIS_FILE4","THESIS_FILE5","DETECT_REPORT","INSTRUCT_REVIEW_DETECT_REPORT","REVIEW_APP","ReviewFile1","ReviewFile2","")
+Public arrDiplomaName:arrDiplomaName=Array("","专科","本科","硕士研究生","博士研究生","博士后")
+Public arrDefenceResult:arrDefenceResult=Array("未录入","优秀","良好","一般","较差")
+Public arrGrantDegreeResult:arrGrantDegreeResult=Array("未录入","同意毕业及授予硕士学位","同意毕业，但不同意授予硕士学位","不同意毕业")
+Public arrReviewFileStat:arrReviewFileStat=Array("不开放显示","仅向导师显示","完全开放显示")
+Public arrDefaultFileListName:arrDefaultFileListName=Array("","开题报告表","开题论文","中期考核表","中期论文","预答辩意见书","预答辩论文","答辩及授予学位审批材料","送检论文","送审论文","答辩论文","教指委盲评论文","定稿论文","送检论文检测报告","教指委盲评论文检测报告","硕士学位论文送审申请表","论文评阅书（专家一）","论文评阅书（专家二）","论文评阅书")
+Public arrDefaultFileListNamePostfix:arrDefaultFileListNamePostfix=Array("","开题报告表","开题论文","中期考核表","中期论文","预答辩意见书","预答辩论文","答辩审批材料","","","","","","送检论文检测报告","教指委盲评论文检测报告","送审申请表","论文评阅书（专家一）","论文评阅书（专家二）","论文评阅书")
+Public arrDefaultFileListPath:arrDefaultFileListPath=Array("","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","student/upload","admin/upload/detect_report","admin/upload/detect_report","tutor/export","expert/export","expert/export","expert/export")
+Public arrDefaultFileListField:arrDefaultFileListField=Array("","TABLE_FILE1","TBL_THESIS_FILE1","TABLE_FILE2","TBL_THESIS_FILE2","TABLE_FILE3","TBL_THESIS_FILE3","TABLE_FILE4","THESIS_FILE","THESIS_FILE2","THESIS_FILE3","THESIS_FILE4","THESIS_FILE5","DETECT_REPORT","INSTRUCT_REVIEW_DETECT_REPORT","REVIEW_APP","ReviewFile1","ReviewFile2","")
 ' 禁止缓存，仅在需要客户端重新请求 JS/CSS/HTML 等静态文件时使用
 Response.CacheControl="no-cache"
 Response.Charset="utf-8"

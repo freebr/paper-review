@@ -15,7 +15,7 @@ Function main(args)
     Dim arg: Set arg=CreateDictionary()
     ensureArgument args, arg, data
     Dim conn,sql,count
-    Connect conn
+    ConnectDb conn
     sql="UPDATE ActivityPeriods SET StartTime=?, EndTime=?, Enabled=? WHERE ActivityId=? AND StuType=? AND SectionId=?"
     On Error Resume Next
     count=ExecNonQuery(conn,sql,_

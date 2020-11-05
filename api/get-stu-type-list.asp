@@ -12,7 +12,7 @@
 Function main()
     Dim data: Set data=CreateDictionary()
     Dim conn,rs,sql,count
-    Connect conn
+    ConnectDb conn
     sql="SELECT TEACHTYPE_ID id, TEACHTYPE_NAME name FROM ViewStudentTypeInfo WHERE (?&StuTypeBitwise)<>0"
     Dim ret:Set ret=ExecQuery(conn,sql,CmdParam("ManageStuTypes",adInteger,4,Session("AdminType")("ManageStuTypes")))
     Set rs=ret("rs")

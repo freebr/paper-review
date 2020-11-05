@@ -15,7 +15,7 @@ Function main(args)
     Dim arg: Set arg=CreateDictionary()
     ensureArgument args, arg, data
     Dim conn,rs,sql,count
-    Connect conn
+    ConnectDb conn
     sql="DECLARE @a int=?,@b int=?;SELECT StuType,StuTypeName,COUNT(StuType) AS PeriodCount FROM ViewActivityPeriods WHERE ActivityId=@a AND (@b&StuTypeBitwise)<>0 GROUP BY StuType,StuTypeName ORDER BY StuTypeName;"&_
         "SELECT LTRIM(STR(StuType))+'-'+LTRIM(STR(SectionId)) Id,ClientTypeName+'/'+SectionName Name,StuType,ClientType,SectionId,Enabled,StartTime,EndTime FROM ViewActivityPeriods WHERE ActivityId=@a AND (@b&StuTypeBitwise)<>0 ORDER BY StuTypeName,ClientType,SectionId"
     Dim ret:Set ret=ExecQuery(conn,sql,_

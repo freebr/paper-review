@@ -39,7 +39,7 @@ If bError Then
 End If
 
 Dim conn,sql,ret,rs,count
-Connect conn
+ConnectDb conn
 sql="SELECT * FROM ViewDissertations_instruct WHERE ID=?"
 Set ret=ExecQuery(conn,sql,CmdParam("ID",adInteger,4,paper_id))
 Set rs=ret("rs")

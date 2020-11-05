@@ -92,7 +92,7 @@ Case 3	' 数据读取，导入到数据库
 	do_notice_student=Request.Form("sendemail")="on"
 	sql="CREATE TABLE #ret(CountInsert int,CountUpdate int,CountError int,FirstImportThesisIDs nvarchar(MAX),IsError bit,ErrMsg nvarchar(MAX));"&_
 		"INSERT INTO #ret EXEC spImportDegreeEvaluationEval '"&filepath&"',"&select_mode&"; SELECT * FROM #ret"
-	Connect conn
+	ConnectDb conn
 	Set rs=conn.Execute(sql).NextRecordSet()
 	countInsert=rs("CountInsert")
 	countUpdate=rs("CountUpdate")

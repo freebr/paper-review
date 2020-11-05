@@ -24,7 +24,7 @@ End If
 bShowAll=Request.QueryString="showAll"
 If bShowAll Then PageSize=-1
 '------------------------------------------------------
-Connect conn
+ConnectDb conn
 sql="SELECT * FROM ViewNotifyInfo WHERE 1=1 "&PubTerm&" ORDER BY USER_TYPE,USER_NAME"
 GetRecordSetNoLock conn,rs,sql,count
 If IsEmpty(pageSize) Or Not IsNumeric(pageSize) Then

@@ -20,7 +20,7 @@ Function main(args)
         stu_type=stu_type+2^(Int(arrStuTypes(i))-1)
     Next
     Dim conn,sql,sql2,count
-    Connect conn
+    ConnectDb conn
     sql="INSERT INTO Activities (Name,SemesterId,StuType,IsOpen,CreatedAt,Creator) VALUES (?,?,?,?,?,?)"
     'On Error Resume Next
     count=ExecNonQuery(conn,sql,_

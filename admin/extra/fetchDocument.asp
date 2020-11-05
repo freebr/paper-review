@@ -20,7 +20,7 @@ If bError Then
 	Response.End()
 End If
 
-Connect conn
+ConnectDb conn
 sql="SELECT *,LEFT(REVIEW_FILE,CHARINDEX(',',REVIEW_FILE)-1) AS REVIEW_FILE1,RIGHT(REVIEW_FILE,LEN(REVIEW_FILE)-CHARINDEX(',',REVIEW_FILE)) AS REVIEW_FILE2 FROM ViewDissertations WHERE ID="&paper_id&" AND Valid=1"
 GetRecordSetNoLock conn,rs,sql,count
 If count<>1 Then

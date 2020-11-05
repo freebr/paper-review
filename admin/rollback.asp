@@ -18,7 +18,7 @@ If Len(paper_id)=0 Or Not IsNumeric(paper_id) Or Len(usertype)=0 Or Not IsNumeri
 End If
 
 Dim conn,rs,sql,sqlDetect,count
-Connect conn
+ConnectDb conn
 sql="SELECT * FROM Dissertations WHERE ID="&paper_id
 GetRecordSet conn,rs,sql,count
 If rs.EOF Then

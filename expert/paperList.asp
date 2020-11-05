@@ -39,7 +39,7 @@ Else
 End If
 '------------------------------------------------------
 arrStatText=Array("待评阅","已评阅")
-Connect conn
+ConnectDb conn
 sql="SELECT dbo.getUnhandledReviewPaperCount(?,?)"
 Set ret=ExecQuery(conn,sql,CmdParam("expert_id",adInteger,4,teacher_id),_
 	CmdParam("activity_id",adInteger,4,activity_id))

@@ -11,7 +11,7 @@ section_id=0
 uploadable=False
 stu_type=Session("StuType")
 
-Connect conn
+ConnectDb conn
 sql="SELECT *,dbo.getThesisStatusText(1,TASK_PROGRESS,2) AS STAT_TEXT FROM ViewDissertations WHERE STU_ID="&Session("Stuid")&" ORDER BY ActivityId DESC"
 GetRecordSetNoLock conn,rs,sql,count
 If rs.EOF Then

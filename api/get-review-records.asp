@@ -14,7 +14,7 @@ Function main(args)
     Dim arg: Set arg=CreateDictionary()
     ensureArgument args, arg, data
     Dim conn,rs,sql,count
-    Connect conn
+    ConnectDb conn
     sql="SELECT Id,ReviewOrder,ReviewOrderText,ReviewerId,ReviewerName,ReviewTime,OverallRatingText,DefenceOpinionText,ReviewFile,Comment,DisplayStatus,DisplayStatusModifiedByName,Creator,CreatorName FROM ViewReviewRecords WHERE DissertationId=?"
     Dim ret:Set ret=ExecQuery(conn,sql,CmdParam("DissertationId",adInteger,4,arg("id")))
     Set rs=ret("rs")

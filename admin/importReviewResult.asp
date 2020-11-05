@@ -8,7 +8,6 @@ If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 zipUploadPath = Server.MapPath(uploadBasePath(usertypeAdmin, "review_result"))
 ensurePathExists zipUploadPath
 
-Dim fso:Set fso=CreateFSO()
 step=Request.QueryString("step")
 Select Case step
 Case vbNullstring ' 文件选择页面
@@ -105,7 +104,7 @@ Case 2	' 上传进程
 %></center></body></html><%
 Case 3	' 数据读取，导入到数据库
 
-	Function addData(upload_path)
+	Function addData(upload_path, authors)
 		' 添加数据
 		outputMessage "读取评阅书信息……"
 		Dim folder: Set folder = fso.GetFolder(upload_path)
@@ -115,7 +114,8 @@ Case 3	' 数据读取，导入到数据库
 		Dim review_count:review_count=0
 		Dim new_msg
 		Dim import_time:import_time=Now
-		Connect conn
+		ConnectDb conn
+		Set authors=CreateDictionary()
 		For Each file In folder.Files
 			If fso.FileExists(file.Path) And _
 				isMatched(fso.getExtensionName(file.Name), "^docx?$",True) Then
@@ -237,7 +237,7 @@ Case 3	' 数据读取，导入到数据库
 						rg.exportReviewDocument review_file_paths(0),review_file_paths(1),review_file_paths(2),template_file,stu_type
 						Set rg=Nothing
 						outputMessage Format("评阅书已导出，编号：{0}",filename)
-
+						
 						' 插入评阅记录
 						sql="EXEC spAddReviewRecord ?,?,?,?,?,?,?,?,?,?,?,?,?,?"
 						Dim ret:Set ret=ExecQuery(conn,sql,_
@@ -245,8 +245,8 @@ Case 3	' 数据读取，导入到数据库
 							CmdParam("reviewer_id",adInteger,4,expert_id),_
 							CmdParam("reviewer_master_level",adInteger,4,reader.ExpertMasterLevel),_
 							CmdParam("score_data",adVarWChar,500,scores),_
-							CmdParam("comment",adLongVarWChar,5000,reader.Comment),_
-							CmdParam("suggestion",adLongVarWChar,5000,reader.Suggestion),_
+							CmdParam("comment",adLongVarWChar,5000,isZeroString(reader.Comment,"")),_
+							CmdParam("suggestion",adLongVarWChar,5000,isZeroString(reader.Suggestion,"")),_
 							CmdParam("correlation_level",adInteger,4,reader.CorrelationLevel),_
 							CmdParam("overall_rating",adInteger,4,reader.ReviewLevel),_
 							CmdParam("defence_opinion",adInteger,4,reader.ReviewResult),_
@@ -255,10 +255,8 @@ Case 3	' 数据读取，导入到数据库
 							CmdParam("review_file",adVarWChar,50,filename),_
 							CmdParam("display_status",adInteger,4,display_status),_
 							CmdParam("creator",adInteger,4,Session("Id")))
-						Set rsb=ret("rs")
-						If Len(authors) Then authors=authors&"，"
-						authors=authors&author
-						CloseRs rsb
+						If Not authors.Exists(author) Then authors(author)=0
+						authors(author)=authors(author)+1
 						review_count=review_count+1
 					End If
 				End If
@@ -267,6 +265,7 @@ Case 3	' 数据读取，导入到数据库
 				On Error GoTo 0
 			End If
 		Next
+		fso.DeleteFolder upload_path
 		CloseConn conn
 		Set file = Nothing
 		Set folder = Nothing
@@ -345,8 +344,10 @@ Case 3	' 数据读取，导入到数据库
 	dictSub.Add "不同意答辩", 4
 
 	Server.ScriptTimeout=3600
-	Dim bError,errMsg,authors
+	Dim fso:Set fso=CreateFSO()
+	Dim bError,errMsg
 	Dim progfile,streamLog
+	Dim authors
 	progfile=Server.MapPath(resolvePath(tempPath(),"prog_"&Session("Id")&".txt"))
 	If fso.FileExists(progfile) Then fso.DeleteFile progfile
 
@@ -358,17 +359,25 @@ Case 3	' 数据读取，导入到数据库
 	' 解压缩
 	outputMessage "解压缩打包文件……"
 	zipFilename=Request.Form("filename")
-	ExtractFile resolvePath(zipUploadPath,zipFilename), zipUploadPath
+	extractPath=resolvePath(zipUploadPath,fso.GetBaseName(zipFilename))
+	If fso.FolderExists(extractPath) Then fso.DeleteFolder extractPath
+	fso.CreateFolder extractPath
+	extractFile resolvePath(zipUploadPath,zipFilename), extractPath
 
 	' 添加数据
-	ret=addData(zipUploadPath)
+	ret=addData(extractPath, authors)
 	
 	outputMessage "导入完成。"&Chr(9)
 	streamLog.Close()
 	Set streamLog=Nothing
 	If fso.FileExists(progfile) Then fso.DeleteFile progfile
-	If Not bError Then
-		logtxt=Format("教务员[{0}]为以下学生的送审论文导入送审论文评阅结果（共计 {1} 份评阅书）：{2}。",Session("name"),ret,authors)
+	If authors.Count Then
+		Dim authors_list
+		For Each key In authors
+			If Len(authors_list) Then authors_list = authors_list & ","
+			authors_list = authors_list & Format("{0} {1} 份", key, authors(key))
+		Next
+		logtxt = Format("教务员[{0}]为以下学生导入送审论文评阅结果（共计 {1} 份评阅书）：{2}。", Session("name"), ret, authors_list)
 		writeLog logtxt
 	End If
 	Server.ScriptTimeout=90

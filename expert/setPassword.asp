@@ -7,7 +7,7 @@ new_password=Request.Form("newPwd")
 repeat_password=Request.Form("repeatPwd")
 new_security_level=verifyPasswordSecurityLevel(new_password)
 
-ConnectOriginDb conn
+ConnectJWDb conn
 sql="SELECT * FROM TEACHER_INFO WHERE TEACHERID="&Session("TId")
 GetRecordSet conn,rs,sql,count
 If Len(new_password)=0 Then

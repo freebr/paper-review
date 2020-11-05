@@ -23,7 +23,7 @@ Set fso=CreateFSO()
 Set folder=fso.GetFolder(uppath)
 Set files=folder.Files
 
-Connect conn
+ConnectDb conn
 %>
 <html>
 <head>

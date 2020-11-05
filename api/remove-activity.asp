@@ -15,7 +15,7 @@ Function main(args)
     Dim arg: Set arg=CreateDictionary()
     ensureArgument args, arg, data
     Dim conn,sql,count
-    Connect conn
+    ConnectDb conn
     sql="DECLARE @Id int=?;UPDATE Activities SET Valid=0 WHERE Id=@Id;"&_
     "DELETE FROM ActivityPeriods WHERE ActivityId=@Id;"&_
     "DELETE FROM ActivityMailTemplates WHERE ActivityId=@Id"

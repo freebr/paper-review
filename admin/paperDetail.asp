@@ -16,7 +16,7 @@ If Len(paper_id)=0 Or Not IsNumeric(paper_id) Then
 	showErrorPage "参数无效。", "提示"
 End If
 
-Connect conn
+ConnectDb conn
 sql="SELECT * FROM ViewDissertations_admin WHERE ID="&paper_id
 GetRecordSet conn,rs,sql,count
 If count=0 Then

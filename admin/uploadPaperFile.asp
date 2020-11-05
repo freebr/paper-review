@@ -20,7 +20,7 @@ Case vbNullString	' 论文详情页面
 	%><body><center><font color=red size="4">参数无效。</font><br/><input type="button" value="返 回" onclick="history.go(-1)" /></center></body><%
 		Response.End()
 	End If
-	Connect conn
+	ConnectDb conn
 	sql="SELECT *,dbo.getThesisStatusText(1,TASK_PROGRESS,1) AS STAT_TEXT1,dbo.getThesisStatusText(2,REVIEW_STATUS,1) AS STAT_TEXT2 FROM ViewDissertations WHERE ID="&paper_id
 	GetRecordSet conn,rs,sql,count
 	If count=0 Then
@@ -127,7 +127,7 @@ Case 2	' 文件上传页面
 	
 	Dim conn,rs,sql,sqlDetect,count
 	sqlDetect=""
-	Connect conn
+	ConnectDb conn
 	sql="SELECT * FROM Dissertations WHERE ID="&paper_id
 	GetRecordSet conn,rs,sql,count
 	If rs.EOF Then

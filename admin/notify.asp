@@ -26,7 +26,7 @@ numFailed=0
 bAllowSms=True
 
 arr=Split(uid_type,",")
-Connect conn
+ConnectDb conn
 For i=0 To UBound(arr)
 	arr2=Split(arr(i),".")
 	user_type=arr2(0)

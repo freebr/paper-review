@@ -1,7 +1,7 @@
 ﻿<%
 Function getProDutyNameOf(tid)
 	Dim conn,rs,sql,num
-	Connect conn
+	ConnectDb conn
 	sql="SELECT PRO_DUTYNAME FROM ViewTeacherInfo WHERE TEACHERID="&tid
 	GetRecordSetNoLock conn,rs,sql,num
 	If Not rs.EOF Then
@@ -14,7 +14,7 @@ End Function
 Function updateActiveTime(teacherID)
 	' 更新数据库中用户使用评阅系统时间的记录
 	Dim conn,sql
-	Connect conn
+	ConnectDb conn
 	sql="UPDATE NotifyList SET LAST_ACTIVE_TIME="&toSqlString(Now)&" WHERE USER_ID="&teacherID
 	conn.Execute sql
 	CloseConn conn
@@ -34,7 +34,7 @@ End Function
 
 Function checkIfProfileFilledIn()
 	Dim conn,rs,sql,i,ret
-	Connect conn
+	ConnectDb conn
 	sql="SELECT EXPERT_NAME,PRO_DUTY_NAME,LAST_DIPLOMA,EXPERTISE,WORKPLACE,ADDRESS,MAILCODE,TELEPHONE,MOBILE,EMAIL,BANK_ACCOUNT,BANK_NAME,IDCARD_NO FROM Experts WHERE TEACHER_ID="&Session("TId")
 	Set rs=conn.Execute(sql)
 	If rs.EOF Then
@@ -90,7 +90,7 @@ Function getSectionAccessibilityInfo(activity_id, stu_type_id, section_id)
 	Set getSectionAccessibilityInfo=dict
 End Function
 
-Dim arrFileListName,arrFileListNamePostfix,arrFileListPath,arrFileListField
+Public arrFileListName,arrFileListNamePostfix,arrFileListPath,arrFileListField
 arrFileListName=Array("","送审论文","论文评阅书 1","论文评阅书 2")
 arrFileListNamePostfix=Array("","","论文评阅书(1)","论文评阅书(2)")
 arrFileListPath=Array("","student/upload","expert/export","expert/export")

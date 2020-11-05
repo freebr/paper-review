@@ -1,7 +1,7 @@
 ﻿<!--#include virtual="/pub/sms.inc"--><%
 
 Function sendNotifyMail(activity_id,stu_type_id,template_name,recipient,field_values)
-	Dim conn:Connect conn
+	Dim conn:ConnectDb conn
 	' 获取邮件模板信息
 	Dim sql:sql="SELECT * FROM ActivityMailTemplates WHERE ActivityId=? AND StuType=? AND Name=?"
 	Dim ret:Set ret=ExecQuery(conn,sql,_
@@ -58,7 +58,7 @@ Function sendNotifyMail(activity_id,stu_type_id,template_name,recipient,field_va
 End Function
 
 Function sendNotifySms(activity_id,stu_type_id,template_name,recipient,field_values)
-	Dim conn:Connect conn
+	Dim conn:ConnectDb conn
 	' 获取短信模板信息
 	Dim sql:sql="SELECT * FROM ActivityMailTemplates WHERE ActivityId=? AND StuType=? AND Name=?"
 	Dim ret:Set ret=ExecQuery(conn,sql,_

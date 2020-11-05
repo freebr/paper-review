@@ -1,8 +1,9 @@
 ﻿<!--#include file="adovbs.inc"-->
+<!--#include file="config.inc"-->
 <script language="jscript" runat="server">
 	function ExecQuery(conn,sql) {
 		// 执行查询或存储过程
-		conn = conn || Connect(conn);
+		conn = conn || ConnectDb();
 		var cmd=new ActiveXObject("ADODB.Command");
 		cmd.ActiveConnection=conn;
 		cmd.CommandText=sql;
@@ -17,7 +18,7 @@
 	}
 	function ExecNonQuery(conn,sql) {
 		// 执行不返回记录的存储过程
-		conn = conn || Connect(conn);
+		conn = conn || ConnectDb();
 		var countAffected=0;
 		var cmd=new ActiveXObject("ADODB.Command");
 		cmd.ActiveConnection=conn;
@@ -29,30 +30,30 @@
 		return countAffected;
 	}
 </script><%
-Function Connect(conn)
-	Dim connstr:connstr=getConnectionString("PaperReviewSystem")
+' 建立本系统数据库连接
+Function ConnectDb(conn)
 	Set conn=Server.CreateObject("ADODB.Connection")
 	conn.CommandTimeout=300
 	conn.CursorLocation=adUseClient
-	conn.Open connstr
-	Set Connect = conn
+	conn.Open getConnectionString(uriDatabaseServer, "PaperReviewSystem")
+	Set ConnectDb = conn
 End Function
-Sub ConnectOriginDb(conn)
-	Dim connstr
-	connstr=getConnectionString("SCUT_MD")
+' 建立教务系统数据库连接
+Function ConnectJWDb(conn)
 	Set conn=Server.CreateObject("ADODB.Connection")
 	conn.CommandTimeout=300
 	conn.CursorLocation=adUseClient
-	conn.Open connstr
-End Sub
-Function getConnectionString(initDbName)
+	conn.Open getConnectionString(uriJWDatabaseServer, "SCUT_MD")
+	Set ConnectJWDb = conn
+End Function
+Function getConnectionString(uriServer,initDbName)
 	Dim ret
-	ret="Provider=SQLNCLI10;Persist Security Info=True;User ID=PaperReviewSystem;Password=freebr@qq.com;Initial Catalog="&initDbName
-	ret=ret&";Data Source=116.57.68.162,14033;Pooling=true;Max Pool Size=512;Min Pool Size=50;Connection Lifetime=999;"
+	ret="Provider=SQLNCLI10;Persist Security Info=True;User ID=PaperReviewSystem;Password=HgggLwpy@87114057;Initial Catalog="&initDbName
+	ret=ret&Format(";Data Source={0};Pooling=true;Max Pool Size=512;Min Pool Size=50;Connection Lifetime=999;",uriServer)
 	getConnectionString=ret
 End Function
+' 构造命令参数对象
 Function CmdParam(name,ptype,size,value)
-	' 构造命令参数对象
 	Dim cmd
 	Set cmd=Server.CreateObject("ADODB.Command")
 	Set CmdParam=cmd.CreateParameter(name,ptype,adParamInput,size,value)
@@ -61,9 +62,9 @@ End Function
 
 Sub GetRecordSet(conn,rs,sqlStr,count)
 	Set rs=Server.CreateObject("ADODB.RECORDSET")
-	If IsEmpty(conn) Then Connect conn
-	rs.activeConnection=conn
-	rs.source=sqlStr
+	If IsEmpty(conn) Then ConnectDb conn
+	rs.ActiveConnection=conn
+	rs.Source=sqlStr
 	rs.Open , ,AdOpenKeyset,AdLockOptimistic
 	count=rs.RecordCount
 End Sub
@@ -71,7 +72,7 @@ End Sub
 
 Sub GetRecordSetNoLock(conn,rsNoLock,sqlStr,count)
 	Set rsNoLock=Server.CreateObject("ADODB.RECORDSET")
-	If IsEmpty(conn) Then Connect conn
+	If IsEmpty(conn) Then ConnectDb conn
 	rsNoLock.activeConnection=conn
 	rsNoLock.source=sqlStr
 	rsNoLock.Open , ,AdOpenKeyset,AdLockReadOnly
@@ -81,7 +82,7 @@ End Sub
 '=======================
 Sub GetMenuListPubTerm(table,FieldID,FieldName,fieldValue,TermStr)
 	Set rsMenu=Server.CreateObject("ADODB.RECORDSET")
-	If IsEmpty(conn) Then Connect conn
+	If IsEmpty(conn) Then ConnectDb conn
 	rsMenu.activeConnection=conn
 	If FieldID="" Then
 		rsMenu.source="SELECT "

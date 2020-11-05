@@ -3,8 +3,8 @@
 Dim ids,sel_count
 ids=Request.Form("sel")
 sel_count=Request.Form("sel").Count
-Connect conn
-ConnectOriginDb connOrigin
+ConnectDb conn
+ConnectJWDb connOrigin
 For i=1 To sel_count
 	sql_origin=sql_origin&"UPDATE TEACHER_INFO SET WRITEPRIVILEGETAGSTRING=dbo.removePrivilege(WRITEPRIVILEGETAGSTRING,'I10'),"&_
 				  "READPRIVILEGETAGSTRING=dbo.removePrivilege(READPRIVILEGETAGSTRING,'I10') WHERE TEACHERID="&Request.Form("sel")(i)&";"

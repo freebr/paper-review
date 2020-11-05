@@ -14,7 +14,7 @@ Function main(args)
     Dim arg: Set arg=CreateDictionary()
     ensureArgument args, arg, data
     Dim conn,rs,sql,count
-    Connect conn
+    ConnectDb conn
     sql="DECLARE @a int=?,@b int=?;SELECT StuType,StuTypeName,COUNT(StuType) AS TemplateCount FROM ViewActivityMailTemplates WHERE ActivityId=@a AND (@b&StuTypeBitwise)<>0 GROUP BY StuType,StuTypeName ORDER BY StuTypeName;"&_
         "SELECT Id,Name,MailSubject Text,StuType,MailContent FROM ViewActivityMailTemplates WHERE ActivityId=@a AND (@b&StuTypeBitwise)<>0 ORDER BY StuTypeName,Name"
     Dim ret:Set ret=ExecQuery(conn,sql,_

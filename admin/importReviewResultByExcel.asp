@@ -4,7 +4,7 @@
 <!--#include file="common.asp"--><%
 If IsEmpty(Session("Id")) Then Response.Redirect("../error.asp?timeout")
 
-tableUploadPath = Server.MapPath(uploadBasePath(usertypeAdmin, "review_result"))
+tableUploadPath = Server.MapPath(uploadBasePath(usertypeAdmin, "review_result_table"))
 ensurePathExists tableUploadPath
 
 tmpDir=Server.MapPath("tmp")
@@ -98,7 +98,7 @@ Case 3	' 数据读取，导入到数据库
 		Dim paper_ids
 		Dim field_count:field_count=rs.Fields.Count
 		Dim paper_count:paper_count=0
-		Connect conn
+		ConnectDb conn
 		Do While Not rs.EOF
 			If IsNull(rs(0)) Then Exit Do
 			Dim paper_id,stu_no,author,tutorinfo,subject,speciality

@@ -17,7 +17,7 @@ query_review_status=Request.Form("In_REVIEW_STATUS2")
 finalFilter=Request.Form("finalFilter2")
 pageSize=Request.Form("pageSize2")
 pageNo=Request.Form("pageNo2")
-Connect conn
+ConnectDb conn
 sql="SELECT THESIS_SUBJECT, STU_NAME FROM ViewDissertations_admin WHERE ID IN ("&ids&")"
 GetRecordSetNoLock conn,rs,sql,count
 
