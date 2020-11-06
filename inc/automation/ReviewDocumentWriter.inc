@@ -216,6 +216,9 @@ Class ReviewDocumentWriter
 		If range.Find.Execute("$eval_text",True,,,,,,1) Then
 			range.Text=info("Comment")
 		End If
+		If range.Find.Execute("$suggestion",True,,,,,,1) Then
+			range.Text=info("Suggestion")
+		End If
 		If Len(info("Scores")) Then
 			Dim scores:scores=Split(info("Scores"),",")
 			' 对ME评阅书进行处理
