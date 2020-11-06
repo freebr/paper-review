@@ -93,10 +93,10 @@ Class ReviewDocumentWriter
 		ErrorDesc=m_err_desc
 	End Property
 
-	Public Function exportReviewDocument(filepath,filepath2,filepath3,template_file,stu_type)
+	Public Function exportReviewDocument(filepath,filepath2,filepath3,template_file,stu_type,wd)
 		' 生成评阅书
-		Dim wd,doc,info
-		Set wd=Server.CreateObject("Word.Application")
+		Dim doc,info
+		If IsNull(wd) Then Set wd = Server.CreateObject("Word.Application")
 		Set doc=wd.Documents.Add(template_file)
 		On Error Resume Next
 		Set info=CreateDictionary()
@@ -138,8 +138,10 @@ Class ReviewDocumentWriter
 		End If
 		doc.Close(False)
 		Set doc=Nothing
-		wd.Quit()
-		Set wd=Nothing
+		If IsNull(wd) Then
+			wd.Quit()
+			Set wd=Nothing
+		End If
 		m_err_desc=Err.Description
 		If Err.Number=0 Then
 			exportReviewDocument=1

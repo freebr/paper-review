@@ -64,10 +64,10 @@ Class ReviewDocumentReader
 	Public Property Get ErrorDesc()
 		ErrorDesc=m_err_desc
 	End Property
-	Public Function extractInfoFromReviewDocument(filepath)
+	Public Function extractInfoFromReviewDocument(filepath,wd)
 		' 读取评阅书 Word 文档中的评阅信息
-		Dim wd, doc
-		Set wd = Server.CreateObject("Word.Application")
+		Dim doc
+		If IsNull(wd) Then Set wd = Server.CreateObject("Word.Application")
 		Set doc = wd.Documents.Add(filepath)
 		' On Error Resume Next
 		' 从文件名获取专家姓名
@@ -77,16 +77,10 @@ Class ReviewDocumentReader
 		' 获取学生类型
 		Dim stu_type: stu_type = compactString(doc.Tables(2).Cell(4, 2).Range.Text, True)
 		Select Case stu_type
-			Case "工商管理硕士"
-				If doc.Tables.Count >= 13 Then	' MBA
-					extractMBAInfo doc
-				Else	' EMBA
-					extractEMBAInfo doc
-				End If
+			Case "工商管理硕士"	' MBA
+				extractMBAInfo doc
 			Case "会计硕士"	' MPAcc
 				extractMPAccInfo doc
-			Case "高级管理人员工商管理硕士"	' EMBA
-				extractEMBAInfo doc
 			Case Else	' MEM
 				If doc.Range.Find.Execute("工程硕士学位论文评阅书") Then
 					extractMEMInfo doc
@@ -96,8 +90,10 @@ Class ReviewDocumentReader
 		End Select
 		doc.Close(False)
 		Set doc=Nothing
-		wd.Quit()
-		Set wd=Nothing
+		If IsNull(wd) Then
+			wd.Quit()
+			Set wd=Nothing
+		End If
 		m_err_desc=Err.Description
 		If Err.Number=0 Then
 			extractInfoFromReviewDocument = 1

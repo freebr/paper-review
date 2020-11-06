@@ -114,19 +114,22 @@ Case 3	' 数据读取，导入到数据库
 		Dim review_count:review_count=0
 		Dim new_msg
 		Dim import_time:import_time=Now
+		Dim wd:Set wd = Server.CreateObject("Word.Application")
 		ConnectDb conn
 		Set authors=CreateDictionary()
 		For Each file In folder.Files
 			If fso.FileExists(file.Path) And _
 				isMatched(fso.getExtensionName(file.Name), "^docx?$",True) Then
 				Dim paper_id,author,tutorinfo,subject,speciality
-				Dim researchway,review_type,paper_type_name,stu_type,stu_type_name,expert_id
+				Dim researchway,review_type,paper_type_name,stu_type,stu_type_name
+				Dim reviewer1,reviewer2,expert_id:expert_id=-1
 				
-				reader.extractInfoFromReviewDocument resolvePath(upload_path,file.Name)
+				outputMessage Format("正在处理：评阅书[{0}]……",file.Name)
+				reader.extractInfoFromReviewDocument resolvePath(upload_path,file.Name),wd
 				' 学号
 				outputMessage Format("正在导入：学号[{0}]的评阅记录……",reader.StuNo)
 				
-				sql=Format("SELECT ID,STU_NAME,THESIS_SUBJECT,TUTOR_ID,TUTOR_NAME,SPECIALITY_NAME,RESEARCHWAY_NAME,REVIEW_TYPE,THESIS_FORM,TEACHTYPE_ID,TEACHTYPE_NAME FROM ViewDissertations WHERE STU_NO={0}",toSqlString(reader.StuNo))
+				sql=Format("SELECT ID,STU_NAME,THESIS_SUBJECT,TUTOR_ID,TUTOR_NAME,SPECIALITY_NAME,RESEARCHWAY_NAME,REVIEW_TYPE,THESIS_FORM,TEACHTYPE_ID,TEACHTYPE_NAME,REVIEWER1,REVIEWER2 FROM ViewDissertations WHERE STU_NO={0}",toSqlString(reader.StuNo))
 				Set rsa=conn.Execute(sql)
 				If rsa.EOF Then
 					bError=True
@@ -145,16 +148,26 @@ Case 3	' 数据读取，导入到数据库
 					paper_type_name=rsa("THESIS_FORM")
 					stu_type=rsa("TEACHTYPE_ID")
 					stu_type_name=rsa("TEACHTYPE_NAME")
+					reviewer1=rsa("REVIEWER1")
+					reviewer2=rsa("REVIEWER2")
 					CloseRs rsa
 					' 专家ID
-					If Len(reader.ExpertTel)=0 Then
-						expert_id=getExpertIdByName(reader.ExpertName)
-					Else
+					If Len(reader.ExpertTel) Then
 						expert_id=getExpertIdByTelephone(reader.ExpertTel)
 					End If
 					If expert_id=-1 Then
+						expert_id=getExpertIdByName(reader.ExpertName)
+					End If
+					If expert_id=-1 Then
+						If Right(fso.GetBaseName(file.Name),2) = "_2" Then
+							expert_id=reviewer2
+						Else
+							expert_id=reviewer1
+						End If
+					End If
+					If expert_id=-1 Then
 						bError=True
-						new_msg=Format("学生[{0}]所匹配的专家未录入评阅专家库，评阅书文件名：{1}。",author,file.Name)
+						new_msg=Format("为学生[{0}]给出以下评阅书的专家未录入系统评阅专家库：{1}。",author,file.Name)
 						errMsg=errMsg&new_msg&vbNewLine
 						outputMessage new_msg
 					Else
@@ -234,7 +247,7 @@ Case 3	' 数据读取，导入到数据库
 						filename=toDateTime(import_time,1)&Int(Timer)&Int(Rnd()*999)
 						review_file_paths=reviewFileVersionPath(filename)
 						' 生成评阅书
-						rg.exportReviewDocument review_file_paths(0),review_file_paths(1),review_file_paths(2),template_file,stu_type
+						bError=rg.exportReviewDocument(review_file_paths(0),review_file_paths(1),review_file_paths(2),template_file,stu_type,wd)=0
 						Set rg=Nothing
 						outputMessage Format("评阅书已导出，编号：{0}",filename)
 						
@@ -267,6 +280,8 @@ Case 3	' 数据读取，导入到数据库
 		Next
 		fso.DeleteFolder upload_path
 		CloseConn conn
+		wd.Quit()
+		Set wd=Nothing
 		Set file = Nothing
 		Set folder = Nothing
 		addData=review_count

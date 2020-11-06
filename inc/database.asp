@@ -54,8 +54,7 @@ Function getConnectionString(uriServer,initDbName)
 End Function
 ' 构造命令参数对象
 Function CmdParam(name,ptype,size,value)
-	Dim cmd
-	Set cmd=Server.CreateObject("ADODB.Command")
+	Dim cmd:Set cmd=Server.CreateObject("ADODB.Command")
 	Set CmdParam=cmd.CreateParameter(name,ptype,adParamInput,size,value)
 	Set cmd=Nothing
 End Function

@@ -98,6 +98,7 @@ Case 3	' 数据读取，导入到数据库
 		Dim paper_ids
 		Dim field_count:field_count=rs.Fields.Count
 		Dim paper_count:paper_count=0
+		Dim wd:Set wd = Server.CreateObject("Word.Application")
 		ConnectDb conn
 		Do While Not rs.EOF
 			If IsNull(rs(0)) Then Exit Do
@@ -250,7 +251,7 @@ Case 3	' 数据读取，导入到数据库
 
 					filename=toDateTime(review_time,1)&Int(Timer)&Int(Rnd()*999)
 					review_file_paths=reviewFileVersionPath(filename)
-					bError=rg.exportReviewDocument(review_file_paths(0),review_file_paths(1),review_file_paths(2),template_file,reviewfile_type)=0
+					bError=rg.exportReviewDocument(review_file_paths(0),review_file_paths(1),review_file_paths(2),template_file,reviewfile_type,wd)=0
 					Set rg=Nothing
 					outputMessage "完成！<br/>"
 
@@ -288,6 +289,8 @@ Case 3	' 数据读取，导入到数据库
 			conn.Execute sql
 		End If
 		CloseConn conn
+		wd.Quit()
+		Set wd=Nothing
 		addData=paper_count
 	End Function
 

@@ -108,7 +108,7 @@ Else
 		arr_review_level(i)=Int(arr5(i))
 	Next
 End If
-teachtype_id=rs("TEACHTYPE_ID")
+stu_type=rs("TEACHTYPE_ID")
 review_type=rs("REVIEW_TYPE")
 submit_review_date=toDateTime(rs("SUBMIT_REVIEW_TIME"),1)
 author=rs("STU_NAME")
@@ -142,7 +142,7 @@ Dim rg,review_time,template_file,reviewfile_type,filepath,filename,full_filename
 template_file=Server.MapPath(uploadBasePath(usertypeAdmin,"review_template")&rs("REVIEW_FILE"))
 CloseRs rs
 review_time=Now()
-If teachtype_id=5 Or teachtype_id=6 Then
+If stu_type=5 Or stu_type=6 Then
 	reviewfile_type=2
 Else
 	reviewfile_type=1
@@ -207,7 +207,7 @@ If reviewfile_type=2 Then	' ME/MBA评阅书，计算评价指标总分
 Else
 	score_data=Null
 End If
-bError=rg.exportReviewDocument(filepath,filepath2,filepath3,template_file,reviewfile_type)=0
+bError=rg.exportReviewDocument(filepath,filepath2,filepath3,template_file,stu_type,Null)=0
 Set rg=Nothing
 
 arr_review_level(reviewer_num)=review_level
