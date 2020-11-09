@@ -33,8 +33,8 @@ tutor_duty_name=getProDutyNameOf(rsStu("TUTOR_ID"))
 If rs.EOF Then
 	section_id=sectionUploadKtbgb
 	task_progress=tpNone
-	str_keywords_ch="''"
-	str_keywords_en="''"
+	keywords_ch="''"
+	keywords_en="''"
 Else
 	paper_id=rs("ID")
 	activity_id=rs("ActivityId")
@@ -78,8 +78,8 @@ Else
 	subject=rs("THESIS_SUBJECT")
 	subject_en=rs("THESIS_SUBJECT_EN")
 	sub_research_field=rs("RESEARCHWAY_NAME")
-	str_keywords_ch="'"&Join(Split(toPlainString(rs("KEYWORDS")),"；"),"','")&"'"
-	str_keywords_en="'"&Join(Split(toPlainString(rs("KEYWORDS_EN")),"；"),"','")&"'"
+	keywords_ch=Split(rs("KEYWORDS"),"；")
+	keywords_en=Split(rs("KEYWORDS_EN"),"；")
 	review_type=rs("REVIEW_TYPE")
 	thesis_form=rs("THESIS_FORM")
 	tutor_modify_eval=rs("TUTOR_MODIFY_EVAL")

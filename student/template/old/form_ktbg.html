@@ -54,10 +54,16 @@
 	<tr><td colspan="3"><textarea name="anticipated_result" class="txt" rows="8" cols="100"></textarea></td></tr>
 	</table></td></tr>
 </table><%
-	If str_keywords_ch<>"''" And str_keywords_en<>"''" Then %>
+	If IsArray(keywords_ch) And IsArray(keywords_en) Then
+	For i=0 To UBound(keywords_ch)
+		keywords_ch(i)=toJsString(keywords_ch(i))
+		keywords_en(i)=toJsString(keywords_en(i))
+	Next
+	str_keywords_ch=Join(keywords_ch, """,""")
+	str_keywords_en=Join(keywords_en, """,""") %>
 <script>
 	$().ready(function() {
-		setKeywords([<%=str_keywords_ch%>],[<%=str_keywords_en%>]);
+		setKeywords(["<%=str_keywords_ch%>"],["<%=str_keywords_en%>"]);
 	});
 </script><%
 	End If %>

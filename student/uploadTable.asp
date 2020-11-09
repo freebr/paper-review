@@ -17,8 +17,8 @@ GetRecordSetNoLock conn,rs,sql,count
 If rs.EOF Then
 	section_id=sectionUploadKtbgb
 	task_progress=tpNone
-	str_keywords_ch="''"
-	str_keywords_en="''"
+	keywords_ch="''"
+	keywords_en="''"
 Else
 	paper_id=rs("ID")
 	activity_id=rs("ActivityId")
@@ -52,8 +52,8 @@ Else
 	subject_ch=rs("THESIS_SUBJECT")
 	subject_en=rs("THESIS_SUBJECT_EN")
 	sub_research_field=rs("RESEARCHWAY_NAME")
-	str_keywords_ch="'"&Join(Split(toPlainString(rs("KEYWORDS")),"；"),"','")&"'"
-	str_keywords_en="'"&Join(Split(toPlainString(rs("KEYWORDS_EN")),"；"),"','")&"'"
+	keywords_ch=Split(rs("KEYWORDS"),"；")
+	keywords_en=Split(rs("KEYWORDS_EN"),"；")
 End If
 If section_id<>0 Then
 	is_new_dissertation=section_id=sectionUploadKtbgb Or stu_type=7 And section_id=sectionUploadYdbyjs
@@ -147,12 +147,18 @@ Case vbNullstring ' 填写信息页面
 </td></tr></table></form></center>
 <script type="text/javascript"><%
 	If is_new_dissertation Then
-		If str_keywords_ch<>"''" And str_keywords_en<>"''" Then %>
+		If IsArray(keywords_ch) And IsArray(keywords_en) Then
+			For i=0 To UBound(keywords_ch)
+				keywords_ch(i)=toJsString(keywords_ch(i))
+				keywords_en(i)=toJsString(keywords_en(i))
+			Next
+			str_keywords_ch=Join(keywords_ch, """,""")
+			str_keywords_en=Join(keywords_en, """,""")
+		%>
 	$().ready(function() {
-		setKeywords([<%=str_keywords_ch%>],[<%=str_keywords_en%>]);
+		setKeywords(["<%=str_keywords_ch%>"],["<%=str_keywords_en%>"]);
 	});<%
-		End If
-		If uploadable Then %>
+		End If %>
 	$('select[name="sub_research_field_select"]').change(function(){
 		$('input[name="sub_research_field"]').val(!this.value.length?'':$(this).find('option:selected').text());
 		var $custom_field=$('input[name="custom_sub_research_field"]');
@@ -167,7 +173,6 @@ Case vbNullstring ' 填写信息页面
 		$('input[name="research_field"]').val(!this.value.length?'':$(this).find('option:selected').text());
 	});
 	initResearchFieldSelectBox($('select[name="research_field_select"]'),<%=stu_type%>);<%
-		End If
 	End If %>
 	$('form').submit(function(event) {<%
 	If is_new_dissertation And uploadable Then %>
