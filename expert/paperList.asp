@@ -9,6 +9,8 @@ teachtype_id=toUnsignedInt(Request.Form("In_TEACHTYPE_ID"))
 is_reviewed=toUnsignedInt(Request.Form("In_IS_REVIEWED"))
 finalFilter=Request.Form("finalFilter")
 If Len(finalFilter) Then PubTerm="AND ("&finalFilter&")"
+
+ConnectDb conn
 If IsEmpty(activity_id) Or activity_id=-1 Then
 	' 获取专家待评阅的学生类型
 	sql="SELECT dbo.getUnhandledReviewType(?)"
@@ -17,6 +19,7 @@ If IsEmpty(activity_id) Or activity_id=-1 Then
 	CloseRs rs
 	Dim activity:Set activity=getLastActivityInfoOfStuType(unhandled_review_type)
 	If activity Is Nothing Then
+		CloseConn conn
 		showErrorPage "您暂时没有需要评阅的论文，请稍后再查看！", "提示"
 	End If
 	activity_id=activity("Id")
@@ -39,7 +42,6 @@ Else
 End If
 '------------------------------------------------------
 arrStatText=Array("待评阅","已评阅")
-ConnectDb conn
 sql="SELECT dbo.getUnhandledReviewPaperCount(?,?)"
 Set ret=ExecQuery(conn,sql,CmdParam("expert_id",adInteger,4,teacher_id),_
 	CmdParam("activity_id",adInteger,4,activity_id))

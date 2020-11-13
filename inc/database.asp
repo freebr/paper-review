@@ -3,7 +3,7 @@
 <script language="jscript" runat="server">
 	function ExecQuery(conn,sql) {
 		// 执行查询或存储过程
-		conn = conn || ConnectDb();
+		var conn = conn || ConnectDb(null);
 		var cmd=new ActiveXObject("ADODB.Command");
 		cmd.ActiveConnection=conn;
 		cmd.CommandText=sql;
@@ -18,7 +18,7 @@
 	}
 	function ExecNonQuery(conn,sql) {
 		// 执行不返回记录的存储过程
-		conn = conn || ConnectDb();
+		var conn = conn || ConnectDb(null);
 		var countAffected=0;
 		var cmd=new ActiveXObject("ADODB.Command");
 		cmd.ActiveConnection=conn;
@@ -43,7 +43,7 @@ Function ConnectJWDb(conn)
 	Set conn=Server.CreateObject("ADODB.Connection")
 	conn.CommandTimeout=300
 	conn.CursorLocation=adUseClient
-	conn.Open getConnectionString(uriJWDatabaseServer, "SCUT_MD")
+	conn.Open getConnectionString(uriJWDatabaseServer, "Jiaowu")
 	Set ConnectJWDb = conn
 End Function
 Function getConnectionString(uriServer,initDbName)
