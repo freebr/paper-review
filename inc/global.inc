@@ -687,6 +687,7 @@ End Function
 ' 添加日志记录
 Function writeLog(content)
 	Dim logfile,fso,stream,msg
+	ensurePathExists baseLogPath()
 	logfile=Server.MapPath(baseLogPath()&toDateTime(Date,1)&".log")
 	Set fso=CreateFSO()
 	Set stream=fso.OpenTextFile(logfile,8,true)
