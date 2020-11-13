@@ -1,4 +1,4 @@
-﻿<!--#include virtual="/pub/sms.inc"--><%
+﻿<!--#include file="sms.inc"--><%
 
 Function sendNotifyMail(activity_id,stu_type_id,template_name,recipient,field_values)
 	Dim conn:ConnectDb conn
