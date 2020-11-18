@@ -413,8 +413,6 @@ Case 1	' 上传进程
 			"honor_penalty","achievement_name","achievement_ym","achievement_source","achievement_authornum","achievement_status",_
 			"dissertation_subject","dissertation_keywords","dissertation_word_count","issue_source","project_name_code",_
 			"dissertation_type","dissertation_duration","tutor_eval","view_state")
-		debug("count="&Request.Form("birthday").Count)
-		debug(",value="&Request.Form("birthday"))
 		params("birthday")=toYearMonthDate(Request.Form("birthday")(1),Request.Form("birthday")(2),Request.Form("birthday")(3))
 		params("entrance_ym")=toYearMonth(Request.Form("entrance_ym")(1),Request.Form("entrance_ym")(2))
 		params("graduation_ym")=toYearMonth(Request.Form("graduation_ym")(1),Request.Form("graduation_ym")(2))

@@ -247,8 +247,8 @@ End Function
 <body>
 <center><font size=4><b>欢迎使用工商管理学院专业学位论文评阅系统</b></font>
 <%
-	If stu_type=6 Then
-		If review_status<>rsNone And (review_type=0 Or review_type=1) Then
+	If stu_type=5 Or stu_type=6 Or stu_type=7 Then
+		If review_status<>rsNone And review_type=0 Then
 			sql="SELECT * FROM ReviewTypes WHERE LEN(THESIS_FORM)>0 AND TEACHTYPE_ID="&stu_type
 			GetRecordSetNoLock conn,rs2,sql,count
 %><form method="post" action="setPaperForm.asp">

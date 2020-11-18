@@ -140,7 +140,7 @@ Case vbNullstring ' 填写信息页面
 	End If
 %>
 <p>院系名称：<input type="text" name="faculty" size="50" value="工商管理学院" readonly /></p><%
-	If stu_type=5 Or stu_type=6 Then %>
+	If stu_type=5 Or stu_type=6 Or stu_type=7 Then %>
 <p>论文形式：<%
 		If section_id<>sectionUploadDetectReview Then
 %><input type="text" size="50" value="<%=thesis_form%>" readonly /><input type="hidden" name="thesisform" value="<%=review_type%>" /><%

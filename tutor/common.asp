@@ -50,7 +50,6 @@ Function addAuditRecord(paper_id,audit_file,audit_type,audit_time,is_passed,ByVa
 	Dim conn,sql
 	ConnectDb conn
 	sql="EXEC spAddAuditRecord ?,?,?,?,?,?,?,NULL"
-	debug(audit_file)
 	ExecNonQuery conn,sql,_
 		CmdParam("paper_id",adInteger,4,paper_id),_
 		CmdParam("audit_file",adVarWChar,50,audit_file),_
@@ -115,9 +114,6 @@ End Function
 Function getSectionAccessibilityInfo(activity_id, stu_type_id, section_id)
 	Dim section, time_flag, tip
 	Dim accessible:accessible=False
-	debug(activity_id)
-	debug(stu_type_id)
-	debug(section_id)
 	If Not isActivityOpen(activity_id) Then
 		Set section=getSectionInfo(Null, Null, section_id)
 		time_flag=-3

@@ -185,7 +185,7 @@ Case 3	' 撤销教务员操作
 	Case 0	' 撤销送检操作
 		sqlDetect="EXEC spDeleteDetectResult "&paper_id&";"
 		If Not IsNull(rs("THESIS_FILE")) Then
-			sqlDetect=sqlDetect&"EXEC spAddDetectResult "&paper_id&","&rs("THESIS_FILE")&",NULL,NULL,NULL,1;"
+			sqlDetect=sqlDetect&"EXEC spAddDetectResult "&paper_id&","&toSqlString(rs("THESIS_FILE"))&",NULL,NULL,NULL,1;"
 		End If
 		rs("REVIEW_STATUS")=rsAgreedDetect
 	Case 1	' 撤销匹配评阅专家操作

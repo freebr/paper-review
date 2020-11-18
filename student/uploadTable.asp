@@ -52,8 +52,12 @@ Else
 	subject_ch=rs("THESIS_SUBJECT")
 	subject_en=rs("THESIS_SUBJECT_EN")
 	sub_research_field=rs("RESEARCHWAY_NAME")
-	keywords_ch=Split(rs("KEYWORDS"),"；")
-	keywords_en=Split(rs("KEYWORDS_EN"),"；")
+	If Not IsNull(rs("KEYWORDS")) Then
+		keywords_ch=Split(rs("KEYWORDS"),"；")
+	End If
+	If Not IsNull(rs("KEYWORDS_EN")) Then
+		keywords_en=Split(rs("KEYWORDS_EN"),"；")
+	End If
 End If
 If section_id<>0 Then
 	is_new_dissertation=section_id=sectionUploadKtbgb Or stu_type=7 And section_id=sectionUploadYdbyjs
